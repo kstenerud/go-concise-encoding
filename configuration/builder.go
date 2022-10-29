@@ -18,7 +18,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 
-package options
+package configuration
 
 import (
 	"fmt"
@@ -36,7 +36,7 @@ import (
 type CustomBinaryBuildFunction func(customType uint64, src []byte, dst reflect.Value) error
 type CustomTextBuildFunction func(customType uint64, src string, dst reflect.Value) error
 
-type BuilderSessionOptions struct {
+type BuilderSessionConfiguration struct {
 	// Specifies which types will be built using custom text/binary build
 	// functions. You must also set one or both of CustomBinaryBuildFunction
 	// and CustomTextBuildFunction in order to use this feature.
@@ -52,11 +52,11 @@ type BuilderSessionOptions struct {
 	CustomTextBuildFunction CustomTextBuildFunction
 }
 
-func DefaultBuilderSessionOptions() BuilderSessionOptions {
-	return defaultBuilderSessionOptions
+func DefaultBuilderSessionConfiguration() BuilderSessionConfiguration {
+	return defaultBuilderSessionConfiguration
 }
 
-var defaultBuilderSessionOptions = BuilderSessionOptions{
+var defaultBuilderSessionConfiguration = BuilderSessionConfiguration{
 	CustomBinaryBuildFunction: func(customType uint64, src []byte, dst reflect.Value) error {
 		return fmt.Errorf("no builder has been registered to handle custom binary data")
 	},
@@ -66,26 +66,26 @@ var defaultBuilderSessionOptions = BuilderSessionOptions{
 	CustomBuiltTypes: []reflect.Type{},
 }
 
-func (_this *BuilderSessionOptions) ApplyDefaults() {
+func (_this *BuilderSessionConfiguration) ApplyDefaults() {
 	if _this.CustomBinaryBuildFunction == nil {
-		_this.CustomBinaryBuildFunction = defaultBuilderSessionOptions.CustomBinaryBuildFunction
+		_this.CustomBinaryBuildFunction = defaultBuilderSessionConfiguration.CustomBinaryBuildFunction
 	}
 	if _this.CustomTextBuildFunction == nil {
-		_this.CustomTextBuildFunction = defaultBuilderSessionOptions.CustomTextBuildFunction
+		_this.CustomTextBuildFunction = defaultBuilderSessionConfiguration.CustomTextBuildFunction
 	}
 	if _this.CustomBuiltTypes == nil {
-		_this.CustomBuiltTypes = defaultBuilderSessionOptions.CustomBuiltTypes
+		_this.CustomBuiltTypes = defaultBuilderSessionConfiguration.CustomBuiltTypes
 	}
 }
 
-func (_this *BuilderSessionOptions) Validate() error {
+func (_this *BuilderSessionConfiguration) Validate() error {
 	return nil
 }
 
 // ============================================================================
 // Builder
 
-type BuilderOptions struct {
+type BuilderConfiguration struct {
 	// Max base-10 exponent allowed when converting from floating point to big integer.
 	// As exponents get very large, it takes geometrically more CPU to convert.
 	FloatToBigIntMaxBase10Exponent int
@@ -103,11 +103,11 @@ type BuilderOptions struct {
 	IgnoreUnknownFields bool
 }
 
-func DefaultBuilderOptions() BuilderOptions {
-	return defaultBuilderOptions
+func DefaultBuilderConfiguration() BuilderConfiguration {
+	return defaultBuilderConfiguration
 }
 
-var defaultBuilderOptions = BuilderOptions{
+var defaultBuilderConfiguration = BuilderConfiguration{
 	FloatToBigIntMaxBase10Exponent:  maxBase10Exp,
 	FloatToBigIntMaxBase2Exponent:   maxBase10Exp * 10 / 3,
 	AllowLossyFloatConversion:       true,
@@ -115,10 +115,10 @@ var defaultBuilderOptions = BuilderOptions{
 	CaseInsensitiveStructFieldNames: true,
 }
 
-func (_this *BuilderOptions) ApplyDefaults() {
+func (_this *BuilderConfiguration) ApplyDefaults() {
 	// Nothing to do
 }
 
-func (_this *BuilderOptions) Validate() error {
+func (_this *BuilderConfiguration) Validate() error {
 	return nil
 }

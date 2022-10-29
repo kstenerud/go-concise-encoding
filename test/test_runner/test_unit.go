@@ -32,8 +32,8 @@ import (
 
 type UnitTest struct {
 	Name        string             `ce:"order=1"`
-	MustSucceed []*MustSucceedTest `ce:"order=2,omitempty"`
-	MustFail    []*MustFailTest    `ce:"order=3,omitempty"`
+	MustSucceed []*MustSucceedTest `ce:"order=2,omit_empty"`
+	MustFail    []*MustFailTest    `ce:"order=3,omit_empty"`
 }
 
 func (_this *UnitTest) PostDecodeInit(ceVersion int, context string, testIndex int) (errors []error) {

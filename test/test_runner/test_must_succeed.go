@@ -32,20 +32,20 @@ import (
 	"strings"
 
 	"github.com/kstenerud/go-concise-encoding/cbe"
+	"github.com/kstenerud/go-concise-encoding/configuration"
 	"github.com/kstenerud/go-concise-encoding/cte"
-	"github.com/kstenerud/go-concise-encoding/options"
 	"github.com/kstenerud/go-concise-encoding/rules"
 	"github.com/kstenerud/go-concise-encoding/test"
 )
 
 type MustSucceedTest struct {
 	BaseTest
-	FromCBE    []byte   `ce:"order=11,omitempty"`
-	ToCBE      []byte   `ce:"order=12,omitempty"`
-	FromCTE    string   `ce:"order=21,omitempty"`
-	ToCTE      string   `ce:"order=22,omitempty"`
-	FromEvents []string `ce:"order=31,omitempty"`
-	ToEvents   []string `ce:"order=32,omitempty"`
+	FromCBE    []byte   `ce:"order=11,omit_empty"`
+	ToCBE      []byte   `ce:"order=12,omit_empty"`
+	FromCTE    string   `ce:"order=21,omit_empty"`
+	ToCTE      string   `ce:"order=22,omit_empty"`
+	FromEvents []string `ce:"order=31,omit_empty"`
+	ToEvents   []string `ce:"order=32,omit_empty"`
 	fromEvents test.Events
 	toEvents   test.Events
 }
@@ -282,12 +282,12 @@ func (_this *MustSucceedTest) cteToCte(document string) (result string, err erro
 		}()
 	}
 
-	decoderOpts := options.DefaultCEDecoderOptions()
-	decoderOpts.DebugPanics = _this.Debug
-	decoder := cte.NewDecoder(&decoderOpts)
+	decoderConfig := configuration.DefaultCEDecoderConfiguration()
+	decoderConfig.DebugPanics = _this.Debug
+	decoder := cte.NewDecoder(&decoderConfig)
 
-	encoderOpts := options.DefaultCTEEncoderOptions()
-	encoder := cte.NewEncoder(&encoderOpts)
+	encoderConfig := configuration.DefaultCTEEncoderConfiguration()
+	encoder := cte.NewEncoder(&encoderConfig)
 	receiver := rules.NewRules(encoder, nil)
 
 	inBuffer := bytes.NewBuffer([]byte(document))
@@ -314,12 +314,12 @@ func (_this *MustSucceedTest) cbeToCte(document []byte) (result string, err erro
 		}()
 	}
 
-	decoderOpts := options.DefaultCEDecoderOptions()
-	decoderOpts.DebugPanics = _this.Debug
-	decoder := cbe.NewDecoder(&decoderOpts)
+	decoderConfig := configuration.DefaultCEDecoderConfiguration()
+	decoderConfig.DebugPanics = _this.Debug
+	decoder := cbe.NewDecoder(&decoderConfig)
 
-	encoderOpts := options.DefaultCTEEncoderOptions()
-	encoder := cte.NewEncoder(&encoderOpts)
+	encoderConfig := configuration.DefaultCTEEncoderConfiguration()
+	encoder := cte.NewEncoder(&encoderConfig)
 	receiver := rules.NewRules(encoder, nil)
 
 	inBuffer := bytes.NewBuffer([]byte(document))
@@ -346,12 +346,12 @@ func (_this *MustSucceedTest) cteToCbe(document string) (result []byte, err erro
 		}()
 	}
 
-	decoderOpts := options.DefaultCEDecoderOptions()
-	decoderOpts.DebugPanics = _this.Debug
-	decoder := cte.NewDecoder(&decoderOpts)
+	decoderConfig := configuration.DefaultCEDecoderConfiguration()
+	decoderConfig.DebugPanics = _this.Debug
+	decoder := cte.NewDecoder(&decoderConfig)
 
-	encoderOpts := options.DefaultCBEEncoderOptions()
-	encoder := cbe.NewEncoder(&encoderOpts)
+	encoderConfig := configuration.DefaultCBEEncoderConfiguration()
+	encoder := cbe.NewEncoder(&encoderConfig)
 	receiver := rules.NewRules(encoder, nil)
 
 	inBuffer := bytes.NewBuffer([]byte(document))
@@ -378,12 +378,12 @@ func (_this *MustSucceedTest) cbeToCbe(document []byte) (result []byte, err erro
 		}()
 	}
 
-	decoderOpts := options.DefaultCEDecoderOptions()
-	decoderOpts.DebugPanics = _this.Debug
-	decoder := cbe.NewDecoder(&decoderOpts)
+	decoderConfig := configuration.DefaultCEDecoderConfiguration()
+	decoderConfig.DebugPanics = _this.Debug
+	decoder := cbe.NewDecoder(&decoderConfig)
 
-	encoderOpts := options.DefaultCBEEncoderOptions()
-	encoder := cbe.NewEncoder(&encoderOpts)
+	encoderConfig := configuration.DefaultCBEEncoderConfiguration()
+	encoder := cbe.NewEncoder(&encoderConfig)
 	receiver := rules.NewRules(encoder, nil)
 
 	inBuffer := bytes.NewBuffer([]byte(document))

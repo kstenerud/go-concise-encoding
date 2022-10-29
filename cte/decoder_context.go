@@ -25,7 +25,7 @@ import (
 	"io"
 
 	"github.com/kstenerud/go-concise-encoding/ce/events"
-	"github.com/kstenerud/go-concise-encoding/options"
+	"github.com/kstenerud/go-concise-encoding/configuration"
 )
 
 type ContainerType uint16
@@ -65,7 +65,7 @@ type DecoderStackEntry struct {
 }
 
 type DecoderContext struct {
-	opts                 *options.CEDecoderOptions
+	config               *configuration.CEDecoderConfiguration
 	Stream               Reader
 	TextPos              *TextPositionCounter
 	EventReceiver        events.DataEventReceiver
@@ -108,8 +108,8 @@ func (_this *DecoderContext) topOfStack() *DecoderStackEntry {
 	return &_this.stack[len(_this.stack)-1]
 }
 
-func (_this *DecoderContext) Init(opts *options.CEDecoderOptions, reader io.Reader, eventReceiver events.DataEventReceiver) {
-	_this.opts = opts
+func (_this *DecoderContext) Init(config *configuration.CEDecoderConfiguration, reader io.Reader, eventReceiver events.DataEventReceiver) {
+	_this.config = config
 	_this.Stream.Init(reader)
 	_this.TextPos = &_this.Stream.TextPos
 	_this.EventReceiver = eventReceiver

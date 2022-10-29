@@ -21,6 +21,8 @@
 package tests
 
 import (
+	"bytes"
+	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -52,7 +54,11 @@ func generateAntlrCode(projectDir string) {
 		"-Dlanguage=Go",
 		lexerPath, parserPath,
 	)
+	stdout := &bytes.Buffer{}
+	stderr := &bytes.Buffer{}
+	cmd.Stdout = stdout
+	cmd.Stderr = stderr
 	if err := cmd.Run(); err != nil {
-		panic(err)
+		panic(fmt.Errorf("failed to run %v: %w\nStdout = [%v]\nStderr = [%v]", cmd.Args, err, stdout.String(), stderr.String()))
 	}
 }

@@ -26,39 +26,39 @@ import (
 	"io"
 
 	"github.com/kstenerud/go-concise-encoding/ce/events"
+	"github.com/kstenerud/go-concise-encoding/configuration"
 	"github.com/kstenerud/go-concise-encoding/internal/chars"
-	"github.com/kstenerud/go-concise-encoding/options"
 )
 
 type DecoderOp func(*DecoderContext)
 
 type Decoder struct {
-	opts *options.CEDecoderOptions
+	config *configuration.CEDecoderConfiguration
 }
 
 // Create a new CTE decoder, which will read from reader and send data events
-// to nextReceiver. If opts is nil, default options will be used.
-func NewDecoder(opts *options.CEDecoderOptions) *Decoder {
+// to nextReceiver. If config is nil, default configuration will be used.
+func NewDecoder(config *configuration.CEDecoderConfiguration) *Decoder {
 	_this := &Decoder{}
-	_this.Init(opts)
+	_this.Init(config)
 	return _this
 }
 
 // Initialize this decoder, which will read from reader and send data events
-// to nextReceiver. If opts is nil, default options will be used.
-func (_this *Decoder) Init(opts *options.CEDecoderOptions) {
-	if opts == nil {
-		o := options.DefaultCEDecoderOptions()
-		opts = &o
+// to nextReceiver. If config is nil, default configuration will be used.
+func (_this *Decoder) Init(config *configuration.CEDecoderConfiguration) {
+	if config == nil {
+		defaultConfig := configuration.DefaultCEDecoderConfiguration()
+		config = &defaultConfig
 	} else {
-		opts.ApplyDefaults()
+		config.ApplyDefaults()
 	}
-	_this.opts = opts
+	_this.config = config
 }
 
 func (_this *Decoder) Decode(reader io.Reader, eventReceiver events.DataEventReceiver) (err error) {
 	defer func() {
-		if !_this.opts.DebugPanics {
+		if !_this.config.DebugPanics {
 			if r := recover(); r != nil {
 				switch v := r.(type) {
 				case error:
@@ -71,7 +71,7 @@ func (_this *Decoder) Decode(reader io.Reader, eventReceiver events.DataEventRec
 	}()
 
 	ctx := DecoderContext{}
-	ctx.Init(_this.opts, reader, eventReceiver)
+	ctx.Init(_this.config, reader, eventReceiver)
 	ctx.StackDecoder(decodeDocumentBegin)
 
 	for !ctx.IsDocumentComplete {

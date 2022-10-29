@@ -30,9 +30,9 @@ import (
 	compact_float "github.com/kstenerud/go-compact-float"
 	compact_time "github.com/kstenerud/go-compact-time"
 	"github.com/kstenerud/go-concise-encoding/ce/events"
+	"github.com/kstenerud/go-concise-encoding/configuration"
 	"github.com/kstenerud/go-concise-encoding/conversions"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
-	"github.com/kstenerud/go-concise-encoding/options"
 )
 
 // Receives data events, constructing a CBE document from them.
@@ -43,27 +43,27 @@ import (
 // designed to panic).
 type Encoder struct {
 	writer Writer
-	opts   *options.CBEEncoderOptions
+	config *configuration.CBEEncoderConfiguration
 }
 
 // Create a new CBE encoder.
-// If opts is nil, default options will be used.
-func NewEncoder(opts *options.CBEEncoderOptions) *Encoder {
+// If config is nil, default configuration will be used.
+func NewEncoder(config *configuration.CBEEncoderConfiguration) *Encoder {
 	_this := &Encoder{}
-	_this.Init(opts)
+	_this.Init(config)
 	return _this
 }
 
 // Initialize this encoder.
-// If opts is nil, default options will be used.
-func (_this *Encoder) Init(opts *options.CBEEncoderOptions) {
-	if opts == nil {
-		o := options.DefaultCBEEncoderOptions()
-		opts = &o
+// If config is nil, default configuration will be used.
+func (_this *Encoder) Init(config *configuration.CBEEncoderConfiguration) {
+	if config == nil {
+		defaultConfig := configuration.DefaultCBEEncoderConfiguration()
+		config = &defaultConfig
 	} else {
-		opts.ApplyDefaults()
+		config.ApplyDefaults()
 	}
-	_this.opts = opts
+	_this.config = config
 	_this.writer.Init()
 }
 

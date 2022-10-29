@@ -32,8 +32,8 @@ import (
 	"strings"
 
 	"github.com/kstenerud/go-concise-encoding/cbe"
+	"github.com/kstenerud/go-concise-encoding/configuration"
 	"github.com/kstenerud/go-concise-encoding/cte"
-	"github.com/kstenerud/go-concise-encoding/options"
 	"github.com/kstenerud/go-concise-encoding/rules"
 	"github.com/kstenerud/go-concise-encoding/test"
 	"github.com/kstenerud/go-concise-encoding/test/event_parser"
@@ -41,12 +41,12 @@ import (
 
 type BaseTest struct {
 	ceVersion   int
-	CBE         []byte   `ce:"order=10,omitempty"`
-	CTE         string   `ce:"order=20,omitempty"`
-	Events      []string `ce:"order=30,omitempty"`
-	RawDocument bool     `ce:"order=40,omitempty"`
-	Skip        bool     `ce:"order=50,omitempty"`
-	Debug       bool     `ce:"order=60,omitempty"` // When true, don't convert panics to errors.
+	CBE         []byte   `ce:"order=10,omit_empty"`
+	CTE         string   `ce:"order=20,omit_empty"`
+	Events      []string `ce:"order=30,omit_empty"`
+	RawDocument bool     `ce:"order=40,omit_zero"`
+	Skip        bool     `ce:"order=50,omit_zero"`
+	Debug       bool     `ce:"order=60,omit_zero"` // When true, don't convert panics to errors.
 	events      test.Events
 	context     string
 }
@@ -125,9 +125,9 @@ func (_this *BaseTest) cteToEvents(document string) (result test.Events, err err
 		}()
 	}
 
-	opts := options.DefaultCEDecoderOptions()
-	opts.DebugPanics = _this.Debug
-	decoder := cte.NewDecoder(&opts)
+	config := configuration.DefaultCEDecoderConfiguration()
+	config.DebugPanics = _this.Debug
+	decoder := cte.NewDecoder(&config)
 	buffer := bytes.NewBuffer([]byte(document))
 	receiver, collection := test.NewEventCollector(nil)
 	receiver = rules.NewRules(receiver, nil)
@@ -152,9 +152,9 @@ func (_this *BaseTest) cbeToEvents(document []byte) (result test.Events, err err
 		}()
 	}
 
-	opts := options.DefaultCEDecoderOptions()
-	opts.DebugPanics = _this.Debug
-	decoder := cbe.NewDecoder(&opts)
+	config := configuration.DefaultCEDecoderConfiguration()
+	config.DebugPanics = _this.Debug
+	decoder := cbe.NewDecoder(&config)
 	buffer := bytes.NewBuffer(document)
 	receiver, collection := test.NewEventCollector(nil)
 	receiver = rules.NewRules(receiver, nil)

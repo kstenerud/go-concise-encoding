@@ -27,7 +27,7 @@ import (
 	"strings"
 
 	"github.com/kstenerud/go-concise-encoding/ce/events"
-	"github.com/kstenerud/go-concise-encoding/options"
+	"github.com/kstenerud/go-concise-encoding/configuration"
 	"github.com/kstenerud/go-concise-encoding/version"
 )
 
@@ -41,7 +41,7 @@ type contextStackEntry struct {
 }
 
 type Context struct {
-	opts            *options.RuleOptions
+	config          *configuration.RuleConfiguration
 	ExpectedVersion uint64
 
 	objectCount uint64
@@ -73,8 +73,8 @@ type Context struct {
 	LocalReferenceCount    uint64
 }
 
-func (_this *Context) Init(opts *options.RuleOptions) {
-	_this.opts = opts
+func (_this *Context) Init(config *configuration.RuleConfiguration) {
+	_this.config = config
 	_this.ExpectedVersion = version.ConciseEncodingVersion
 	_this.stack = make([]contextStackEntry, 0, 16)
 	_this.Reset()
@@ -136,8 +136,8 @@ func (_this *Context) NotifyNewObject(isRealObject bool) {
 		}
 	}
 	_this.objectCount++
-	if _this.objectCount > _this.opts.MaxObjectCount {
-		panic(fmt.Errorf("exceeded max object count of %d", _this.opts.MaxObjectCount))
+	if _this.objectCount > _this.config.MaxObjectCount {
+		panic(fmt.Errorf("exceeded max object count of %d", _this.config.MaxObjectCount))
 	}
 }
 
@@ -146,8 +146,8 @@ func (_this *Context) NotifyNewObject(isRealObject bool) {
  */
 func (_this *Context) beginContainer(rule EventRule, dataType DataType, expectedObjectCount int) {
 	_this.containerDepth++
-	if _this.containerDepth > _this.opts.MaxContainerDepth {
-		panic(fmt.Errorf("exceeded max container depth of %d", _this.opts.MaxContainerDepth))
+	if _this.containerDepth > _this.config.MaxContainerDepth {
+		panic(fmt.Errorf("exceeded max container depth of %d", _this.config.MaxContainerDepth))
 	}
 	_this.stackRule(rule, dataType, expectedObjectCount)
 }
@@ -246,8 +246,8 @@ func (_this *Context) EndDocument() {
 
 func (_this *Context) MarkObject(dataType DataType) {
 	newLocalReferenceCount := _this.LocalReferenceCount + 1
-	if newLocalReferenceCount > _this.opts.MaxLocalReferenceCount {
-		panic(fmt.Errorf("too many marked objects (%d). Max is %d", newLocalReferenceCount, _this.opts.MaxLocalReferenceCount))
+	if newLocalReferenceCount > _this.config.MaxLocalReferenceCount {
+		panic(fmt.Errorf("too many marked objects (%d). Max is %d", newLocalReferenceCount, _this.config.MaxLocalReferenceCount))
 	}
 
 	id := _this.markerID

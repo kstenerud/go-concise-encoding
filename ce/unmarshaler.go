@@ -25,8 +25,8 @@ import (
 	"io"
 
 	"github.com/kstenerud/go-concise-encoding/cbe"
+	"github.com/kstenerud/go-concise-encoding/configuration"
 	"github.com/kstenerud/go-concise-encoding/cte"
-	"github.com/kstenerud/go-concise-encoding/options"
 )
 
 // Unmarshaler decodes bytes from an input source, then creates, fills out, and
@@ -41,12 +41,12 @@ type Unmarshaler interface {
 	UnmarshalFromDocument(document []byte, template interface{}) (decoded interface{}, err error)
 }
 
-func chooseUnmarshaler(identifier byte, opts *options.CEUnmarshalerOptions) (unmarshaler Unmarshaler, err error) {
+func chooseUnmarshaler(identifier byte, config *configuration.CEUnmarshalerConfiguration) (unmarshaler Unmarshaler, err error) {
 	switch identifier {
 	case 'c':
-		unmarshaler = cte.NewUnmarshaler(opts)
+		unmarshaler = cte.NewUnmarshaler(config)
 	case cbe.CBESignatureByte:
-		unmarshaler = cbe.NewUnmarshaler(opts)
+		unmarshaler = cbe.NewUnmarshaler(config)
 	default:
 		err = fmt.Errorf("%02d: Unknown CE identifier", identifier)
 	}

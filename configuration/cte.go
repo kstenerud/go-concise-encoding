@@ -18,7 +18,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 
-package options
+package configuration
 
 import (
 	"fmt"
@@ -46,7 +46,7 @@ const (
 // ============================================================================
 // CTE Encoder
 
-type CTEEncoderOptions struct {
+type CTEEncoderConfiguration struct {
 	// Indentation to use when pretty printing
 	Indent string
 
@@ -112,11 +112,11 @@ func (_this CTENumericFormat) String() string {
 	return fmt.Sprintf("CTEEncodingFormat(%d)", _this)
 }
 
-func DefaultCTEEncoderOptions() CTEEncoderOptions {
-	return defaultCTEEncoderOptions
+func DefaultCTEEncoderConfiguration() CTEEncoderConfiguration {
+	return defaultCTEEncoderConfiguration
 }
 
-var defaultCTEEncoderOptions = CTEEncoderOptions{
+var defaultCTEEncoderConfiguration = CTEEncoderConfiguration{
 	Indent:            "    ",
 	MaxColumn:         0,
 	EscapeLineEndings: true,
@@ -140,7 +140,7 @@ var defaultCTEEncoderOptions = CTEEncoderOptions{
 	},
 }
 
-func (_this *CTEEncoderOptions) ApplyDefaults() {
+func (_this *CTEEncoderConfiguration) ApplyDefaults() {
 	// Nothing to do
 }
 
@@ -164,7 +164,7 @@ var cteValidArrayIntFormats = map[CTENumericFormat]bool{
 	CTEEncodingFormatHexadecimalZeroFilled: true,
 }
 
-func (_this *CTEEncoderOptions) Validate() (err error) {
+func (_this *CTEEncoderConfiguration) Validate() (err error) {
 	validate := func(name string, format CTENumericFormat, validFormats map[CTENumericFormat]bool) error {
 		if validFormats[format] {
 			return nil
@@ -224,33 +224,27 @@ func (_this *CTEEncoderOptions) Validate() (err error) {
 // ============================================================================
 // CTE Marshaler
 
-type CTEMarshalerOptions struct {
-	Encoder     CTEEncoderOptions
-	Iterator    IteratorOptions
-	Session     IteratorSessionOptions
+type CTEMarshalerConfiguration struct {
+	Encoder     CTEEncoderConfiguration
+	Iterator    IteratorConfiguration
 	DebugPanics bool
 }
 
-func DefaultCTEMarshalerOptions() CTEMarshalerOptions {
-	return CTEMarshalerOptions{
-		Encoder:  DefaultCTEEncoderOptions(),
-		Iterator: DefaultIteratorOptions(),
-		Session:  DefaultIteratorSessionOptions(),
+func DefaultCTEMarshalerConfiguration() CTEMarshalerConfiguration {
+	return CTEMarshalerConfiguration{
+		Encoder:  DefaultCTEEncoderConfiguration(),
+		Iterator: DefaultIteratorConfiguration(),
 	}
 }
 
-func (_this *CTEMarshalerOptions) ApplyDefaults() {
+func (_this *CTEMarshalerConfiguration) ApplyDefaults() {
 	_this.Encoder.ApplyDefaults()
 	_this.Iterator.ApplyDefaults()
-	_this.Session.ApplyDefaults()
 }
 
-func (_this *CTEMarshalerOptions) Validate() error {
+func (_this *CTEMarshalerConfiguration) Validate() error {
 	if err := _this.Encoder.Validate(); err != nil {
 		return err
 	}
-	if err := _this.Iterator.Validate(); err != nil {
-		return err
-	}
-	return _this.Session.Validate()
+	return _this.Iterator.Validate()
 }

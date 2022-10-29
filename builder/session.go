@@ -29,8 +29,8 @@ import (
 	"reflect"
 	"sync"
 
+	"github.com/kstenerud/go-concise-encoding/configuration"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
-	"github.com/kstenerud/go-concise-encoding/options"
 )
 
 // A builder session holds a cache of known mappings of types to builders.
@@ -39,31 +39,31 @@ import (
 // unintended behavior in codec activity elsewhere in the program.
 type Session struct {
 	builderGenerators sync.Map
-	opts              *options.BuilderSessionOptions
+	config            *configuration.BuilderSessionConfiguration
 }
 
 // Start a new builder session. It will inherit the builders of its parent.
 // If parent is nil, it will inherit from the root session, which has builders
 // for all basic go types.
-// If opts is nil, default options will be used.
-func NewSession(parent *Session, opts *options.BuilderSessionOptions) *Session {
+// If config is nil, default configuration will be used.
+func NewSession(parent *Session, config *configuration.BuilderSessionConfiguration) *Session {
 	_this := &Session{}
-	_this.Init(parent, opts)
+	_this.Init(parent, config)
 	return _this
 }
 
 // Initialize a builder session. It will inherit the builders of its parent.
 // If parent is nil, it will inherit from the root session, which has builders
 // for all basic go types.
-// If opts is nil, default options will be used.
-func (_this *Session) Init(parent *Session, opts *options.BuilderSessionOptions) {
-	if opts == nil {
-		o := options.DefaultBuilderSessionOptions()
-		opts = &o
+// If config is nil, default configuration will be used.
+func (_this *Session) Init(parent *Session, config *configuration.BuilderSessionConfiguration) {
+	if config == nil {
+		defaultConfig := configuration.DefaultBuilderSessionConfiguration()
+		config = &defaultConfig
 	} else {
-		opts.ApplyDefaults()
+		config.ApplyDefaults()
 	}
-	_this.opts = opts
+	_this.config = config
 
 	if parent == nil {
 		parent = &rootSession
@@ -75,7 +75,7 @@ func (_this *Session) Init(parent *Session, opts *options.BuilderSessionOptions)
 		})
 	}
 
-	for _, t := range _this.opts.CustomBuiltTypes {
+	for _, t := range _this.config.CustomBuiltTypes {
 		_this.RegisterBuilderGeneratorForType(t, generateCustomBuilder)
 	}
 }
@@ -83,8 +83,8 @@ func (_this *Session) Init(parent *Session, opts *options.BuilderSessionOptions)
 // NewBuilderFor creates a new builder that builds objects of the same type as
 // the template object.
 // If template is nil, a generic interface type will be used.
-// If opts is nil, default options will be used.
-func (_this *Session) NewBuilderFor(template interface{}, opts *options.BuilderOptions) *BuilderEventReceiver {
+// If config is nil, default configuration will be used.
+func (_this *Session) NewBuilderFor(template interface{}, config *configuration.BuilderConfiguration) *BuilderEventReceiver {
 	rv := reflect.ValueOf(template)
 	var t reflect.Type
 	if rv.IsValid() {
@@ -93,7 +93,7 @@ func (_this *Session) NewBuilderFor(template interface{}, opts *options.BuilderO
 		t = common.TypeInterface
 	}
 
-	return NewBuilderEventReceiver(_this, t, opts)
+	return NewBuilderEventReceiver(_this, t, config)
 }
 
 // Register a specific builder for a type.

@@ -30,8 +30,8 @@ import (
 
 	"github.com/cockroachdb/apd/v2"
 	compact_time "github.com/kstenerud/go-compact-time"
+	"github.com/kstenerud/go-concise-encoding/configuration"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
-	"github.com/kstenerud/go-concise-encoding/options"
 	"github.com/kstenerud/go-concise-encoding/test"
 	"github.com/kstenerud/go-concise-encoding/types"
 	"github.com/kstenerud/go-describe"
@@ -591,8 +591,8 @@ func TestBuilderChunkedRID(t *testing.T) {
 type CustomBinaryExampleType uint64
 
 func TestBuilderChunkedCustomBinary(t *testing.T) {
-	opts := options.DefaultBuilderSessionOptions()
-	opts.CustomBinaryBuildFunction = func(customType uint64, src []byte, dst reflect.Value) error {
+	config := configuration.DefaultBuilderSessionConfiguration()
+	config.CustomBinaryBuildFunction = func(customType uint64, src []byte, dst reflect.Value) error {
 		var accum CustomBinaryExampleType
 		for _, b := range src {
 			accum = (accum << 8) | CustomBinaryExampleType(b)
@@ -600,8 +600,8 @@ func TestBuilderChunkedCustomBinary(t *testing.T) {
 		dst.SetUint(uint64(accum))
 		return nil
 	}
-	opts.CustomBuiltTypes = append(opts.CustomBuiltTypes, reflect.TypeOf(CustomBinaryExampleType(0)))
-	session := NewSession(nil, &opts)
+	config.CustomBuiltTypes = append(config.CustomBuiltTypes, reflect.TypeOf(CustomBinaryExampleType(0)))
+	session := NewSession(nil, &config)
 	expected := CustomBinaryExampleType(0x01020304)
 	assertBuildWithSession(t, session, expected, BCB(1), ACM(2), ADU8([]byte{1, 2}), ACL(2), ADU8([]byte{3, 4}))
 	assertBuildWithSession(t, session, expected, BCB(1), ACM(2), ADU8([]byte{1, 2}), ACM(2), ADU8([]byte{3, 4}), ACL(0))
@@ -610,8 +610,8 @@ func TestBuilderChunkedCustomBinary(t *testing.T) {
 type CustomTextExampleType uint64
 
 func TestBuilderChunkedCustomText(t *testing.T) {
-	opts := options.DefaultBuilderSessionOptions()
-	opts.CustomTextBuildFunction = func(customType uint64, src string, dst reflect.Value) error {
+	config := configuration.DefaultBuilderSessionConfiguration()
+	config.CustomTextBuildFunction = func(customType uint64, src string, dst reflect.Value) error {
 		v, err := strconv.ParseUint(string(src), 16, 64)
 		if err != nil {
 			return err
@@ -619,8 +619,8 @@ func TestBuilderChunkedCustomText(t *testing.T) {
 		dst.SetUint(v)
 		return nil
 	}
-	opts.CustomBuiltTypes = append(opts.CustomBuiltTypes, reflect.TypeOf(CustomTextExampleType(0)))
-	session := NewSession(nil, &opts)
+	config.CustomBuiltTypes = append(config.CustomBuiltTypes, reflect.TypeOf(CustomTextExampleType(0)))
+	session := NewSession(nil, &config)
 	expected := CustomTextExampleType(0x1234)
 	assertBuildWithSession(t, session, expected, BCT(1), ACM(2), ADU8([]byte{'1', '2'}), ACL(2), ADU8([]byte{'3', '4'}))
 	assertBuildWithSession(t, session, expected, BCT(1), ACM(2), ADU8([]byte{'1', '2'}), ACM(2), ADU8([]byte{'3', '4'}), ACL(0))
@@ -1304,15 +1304,13 @@ func TestBuilderRefStruct(t *testing.T) {
 }
 
 type TagStruct struct {
-	Omit1 string `ce:"-"`
-	Omit2 string `ce:"omit"`
-	Named string `ce:"name=test"`
+	Omitted string `ce:"omit"`
+	Named   string `ce:"name=test"`
 }
 
 type TagStruct2 struct {
-	Omit1 string `ce:"  - "`
-	Omit2 string `ce:"  omit "`
-	Named string `ce:" name = test "`
+	Omitted string `ce:"  omit "`
+	Named   string `ce:" name = test "`
 }
 
 func TestBuilderStructTags(t *testing.T) {

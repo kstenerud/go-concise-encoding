@@ -29,7 +29,7 @@ import (
 	"github.com/kstenerud/go-concise-encoding/cbe"
 	"github.com/kstenerud/go-concise-encoding/ce"
 	"github.com/kstenerud/go-concise-encoding/cte"
-	"github.com/kstenerud/go-concise-encoding/options"
+	"github.com/kstenerud/go-concise-encoding/configuration"
 	"github.com/kstenerud/go-concise-encoding/test"
 	"github.com/kstenerud/go-concise-encoding/test/test_runner"
 	"github.com/kstenerud/go-concise-encoding/version"
@@ -371,10 +371,10 @@ func writeTestFile(path string, tests ...*test_runner.UnitTest) {
 	}
 	defer f.Close()
 
-	opts := options.DefaultCTEMarshalerOptions()
-	opts.Session.LowercaseStructFieldNames = false
-	opts.Encoder.DefaultNumericFormats.Array.Uint8 = options.CTEEncodingFormatHexadecimalZeroFilled
-	if err := ce.MarshalCTE(suite, f, &opts); err != nil {
+	config := configuration.DefaultCTEMarshalerConfiguration()
+	config.Iterator.LowercaseStructFieldNames = false
+	config.Encoder.DefaultNumericFormats.Array.Uint8 = configuration.CTEEncodingFormatHexadecimalZeroFilled
+	if err := ce.MarshalCTE(suite, f, &config); err != nil {
 		panic(err)
 	}
 }

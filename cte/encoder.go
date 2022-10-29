@@ -29,7 +29,7 @@ import (
 	compact_float "github.com/kstenerud/go-compact-float"
 	compact_time "github.com/kstenerud/go-compact-time"
 	"github.com/kstenerud/go-concise-encoding/ce/events"
-	"github.com/kstenerud/go-concise-encoding/options"
+	"github.com/kstenerud/go-concise-encoding/configuration"
 )
 
 type EncoderEventReceiver struct {
@@ -37,23 +37,23 @@ type EncoderEventReceiver struct {
 }
 
 // Create a new encoder.
-// If opts = nil, defaults are used.
-func NewEncoder(opts *options.CTEEncoderOptions) *EncoderEventReceiver {
+// If config = nil, defaults are used.
+func NewEncoder(config *configuration.CTEEncoderConfiguration) *EncoderEventReceiver {
 	_this := &EncoderEventReceiver{}
-	_this.Init(opts)
+	_this.Init(config)
 	return _this
 }
 
 // Initialize an encoder.
-// If opts = nil, defaults are used.
-func (_this *EncoderEventReceiver) Init(opts *options.CTEEncoderOptions) {
-	if opts == nil {
-		o := options.DefaultCTEEncoderOptions()
-		opts = &o
+// If config = nil, defaults are used.
+func (_this *EncoderEventReceiver) Init(config *configuration.CTEEncoderConfiguration) {
+	if config == nil {
+		defaultConfig := configuration.DefaultCTEEncoderConfiguration()
+		config = &defaultConfig
 	} else {
-		opts.ApplyDefaults()
+		config.ApplyDefaults()
 	}
-	_this.context.Init(opts)
+	_this.context.Init(config)
 }
 
 // Prepare the encoder for encoding. All events will be encoded to writer.

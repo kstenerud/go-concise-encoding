@@ -28,8 +28,8 @@ import (
 
 	"github.com/cockroachdb/apd/v2"
 	compact_time "github.com/kstenerud/go-compact-time"
+	"github.com/kstenerud/go-concise-encoding/configuration"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
-	"github.com/kstenerud/go-concise-encoding/options"
 	"github.com/kstenerud/go-concise-encoding/test"
 	"github.com/kstenerud/go-concise-encoding/types"
 )
@@ -238,19 +238,19 @@ type StructTestIterate struct {
 }
 
 func TestIterateStruct(t *testing.T) {
-	sOpts := options.DefaultIteratorSessionOptions()
-	sOpts.LowercaseStructFieldNames = false
-	iOpts := options.DefaultIteratorOptions()
+	config := configuration.DefaultIteratorConfiguration()
+	config.LowercaseStructFieldNames = false
 
 	assertIterate(t, new(StructTestIterate), M(), S("a"), N(0), E())
-	assertIterateWithOptions(t, &sOpts, &iOpts, new(StructTestIterate), M(), S("A"), N(0), E())
+
+	assertIterateWithConfiguration(t, &config, new(StructTestIterate), M(), S("A"), N(0), E())
 	assertIterate(t, (*StructTestIterate)(nil), NULL())
 }
 
-func TestIterateNilOpts(t *testing.T) {
+func TestIterateNilConfig(t *testing.T) {
 	expected := test.Events{EvV, N(1)}
 	receiver, events := test.NewEventCollector(nil)
-	iterateObject(1, receiver, nil, nil)
+	iterateObject(1, receiver, nil)
 
 	if !events.IsEquivalentTo(expected) {
 		t.Errorf("Expected %v but got %v", expected, events.Events)
@@ -269,11 +269,10 @@ func TestIterateRecurse(t *testing.T) {
 	obj.R = obj
 
 	expected := test.Events{EvV, MARK("0"), M(), S("i"), N(50), S("r"), REFL("0"), E()}
-	sessionOptions := options.DefaultIteratorSessionOptions()
-	iteratorOptions := options.DefaultIteratorOptions()
-	iteratorOptions.RecursionSupport = true
+	iteratorConfiguration := configuration.DefaultIteratorConfiguration()
+	iteratorConfiguration.RecursionSupport = true
 	receiver, events := test.NewEventCollector(nil)
-	iterateObject(obj, receiver, &sessionOptions, &iteratorOptions)
+	iterateObject(obj, receiver, &iteratorConfiguration)
 
 	if !events.IsEquivalentTo(expected) {
 		t.Errorf("Expected %v but got %v", expected, events.Events)
@@ -281,30 +280,26 @@ func TestIterateRecurse(t *testing.T) {
 }
 
 type TagStruct struct {
-	Omit1 string `ce:"-"`
-	Omit2 string `ce:"omit"`
-	Named string `ce:"name=test"`
+	Omitted string `ce:"omit"`
+	Named   string `ce:"name=test"`
 }
 
 type TagStruct2 struct {
-	Omit1 string `ce:" - "`
-	Omit2 string `ce:" omit "`
-	Named string `ce:" name = test "`
+	Omitted string `ce:" omit "`
+	Named   string `ce:" name = test "`
 }
 
 func TestIterateTaggedStruct(t *testing.T) {
 	obj := &TagStruct{
-		Omit1: "Omit1 should be omitted",
-		Omit2: "Omit2 should be omitted",
-		Named: "Named should be present",
+		Omitted: "Omitted should be omitted",
+		Named:   "Named should be present",
 	}
 
 	assertIterate(t, obj, M(), S("test"), S("Named should be present"), E())
 
 	obj2 := &TagStruct2{
-		Omit1: "Omit1 should be omitted",
-		Omit2: "Omit2 should be omitted",
-		Named: "Named should be present",
+		Omitted: "Omitted should be omitted",
+		Named:   "Named should be present",
 	}
 
 	assertIterate(t, obj2, M(), S("test"), S("Named should be present"), E())

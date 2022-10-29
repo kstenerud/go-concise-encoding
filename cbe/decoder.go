@@ -27,32 +27,32 @@ import (
 	"math"
 
 	"github.com/kstenerud/go-concise-encoding/ce/events"
+	"github.com/kstenerud/go-concise-encoding/configuration"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
-	"github.com/kstenerud/go-concise-encoding/options"
 )
 
 // Decodes CBE documents.
 type Decoder struct {
 	reader Reader
-	opts   *options.CEDecoderOptions
+	config *configuration.CEDecoderConfiguration
 }
 
-// Create a new CBE decoder. If opts is nil, default options will be used.
-func NewDecoder(opts *options.CEDecoderOptions) *Decoder {
+// Create a new CBE decoder. If config is nil, default configuration will be used.
+func NewDecoder(config *configuration.CEDecoderConfiguration) *Decoder {
 	_this := &Decoder{}
-	_this.Init(opts)
+	_this.Init(config)
 	return _this
 }
 
-// Initialize this decoder. If opts is nil, default options will be used.
-func (_this *Decoder) Init(opts *options.CEDecoderOptions) {
-	if opts == nil {
-		o := options.DefaultCEDecoderOptions()
-		opts = &o
+// Initialize this decoder. If config is nil, default configuration will be used.
+func (_this *Decoder) Init(config *configuration.CEDecoderConfiguration) {
+	if config == nil {
+		defaultConfig := configuration.DefaultCEDecoderConfiguration()
+		config = &defaultConfig
 	} else {
-		opts.ApplyDefaults()
+		config.ApplyDefaults()
 	}
-	_this.opts = opts
+	_this.config = config
 	_this.reader.Init()
 }
 
@@ -64,7 +64,7 @@ func (_this *Decoder) DecodeDocument(document []byte, eventReceiver events.DataE
 // Read and decode a document from reader, sending all decoded events to eventReceiver.
 func (_this *Decoder) Decode(reader io.Reader, eventReceiver events.DataEventReceiver) (err error) {
 	defer func() {
-		if !_this.opts.DebugPanics {
+		if !_this.config.DebugPanics {
 			if r := recover(); r != nil {
 				switch v := r.(type) {
 				case error:

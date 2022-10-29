@@ -22,7 +22,7 @@ package cte
 
 import (
 	"github.com/kstenerud/go-concise-encoding/ce/events"
-	"github.com/kstenerud/go-concise-encoding/options"
+	"github.com/kstenerud/go-concise-encoding/configuration"
 )
 
 type indenter struct {
@@ -66,7 +66,7 @@ func (_this *indenter) GetOriginAndIndent() []byte {
 }
 
 type EncoderContext struct {
-	opts                *options.CTEEncoderOptions
+	config              *configuration.CTEEncoderConfiguration
 	indenter            indenter
 	stack               []EncoderDecorator
 	Decorator           EncoderDecorator
@@ -75,9 +75,9 @@ type EncoderContext struct {
 	ArrayEngine         arrayEncoderEngine
 }
 
-func (_this *EncoderContext) Init(opts *options.CTEEncoderOptions) {
-	_this.opts = opts
-	_this.ArrayEngine.Init(&_this.Stream, _this.opts)
+func (_this *EncoderContext) Init(config *configuration.CTEEncoderConfiguration) {
+	_this.config = config
+	_this.ArrayEngine.Init(&_this.Stream, _this.config)
 	_this.Stream.Init()
 }
 

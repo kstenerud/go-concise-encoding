@@ -18,7 +18,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 
-package options
+package configuration
 
 import (
 	"reflect"
@@ -34,10 +34,23 @@ import (
 // See https://github.com/kstenerud/concise-encoding/blob/master/cte-specification.md#custom-text
 type ConvertToCustomFunction func(v reflect.Value) (customType uint64, asBytes []byte, err error)
 
-type IteratorSessionOptions struct {
+type IteratorConfiguration struct {
 
 	// Use lowercase struct field names
 	LowercaseStructFieldNames bool
+
+	// If RecursionSupport is true, the iterator will also look for duplicate
+	// pointers to data, generating marker and reference events rather than
+	// walking the object again. This is useful for cyclic or recursive data
+	// structures, but has a performance cost.
+	RecursionSupport bool
+
+	// What to do by default when an empty field is encountered.
+	// This can be overridden at the field level using the ce tags
+	// "omit", "omit_never", "omit_empty", and "omit_zero".
+	//
+	// Defaults to OmitFieldEmpty
+	DefaultFieldOmitBehavior FieldOmitBehavior
 
 	// Specifies which types to convert to custom binary data, and how to do it.
 	// Note: You should only fill out one of these maps, depending on your
@@ -52,18 +65,20 @@ type IteratorSessionOptions struct {
 	CustomTextConverters map[reflect.Type]ConvertToCustomFunction
 }
 
-func DefaultIteratorSessionOptions() IteratorSessionOptions {
-	opts := defaultIteratorSessionOptions
-	opts.CustomBinaryConverters = make(map[reflect.Type]ConvertToCustomFunction)
-	opts.CustomTextConverters = make(map[reflect.Type]ConvertToCustomFunction)
-	return opts
+func DefaultIteratorConfiguration() IteratorConfiguration {
+	config := defaultIteratorConfiguration
+	config.CustomBinaryConverters = make(map[reflect.Type]ConvertToCustomFunction)
+	config.CustomTextConverters = make(map[reflect.Type]ConvertToCustomFunction)
+	return config
 }
 
-var defaultIteratorSessionOptions = IteratorSessionOptions{
+var defaultIteratorConfiguration = IteratorConfiguration{
 	LowercaseStructFieldNames: true,
+	RecursionSupport:          true,
+	DefaultFieldOmitBehavior:  OmitFieldEmpty,
 }
 
-func (_this *IteratorSessionOptions) ApplyDefaults() {
+func (_this *IteratorConfiguration) ApplyDefaults() {
 	if _this.CustomBinaryConverters == nil {
 		_this.CustomBinaryConverters = make(map[reflect.Type]ConvertToCustomFunction)
 	}
@@ -72,37 +87,26 @@ func (_this *IteratorSessionOptions) ApplyDefaults() {
 	}
 }
 
-func (_this *IteratorSessionOptions) Validate() error {
+func (_this *IteratorConfiguration) Validate() error {
 	return nil
 }
 
-// ============================================================================
-// Iterator
+type FieldOmitBehavior int
 
-type IteratorOptions struct {
-	// If RecursionSupport is true, the iterator will also look for duplicate
-	// pointers to data, generating marker and reference events rather than
-	// walking the object again. This is useful for cyclic or recursive data
-	// structures, but has a performance cost.
-	RecursionSupport bool
+const (
+	OmitFieldChooseDefault FieldOmitBehavior = iota
 
-	// TODO If true, don't write a nil object when a nil pointer is encountered.
-	OmitNilPointers bool
-}
+	OmitFieldNever
 
-func DefaultIteratorOptions() IteratorOptions {
-	return defaultIteratorOptions
-}
+	OmitFieldAlways
 
-var defaultIteratorOptions = IteratorOptions{
-	RecursionSupport: true,
-	OmitNilPointers:  true,
-}
+	// An "empty" field is:
+	//  * A container with no contents
+	//  * An empty array
+	//  * A nil pointer
+	OmitFieldEmpty
 
-func (_this *IteratorOptions) ApplyDefaults() {
-	// Nothing to do
-}
-
-func (_this *IteratorOptions) Validate() error {
-	return nil
-}
+	// A zero field ebcompasses OmitFieldEmpty and also omits
+	// any golang zero value.
+	OmitFieldZero
+)

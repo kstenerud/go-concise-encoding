@@ -27,8 +27,8 @@ import (
 
 	"github.com/kstenerud/go-concise-encoding/builder"
 	"github.com/kstenerud/go-concise-encoding/ce/events"
+	"github.com/kstenerud/go-concise-encoding/configuration"
 	"github.com/kstenerud/go-concise-encoding/iterator"
-	"github.com/kstenerud/go-concise-encoding/options"
 	"github.com/kstenerud/go-concise-encoding/rules"
 )
 
@@ -41,32 +41,32 @@ import (
 type Marshaler struct {
 	session iterator.Session
 	encoder Encoder
-	opts    *options.CBEMarshalerOptions
+	config  *configuration.CBEMarshalerConfiguration
 }
 
-// Create a new marshaler. If opts is nil, default options will be used.
-func NewMarshaler(opts *options.CBEMarshalerOptions) *Marshaler {
+// Create a new marshaler. If config is nil, default configuration will be used.
+func NewMarshaler(config *configuration.CBEMarshalerConfiguration) *Marshaler {
 	_this := &Marshaler{}
-	_this.Init(opts)
+	_this.Init(config)
 	return _this
 }
 
-// Init a marshaler. If opts is nil, default options will be used.
-func (_this *Marshaler) Init(opts *options.CBEMarshalerOptions) {
-	if opts == nil {
-		o := options.DefaultCBEMarshalerOptions()
-		opts = &o
+// Init a marshaler. If config is nil, default configuration will be used.
+func (_this *Marshaler) Init(config *configuration.CBEMarshalerConfiguration) {
+	if config == nil {
+		defaultConfig := configuration.DefaultCBEMarshalerConfiguration()
+		config = &defaultConfig
 	} else {
-		opts.ApplyDefaults()
+		config.ApplyDefaults()
 	}
-	_this.opts = opts
-	_this.session.Init(nil, &_this.opts.Session)
-	_this.encoder.Init(&_this.opts.Encoder)
+	_this.config = config
+	_this.session.Init(nil, &_this.config.Iterator)
+	_this.encoder.Init(&_this.config.Encoder)
 }
 
 // Marshal a go object into a CBE document, written to writer.
 func (_this *Marshaler) Marshal(object interface{}, writer io.Writer) (err error) {
-	if !_this.opts.DebugPanics {
+	if !_this.config.DebugPanics {
 		defer func() {
 			if r := recover(); r != nil {
 				switch v := r.(type) {
@@ -80,7 +80,7 @@ func (_this *Marshaler) Marshal(object interface{}, writer io.Writer) (err error
 	}
 
 	_this.encoder.PrepareToEncode(writer)
-	iterator := _this.session.NewIterator(&_this.encoder, &_this.opts.Iterator)
+	iterator := _this.session.NewIterator(&_this.encoder)
 	iterator.Iterate(object)
 	return
 }
@@ -103,35 +103,35 @@ func (_this *Marshaler) MarshalToDocument(object interface{}) (document []byte, 
 type Unmarshaler struct {
 	session builder.Session
 	decoder Decoder
-	opts    *options.CEUnmarshalerOptions
+	config  *configuration.CEUnmarshalerConfiguration
 	rules   rules.RulesEventReceiver
 }
 
-// Create a new unmarshaler. If opts is nil, default options will be used.
-func NewUnmarshaler(opts *options.CEUnmarshalerOptions) *Unmarshaler {
+// Create a new unmarshaler. If config is nil, default configuration will be used.
+func NewUnmarshaler(config *configuration.CEUnmarshalerConfiguration) *Unmarshaler {
 	_this := &Unmarshaler{}
-	_this.Init(opts)
+	_this.Init(config)
 	return _this
 }
 
-// Init an unmarshaler. If opts is nil, default options will be used.
-func (_this *Unmarshaler) Init(opts *options.CEUnmarshalerOptions) {
-	if opts == nil {
-		o := options.DefaultCEUnmarshalerOptions()
-		opts = &o
+// Init an unmarshaler. If config is nil, default configuration will be used.
+func (_this *Unmarshaler) Init(config *configuration.CEUnmarshalerConfiguration) {
+	if config == nil {
+		defaultConfig := configuration.DefaultCEUnmarshalerConfiguration()
+		config = &defaultConfig
 	} else {
-		opts.ApplyDefaults()
+		config.ApplyDefaults()
 	}
-	_this.opts = opts
-	_this.session.Init(nil, &_this.opts.Session)
-	_this.decoder.Init(&_this.opts.Decoder)
-	_this.rules.Init(nil, &_this.opts.Rules)
+	_this.config = config
+	_this.session.Init(nil, &_this.config.Session)
+	_this.decoder.Init(&_this.config.Decoder)
+	_this.rules.Init(nil, &_this.config.Rules)
 }
 
 // Unmarshal a CBE document, creating an object of the same type as the template.
 // If template is nil, a best-guess type will be returned (likely a slice or map).
 func (_this *Unmarshaler) Unmarshal(reader io.Reader, template interface{}) (decoded interface{}, err error) {
-	if !_this.opts.DebugPanics {
+	if !_this.config.DebugPanics {
 		defer func() {
 			if r := recover(); r != nil {
 				switch v := r.(type) {
@@ -144,9 +144,9 @@ func (_this *Unmarshaler) Unmarshal(reader io.Reader, template interface{}) (dec
 		}()
 	}
 
-	builder := _this.session.NewBuilderFor(template, &_this.opts.Builder)
+	builder := _this.session.NewBuilderFor(template, &_this.config.Builder)
 	receiver := events.DataEventReceiver(builder)
-	if _this.opts.EnforceRules {
+	if _this.config.EnforceRules {
 		_this.rules.Reset()
 		_this.rules.SetNextReceiver(receiver)
 		receiver = &_this.rules

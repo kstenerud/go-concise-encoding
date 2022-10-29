@@ -24,6 +24,7 @@ import (
 	"reflect"
 
 	"github.com/kstenerud/go-concise-encoding/ce/events"
+	"github.com/kstenerud/go-concise-encoding/configuration"
 )
 
 // Common function signatures
@@ -32,8 +33,8 @@ type TryAddLocalReference func(reflect.Value) (didGenerateReferenceEvent bool)
 
 type Context struct {
 	// Per-session data
-	GetIteratorForType        GetIteratorForType
-	LowercaseStructFieldNames bool
+	GetIteratorForType GetIteratorForType
+	Configuration      *configuration.IteratorConfiguration
 
 	// Per-root-iterator data
 	EventReceiver        events.DataEventReceiver
@@ -44,10 +45,10 @@ func (_this *Context) NotifyNil() {
 	_this.EventReceiver.OnNull()
 }
 
-func sessionContext(getIteratorFunc GetIteratorForType, lowercaseStructFieldNames bool) Context {
+func sessionContext(getIteratorFunc GetIteratorForType, config *configuration.IteratorConfiguration) Context {
 	return Context{
-		GetIteratorForType:        getIteratorFunc,
-		LowercaseStructFieldNames: lowercaseStructFieldNames,
+		GetIteratorForType: getIteratorFunc,
+		Configuration:      config,
 	}
 }
 
@@ -56,9 +57,9 @@ func iteratorContext(sessionContext *Context,
 	tryAddLocalReference TryAddLocalReference) Context {
 
 	return Context{
-		GetIteratorForType:        sessionContext.GetIteratorForType,
-		LowercaseStructFieldNames: sessionContext.LowercaseStructFieldNames,
-		EventReceiver:             eventReceiver,
-		TryAddLocalReference:      tryAddLocalReference,
+		GetIteratorForType:   sessionContext.GetIteratorForType,
+		EventReceiver:        eventReceiver,
+		TryAddLocalReference: tryAddLocalReference,
+		Configuration:        sessionContext.Configuration,
 	}
 }

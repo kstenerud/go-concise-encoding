@@ -30,9 +30,9 @@ import (
 
 	"github.com/kstenerud/go-concise-encoding/builder"
 	"github.com/kstenerud/go-concise-encoding/ce"
+	"github.com/kstenerud/go-concise-encoding/configuration"
 	"github.com/kstenerud/go-concise-encoding/iterator"
 	"github.com/kstenerud/go-concise-encoding/nullevent"
-	"github.com/kstenerud/go-concise-encoding/options"
 	"github.com/kstenerud/go-concise-encoding/rules"
 	"github.com/kstenerud/go-concise-encoding/test"
 	"github.com/kstenerud/go-describe"
@@ -89,16 +89,16 @@ func benchmarkMarshal(b *testing.B, marshaler ce.Marshaler) {
 }
 
 func BenchmarkCTEMarshal(b *testing.B) {
-	opts := options.DefaultCTEMarshalerOptions()
-	opts.Iterator.RecursionSupport = false
-	marshaler := ce.NewCTEMarshaler(&opts)
+	config := configuration.DefaultCTEMarshalerConfiguration()
+	config.Iterator.RecursionSupport = false
+	marshaler := ce.NewCTEMarshaler(&config)
 	benchmarkMarshal(b, marshaler)
 }
 
 func BenchmarkCBEMarshal(b *testing.B) {
-	opts := options.DefaultCBEMarshalerOptions()
-	opts.Iterator.RecursionSupport = false
-	marshaler := ce.NewCBEMarshaler(&opts)
+	config := configuration.DefaultCBEMarshalerConfiguration()
+	config.Iterator.RecursionSupport = false
+	marshaler := ce.NewCBEMarshaler(&config)
 	benchmarkMarshal(b, marshaler)
 }
 
@@ -182,48 +182,48 @@ func benchmarkDecode(b *testing.B, marshaler ce.Marshaler, decoder ce.Decoder) {
 }
 
 func BenchmarkCTEDecode(b *testing.B) {
-	marshalOpts := options.DefaultCTEMarshalerOptions()
-	marshalOpts.Iterator.RecursionSupport = false
-	marshaler := ce.NewCTEMarshaler(&marshalOpts)
+	marshalConfig := configuration.DefaultCTEMarshalerConfiguration()
+	marshalConfig.Iterator.RecursionSupport = false
+	marshaler := ce.NewCTEMarshaler(&marshalConfig)
 	decoder := ce.NewCTEDecoder(nil)
 	benchmarkDecode(b, marshaler, decoder)
 }
 
 func BenchmarkCTEUnmarshalRules(b *testing.B) {
-	marshalOpts := options.DefaultCTEMarshalerOptions()
-	marshalOpts.Iterator.RecursionSupport = false
-	marshaler := ce.NewCTEMarshaler(&marshalOpts)
-	unmarshalOpts := options.DefaultCEUnmarshalerOptions()
-	unmarshaler := ce.NewCTEUnmarshaler(&unmarshalOpts)
+	marshalConfig := configuration.DefaultCTEMarshalerConfiguration()
+	marshalConfig.Iterator.RecursionSupport = false
+	marshaler := ce.NewCTEMarshaler(&marshalConfig)
+	unmarshalConfig := configuration.DefaultCEUnmarshalerConfiguration()
+	unmarshaler := ce.NewCTEUnmarshaler(&unmarshalConfig)
 	benchmarkUnmarshal(b, marshaler, unmarshaler)
 }
 
 func BenchmarkCTEUnmarshalNoRules(b *testing.B) {
-	marshalOpts := options.DefaultCTEMarshalerOptions()
-	marshalOpts.Iterator.RecursionSupport = false
-	marshaler := ce.NewCTEMarshaler(&marshalOpts)
-	unmarshalOpts := options.DefaultCEUnmarshalerOptions()
-	unmarshalOpts.EnforceRules = false
-	unmarshaler := ce.NewCTEUnmarshaler(&unmarshalOpts)
+	marshalConfig := configuration.DefaultCTEMarshalerConfiguration()
+	marshalConfig.Iterator.RecursionSupport = false
+	marshaler := ce.NewCTEMarshaler(&marshalConfig)
+	unmarshalConfig := configuration.DefaultCEUnmarshalerConfiguration()
+	unmarshalConfig.EnforceRules = false
+	unmarshaler := ce.NewCTEUnmarshaler(&unmarshalConfig)
 	benchmarkUnmarshal(b, marshaler, unmarshaler)
 }
 
 func BenchmarkCBEUnmarshalRules(b *testing.B) {
-	marshalOpts := options.DefaultCBEMarshalerOptions()
-	marshalOpts.Iterator.RecursionSupport = false
-	marshaler := ce.NewCBEMarshaler(&marshalOpts)
-	unmarshalOpts := options.DefaultCEUnmarshalerOptions()
-	unmarshaler := ce.NewCBEUnmarshaler(&unmarshalOpts)
+	marshalConfig := configuration.DefaultCBEMarshalerConfiguration()
+	marshalConfig.Iterator.RecursionSupport = false
+	marshaler := ce.NewCBEMarshaler(&marshalConfig)
+	unmarshalConfig := configuration.DefaultCEUnmarshalerConfiguration()
+	unmarshaler := ce.NewCBEUnmarshaler(&unmarshalConfig)
 	benchmarkUnmarshal(b, marshaler, unmarshaler)
 }
 
 func BenchmarkCBEUnmarshalNoRules(b *testing.B) {
-	marshalOpts := options.DefaultCBEMarshalerOptions()
-	marshalOpts.Iterator.RecursionSupport = false
-	marshaler := ce.NewCBEMarshaler(&marshalOpts)
-	unmarshalOpts := options.DefaultCEUnmarshalerOptions()
-	unmarshalOpts.EnforceRules = false
-	unmarshaler := ce.NewCBEUnmarshaler(&unmarshalOpts)
+	marshalConfig := configuration.DefaultCBEMarshalerConfiguration()
+	marshalConfig.Iterator.RecursionSupport = false
+	marshaler := ce.NewCBEMarshaler(&marshalConfig)
+	unmarshalConfig := configuration.DefaultCEUnmarshalerConfiguration()
+	unmarshalConfig.EnforceRules = false
+	unmarshaler := ce.NewCBEUnmarshaler(&unmarshalConfig)
 	benchmarkUnmarshal(b, marshaler, unmarshaler)
 }
 
@@ -265,10 +265,10 @@ func BenchmarkJSONUnmarshal(b *testing.B) {
 func BenchmarkRules(b *testing.B) {
 	b.Helper()
 	receiver, store := test.NewEventCollector(nil)
-	iterSession := iterator.NewSession(nil, nil)
-	iterOptions := options.DefaultIteratorOptions()
-	iterOptions.RecursionSupport = false
-	iter := iterSession.NewIterator(receiver, &iterOptions)
+	iterConfiguration := configuration.DefaultIteratorConfiguration()
+	iterConfiguration.RecursionSupport = false
+	iterSession := iterator.NewSession(nil, &iterConfiguration)
+	iter := iterSession.NewIterator(receiver)
 
 	objs := generate()
 	documents := make([]test.Events, 0, len(objs))
@@ -292,10 +292,10 @@ func BenchmarkRules(b *testing.B) {
 func BenchmarkBuilder(b *testing.B) {
 	b.Helper()
 	receiver, store := test.NewEventCollector(nil)
-	iterSession := iterator.NewSession(nil, nil)
-	iterOptions := options.DefaultIteratorOptions()
-	iterOptions.RecursionSupport = false
-	iter := iterSession.NewIterator(receiver, &iterOptions)
+	iterConfiguration := configuration.DefaultIteratorConfiguration()
+	iterConfiguration.RecursionSupport = false
+	iterSession := iterator.NewSession(nil, &iterConfiguration)
+	iter := iterSession.NewIterator(receiver)
 
 	objs := generate()
 	documents := make([]test.Events, 0, len(objs))
@@ -318,14 +318,14 @@ func BenchmarkBuilder(b *testing.B) {
 
 func BenchmarkIterator(b *testing.B) {
 	b.Helper()
-	iterSession := iterator.NewSession(nil, nil)
-	iterOptions := options.DefaultIteratorOptions()
+	iterConfiguration := configuration.DefaultIteratorConfiguration()
+	iterSession := iterator.NewSession(nil, &iterConfiguration)
 	objs := generate()
 
 	b.ReportAllocs()
 	b.ResetTimer()
-	iterOptions.RecursionSupport = false
-	iter := iterSession.NewIterator(nullevent.NewNullEventReceiver(), &iterOptions)
+	iterConfiguration.RecursionSupport = false
+	iter := iterSession.NewIterator(nullevent.NewNullEventReceiver())
 	for i := 0; i < b.N; i++ {
 		index := i % len(objs)
 		iter.Iterate(objs[index])

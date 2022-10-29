@@ -29,7 +29,7 @@ import (
 	compact_float "github.com/kstenerud/go-compact-float"
 	compact_time "github.com/kstenerud/go-compact-time"
 	"github.com/kstenerud/go-concise-encoding/ce/events"
-	"github.com/kstenerud/go-concise-encoding/options"
+	"github.com/kstenerud/go-concise-encoding/configuration"
 	"github.com/kstenerud/go-concise-encoding/test"
 	"github.com/kstenerud/go-concise-encoding/types"
 	"github.com/kstenerud/go-describe"
@@ -166,23 +166,21 @@ func V(v uint64) test.Event               { return test.V(v) }
 
 func iterateObject(object interface{},
 	eventReceiver events.DataEventReceiver,
-	sessionOptions *options.IteratorSessionOptions,
-	iteratorOptions *options.IteratorOptions) {
+	iteratorConfiguration *configuration.IteratorConfiguration) {
 
-	session := NewSession(nil, sessionOptions)
-	iter := session.NewIterator(eventReceiver, iteratorOptions)
+	session := NewSession(nil, iteratorConfiguration)
+	iter := session.NewIterator(eventReceiver)
 	iter.Iterate(object)
 }
 
-func assertIterateWithOptions(t *testing.T,
-	sessionOptions *options.IteratorSessionOptions,
-	iteratorOptions *options.IteratorOptions,
+func assertIterateWithConfiguration(t *testing.T,
+	iteratorConfiguration *configuration.IteratorConfiguration,
 	obj interface{},
 	evts ...test.Event) {
 
 	expected := test.Events(append(test.Events{EvV}, evts...))
 	receiver, container := test.NewEventCollector(nil)
-	iterateObject(obj, receiver, sessionOptions, iteratorOptions)
+	iterateObject(obj, receiver, iteratorConfiguration)
 
 	if !container.IsEquivalentTo(expected) {
 		t.Errorf("Expected %v to iterate to events [%v] but got [%v]", describe.D(obj), expected, container.Events)
@@ -190,7 +188,6 @@ func assertIterateWithOptions(t *testing.T,
 }
 
 func assertIterate(t *testing.T, obj interface{}, events ...test.Event) {
-	sOpts := options.DefaultIteratorSessionOptions()
-	iOpts := options.DefaultIteratorOptions()
-	assertIterateWithOptions(t, &sOpts, &iOpts, obj, events...)
+	config := configuration.DefaultIteratorConfiguration()
+	assertIterateWithConfiguration(t, &config, obj, events...)
 }

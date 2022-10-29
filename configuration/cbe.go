@@ -18,60 +18,54 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 
-package options
+package configuration
 
 // ============================================================================
 // CBE Encoder
 
-type CBEEncoderOptions struct {
+type CBEEncoderConfiguration struct {
 }
 
-func DefaultCBEEncoderOptions() CBEEncoderOptions {
-	return defaultCBEEncoderOptions
+func DefaultCBEEncoderConfiguration() CBEEncoderConfiguration {
+	return defaultCBEEncoderConfiguration
 }
 
-var defaultCBEEncoderOptions = CBEEncoderOptions{}
+var defaultCBEEncoderConfiguration = CBEEncoderConfiguration{}
 
-func (_this *CBEEncoderOptions) ApplyDefaults() {
+func (_this *CBEEncoderConfiguration) ApplyDefaults() {
 }
 
-func (_this *CBEEncoderOptions) Validate() error {
+func (_this *CBEEncoderConfiguration) Validate() error {
 	return nil
 }
 
 // ============================================================================
 // CBE Marshaler
 
-type CBEMarshalerOptions struct {
-	Encoder     CBEEncoderOptions
-	Iterator    IteratorOptions
-	Session     IteratorSessionOptions
+type CBEMarshalerConfiguration struct {
+	Encoder     CBEEncoderConfiguration
+	Iterator    IteratorConfiguration
 	DebugPanics bool
 }
 
-func DefaultCBEMarshalerOptions() CBEMarshalerOptions {
-	return defaultCBEMarshalerOptions
+func DefaultCBEMarshalerConfiguration() CBEMarshalerConfiguration {
+	return defaultCBEMarshalerConfiguration
 }
 
-var defaultCBEMarshalerOptions = CBEMarshalerOptions{
-	Encoder:     DefaultCBEEncoderOptions(),
-	Iterator:    DefaultIteratorOptions(),
-	Session:     DefaultIteratorSessionOptions(),
+var defaultCBEMarshalerConfiguration = CBEMarshalerConfiguration{
+	Encoder:     DefaultCBEEncoderConfiguration(),
+	Iterator:    DefaultIteratorConfiguration(),
 	DebugPanics: false,
 }
 
-func (_this *CBEMarshalerOptions) ApplyDefaults() {
+func (_this *CBEMarshalerConfiguration) ApplyDefaults() {
 	_this.Encoder.ApplyDefaults()
 	_this.Iterator.ApplyDefaults()
-	_this.Session.ApplyDefaults()
 }
 
-func (_this *CBEMarshalerOptions) Validate() error {
+func (_this *CBEMarshalerConfiguration) Validate() error {
 	if err := _this.Encoder.Validate(); err != nil {
 		return err
 	}
-	if err := _this.Iterator.Validate(); err != nil {
-		return err
-	}
-	return _this.Session.Validate()
+	return _this.Iterator.Validate()
 }

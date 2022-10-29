@@ -27,8 +27,8 @@ import (
 
 	"github.com/kstenerud/go-concise-encoding/cbe"
 	"github.com/kstenerud/go-concise-encoding/ce/events"
+	"github.com/kstenerud/go-concise-encoding/configuration"
 	"github.com/kstenerud/go-concise-encoding/cte"
-	"github.com/kstenerud/go-concise-encoding/options"
 )
 
 // Decoder decodes a byte stream, converting it to events.
@@ -45,7 +45,7 @@ type Decoder interface {
 // - 0x63 = Decode as CTE
 // - 0x81 = Decode as CBE
 type UniversalDecoder struct {
-	opts *options.CEDecoderOptions
+	config *configuration.CEDecoderConfiguration
 }
 
 func (_this *UniversalDecoder) Decode(reader io.Reader, eventReceiver events.DataEventReceiver) error {
@@ -55,7 +55,7 @@ func (_this *UniversalDecoder) Decode(reader io.Reader, eventReceiver events.Dat
 		return err
 	}
 
-	if decoder, err := chooseDecoder(firstByte[0], _this.opts); err == nil {
+	if decoder, err := chooseDecoder(firstByte[0], _this.config); err == nil {
 		return decoder.Decode(bufReader, eventReceiver)
 	} else {
 		return err
@@ -63,19 +63,19 @@ func (_this *UniversalDecoder) Decode(reader io.Reader, eventReceiver events.Dat
 }
 
 func (_this *UniversalDecoder) DecodeDocument(document []byte, eventReceiver events.DataEventReceiver) error {
-	if decoder, err := chooseDecoder(document[0], _this.opts); err == nil {
+	if decoder, err := chooseDecoder(document[0], _this.config); err == nil {
 		return decoder.DecodeDocument(document, eventReceiver)
 	} else {
 		return err
 	}
 }
 
-func chooseDecoder(identifier byte, opts *options.CEDecoderOptions) (decoder Decoder, err error) {
+func chooseDecoder(identifier byte, config *configuration.CEDecoderConfiguration) (decoder Decoder, err error) {
 	switch identifier {
 	case 'c':
-		decoder = cte.NewDecoder(opts)
+		decoder = cte.NewDecoder(config)
 	case cbe.CBESignatureByte:
-		decoder = cbe.NewDecoder(opts)
+		decoder = cbe.NewDecoder(config)
 	default:
 		err = fmt.Errorf("%02d: Unknown CE identifier", identifier)
 	}

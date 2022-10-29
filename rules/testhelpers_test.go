@@ -29,8 +29,8 @@ import (
 	compact_float "github.com/kstenerud/go-compact-float"
 	compact_time "github.com/kstenerud/go-compact-time"
 	"github.com/kstenerud/go-concise-encoding/ce/events"
+	"github.com/kstenerud/go-concise-encoding/configuration"
 	"github.com/kstenerud/go-concise-encoding/nullevent"
-	"github.com/kstenerud/go-concise-encoding/options"
 	"github.com/kstenerud/go-concise-encoding/test"
 	"github.com/kstenerud/go-concise-encoding/version"
 )
@@ -227,15 +227,15 @@ func assertEventsMaxDepth(t *testing.T, maxDepth int, events ...test.Event) {
 	assertEventsSucceed(t, rules, events...)
 }
 
-func newRulesAfterVersion(opts *options.RuleOptions) *RulesEventReceiver {
-	rules := NewRules(nullevent.NewNullEventReceiver(), opts)
+func newRulesAfterVersion(config *configuration.RuleConfiguration) *RulesEventReceiver {
+	rules := NewRules(nullevent.NewNullEventReceiver(), config)
 	rules.OnBeginDocument()
 	rules.OnVersion(ceVer)
 	return rules
 }
 
 func newRulesWithMaxDepth(maxDepth int) *RulesEventReceiver {
-	opts := options.DefaultRuleOptions()
-	opts.MaxContainerDepth = uint64(maxDepth)
-	return newRulesAfterVersion(&opts)
+	config := configuration.DefaultRuleConfiguration()
+	config.MaxContainerDepth = uint64(maxDepth)
+	return newRulesAfterVersion(&config)
 }

@@ -26,8 +26,8 @@ import (
 
 	compact_time "github.com/kstenerud/go-compact-time"
 	"github.com/kstenerud/go-concise-encoding/ce/events"
+	"github.com/kstenerud/go-concise-encoding/configuration"
 	"github.com/kstenerud/go-concise-encoding/nullevent"
-	"github.com/kstenerud/go-concise-encoding/options"
 	"github.com/kstenerud/go-concise-encoding/test"
 )
 
@@ -437,47 +437,47 @@ func TestRulesErrorInvalidMarkerID(t *testing.T) {
 // TODO: Other array byte lengths
 
 func TestRulesMaxBytesLength(t *testing.T) {
-	opts := options.DefaultRuleOptions()
-	opts.MaxArrayByteLength = 10
-	rules := newRulesAfterVersion(&opts)
+	config := configuration.DefaultRuleConfiguration()
+	config.MaxArrayByteLength = 10
+	rules := newRulesAfterVersion(&config)
 	assertEventsFail(t, rules, AU8(NewBytes(11, 0)))
 
-	rules = newRulesAfterVersion(&opts)
+	rules = newRulesAfterVersion(&config)
 	assertEventsSucceed(t, rules, BAU8(), ACM(8), ADU8(NewBytes(8, 0)))
 	assertEventsFail(t, rules, ACL(4))
 }
 
 func TestRulesMaxStringLength(t *testing.T) {
-	opts := options.DefaultRuleOptions()
-	opts.MaxStringByteLength = 10
-	rules := newRulesAfterVersion(&opts)
+	config := configuration.DefaultRuleConfiguration()
+	config.MaxStringByteLength = 10
+	rules := newRulesAfterVersion(&config)
 	assertEventsFail(t, rules, S("12345678901"))
 
-	rules = newRulesAfterVersion(&opts)
+	rules = newRulesAfterVersion(&config)
 	assertEventsSucceed(t, rules, BS(), ACM(8), ADU8(NewBytes(8, 40)))
 	assertEventsFail(t, rules, ACL(4))
 }
 
 func TestRulesMaxResourceIDLength(t *testing.T) {
-	opts := options.DefaultRuleOptions()
-	opts.MaxResourceIDByteLength = 10
-	rules := newRulesAfterVersion(&opts)
+	config := configuration.DefaultRuleConfiguration()
+	config.MaxResourceIDByteLength = 10
+	rules := newRulesAfterVersion(&config)
 	assertEventsFail(t, rules, RID("12345678901"))
 
-	rules = newRulesAfterVersion(&opts)
+	rules = newRulesAfterVersion(&config)
 	assertEventsSucceed(t, rules, BRID(), ACM(8), ADU8(NewBytes(8, 64)))
 	assertEventsFail(t, rules, ACL(4))
 }
 
 func TestRulesMaxIDLength(t *testing.T) {
 	maxIDLength := 200
-	opts := options.DefaultRuleOptions()
-	opts.MaxIdentifierLength = uint64(maxIDLength)
+	config := configuration.DefaultRuleConfiguration()
+	config.MaxIdentifierLength = uint64(maxIDLength)
 
-	rules := newRulesAfterVersion(&opts)
+	rules := newRulesAfterVersion(&config)
 	assertEventsFail(t, rules, MARK(string(NewString(maxIDLength+1, 0))))
 
-	rules = newRulesAfterVersion(&opts)
+	rules = newRulesAfterVersion(&config)
 	assertEventsSucceed(t, rules,
 		L(),
 		MARK(string(NewString(maxIDLength, 0))),
@@ -494,27 +494,27 @@ func TestRulesMaxContainerDepth(t *testing.T) {
 }
 
 func TestRulesMaxObjectCount(t *testing.T) {
-	opts := options.DefaultRuleOptions()
-	opts.MaxObjectCount = 3
-	rules := newRulesAfterVersion(&opts)
+	config := configuration.DefaultRuleConfiguration()
+	config.MaxObjectCount = 3
+	rules := newRulesAfterVersion(&config)
 	assertEventsSucceed(t, rules, L(), S("test"), B(true))
 	assertEventsFail(t, rules, B(false))
 }
 
 func TestRulesMaxReferenceCount(t *testing.T) {
-	opts := options.DefaultRuleOptions()
-	opts.MaxLocalReferenceCount = 2
-	rules := newRulesAfterVersion(&opts)
+	config := configuration.DefaultRuleConfiguration()
+	config.MaxLocalReferenceCount = 2
+	rules := newRulesAfterVersion(&config)
 	assertEventsSucceed(t, rules, L(), MARK("test"), B(true), MARK("10"), B(true))
 	assertEventsFail(t, rules, MARK("xx"), B(true))
 }
 
 func TestRulesReset(t *testing.T) {
-	opts := options.DefaultRuleOptions()
-	opts.MaxContainerDepth = 2
-	opts.MaxObjectCount = 5
-	opts.MaxLocalReferenceCount = 2
-	rules := newRulesAfterVersion(&opts)
+	config := configuration.DefaultRuleConfiguration()
+	config.MaxContainerDepth = 2
+	config.MaxObjectCount = 5
+	config.MaxLocalReferenceCount = 2
+	rules := newRulesAfterVersion(&config)
 	assertEventsSucceed(t, rules, L())
 	rules.Reset()
 	assertEventsFail(t, rules, E())
@@ -528,8 +528,8 @@ func TestRulesReset(t *testing.T) {
 }
 
 func TestTopLevelStringLikeReferenceID(t *testing.T) {
-	opts := options.DefaultRuleOptions()
-	rules := NewRules(nullevent.NewNullEventReceiver(), &opts)
+	config := configuration.DefaultRuleConfiguration()
+	rules := NewRules(nullevent.NewNullEventReceiver(), &config)
 	assertEventsSucceed(t, rules, BD(), EvV, REFR("http://x.y"), ED())
 }
 

@@ -18,8 +18,8 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 
-// All options that can be used to fine-tune the behavior of various aspects of
+// All configuration that can be used to fine-tune the behavior of various aspects of
 // this library.
-package options
+package configuration
 
 const maxBase10Exp = 50

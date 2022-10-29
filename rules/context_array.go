@@ -124,13 +124,13 @@ func (_this *Context) BeginArrayAnyType(arrayType events.ArrayType) {
 	dataType := arrayTypeToDataType[arrayType]
 	switch arrayType {
 	case events.ArrayTypeString:
-		_this.beginArray(arrayType, &stringRule, dataType, _this.opts.MaxStringByteLength, _this.ValidateContentsString)
+		_this.beginArray(arrayType, &stringRule, dataType, _this.config.MaxStringByteLength, _this.ValidateContentsString)
 	case events.ArrayTypeResourceID:
-		_this.beginArray(arrayType, &stringRule, dataType, _this.opts.MaxResourceIDByteLength, _this.ValidateContentsRID)
+		_this.beginArray(arrayType, &stringRule, dataType, _this.config.MaxResourceIDByteLength, _this.ValidateContentsRID)
 	case events.ArrayTypeCustomText:
-		_this.beginArray(arrayType, &stringRule, dataType, _this.opts.MaxArrayByteLength, _this.ValidateContentsCustomText)
+		_this.beginArray(arrayType, &stringRule, dataType, _this.config.MaxArrayByteLength, _this.ValidateContentsCustomText)
 	default:
-		_this.beginArray(arrayType, &arrayRule, dataType, _this.opts.MaxArrayByteLength, _this.ValidateNothing)
+		_this.beginArray(arrayType, &arrayRule, dataType, _this.config.MaxArrayByteLength, _this.ValidateNothing)
 	}
 }
 
@@ -142,7 +142,7 @@ func (_this *Context) BeginArrayKeyable(contextDesc string, arrayType events.Arr
 func (_this *Context) BeginArrayMediaData() {
 	_this.ValidateContentsString(_this.builtArrayBuffer)
 	_this.UnstackRule()
-	_this.beginArray(events.ArrayTypeMediaData, &arrayRule, DataTypeMedia, _this.opts.MaxArrayByteLength, _this.ValidateNothing)
+	_this.beginArray(events.ArrayTypeMediaData, &arrayRule, DataTypeMedia, _this.config.MaxArrayByteLength, _this.ValidateNothing)
 }
 
 func (_this *Context) BeginChunkAnyType(elemCount uint64, moreChunksFollow bool) {
@@ -166,19 +166,19 @@ func (_this *Context) EndChunkAnyType() {
 func (_this *Context) BeginArrayString(contextDesc string, arrayType events.ArrayType) {
 	dataType := arrayTypeToDataType[arrayType]
 	_this.AssertArrayType(contextDesc, arrayType, AllowString)
-	_this.beginArray(arrayType, &stringRule, dataType, _this.opts.MaxStringByteLength, _this.ValidateContentsString)
+	_this.beginArray(arrayType, &stringRule, dataType, _this.config.MaxStringByteLength, _this.ValidateContentsString)
 }
 
 func (_this *Context) BeginArrayRemoteReference(arrayType events.ArrayType) {
 	dataType := arrayTypeToDataType[arrayType]
 	_this.AssertArrayType("remote reference", arrayType, AllowResourceID)
-	_this.beginArray(arrayType, &stringRule, dataType, _this.opts.MaxResourceIDByteLength, _this.ValidateContentsRID)
+	_this.beginArray(arrayType, &stringRule, dataType, _this.config.MaxResourceIDByteLength, _this.ValidateContentsRID)
 }
 
 func (_this *Context) BeginArrayComment(arrayType events.ArrayType) {
 	dataType := arrayTypeToDataType[arrayType]
 	_this.AssertArrayType("comment", arrayType, AllowString)
-	_this.beginArray(arrayType, &stringRule, dataType, _this.opts.MaxArrayByteLength, _this.ValidateContentsComment)
+	_this.beginArray(arrayType, &stringRule, dataType, _this.config.MaxArrayByteLength, _this.ValidateContentsComment)
 }
 
 func (_this *Context) BeginChunkString(elemCount uint64, moreChunksFollow bool) {
@@ -215,7 +215,7 @@ func (_this *Context) EndChunkMediaType() {
 func (_this *Context) BeginStringBuilder(contextDesc string, arrayType events.ArrayType, completedValidatorFunc func([]byte)) {
 	dataType := arrayTypeToDataType[arrayType]
 	_this.AssertArrayType(contextDesc, arrayType, AllowString)
-	_this.beginArray(arrayType, &stringBuilderRule, dataType, _this.opts.MaxStringByteLength, completedValidatorFunc)
+	_this.beginArray(arrayType, &stringBuilderRule, dataType, _this.config.MaxStringByteLength, completedValidatorFunc)
 }
 
 func (_this *Context) BeginChunkStringBuilder(elemCount uint64, moreChunksFollow bool) {
@@ -242,7 +242,7 @@ func (_this *Context) ValidateIdentifier(data []uint8) {
 	if len(data) == 0 {
 		panic(fmt.Errorf("identifier cannot be empty"))
 	}
-	if len(data) > int(_this.opts.MaxIdentifierLength) {
+	if len(data) > int(_this.config.MaxIdentifierLength) {
 		panic(fmt.Errorf("identifier is too long (%v bytes)", len(data)))
 	}
 	if !chars.IsIdentifierSafe(data) {
@@ -339,20 +339,20 @@ func (_this *Context) AssertArrayType(contextDesc string, arrayType events.Array
 }
 
 func (_this *Context) ValidateLengthAnyType(length uint64) {
-	if length > _this.opts.MaxArrayByteLength && _this.opts.MaxArrayByteLength > 0 {
-		panic(fmt.Errorf("array byte length %d is greater than the maximum of %d", length, _this.opts.MaxArrayByteLength))
+	if length > _this.config.MaxArrayByteLength && _this.config.MaxArrayByteLength > 0 {
+		panic(fmt.Errorf("array byte length %d is greater than the maximum of %d", length, _this.config.MaxArrayByteLength))
 	}
 }
 
 func (_this *Context) ValidateLengthString(length uint64) {
-	if length > _this.opts.MaxStringByteLength && _this.opts.MaxStringByteLength > 0 {
-		panic(fmt.Errorf("string byte length %d is greater than the maximum of %d", length, _this.opts.MaxStringByteLength))
+	if length > _this.config.MaxStringByteLength && _this.config.MaxStringByteLength > 0 {
+		panic(fmt.Errorf("string byte length %d is greater than the maximum of %d", length, _this.config.MaxStringByteLength))
 	}
 }
 
 func (_this *Context) ValidateLengthRID(length uint64) {
-	if length > _this.opts.MaxResourceIDByteLength && _this.opts.MaxResourceIDByteLength > 0 {
-		panic(fmt.Errorf("resource ID byte length %d is greater than the maximum of %d", length, _this.opts.MaxResourceIDByteLength))
+	if length > _this.config.MaxResourceIDByteLength && _this.config.MaxResourceIDByteLength > 0 {
+		panic(fmt.Errorf("resource ID byte length %d is greater than the maximum of %d", length, _this.config.MaxResourceIDByteLength))
 	}
 }
 

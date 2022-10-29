@@ -37,13 +37,11 @@
 //
 // The following tag values are recognized:
 //
-// omit: (flag) This struct field will not be written to a CE document, nor
-//       will it be read from a CE document.
-//
-// -:    Shorthand for omit.
-//
-// name: (k=v) Specifies the name to use when encoding/decoding to a document.
-//
+//   - name: (k=v) Specifies the name to use when encoding/decoding to a document.
+//   - omit: (flag) Never read or write this field to/from a CE document.
+//   - omit_never: (flag) Never omit this field.
+//   - omit_empty: (flag) Omit only if it's empty (empty slice, array, map, nil value).
+//   - omit_empty: (flag) Omit only if it's a golang zero value.
 package ce
 
 import (
@@ -53,8 +51,8 @@ import (
 
 	"github.com/kstenerud/go-concise-encoding/cbe"
 	"github.com/kstenerud/go-concise-encoding/ce/events"
+	"github.com/kstenerud/go-concise-encoding/configuration"
 	"github.com/kstenerud/go-concise-encoding/cte"
-	"github.com/kstenerud/go-concise-encoding/options"
 	"github.com/kstenerud/go-concise-encoding/rules"
 )
 
@@ -63,15 +61,15 @@ import (
 
 // Unmarshal a CE document (CBE or CTE) from a reader, creating an object of the same type as the template.
 // If template is nil, a best-guess type will be returned (likely a slice or map).
-// If opts is nil, default options will be used.
-func UnmarshalCE(reader io.Reader, template interface{}, opts *options.CEUnmarshalerOptions) (decoded interface{}, err error) {
+// If config is nil, default configuration will be used.
+func UnmarshalCE(reader io.Reader, template interface{}, config *configuration.CEUnmarshalerConfiguration) (decoded interface{}, err error) {
 	bufReader := bufio.NewReader(reader)
 	firstByte, err := bufReader.Peek(1)
 	if err != nil {
 		return
 	}
 
-	unmarshaler, err := chooseUnmarshaler(firstByte[0], opts)
+	unmarshaler, err := chooseUnmarshaler(firstByte[0], config)
 	if err != nil {
 		return
 	}
@@ -80,13 +78,13 @@ func UnmarshalCE(reader io.Reader, template interface{}, opts *options.CEUnmarsh
 
 // Unmarshal a CE document (CBE or CTE) from a byte slice, creating an object of the same type as the template.
 // If template is nil, a best-guess type will be returned (likely a slice or map).
-// If opts is nil, default options will be used.
-func UnmarshalFromCEDocument(document []byte, template interface{}, opts *options.CEUnmarshalerOptions) (decoded interface{}, err error) {
+// If config is nil, default configuration will be used.
+func UnmarshalFromCEDocument(document []byte, template interface{}, config *configuration.CEUnmarshalerConfiguration) (decoded interface{}, err error) {
 	if len(document) == 0 {
 		err = fmt.Errorf("no data")
 		return
 	}
-	unmarshaler, err := chooseUnmarshaler(document[0], opts)
+	unmarshaler, err := chooseUnmarshaler(document[0], config)
 	if err != nil {
 		return
 	}
@@ -97,105 +95,105 @@ func UnmarshalFromCEDocument(document []byte, template interface{}, opts *option
 // One-shot marshal/unmarshal API (binary format)
 
 // Marshal a go object into a CBE document, written to writer.
-// If opts is nil, default options will be used.
-func MarshalCBE(object interface{}, writer io.Writer, opts *options.CBEMarshalerOptions) (err error) {
-	return NewCBEMarshaler(opts).Marshal(object, writer)
+// If config is nil, default configuration will be used.
+func MarshalCBE(object interface{}, writer io.Writer, config *configuration.CBEMarshalerConfiguration) (err error) {
+	return NewCBEMarshaler(config).Marshal(object, writer)
 }
 
 // Marshal a go object into a CBE document, returned as a byte slice.
-// If opts is nil, default options will be used.
-func MarshalToCBEDocument(object interface{}, opts *options.CBEMarshalerOptions) (document []byte, err error) {
-	return NewCBEMarshaler(opts).MarshalToDocument(object)
+// If config is nil, default configuration will be used.
+func MarshalToCBEDocument(object interface{}, config *configuration.CBEMarshalerConfiguration) (document []byte, err error) {
+	return NewCBEMarshaler(config).MarshalToDocument(object)
 }
 
 // Unmarshal a CBE document from a reader, creating an object of the same type as the template.
 // If template is nil, a best-guess type will be returned (likely a slice or map).
-// If opts is nil, default options will be used.
-func UnmarshalCBE(reader io.Reader, template interface{}, opts *options.CEUnmarshalerOptions) (decoded interface{}, err error) {
-	return NewCBEUnmarshaler(opts).Unmarshal(reader, template)
+// If config is nil, default configuration will be used.
+func UnmarshalCBE(reader io.Reader, template interface{}, config *configuration.CEUnmarshalerConfiguration) (decoded interface{}, err error) {
+	return NewCBEUnmarshaler(config).Unmarshal(reader, template)
 }
 
 // Unmarshal a CBE document from a byte slice, creating an object of the same type as the template.
 // If template is nil, a best-guess type will be returned (likely a slice or map).
-// If opts is nil, default options will be used.
-func UnmarshalFromCBEDocument(document []byte, template interface{}, opts *options.CEUnmarshalerOptions) (decoded interface{}, err error) {
-	return NewCBEUnmarshaler(opts).UnmarshalFromDocument(document, template)
+// If config is nil, default configuration will be used.
+func UnmarshalFromCBEDocument(document []byte, template interface{}, config *configuration.CEUnmarshalerConfiguration) (decoded interface{}, err error) {
+	return NewCBEUnmarshaler(config).UnmarshalFromDocument(document, template)
 }
 
 // ============================================================================
 // One-shot marshal/unmarshal API (text format)
 
 // Marshal a go object into a CTE document, written to writer.
-// If opts is nil, default options will be used.
-func MarshalCTE(object interface{}, writer io.Writer, opts *options.CTEMarshalerOptions) (err error) {
-	return NewCTEMarshaler(opts).Marshal(object, writer)
+// If config is nil, default configuration will be used.
+func MarshalCTE(object interface{}, writer io.Writer, config *configuration.CTEMarshalerConfiguration) (err error) {
+	return NewCTEMarshaler(config).Marshal(object, writer)
 }
 
 // Marshal a go object into a CTE document, returned as a byte slice.
-// If opts is nil, default options will be used.
-func MarshalToCTEDocument(object interface{}, opts *options.CTEMarshalerOptions) (document []byte, err error) {
-	return NewCTEMarshaler(opts).MarshalToDocument(object)
+// If config is nil, default configuration will be used.
+func MarshalToCTEDocument(object interface{}, config *configuration.CTEMarshalerConfiguration) (document []byte, err error) {
+	return NewCTEMarshaler(config).MarshalToDocument(object)
 
 }
 
 // Unmarshal a CTE document, creating an object of the same type as the template.
 // If template is nil, a best-guess type will be returned (likely a slice or map).
-// If opts is nil, default options will be used.
-func UnmarshalCTE(reader io.Reader, template interface{}, opts *options.CEUnmarshalerOptions) (decoded interface{}, err error) {
-	return NewCTEUnmarshaler(opts).Unmarshal(reader, template)
+// If config is nil, default configuration will be used.
+func UnmarshalCTE(reader io.Reader, template interface{}, config *configuration.CEUnmarshalerConfiguration) (decoded interface{}, err error) {
+	return NewCTEUnmarshaler(config).Unmarshal(reader, template)
 }
 
 // Unmarshal a CTE document from a byte slice, creating an object of the same type as the template.
 // If template is nil, a best-guess type will be returned (likely a slice or map).
-// If opts is nil, default options will be used.
-func UnmarshalFromCTEDocument(document []byte, template interface{}, opts *options.CEUnmarshalerOptions) (decoded interface{}, err error) {
-	return NewCTEUnmarshaler(opts).UnmarshalFromDocument(document, template)
+// If config is nil, default configuration will be used.
+func UnmarshalFromCTEDocument(document []byte, template interface{}, config *configuration.CEUnmarshalerConfiguration) (decoded interface{}, err error) {
+	return NewCTEUnmarshaler(config).UnmarshalFromDocument(document, template)
 }
 
 // ============================================================================
 // Marshalers/Unmarshalers API
 
-func NewCBEMarshaler(opts *options.CBEMarshalerOptions) Marshaler {
-	return cbe.NewMarshaler(opts)
+func NewCBEMarshaler(config *configuration.CBEMarshalerConfiguration) Marshaler {
+	return cbe.NewMarshaler(config)
 }
 
-func NewCBEUnmarshaler(opts *options.CEUnmarshalerOptions) Unmarshaler {
-	return cbe.NewUnmarshaler(opts)
+func NewCBEUnmarshaler(config *configuration.CEUnmarshalerConfiguration) Unmarshaler {
+	return cbe.NewUnmarshaler(config)
 }
 
-func NewCTEMarshaler(opts *options.CTEMarshalerOptions) Marshaler {
-	return cte.NewMarshaler(opts)
+func NewCTEMarshaler(config *configuration.CTEMarshalerConfiguration) Marshaler {
+	return cte.NewMarshaler(config)
 }
 
-func NewCTEUnmarshaler(opts *options.CEUnmarshalerOptions) Unmarshaler {
-	return cte.NewUnmarshaler(opts)
+func NewCTEUnmarshaler(config *configuration.CEUnmarshalerConfiguration) Unmarshaler {
+	return cte.NewUnmarshaler(config)
 }
 
 // ============================================================================
 // Encoders/Decoders API
 
 // Create a new universal CE decoder
-func NewCEDecoder(opts *options.CEDecoderOptions) Decoder {
-	return &UniversalDecoder{opts: opts}
+func NewCEDecoder(config *configuration.CEDecoderConfiguration) Decoder {
+	return &UniversalDecoder{config: config}
 }
 
-func NewCBEEncoder(opts *options.CBEEncoderOptions) Encoder {
-	return cbe.NewEncoder(opts)
+func NewCBEEncoder(config *configuration.CBEEncoderConfiguration) Encoder {
+	return cbe.NewEncoder(config)
 }
 
-func NewCBEDecoder(opts *options.CEDecoderOptions) Decoder {
-	return cbe.NewDecoder(opts)
+func NewCBEDecoder(config *configuration.CEDecoderConfiguration) Decoder {
+	return cbe.NewDecoder(config)
 }
 
-func NewCTEEncoder(opts *options.CTEEncoderOptions) Encoder {
-	return cte.NewEncoder(opts)
+func NewCTEEncoder(config *configuration.CTEEncoderConfiguration) Encoder {
+	return cte.NewEncoder(config)
 }
 
-func NewCTEDecoder(opts *options.CEDecoderOptions) Decoder {
-	return cte.NewDecoder(opts)
+func NewCTEDecoder(config *configuration.CEDecoderConfiguration) Decoder {
+	return cte.NewDecoder(config)
 }
 
 // Create a new rules data receiver, which will enforce proper concise encoding structure.
-func NewRules(nextReceiver events.DataEventReceiver, opts *options.RuleOptions) *rules.RulesEventReceiver {
-	return rules.NewRules(nextReceiver, opts)
+func NewRules(nextReceiver events.DataEventReceiver, config *configuration.RuleConfiguration) *rules.RulesEventReceiver {
+	return rules.NewRules(nextReceiver, config)
 }

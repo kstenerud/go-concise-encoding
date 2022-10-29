@@ -18,12 +18,12 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 
-package options
+package configuration
 
 // ============================================================================
 // Rules
 
-type RuleOptions struct {
+type RuleConfiguration struct {
 	// Limits before the ruleset artificially terminates with an error.
 	MaxArrayByteLength      uint64
 	MaxStringByteLength     uint64
@@ -37,11 +37,11 @@ type RuleOptions struct {
 	MaxTotalArrayBytes uint64
 }
 
-func DefaultRuleOptions() RuleOptions {
-	return defaultRuleOptions
+func DefaultRuleConfiguration() RuleConfiguration {
+	return defaultRuleConfiguration
 }
 
-var defaultRuleOptions = RuleOptions{
+var defaultRuleConfiguration = RuleConfiguration{
 	MaxArrayByteLength:      1000000000,
 	MaxStringByteLength:     100000000,
 	MaxResourceIDByteLength: 10000,
@@ -52,33 +52,33 @@ var defaultRuleOptions = RuleOptions{
 	// TODO: References need to check for amplification attacks. Keep count of referenced things and their object counts
 }
 
-func (_this *RuleOptions) ApplyDefaults() {
+func (_this *RuleConfiguration) ApplyDefaults() {
 	if _this.MaxArrayByteLength < 1 {
-		_this.MaxArrayByteLength = defaultRuleOptions.MaxArrayByteLength
+		_this.MaxArrayByteLength = defaultRuleConfiguration.MaxArrayByteLength
 	}
 	if _this.MaxStringByteLength < 1 {
-		_this.MaxStringByteLength = defaultRuleOptions.MaxStringByteLength
+		_this.MaxStringByteLength = defaultRuleConfiguration.MaxStringByteLength
 	}
 	if _this.MaxStringByteLength > _this.MaxArrayByteLength {
 		_this.MaxStringByteLength = _this.MaxArrayByteLength
 	}
 	if _this.MaxResourceIDByteLength < 1 {
-		_this.MaxResourceIDByteLength = defaultRuleOptions.MaxResourceIDByteLength
+		_this.MaxResourceIDByteLength = defaultRuleConfiguration.MaxResourceIDByteLength
 	}
 	if _this.MaxResourceIDByteLength > _this.MaxArrayByteLength {
 		_this.MaxResourceIDByteLength = _this.MaxArrayByteLength
 	}
 	if _this.MaxContainerDepth < 1 {
-		_this.MaxContainerDepth = defaultRuleOptions.MaxContainerDepth
+		_this.MaxContainerDepth = defaultRuleConfiguration.MaxContainerDepth
 	}
 	if _this.MaxObjectCount < 1 {
-		_this.MaxObjectCount = defaultRuleOptions.MaxObjectCount
+		_this.MaxObjectCount = defaultRuleConfiguration.MaxObjectCount
 	}
 	if _this.MaxLocalReferenceCount < 1 {
-		_this.MaxLocalReferenceCount = defaultRuleOptions.MaxLocalReferenceCount
+		_this.MaxLocalReferenceCount = defaultRuleConfiguration.MaxLocalReferenceCount
 	}
 }
 
-func (_this *RuleOptions) Validate() error {
+func (_this *RuleConfiguration) Validate() error {
 	return nil
 }

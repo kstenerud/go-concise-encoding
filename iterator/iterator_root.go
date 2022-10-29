@@ -25,7 +25,7 @@ import (
 	"reflect"
 
 	"github.com/kstenerud/go-concise-encoding/ce/events"
-	"github.com/kstenerud/go-concise-encoding/options"
+	"github.com/kstenerud/go-concise-encoding/configuration"
 	"github.com/kstenerud/go-concise-encoding/version"
 	"github.com/kstenerud/go-duplicates"
 )
@@ -42,33 +42,33 @@ type RootObjectIterator struct {
 	namedReferences map[duplicates.TypedPointer]uint32
 	nextMarkerName  uint32
 	context         Context
-	opts            *options.IteratorOptions
+	config          *configuration.IteratorConfiguration
 }
 
 // Create a new root object iterator that will send data events to eventReceiver.
-// If opts is nil, default options will be used.
+// If config is nil, default configuration will be used.
 func NewRootObjectIterator(context *Context,
 	eventReceiver events.DataEventReceiver,
-	opts *options.IteratorOptions) *RootObjectIterator {
+	config *configuration.IteratorConfiguration) *RootObjectIterator {
 
 	_this := &RootObjectIterator{}
-	_this.Init(context, eventReceiver, opts)
+	_this.Init(context, eventReceiver, config)
 	return _this
 }
 
 // Initialize this iterator to send data events to eventReceiver.
-// If opts is nil, default options will be used.
+// If config is nil, default configuration will be used.
 func (_this *RootObjectIterator) Init(context *Context,
 	eventReceiver events.DataEventReceiver,
-	opts *options.IteratorOptions) {
+	config *configuration.IteratorConfiguration) {
 
-	if opts == nil {
-		o := options.DefaultIteratorOptions()
-		opts = &o
+	if config == nil {
+		defaultConfig := configuration.DefaultIteratorConfiguration()
+		config = &defaultConfig
 	} else {
-		opts.ApplyDefaults()
+		config.ApplyDefaults()
 	}
-	_this.opts = opts
+	_this.config = config
 	_this.context = iteratorContext(context,
 		eventReceiver,
 		_this.addLocalReference)
@@ -88,7 +88,7 @@ func (_this *RootObjectIterator) Iterate(object interface{}) {
 		return
 	}
 
-	if _this.opts.RecursionSupport {
+	if _this.config.RecursionSupport {
 		_this.foundReferences = duplicates.FindDuplicatePointers(object)
 		_this.namedReferences = make(map[duplicates.TypedPointer]uint32)
 	}
@@ -114,7 +114,7 @@ func (_this *RootObjectIterator) getNamedLocalReference(ptr duplicates.TypedPoin
 }
 
 func (_this *RootObjectIterator) addLocalReference(v reflect.Value) (didGenerateReferenceEvent bool) {
-	if !_this.opts.RecursionSupport {
+	if !_this.config.RecursionSupport {
 		return false
 	}
 

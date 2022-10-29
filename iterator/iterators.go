@@ -28,16 +28,14 @@ import (
 	"net/url"
 	"reflect"
 	"sort"
-	"strconv"
-	"strings"
 	"time"
 
 	"github.com/cockroachdb/apd/v2"
 	compact_float "github.com/kstenerud/go-compact-float"
 	compact_time "github.com/kstenerud/go-compact-time"
 	"github.com/kstenerud/go-concise-encoding/ce/events"
+	"github.com/kstenerud/go-concise-encoding/configuration"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
-	"github.com/kstenerud/go-concise-encoding/options"
 	"github.com/kstenerud/go-concise-encoding/types"
 )
 
@@ -245,7 +243,7 @@ func newMapIterator(ctx *Context, mapType reflect.Type) IteratorFunction {
 	}
 }
 
-func newCustomBinaryIterator(convert options.ConvertToCustomFunction) IteratorFunction {
+func newCustomBinaryIterator(convert configuration.ConvertToCustomFunction) IteratorFunction {
 	return func(context *Context, v reflect.Value) {
 		customType, asBytes, err := convert(v)
 		if err != nil {
@@ -255,7 +253,7 @@ func newCustomBinaryIterator(convert options.ConvertToCustomFunction) IteratorFu
 	}
 }
 
-func newCustomTextIterator(convert options.ConvertToCustomFunction) IteratorFunction {
+func newCustomTextIterator(convert configuration.ConvertToCustomFunction) IteratorFunction {
 	return func(context *Context, v reflect.Value) {
 		customType, asBytes, err := convert(v)
 		if err != nil {
@@ -266,83 +264,36 @@ func newCustomTextIterator(convert options.ConvertToCustomFunction) IteratorFunc
 }
 
 type structField struct {
-	Name        string
-	Type        reflect.Type
-	Index       int
-	Iterate     IteratorFunction
-	IncludeName bool
-	Omit        bool
-	OmitEmpty   bool
-	OmitValue   string // TODO
-	Order       uint32
+	Name         string
+	Type         reflect.Type
+	Index        int
+	Iterate      IteratorFunction
+	IncludeName  bool
+	OmitBehavior configuration.FieldOmitBehavior
+	Order        int64
 }
 
-func (_this *structField) applyTags(tags string) {
-	if tags == "" {
-		return
-	}
-
-	requiresValue := func(kv []string, key string) {
-		if len(kv) != 2 {
-			panic(fmt.Errorf(`tag key "%s" requires a value`, key))
-		}
-	}
-
-	for _, entry := range strings.Split(tags, ",") {
-		kv := strings.Split(entry, "=")
-		switch strings.TrimSpace(kv[0]) {
-		// TODO: lowercase/origcase
-		// TODO: recurse/norecurse?
-		// TODO: nil?
-		// TODO: type=f16, f10.x, i2, i8, i10, i16, string, vstring
-		case "-":
-			_this.Omit = true
-		case "omit":
-			if len(kv) == 1 {
-				_this.Omit = true
-			} else {
-				_this.OmitValue = strings.TrimSpace(kv[1])
-			}
-		case "omitempty":
-			_this.OmitEmpty = true
-		case "name":
-			requiresValue(kv, "name")
-			_this.Name = strings.TrimSpace(kv[1])
-		case "order":
-			order, err := strconv.ParseUint(kv[1], 10, 32)
-			if err != nil {
-				panic(err)
-			}
-			_this.Order = uint32(order)
-		default:
-			panic(fmt.Errorf("%v: Unknown Concise Encoding struct tag field", entry))
-		}
-	}
+func (_this *structField) getValueFromStruct(fromValue reflect.Value) reflect.Value {
+	return fromValue.Field(_this.Index)
 }
 
-func getEmbeddedFieldIterator(ctx *Context, structType reflect.Type) IteratorFunction {
-	fields := extractFields(ctx, structType, make([]structField, 0, structType.NumField()))
-	return func(context *Context, value reflect.Value) {
-		for _, field := range fields {
-			fieldValue := value.Field(field.Index)
-			if !(field.OmitEmpty && isValueEmpty(fieldValue)) {
-				if field.IncludeName {
-					context.EventReceiver.OnStringlikeArray(events.ArrayTypeString, field.Name)
-				}
-				field.Iterate(context, fieldValue)
-			}
-		}
+func newStructField(fromField reflect.StructField, index int) structField {
+	tags := common.DecodeGoTags(fromField)
+	return structField{
+		Name:         tags.Name,
+		Type:         fromField.Type,
+		Index:        index,
+		OmitBehavior: tags.OmitBehavior,
+		Order:        tags.Order,
 	}
 }
 
 func isValueEmpty(value reflect.Value) bool {
 	if !value.IsValid() {
-		return false
+		return true
 	}
 
 	switch value.Kind() {
-	case reflect.Bool:
-		return !value.Bool()
 	case reflect.Interface, reflect.Pointer:
 		return value.IsNil()
 	case reflect.Map, reflect.Slice:
@@ -350,26 +301,32 @@ func isValueEmpty(value reflect.Value) bool {
 	case reflect.Array, reflect.String:
 		return value.Len() == 0
 	default:
+		return false
+	}
+}
+
+func isValueZero(value reflect.Value) bool {
+	if !value.IsValid() {
 		return true
 	}
+
+	if value.IsZero() {
+		return true
+	}
+
+	return isValueEmpty(value)
 }
 
 func extractFields(ctx *Context, structType reflect.Type, fields []structField) []structField {
 	for i := 0; i < structType.NumField(); i++ {
 		reflectField := structType.Field(i)
 		if common.IsFieldExported(reflectField.Name) {
-			field := structField{
-				Name:  reflectField.Name,
-				Type:  reflectField.Type,
-				Index: i,
-				Order: 0xffffffff,
-			}
-			field.applyTags(reflectField.Tag.Get("ce"))
-			if ctx.LowercaseStructFieldNames {
+			field := newStructField(reflectField, i)
+			if ctx.Configuration.LowercaseStructFieldNames {
 				field.Name = common.ToStructFieldIdentifier(field.Name)
 			}
 
-			if !field.Omit {
+			if field.OmitBehavior != configuration.OmitFieldAlways {
 				if reflectField.Anonymous {
 					field.Iterate = getEmbeddedFieldIterator(ctx, field.Type)
 				} else {
@@ -388,23 +345,54 @@ func extractFields(ctx *Context, structType reflect.Type, fields []structField) 
 	return fields
 }
 
+func shouldIncludeField(field structField, value reflect.Value, defaultOmitBehavior configuration.FieldOmitBehavior) bool {
+	omitBehavior := field.OmitBehavior
+	if omitBehavior == configuration.OmitFieldChooseDefault {
+		omitBehavior = defaultOmitBehavior
+	}
+	switch omitBehavior {
+	case configuration.OmitFieldAlways:
+		return false
+	case configuration.OmitFieldNever:
+		return true
+	case configuration.OmitFieldEmpty:
+		return !isValueEmpty(value)
+	case configuration.OmitFieldZero:
+		return !isValueZero(value)
+	}
+	// Should never happen
+	return true
+}
+
 func newStructIterator(ctx *Context, structType reflect.Type) IteratorFunction {
 	fields := extractFields(ctx, structType, make([]structField, 0, structType.NumField()))
-
-	return func(context *Context, v reflect.Value) {
+	return func(context *Context, value reflect.Value) {
 		context.EventReceiver.OnMap()
-
 		for _, field := range fields {
-			fieldValue := v.Field(field.Index)
-			if !(field.OmitEmpty && isValueEmpty(fieldValue)) {
+			fieldValue := field.getValueFromStruct(value)
+			if shouldIncludeField(field, fieldValue, ctx.Configuration.DefaultFieldOmitBehavior) {
 				if field.IncludeName {
 					context.EventReceiver.OnStringlikeArray(events.ArrayTypeString, field.Name)
 				}
 				field.Iterate(context, fieldValue)
 			}
 		}
-
 		context.EventReceiver.OnEndContainer()
+	}
+}
+
+func getEmbeddedFieldIterator(ctx *Context, structType reflect.Type) IteratorFunction {
+	fields := extractFields(ctx, structType, make([]structField, 0, structType.NumField()))
+	return func(context *Context, value reflect.Value) {
+		for _, field := range fields {
+			fieldValue := field.getValueFromStruct(value)
+			if shouldIncludeField(field, fieldValue, ctx.Configuration.DefaultFieldOmitBehavior) {
+				if field.IncludeName {
+					context.EventReceiver.OnStringlikeArray(events.ArrayTypeString, field.Name)
+				}
+				field.Iterate(context, fieldValue)
+			}
+		}
 	}
 }
 

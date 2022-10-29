@@ -29,9 +29,9 @@ import (
 	compact_float "github.com/kstenerud/go-compact-float"
 	compact_time "github.com/kstenerud/go-compact-time"
 	"github.com/kstenerud/go-concise-encoding/ce/events"
+	"github.com/kstenerud/go-concise-encoding/configuration"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
 	"github.com/kstenerud/go-concise-encoding/nullevent"
-	"github.com/kstenerud/go-concise-encoding/options"
 )
 
 // RulesEventReceiver is a DataEventsReceiver passthrough object that constrains
@@ -51,30 +51,30 @@ type RulesEventReceiver struct {
 }
 
 // Create a new rules set.
-// If opts = nil, defaults are used.
-func NewRules(nextReceiver events.DataEventReceiver, opts *options.RuleOptions) *RulesEventReceiver {
+// If config = nil, defaults are used.
+func NewRules(nextReceiver events.DataEventReceiver, config *configuration.RuleConfiguration) *RulesEventReceiver {
 	_this := &RulesEventReceiver{}
-	_this.Init(nextReceiver, opts)
+	_this.Init(nextReceiver, config)
 	return _this
 }
 
 var nullReceiver = &nullevent.NullEventReceiver{}
 
 // Initialize a rules set.
-// If opts = nil, defaults are used.
-func (_this *RulesEventReceiver) Init(nextReceiver events.DataEventReceiver, opts *options.RuleOptions) {
-	if opts == nil {
-		o := options.DefaultRuleOptions()
-		opts = &o
+// If config = nil, defaults are used.
+func (_this *RulesEventReceiver) Init(nextReceiver events.DataEventReceiver, config *configuration.RuleConfiguration) {
+	if config == nil {
+		defaultConfig := configuration.DefaultRuleConfiguration()
+		config = &defaultConfig
 	} else {
-		opts.ApplyDefaults()
+		config.ApplyDefaults()
 	}
 
 	_this.receiver = nextReceiver
 	if _this.receiver == nil {
 		_this.receiver = nullReceiver
 	}
-	_this.context.Init(opts)
+	_this.context.Init(config)
 }
 
 // Reset the rules set back to its initial state.

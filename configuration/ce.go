@@ -18,7 +18,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 
-package options
+package configuration
 
 type DocumentLimits struct {
 	MaxDocumentSizeBytes          uint64
@@ -48,41 +48,41 @@ var defaultDocumentLimits = DocumentLimits{
 
 func (_this *DocumentLimits) ApplyDefaults() {
 	if _this.MaxDocumentSizeBytes == 0 {
-		_this.MaxDocumentSizeBytes = defaultDecoderOptions.DocumentLimits.MaxDocumentSizeBytes
+		_this.MaxDocumentSizeBytes = defaultDecoderConfiguration.DocumentLimits.MaxDocumentSizeBytes
 	}
 	if _this.MaxArraySizeBytes == 0 {
-		_this.MaxArraySizeBytes = defaultDecoderOptions.DocumentLimits.MaxArraySizeBytes
+		_this.MaxArraySizeBytes = defaultDecoderConfiguration.DocumentLimits.MaxArraySizeBytes
 	}
 	if _this.MaxObjectCount == 0 {
-		_this.MaxObjectCount = defaultDecoderOptions.DocumentLimits.MaxObjectCount
+		_this.MaxObjectCount = defaultDecoderConfiguration.DocumentLimits.MaxObjectCount
 	}
 	if _this.MaxContainerDepth == 0 {
-		_this.MaxContainerDepth = defaultDecoderOptions.DocumentLimits.MaxContainerDepth
+		_this.MaxContainerDepth = defaultDecoderConfiguration.DocumentLimits.MaxContainerDepth
 	}
 	if _this.MaxIntegerDigitCount == 0 {
-		_this.MaxIntegerDigitCount = defaultDecoderOptions.DocumentLimits.MaxIntegerDigitCount
+		_this.MaxIntegerDigitCount = defaultDecoderConfiguration.DocumentLimits.MaxIntegerDigitCount
 	}
 	if _this.MaxFloatCoefficientDigitCount == 0 {
-		_this.MaxFloatCoefficientDigitCount = defaultDecoderOptions.DocumentLimits.MaxFloatCoefficientDigitCount
+		_this.MaxFloatCoefficientDigitCount = defaultDecoderConfiguration.DocumentLimits.MaxFloatCoefficientDigitCount
 	}
 	if _this.MaxFloatExponentDigitCount == 0 {
-		_this.MaxFloatExponentDigitCount = defaultDecoderOptions.DocumentLimits.MaxFloatExponentDigitCount
+		_this.MaxFloatExponentDigitCount = defaultDecoderConfiguration.DocumentLimits.MaxFloatExponentDigitCount
 	}
 	if _this.MaxYearDigitCount == 0 {
-		_this.MaxYearDigitCount = defaultDecoderOptions.DocumentLimits.MaxYearDigitCount
+		_this.MaxYearDigitCount = defaultDecoderConfiguration.DocumentLimits.MaxYearDigitCount
 	}
 	if _this.MaxMarkerCount == 0 {
-		_this.MaxMarkerCount = defaultDecoderOptions.DocumentLimits.MaxMarkerCount
+		_this.MaxMarkerCount = defaultDecoderConfiguration.DocumentLimits.MaxMarkerCount
 	}
 	if _this.MaxLocalReferenceCount == 0 {
-		_this.MaxLocalReferenceCount = defaultDecoderOptions.DocumentLimits.MaxLocalReferenceCount
+		_this.MaxLocalReferenceCount = defaultDecoderConfiguration.DocumentLimits.MaxLocalReferenceCount
 	}
 }
 
 // ============================================================================
 // CE Decoder
 
-type CEDecoderOptions struct {
+type CEDecoderConfiguration struct {
 	AllowRecursiveLocalReferences bool
 	FollowRemoteReferences        bool
 	CompleteTruncatedDocument     bool
@@ -91,7 +91,7 @@ type CEDecoderOptions struct {
 	DebugPanics                   bool
 }
 
-var defaultDecoderOptions = CEDecoderOptions{
+var defaultDecoderConfiguration = CEDecoderConfiguration{
 	AllowRecursiveLocalReferences: false,
 	FollowRemoteReferences:        false,
 	CompleteTruncatedDocument:     false,
@@ -100,52 +100,52 @@ var defaultDecoderOptions = CEDecoderOptions{
 	DebugPanics:                   false,
 }
 
-func DefaultCEDecoderOptions() CEDecoderOptions {
-	return defaultDecoderOptions
+func DefaultCEDecoderConfiguration() CEDecoderConfiguration {
+	return defaultDecoderConfiguration
 }
 
-func (_this *CEDecoderOptions) ApplyDefaults() {
+func (_this *CEDecoderConfiguration) ApplyDefaults() {
 	_this.DocumentLimits.ApplyDefaults()
 }
 
-func (_this *CEDecoderOptions) Validate() error {
+func (_this *CEDecoderConfiguration) Validate() error {
 	return nil
 }
 
 // ============================================================================
 // CE Unmarshaler
 
-type CEUnmarshalerOptions struct {
-	Decoder CEDecoderOptions
-	Builder BuilderOptions
-	Session BuilderSessionOptions
-	Rules   RuleOptions
+type CEUnmarshalerConfiguration struct {
+	Decoder CEDecoderConfiguration
+	Builder BuilderConfiguration
+	Session BuilderSessionConfiguration
+	Rules   RuleConfiguration
 
 	// If false, do not wrap a Rules object around the builder, disabling all rule checks.
 	EnforceRules bool
 	DebugPanics  bool
 }
 
-func DefaultCEUnmarshalerOptions() CEUnmarshalerOptions {
-	return defaultCEUnmarshalerOptions
+func DefaultCEUnmarshalerConfiguration() CEUnmarshalerConfiguration {
+	return defaultCEUnmarshalerConfiguration
 }
 
-var defaultCEUnmarshalerOptions = CEUnmarshalerOptions{
-	Decoder:      DefaultCEDecoderOptions(),
-	Builder:      DefaultBuilderOptions(),
-	Session:      DefaultBuilderSessionOptions(),
-	Rules:        DefaultRuleOptions(),
+var defaultCEUnmarshalerConfiguration = CEUnmarshalerConfiguration{
+	Decoder:      DefaultCEDecoderConfiguration(),
+	Builder:      DefaultBuilderConfiguration(),
+	Session:      DefaultBuilderSessionConfiguration(),
+	Rules:        DefaultRuleConfiguration(),
 	EnforceRules: true,
 }
 
-func (_this *CEUnmarshalerOptions) ApplyDefaults() {
+func (_this *CEUnmarshalerConfiguration) ApplyDefaults() {
 	_this.Decoder.ApplyDefaults()
 	_this.Builder.ApplyDefaults()
 	_this.Session.ApplyDefaults()
 	_this.Rules.ApplyDefaults()
 }
 
-func (_this *CEUnmarshalerOptions) Validate() error {
+func (_this *CEUnmarshalerConfiguration) Validate() error {
 	if err := _this.Builder.Validate(); err != nil {
 		return err
 	}

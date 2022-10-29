@@ -30,8 +30,8 @@ import (
 	compact_float "github.com/kstenerud/go-compact-float"
 	compact_time "github.com/kstenerud/go-compact-time"
 	"github.com/kstenerud/go-concise-encoding/ce/events"
+	"github.com/kstenerud/go-concise-encoding/configuration"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
-	"github.com/kstenerud/go-concise-encoding/options"
 )
 
 // BuilderEventReceiver adapts DataEventReceiver to ObjectBuilder, passing
@@ -49,20 +49,20 @@ type BuilderEventReceiver struct {
 }
 
 // Create a new builder event receiver that can build objects of dstType.
-// If opts is nil, default options will be used.
-func NewBuilderEventReceiver(session *Session, dstType reflect.Type, opts *options.BuilderOptions) *BuilderEventReceiver {
+// If config is nil, default configuration will be used.
+func NewBuilderEventReceiver(session *Session, dstType reflect.Type, config *configuration.BuilderConfiguration) *BuilderEventReceiver {
 	_this := &BuilderEventReceiver{}
-	_this.Init(session, dstType, opts)
+	_this.Init(session, dstType, config)
 	return _this
 }
 
 // Initialize to build objects of dstType.
-// If opts is nil, default options will be used.
-func (_this *BuilderEventReceiver) Init(session *Session, dstType reflect.Type, opts *options.BuilderOptions) {
-	_this.context.Init(opts,
+// If config is nil, default configuration will be used.
+func (_this *BuilderEventReceiver) Init(session *Session, dstType reflect.Type, config *configuration.BuilderConfiguration) {
+	_this.context.Init(config,
 		dstType,
-		session.opts.CustomBinaryBuildFunction,
-		session.opts.CustomTextBuildFunction,
+		session.config.CustomBinaryBuildFunction,
+		session.config.CustomTextBuildFunction,
 		session.GetBuilderGeneratorForType)
 
 	if dstType == nil {

@@ -27,7 +27,7 @@ package builder
 import (
 	"reflect"
 
-	"github.com/kstenerud/go-concise-encoding/options"
+	"github.com/kstenerud/go-concise-encoding/configuration"
 )
 
 type structTemplateKey func(*Context, Builder)
@@ -35,12 +35,12 @@ type structTemplateKey func(*Context, Builder)
 var unusedValue reflect.Value
 
 type Context struct {
-	opts            *options.BuilderOptions
+	config          *configuration.BuilderConfiguration
 	dstType         reflect.Type
 	referenceFiller ReferenceFiller
 
-	CustomBinaryBuildFunction  options.CustomBinaryBuildFunction
-	CustomTextBuildFunction    options.CustomTextBuildFunction
+	CustomBinaryBuildFunction  configuration.CustomBinaryBuildFunction
+	CustomTextBuildFunction    configuration.CustomTextBuildFunction
 	CurrentBuilder             Builder
 	GetBuilderGeneratorForType func(dstType reflect.Type) BuilderGenerator
 	builderStack               []Builder
@@ -55,19 +55,19 @@ type Context struct {
 	structTemplateName string
 }
 
-func (_this *Context) Init(opts *options.BuilderOptions,
+func (_this *Context) Init(config *configuration.BuilderConfiguration,
 	dstType reflect.Type,
-	customBinaryBuildFunction options.CustomBinaryBuildFunction,
-	customTextBuildFunction options.CustomTextBuildFunction,
+	customBinaryBuildFunction configuration.CustomBinaryBuildFunction,
+	customTextBuildFunction configuration.CustomTextBuildFunction,
 	getBuilderGeneratorForType func(dstType reflect.Type) BuilderGenerator,
 ) {
-	if opts == nil {
-		o := options.DefaultBuilderOptions()
-		opts = &o
+	if config == nil {
+		defaultConfig := configuration.DefaultBuilderConfiguration()
+		config = &defaultConfig
 	} else {
-		opts.ApplyDefaults()
+		config.ApplyDefaults()
 	}
-	_this.opts = opts
+	_this.config = config
 	_this.dstType = dstType
 	_this.CustomBinaryBuildFunction = customBinaryBuildFunction
 	_this.CustomTextBuildFunction = customTextBuildFunction

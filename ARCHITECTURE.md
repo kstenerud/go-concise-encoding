@@ -27,31 +27,31 @@ The other secondary sections are:
 		- [Debug Helpers](#debug-helpers)
 		- [Test Helpers](#test-helpers)
 		- [Conversions](#conversions)
-		- [Options](#options)
+		- [Configuration](#configuration)
 
 
 Code Organization
 -----------------
 
-| Directory                  | Description                                                     |
-| -------------------------- | --------------------------------------------------------------- |
-| [bugreport](bugreport)     | Templates for constructing and testing bug reports              |
-| [builder](builder)         | [Builders](#builders)                                           |
-| [cbe](cbe)                 | [CBE](https://github.com/kstenerud/concise-encoding/blob/master/cbe-specification.md) codec |
-| [ce](ce)                   | Top-level API                                                   |
-| [codegen](codegen)         | Code generator source (generates all `generated-do-not-edit.go` files) |
-| [conversions](conversions) | Data type converters used by builders and codecs                |
-| [cte](cte)                 | [CTE](https://github.com/kstenerud/concise-encoding/blob/master/cte-specification.md) codec |
-| [debug](debug)             | Tools to help with debugging                                    |
-| [events](events)           | [Events](#events), and a "null" event receiver                  |
-| [internal](internal)       | Various tools used internally by the library                    |
-| [iterator](iterator)       | [Iterators](#iterators)                                         |
-| [options](options)         | Configuration for all high level APIs                           |
-| [rules](rules)             | [Rules](#rules)                                                 |
-| [test](test)               | Test helper code and unit test parser                           |
-| [tests](tests)             | Portable unit tests                                             |
-| [types](types)             | Types not present in the standard library                       |
-| [version](version)         | The currently supported Concise Encoding version                |
+| Directory                      | Description                                                     |
+| ------------------------------ | --------------------------------------------------------------- |
+| [bugreport](bugreport)         | Templates for constructing and testing bug reports              |
+| [builder](builder)             | [Builders](#builders)                                           |
+| [cbe](cbe)                     | [CBE](https://github.com/kstenerud/concise-encoding/blob/master/cbe-specification.md) codec |
+| [ce](ce)                       | Top-level API                                                   |
+| [codegen](codegen)             | Code generator source (generates all `generated-do-not-edit.go` files) |
+| [conversions](conversions)     | Data type converters used by builders and codecs                |
+| [cte](cte)                     | [CTE](https://github.com/kstenerud/concise-encoding/blob/master/cte-specification.md) codec |
+| [debug](debug)                 | Tools to help with debugging                                    |
+| [events](events)               | [Events](#events), and a "null" event receiver                  |
+| [internal](internal)           | Various tools used internally by the library                    |
+| [iterator](iterator)           | [Iterators](#iterators)                                         |
+| [configuration](configuration) | Configuration for all high level APIs                           |
+| [rules](rules)                 | [Rules](#rules)                                                 |
+| [test](test)                   | Test helper code and unit test parser                           |
+| [tests](tests)                 | Portable unit tests                                             |
+| [types](types)                 | Types not present in the standard library                       |
+| [version](version)             | The currently supported Concise Encoding version                |
 
 
 
@@ -151,6 +151,6 @@ The [test](test) directory contains code to help with writing and debugging test
 
 The [conversions](conversions) directory contains common type conversion functions used by various subsections. It's kept publically accessible so that user-defined codec code can make use of them.
 
-### Options
+### Configuration
 
-All configuration options and their defaults are defined in the [options](options) directory.
+All configuration configuration and their defaults are defined in the [configuration](configuration) directory.

@@ -27,8 +27,8 @@ import (
 	"sync"
 
 	"github.com/kstenerud/go-concise-encoding/ce/events"
+	"github.com/kstenerud/go-concise-encoding/configuration"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
-	"github.com/kstenerud/go-concise-encoding/options"
 )
 
 // An iterator session holds a cache of known mappings of types to iterators.
@@ -37,32 +37,32 @@ import (
 // unintended behavior in codec activity elsewhere in the program.
 type Session struct {
 	iteratorFuncs sync.Map
-	opts          *options.IteratorSessionOptions
+	config        *configuration.IteratorConfiguration
 	context       Context
 }
 
 // Start a new iterator session. It will inherit the iterators of its parent.
 // If parent is nil, it will inherit from the root session, which has iterators
 // for all basic go types.
-// If opts is nil, default options will be used.
-func NewSession(parent *Session, opts *options.IteratorSessionOptions) *Session {
+// If config is nil, default configuration will be used.
+func NewSession(parent *Session, config *configuration.IteratorConfiguration) *Session {
 	_this := &Session{}
-	_this.Init(parent, opts)
+	_this.Init(parent, config)
 	return _this
 }
 
 // Initialize an iterator session. It will inherit the iterators of its parent.
 // If parent is nil, it will inherit from the root session, which has iterators
 // for all basic go types.
-// If opts is nil, default options will be used.
-func (_this *Session) Init(parent *Session, opts *options.IteratorSessionOptions) {
-	if opts == nil {
-		o := options.DefaultIteratorSessionOptions()
-		opts = &o
+// If config is nil, default configuration will be used.
+func (_this *Session) Init(parent *Session, config *configuration.IteratorConfiguration) {
+	if config == nil {
+		defaultConfig := configuration.DefaultIteratorConfiguration()
+		config = &defaultConfig
 	} else {
-		opts.ApplyDefaults()
+		config.ApplyDefaults()
 	}
-	_this.opts = opts
+	_this.config = config
 
 	if parent == nil {
 		parent = &rootSession
@@ -73,21 +73,21 @@ func (_this *Session) Init(parent *Session, opts *options.IteratorSessionOptions
 		return true
 	})
 
-	for t, converter := range _this.opts.CustomBinaryConverters {
+	for t, converter := range _this.config.CustomBinaryConverters {
 		_this.RegisterIteratorForType(t, newCustomBinaryIterator(converter))
 	}
-	for t, converter := range _this.opts.CustomTextConverters {
+	for t, converter := range _this.config.CustomTextConverters {
 		_this.RegisterIteratorForType(t, newCustomTextIterator(converter))
 	}
 
-	_this.context = sessionContext(_this.GetIteratorForType, _this.opts.LowercaseStructFieldNames)
+	_this.context = sessionContext(_this.GetIteratorForType, _this.config)
 }
 
 // Creates a new iterator that sends data events to eventReceiver.
-// If opts is nil, default options will be used.
-func (_this *Session) NewIterator(eventReceiver events.DataEventReceiver, opts *options.IteratorOptions) *RootObjectIterator {
+// If config is nil, default configuration will be used.
+func (_this *Session) NewIterator(eventReceiver events.DataEventReceiver) *RootObjectIterator {
 
-	return NewRootObjectIterator(&_this.context, eventReceiver, opts)
+	return NewRootObjectIterator(&_this.context, eventReceiver, _this.config)
 }
 
 // Register a specific iterator for a type.

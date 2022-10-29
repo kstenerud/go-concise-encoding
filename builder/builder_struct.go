@@ -24,7 +24,6 @@ import (
 	"fmt"
 	"math/big"
 	"reflect"
-	"strings"
 
 	"github.com/cockroachdb/apd/v2"
 	compact_float "github.com/kstenerud/go-compact-float"
@@ -36,9 +35,6 @@ import (
 type structBuilderField struct {
 	Name      string
 	IndexPath []int
-	Omit      bool
-	OmitEmpty bool
-	OmitValue string
 }
 
 func (_this *structBuilderField) GetField(container reflect.Value) (value reflect.Value) {
@@ -49,42 +45,9 @@ func (_this *structBuilderField) GetField(container reflect.Value) (value reflec
 	return
 }
 
-func (_this *structBuilderField) applyTags(tags string) {
-	if tags == "" {
-		return
-	}
-
-	requiresValue := func(kv []string, key string) {
-		if len(kv) != 2 {
-			panic(fmt.Errorf(`tag key "%s" requires a value`, key))
-		}
-	}
-
-	for _, entry := range strings.Split(tags, ",") {
-		kv := strings.Split(entry, "=")
-		switch strings.TrimSpace(kv[0]) {
-		// TODO: lossy/nolossy
-		// TODO: lowercase/origcase
-		case "-":
-			_this.Omit = true
-		case "omit":
-			if len(kv) == 1 {
-				_this.Omit = true
-			} else {
-				_this.OmitValue = strings.TrimSpace(kv[1])
-			}
-		case "omitempty":
-			// TODO: Implement omitempty
-			_this.OmitEmpty = true
-		case "name":
-			requiresValue(kv, "name")
-			_this.Name = strings.TrimSpace(kv[1])
-		case "order":
-			// Nothing to do here
-		default:
-			panic(fmt.Errorf("%v: Unknown Concise Encoding struct tag field", entry))
-		}
-	}
+func (_this *structBuilderField) applyTags(field reflect.StructField) {
+	tags := common.DecodeGoTags(field)
+	_this.Name = tags.Name
 }
 
 type structBuilder struct {
@@ -124,7 +87,7 @@ func makeGeneratorDescs(
 					Name:      reflectField.Name,
 					IndexPath: path,
 				}
-				structField.applyTags(reflectField.Tag.Get("ce"))
+				structField.applyTags(reflectField)
 				generatorDescs[structField.Name] = &structBuilderGeneratorDesc{
 					field:            structField,
 					builderGenerator: builderGenerator,
@@ -243,7 +206,7 @@ func (_this *structBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayT
 	switch arrayType {
 	case events.ArrayTypeString:
 		if _this.nextIsKey {
-			if ctx.opts.CaseInsensitiveStructFieldNames {
+			if ctx.config.CaseInsensitiveStructFieldNames {
 				value = []byte(common.ToStructFieldIdentifier(string(value)))
 			}
 
@@ -269,7 +232,7 @@ func (_this *structBuilder) BuildFromStringlikeArray(ctx *Context, arrayType eve
 	switch arrayType {
 	case events.ArrayTypeString:
 		if _this.nextIsKey {
-			if ctx.opts.CaseInsensitiveStructFieldNames {
+			if ctx.config.CaseInsensitiveStructFieldNames {
 				value = common.ToStructFieldIdentifier(value)
 			}
 

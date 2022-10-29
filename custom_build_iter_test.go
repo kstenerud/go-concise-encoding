@@ -29,7 +29,7 @@ import (
 	"testing"
 
 	"github.com/kstenerud/go-concise-encoding/ce"
-	"github.com/kstenerud/go-concise-encoding/options"
+	"github.com/kstenerud/go-concise-encoding/configuration"
 	"github.com/kstenerud/go-describe"
 	"github.com/kstenerud/go-equivalence"
 )
@@ -130,14 +130,14 @@ func convertFromCustomBinary(customType uint64, src []byte, dst reflect.Value) e
 // ============================================================================
 
 func assertCBEMarshalUnmarshalComplexFromBinary(t *testing.T, value interface{}) {
-	marshalOpts := options.DefaultCBEMarshalerOptions()
-	marshalOpts.Session.CustomBinaryConverters[reflect.TypeOf(complex(float32(0), float32(0)))] = convertComplex64ToCustomBinary
-	marshalOpts.Session.CustomBinaryConverters[reflect.TypeOf(complex(float64(0), float64(0)))] = convertComplex128ToCustomBinary
-	unmarshalOpts := options.DefaultCEUnmarshalerOptions()
-	unmarshalOpts.Session.CustomBinaryBuildFunction = convertFromCustomBinary
-	unmarshalOpts.Session.CustomBuiltTypes = append(unmarshalOpts.Session.CustomBuiltTypes, reflect.TypeOf(value))
+	marshalConfig := configuration.DefaultCBEMarshalerConfiguration()
+	marshalConfig.Iterator.CustomBinaryConverters[reflect.TypeOf(complex(float32(0), float32(0)))] = convertComplex64ToCustomBinary
+	marshalConfig.Iterator.CustomBinaryConverters[reflect.TypeOf(complex(float64(0), float64(0)))] = convertComplex128ToCustomBinary
+	unmarshalConfig := configuration.DefaultCEUnmarshalerConfiguration()
+	unmarshalConfig.Session.CustomBinaryBuildFunction = convertFromCustomBinary
+	unmarshalConfig.Session.CustomBuiltTypes = append(unmarshalConfig.Session.CustomBuiltTypes, reflect.TypeOf(value))
 
-	marshaler := ce.NewCBEMarshaler(&marshalOpts)
+	marshaler := ce.NewCBEMarshaler(&marshalConfig)
 	document, err := marshaler.MarshalToDocument(value)
 	if err != nil {
 		t.Error(err)
@@ -145,7 +145,7 @@ func assertCBEMarshalUnmarshalComplexFromBinary(t *testing.T, value interface{})
 	}
 
 	template := value
-	unmarshaler := ce.NewCBEUnmarshaler(&unmarshalOpts)
+	unmarshaler := ce.NewCBEUnmarshaler(&unmarshalConfig)
 	actual, err := unmarshaler.UnmarshalFromDocument(document, template)
 	if err != nil {
 		t.Error(err)
@@ -158,14 +158,14 @@ func assertCBEMarshalUnmarshalComplexFromBinary(t *testing.T, value interface{})
 }
 
 func assertCTEMarshalUnmarshalComplexFromBinary(t *testing.T, value interface{}) {
-	marshalOpts := options.DefaultCTEMarshalerOptions()
-	marshalOpts.Session.CustomBinaryConverters[reflect.TypeOf(complex(float32(0), float32(0)))] = convertComplex64ToCustomBinary
-	marshalOpts.Session.CustomBinaryConverters[reflect.TypeOf(complex(float64(0), float64(0)))] = convertComplex128ToCustomBinary
-	unmarshalOpts := options.DefaultCEUnmarshalerOptions()
-	unmarshalOpts.Session.CustomBinaryBuildFunction = convertFromCustomBinary
-	unmarshalOpts.Session.CustomBuiltTypes = append(unmarshalOpts.Session.CustomBuiltTypes, reflect.TypeOf(value))
+	marshalConfig := configuration.DefaultCTEMarshalerConfiguration()
+	marshalConfig.Iterator.CustomBinaryConverters[reflect.TypeOf(complex(float32(0), float32(0)))] = convertComplex64ToCustomBinary
+	marshalConfig.Iterator.CustomBinaryConverters[reflect.TypeOf(complex(float64(0), float64(0)))] = convertComplex128ToCustomBinary
+	unmarshalConfig := configuration.DefaultCEUnmarshalerConfiguration()
+	unmarshalConfig.Session.CustomBinaryBuildFunction = convertFromCustomBinary
+	unmarshalConfig.Session.CustomBuiltTypes = append(unmarshalConfig.Session.CustomBuiltTypes, reflect.TypeOf(value))
 
-	marshaler := ce.NewCTEMarshaler(&marshalOpts)
+	marshaler := ce.NewCTEMarshaler(&marshalConfig)
 	document, err := marshaler.MarshalToDocument(value)
 	if err != nil {
 		t.Error(err)
@@ -173,7 +173,7 @@ func assertCTEMarshalUnmarshalComplexFromBinary(t *testing.T, value interface{})
 	}
 
 	template := value
-	unmarshaler := ce.NewCTEUnmarshaler(&unmarshalOpts)
+	unmarshaler := ce.NewCTEUnmarshaler(&unmarshalConfig)
 	actual, err := unmarshaler.UnmarshalFromDocument(document, template)
 	if err != nil {
 		t.Error(err)
@@ -217,14 +217,14 @@ func convertFromCustomText(customType uint64, src string, dst reflect.Value) err
 }
 
 func assertCTEMarshalUnmarshalComplexFromText(t *testing.T, value interface{}) {
-	marshalOpts := options.DefaultCTEMarshalerOptions()
-	marshalOpts.Session.CustomTextConverters[reflect.TypeOf(complex(float32(0), float32(0)))] = convertComplexToCustomText
-	marshalOpts.Session.CustomTextConverters[reflect.TypeOf(complex(float64(0), float64(0)))] = convertComplexToCustomText
-	unmarshalOpts := options.DefaultCEUnmarshalerOptions()
-	unmarshalOpts.Session.CustomTextBuildFunction = convertFromCustomText
-	unmarshalOpts.Session.CustomBuiltTypes = append(unmarshalOpts.Session.CustomBuiltTypes, reflect.TypeOf(value))
+	marshalConfig := configuration.DefaultCTEMarshalerConfiguration()
+	marshalConfig.Iterator.CustomTextConverters[reflect.TypeOf(complex(float32(0), float32(0)))] = convertComplexToCustomText
+	marshalConfig.Iterator.CustomTextConverters[reflect.TypeOf(complex(float64(0), float64(0)))] = convertComplexToCustomText
+	unmarshalConfig := configuration.DefaultCEUnmarshalerConfiguration()
+	unmarshalConfig.Session.CustomTextBuildFunction = convertFromCustomText
+	unmarshalConfig.Session.CustomBuiltTypes = append(unmarshalConfig.Session.CustomBuiltTypes, reflect.TypeOf(value))
 
-	marshaler := ce.NewCTEMarshaler(&marshalOpts)
+	marshaler := ce.NewCTEMarshaler(&marshalConfig)
 	document, err := marshaler.MarshalToDocument(value)
 	if err != nil {
 		t.Error(err)
@@ -232,7 +232,7 @@ func assertCTEMarshalUnmarshalComplexFromText(t *testing.T, value interface{}) {
 	}
 
 	template := value
-	unmarshaler := ce.NewCTEUnmarshaler(&unmarshalOpts)
+	unmarshaler := ce.NewCTEUnmarshaler(&unmarshalConfig)
 	actual, err := unmarshaler.UnmarshalFromDocument(document, template)
 	if err != nil {
 		t.Error(err)
