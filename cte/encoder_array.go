@@ -150,7 +150,7 @@ func (_this *arrayEncoderEngine) BeginCustomText(customType uint64, onComplete f
 	_this.hasWrittenElements = false
 
 	_this.setElementByteWidth(1)
-	_this.stream.WriteFmtNotLF("|c%v ", customType)
+	_this.stream.WriteFmtNotLF("|c%v", customType)
 	_this.addElementsFunc = func(data []byte) {
 		_this.handleFirstElement(data)
 		_this.appendStringbuffer(data)
