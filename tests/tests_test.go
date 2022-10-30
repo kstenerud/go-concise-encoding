@@ -21,55 +21,36 @@
 package tests
 
 import (
+	"os"
+	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/kstenerud/go-concise-encoding/test/test_runner"
 )
 
-func TestPrimary(t *testing.T) {
-	test_runner.RunTests(t, "version.cte")
-	test_runner.RunTests(t, "other.cte")
-	test_runner.RunTests(t, "integer.cte")
-	test_runner.RunTests(t, "float.cte")
-	test_runner.RunTests(t, "time.cte")
-	test_runner.RunTests(t, "arrays.cte")
-	test_runner.RunTests(t, "arrays_int8.cte")
-
-	test_runner.RunTests(t, "cbe-arrays.cte")
-	test_runner.RunTests(t, "cbe-containers.cte")
-	test_runner.RunTests(t, "cte-arrays.cte")
-	test_runner.RunTests(t, "cte-containers.cte")
-	test_runner.RunTests(t, "cte-comment.cte")
-	test_runner.RunTests(t, "cte-complex.cte")
-	test_runner.RunTests(t, "cte-spacing.cte")
-
-	test_runner.RunTests(t, "cte-header-generated.cte")
-	test_runner.RunTests(t, "edge-generated.cte")
-	test_runner.RunTests(t, "list-generated.cte")
-	test_runner.RunTests(t, "map-generated.cte")
-	test_runner.RunTests(t, "node-generated.cte")
-	test_runner.RunTests(t, "struct-generated.cte")
-	test_runner.RunTests(t, "tlo-generated.cte")
+func TestSuites(t *testing.T) {
+	runTestsInPath(t, "suites")
 }
 
-func TestTemplates(t *testing.T) {
+func runTestsInPath(t *testing.T, testDir string) {
+	filepath.Walk(testDir, func(path string, info os.FileInfo, err error) error {
+		if info.IsDir() {
+			return nil
+		}
+		if !strings.HasSuffix(strings.ToLower(info.Name()), ".cte") {
+			return nil
+		}
+		test_runner.RunTests(t, path)
+		return nil
+	})
+}
 
-	// Make sure the general test template is valid
-	test_runner.RunTests(t, "template.cte")
-
+func TestBugReportTemplates(t *testing.T) {
 	// Make sure the bug report templates are valid
 	test_runner.RunTests(t, "../bugreport/templates/incorrectly_allowed.cte")
 	test_runner.RunTests(t, "../bugreport/templates/incorrectly_rejected.cte")
 
 	// Make sure the default bug report test is valid
 	test_runner.RunTests(t, "../bugreport/bugreport.cte")
-}
-
-func TestExamples(t *testing.T) {
-	test_runner.RunTests(t, "website-examples.cte")
-	test_runner.RunTests(t, "ce-specification-examples.cte")
-}
-
-func TestGithubIssues(t *testing.T) {
-	test_runner.RunTests(t, "github-issues.cte")
 }

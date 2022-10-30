@@ -36,7 +36,7 @@ import (
 )
 
 func generateTestFiles(projectDir string) {
-	testsDir := filepath.Join(projectDir, "tests")
+	testsDir := filepath.Join(projectDir, "tests/suites/generated")
 
 	writeTestFile(filepath.Join(testsDir, "cte-header-generated.cte"), generateCteHeaderTests()...)
 	writeTestFile(filepath.Join(testsDir, "tlo-generated.cte"), generateTLOTests())
