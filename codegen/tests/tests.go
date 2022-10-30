@@ -38,13 +38,12 @@ import (
 func generateTestFiles(projectDir string) {
 	testsDir := filepath.Join(projectDir, "tests")
 
-	generateCteHeaderTests(filepath.Join(testsDir, "cte-generated-do-not-edit.cte"))
-	generateRulesTests(filepath.Join(testsDir, "rules-generated-do-not-edit.cte"))
-	generateEncodeDecodeTests(filepath.Join(testsDir, "enc-dec-generated-do-not-edit.cte"))
+	writeTestFile(filepath.Join(testsDir, "cte-generated-do-not-edit.cte"), generateCteHeaderTests()...)
+	writeTestFile(filepath.Join(testsDir, "enc-dec-generated-do-not-edit.cte"), generateEncodeDecodeTests()...)
 }
 
-func generateEncodeDecodeTests(path string) {
-	writeTestFile(path,
+func generateEncodeDecodeTests() []*test_runner.UnitTest {
+	return []*test_runner.UnitTest{
 		generateTLOTests(),
 		generateListTests(),
 		generateMapKeyTests(),
@@ -56,7 +55,7 @@ func generateEncodeDecodeTests(path string) {
 		generateNodeChildTests(),
 		generateStructTemplateTests(),
 		generateStructInstanceTests(),
-	)
+	}
 }
 
 func generateTLOTests() *test_runner.UnitTest {
@@ -177,7 +176,7 @@ func generateEncodeDecodeTest(name string, prefix test.Events, suffix test.Event
 	return generateTest(name, mustSucceed, mustFail)
 }
 
-func generateCteHeaderTests(path string) {
+func generateCteHeaderTests() []*test_runner.UnitTest {
 	wrongSentinelFailureTests := []*test_runner.MustFailTest{}
 	for i := 0; i < 0x100; i++ {
 		if i == 'c' || i == 'C' {
@@ -206,13 +205,7 @@ func generateCteHeaderTests(path string) {
 	}
 	wrongVersionTest := generateTest("Wrong version", nil, wrongVersionFailureTests)
 
-	writeTestFile(path, wrongSentinelTest, wrongVersionCharTest, wrongVersionTest)
-}
-
-func generateRulesTests(path string) {
-	noTests := generateTest("No tests", nil, nil)
-
-	writeTestFile(path, noTests)
+	return []*test_runner.UnitTest{wrongSentinelTest, wrongVersionCharTest, wrongVersionTest}
 }
 
 // ===========================================================================
