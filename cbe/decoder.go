@@ -299,69 +299,38 @@ func (_this *Decoder) decodePlane7f(eventReceiver events.DataEventReceiver) {
 
 func (_this *Decoder) decodeArray(arrayType events.ArrayType, eventReceiver events.DataEventReceiver) {
 	elementBitWidth := arrayType.ElementSize()
-	elementCount, moreChunksFollow := _this.reader.ReadArrayChunkHeader()
-	validateLength(elementCount)
-
-	if !moreChunksFollow {
-		byteCount := common.ElementCountToByteCount(elementBitWidth, elementCount)
-		bytes := _this.reader.ReadBytes(int(byteCount))
-		eventReceiver.OnArray(arrayType, elementCount, bytes)
-		return
-	}
-
 	eventReceiver.OnArrayBegin(arrayType)
-	_this.decodeArrayChunks(eventReceiver, elementBitWidth, elementCount, moreChunksFollow)
+	_this.decodeArrayChunks(eventReceiver, elementBitWidth)
 }
 
 func (_this *Decoder) decodeMedia(eventReceiver events.DataEventReceiver) {
 	mediaTypeLength := _this.reader.readSmallULEB128("media type length", 0xffffffff)
 	mediaType := string(_this.reader.ReadBytes(int(mediaTypeLength)))
-
-	elementCount, moreChunksFollow := _this.reader.ReadArrayChunkHeader()
-	validateLength(elementCount)
-
-	if !moreChunksFollow {
-		bytes := _this.reader.ReadBytes(int(elementCount))
-		eventReceiver.OnMedia(mediaType, bytes)
-		return
-	}
-
-	eventReceiver.OnMediaBegin(mediaType)
 	elementBitWidth := 8
-	_this.decodeArrayChunks(eventReceiver, elementBitWidth, elementCount, moreChunksFollow)
+	eventReceiver.OnMediaBegin(mediaType)
+	_this.decodeArrayChunks(eventReceiver, elementBitWidth)
 }
 
 func (_this *Decoder) decodeCustomType(eventReceiver events.DataEventReceiver) {
 	customType := _this.reader.readSmallULEB128("custom type code", 0xffffffff)
-	elementCount, moreChunksFollow := _this.reader.ReadArrayChunkHeader()
-	validateLength(elementCount)
-
-	if !moreChunksFollow {
-		bytes := _this.reader.ReadBytes(int(elementCount))
-		eventReceiver.OnCustomBinary(customType, bytes)
-		return
-	}
-
-	eventReceiver.OnCustomBegin(events.ArrayTypeCustomBinary, customType)
 	elementBitWidth := 8
-	_this.decodeArrayChunks(eventReceiver, elementBitWidth, elementCount, moreChunksFollow)
+	eventReceiver.OnCustomBegin(events.ArrayTypeCustomBinary, customType)
+	_this.decodeArrayChunks(eventReceiver, elementBitWidth)
 }
 
-func (_this *Decoder) decodeArrayChunks(eventReceiver events.DataEventReceiver, elementBitWidth int, initialElementCount uint64, moreChunksFollow bool) {
-	elementCount := initialElementCount
+func (_this *Decoder) decodeArrayChunks(eventReceiver events.DataEventReceiver, elementBitWidth int) {
+	moreChunksFollow := true
+	elementCount := uint64(0)
 
-	for {
+	for moreChunksFollow {
+		elementCount, moreChunksFollow = _this.reader.ReadArrayChunkHeader()
+		validateLength(elementCount)
 		eventReceiver.OnArrayChunk(elementCount, moreChunksFollow)
 		byteCount := common.ElementCountToByteCount(elementBitWidth, elementCount)
 		if byteCount > 0 {
 			nextBytes := _this.reader.ReadBytes(int(byteCount))
 			eventReceiver.OnArrayData(nextBytes)
 		}
-		if !moreChunksFollow {
-			return
-		}
-		elementCount, moreChunksFollow = _this.reader.ReadArrayChunkHeader()
-		validateLength(elementCount)
 	}
 }
 

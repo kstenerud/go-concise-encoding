@@ -10,7 +10,7 @@ c0
             "Name" = "TLO"
             "MustSucceed" = [
                 {
-                    "CBE" = |u8x 94 02 01|
+                    "ToCBE" = |u8x 94 02 01|
                     "CTE" = "|b 1|"
                     "Events" = [
                         "ab=1"
@@ -94,7 +94,7 @@ c0
                     ]
                 }
                 {
-                    "CBE" = |u8x 93 02 01|
+                    "ToCBE" = |u8x 93 02 01|
                     "CTE" = "|u8 1|"
                     "Events" = [
                         "au8=0x01"
@@ -108,8 +108,8 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 94 02 01|
                     "ToCTE" = "|b 1|"
+                    "CBE" = |u8x 94 02 01|
                     "Events" = [
                         "bab"
                         "acl=1"
@@ -117,8 +117,8 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 7f e8 02 80 3f|
                     "ToCTE" = "|f16x 1|"
+                    "CBE" = |u8x 7f e8 02 80 3f|
                     "Events" = [
                         "baf16"
                         "acl=1"
@@ -126,8 +126,8 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 7f e9 02 00 00 80 3f|
                     "ToCTE" = "|f32x 1|"
+                    "CBE" = |u8x 7f e9 02 00 00 80 3f|
                     "Events" = [
                         "baf32"
                         "acl=1"
@@ -135,8 +135,8 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 7f ea 02 00 00 00 00 00 00 f0 3f|
                     "ToCTE" = "|f64x 1|"
+                    "CBE" = |u8x 7f ea 02 00 00 00 00 00 00 f0 3f|
                     "Events" = [
                         "baf64"
                         "acl=1"
@@ -144,8 +144,8 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 7f e3 02 01 00|
                     "ToCTE" = "|i16 1|"
+                    "CBE" = |u8x 7f e3 02 01 00|
                     "Events" = [
                         "bai16"
                         "acl=1"
@@ -153,8 +153,8 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 7f e5 02 01 00 00 00|
                     "ToCTE" = "|i32 1|"
+                    "CBE" = |u8x 7f e5 02 01 00 00 00|
                     "Events" = [
                         "bai32"
                         "acl=1"
@@ -162,8 +162,8 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 7f e7 02 01 00 00 00 00 00 00 00|
                     "ToCTE" = "|i64 1|"
+                    "CBE" = |u8x 7f e7 02 01 00 00 00 00 00 00 00|
                     "Events" = [
                         "bai64"
                         "acl=1"
@@ -171,8 +171,8 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 7f e1 02 01|
                     "ToCTE" = "|i8 1|"
+                    "CBE" = |u8x 7f e1 02 01|
                     "Events" = [
                         "bai8"
                         "acl=1"
@@ -180,8 +180,8 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 7f e0 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|
                     "ToCTE" = "|u 00000000-0000-0000-0000-000000000000|"
+                    "CBE" = |u8x 7f e0 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|
                     "Events" = [
                         "bau"
                         "acl=1"
@@ -189,8 +189,8 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 7f e2 02 01 00|
                     "ToCTE" = "|u16 1|"
+                    "CBE" = |u8x 7f e2 02 01 00|
                     "Events" = [
                         "bau16"
                         "acl=1"
@@ -198,8 +198,8 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 7f e4 02 01 00 00 00|
                     "ToCTE" = "|u32 1|"
+                    "CBE" = |u8x 7f e4 02 01 00 00 00|
                     "Events" = [
                         "bau32"
                         "acl=1"
@@ -207,8 +207,8 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 7f e6 02 01 00 00 00 00 00 00 00|
                     "ToCTE" = "|u64 1|"
+                    "CBE" = |u8x 7f e6 02 01 00 00 00 00 00 00 00|
                     "Events" = [
                         "bau64"
                         "acl=1"
@@ -216,8 +216,8 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 93 02 01|
                     "ToCTE" = "|u8 1|"
+                    "CBE" = |u8x 93 02 01|
                     "Events" = [
                         "bau8"
                         "acl=1"
@@ -225,8 +225,8 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 92 00 02 01|
                     "ToCTE" = "|c0 01|"
+                    "CBE" = |u8x 92 00 02 01|
                     "Events" = [
                         "bcb=0"
                         "acl=1"
@@ -234,8 +234,16 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 7f f3 03 61 2f 62 02 01|
+                    "ToCTE" = "|c0  \"a\"|"
+                    "Events" = [
+                        "bct=0"
+                        "acl=1"
+                        "adt=a"
+                    ]
+                }
+                {
                     "ToCTE" = "|a/b 01|"
+                    "CBE" = |u8x 7f f3 03 61 2f 62 02 01|
                     "Events" = [
                         "bmedia=a/b"
                         "acl=1"
@@ -243,8 +251,8 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 91 02 61|
                     "ToCTE" = "@\"a\""
+                    "CBE" = |u8x 91 02 61|
                     "Events" = [
                         "brid"
                         "acl=1"
@@ -252,8 +260,8 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 90 02 61|
                     "ToCTE" = "\"a\""
+                    "CBE" = |u8x 90 02 61|
                     "Events" = [
                         "bs"
                         "acl=1"
@@ -261,7 +269,7 @@ c0
                     ]
                 }
                 {
-                    "CBE" = |u8x 92 00 02 01|
+                    "ToCBE" = |u8x 92 00 02 01|
                     "CTE" = "|c0 01|"
                     "Events" = [
                         "cb=0 01"
@@ -286,7 +294,13 @@ c0
                     ]
                 }
                 {
-                    "CBE" = |u8x 97 91 18 68 74 74 70 3a 2f 2f 7a 2e 63 6f 6d 91 18 68 74 74 70 3a 2f 2f 7a 2e 63 6f 6d ff 9b|
+                    "CTE" = "|c0 \"a\"|"
+                    "Events" = [
+                        "ct=0 a"
+                    ]
+                }
+                {
+                    "ToCBE" = |u8x 97 91 18 68 74 74 70 3a 2f 2f 7a 2e 63 6f 6d 91 18 68 74 74 70 3a 2f 2f 7a 2e 63 6f 6d ff 9b|
                     "CTE" = "@(
     @\"http://z.com\"
     @\"http://z.com\"
@@ -332,7 +346,7 @@ c0
                     ]
                 }
                 {
-                    "CBE" = |u8x 7f f3 03 61 2f 62 02 01|
+                    "ToCBE" = |u8x 7f f3 03 61 2f 62 02 01|
                     "CTE" = "|a/b 01|"
                     "Events" = [
                         "media=a/b 01"
@@ -385,14 +399,14 @@ c0
                     ]
                 }
                 {
-                    "CBE" = |u8x 7f f2 02 61|
+                    "ToCBE" = |u8x 7f f2 02 61|
                     "CTE" = "$\"a\""
                     "Events" = [
                         "refr=a"
                     ]
                 }
                 {
-                    "CBE" = |u8x 91 18 68 74 74 70 3a 2f 2f 7a 2e 63 6f 6d|
+                    "ToCBE" = |u8x 91 18 68 74 74 70 3a 2f 2f 7a 2e 63 6f 6d|
                     "CTE" = "@\"http://z.com\""
                     "Events" = [
                         "rid=http://z.com"
@@ -477,7 +491,7 @@ c0
             "Name" = "List"
             "MustSucceed" = [
                 {
-                    "CBE" = |u8x 9a 94 02 01 9b|
+                    "ToCBE" = |u8x 9a 94 02 01 9b|
                     "CTE" = "[
     |b 1|
 ]"
@@ -609,7 +623,7 @@ c0
                     ]
                 }
                 {
-                    "CBE" = |u8x 9a 93 02 01 9b|
+                    "ToCBE" = |u8x 9a 93 02 01 9b|
                     "CTE" = "[
     |u8 1|
 ]"
@@ -631,10 +645,10 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 9a 94 02 01 9b|
                     "ToCTE" = "[
     |b 1|
 ]"
+                    "CBE" = |u8x 9a 94 02 01 9b|
                     "Events" = [
                         "l"
                         "bab"
@@ -644,10 +658,10 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 9a 7f e8 02 80 3f 9b|
                     "ToCTE" = "[
     |f16x 1|
 ]"
+                    "CBE" = |u8x 9a 7f e8 02 80 3f 9b|
                     "Events" = [
                         "l"
                         "baf16"
@@ -657,10 +671,10 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 9a 7f e9 02 00 00 80 3f 9b|
                     "ToCTE" = "[
     |f32x 1|
 ]"
+                    "CBE" = |u8x 9a 7f e9 02 00 00 80 3f 9b|
                     "Events" = [
                         "l"
                         "baf32"
@@ -670,10 +684,10 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 9a 7f ea 02 00 00 00 00 00 00 f0 3f 9b|
                     "ToCTE" = "[
     |f64x 1|
 ]"
+                    "CBE" = |u8x 9a 7f ea 02 00 00 00 00 00 00 f0 3f 9b|
                     "Events" = [
                         "l"
                         "baf64"
@@ -683,10 +697,10 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 9a 7f e3 02 01 00 9b|
                     "ToCTE" = "[
     |i16 1|
 ]"
+                    "CBE" = |u8x 9a 7f e3 02 01 00 9b|
                     "Events" = [
                         "l"
                         "bai16"
@@ -696,10 +710,10 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 9a 7f e5 02 01 00 00 00 9b|
                     "ToCTE" = "[
     |i32 1|
 ]"
+                    "CBE" = |u8x 9a 7f e5 02 01 00 00 00 9b|
                     "Events" = [
                         "l"
                         "bai32"
@@ -709,10 +723,10 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 9a 7f e7 02 01 00 00 00 00 00 00 00 9b|
                     "ToCTE" = "[
     |i64 1|
 ]"
+                    "CBE" = |u8x 9a 7f e7 02 01 00 00 00 00 00 00 00 9b|
                     "Events" = [
                         "l"
                         "bai64"
@@ -722,10 +736,10 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 9a 7f e1 02 01 9b|
                     "ToCTE" = "[
     |i8 1|
 ]"
+                    "CBE" = |u8x 9a 7f e1 02 01 9b|
                     "Events" = [
                         "l"
                         "bai8"
@@ -735,10 +749,10 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 9a 7f e0 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 9b|
                     "ToCTE" = "[
     |u 00000000-0000-0000-0000-000000000000|
 ]"
+                    "CBE" = |u8x 9a 7f e0 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 9b|
                     "Events" = [
                         "l"
                         "bau"
@@ -748,10 +762,10 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 9a 7f e2 02 01 00 9b|
                     "ToCTE" = "[
     |u16 1|
 ]"
+                    "CBE" = |u8x 9a 7f e2 02 01 00 9b|
                     "Events" = [
                         "l"
                         "bau16"
@@ -761,10 +775,10 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 9a 7f e4 02 01 00 00 00 9b|
                     "ToCTE" = "[
     |u32 1|
 ]"
+                    "CBE" = |u8x 9a 7f e4 02 01 00 00 00 9b|
                     "Events" = [
                         "l"
                         "bau32"
@@ -774,10 +788,10 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 9a 7f e6 02 01 00 00 00 00 00 00 00 9b|
                     "ToCTE" = "[
     |u64 1|
 ]"
+                    "CBE" = |u8x 9a 7f e6 02 01 00 00 00 00 00 00 00 9b|
                     "Events" = [
                         "l"
                         "bau64"
@@ -787,10 +801,10 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 9a 93 02 01 9b|
                     "ToCTE" = "[
     |u8 1|
 ]"
+                    "CBE" = |u8x 9a 93 02 01 9b|
                     "Events" = [
                         "l"
                         "bau8"
@@ -800,10 +814,10 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 9a 92 00 02 01 9b|
                     "ToCTE" = "[
     |c0 01|
 ]"
+                    "CBE" = |u8x 9a 92 00 02 01 9b|
                     "Events" = [
                         "l"
                         "bcb=0"
@@ -813,10 +827,22 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 9a 7f f3 03 61 2f 62 02 01 9b|
+                    "ToCTE" = "[
+    |c0  \"a\"|
+]"
+                    "Events" = [
+                        "l"
+                        "bct=0"
+                        "acl=1"
+                        "adt=a"
+                        "e"
+                    ]
+                }
+                {
                     "ToCTE" = "[
     |a/b 01|
 ]"
+                    "CBE" = |u8x 9a 7f f3 03 61 2f 62 02 01 9b|
                     "Events" = [
                         "l"
                         "bmedia=a/b"
@@ -826,10 +852,10 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 9a 91 02 61 9b|
                     "ToCTE" = "[
     @\"a\"
 ]"
+                    "CBE" = |u8x 9a 91 02 61 9b|
                     "Events" = [
                         "l"
                         "brid"
@@ -839,10 +865,10 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 9a 90 02 61 9b|
                     "ToCTE" = "[
     \"a\"
 ]"
+                    "CBE" = |u8x 9a 90 02 61 9b|
                     "Events" = [
                         "l"
                         "bs"
@@ -852,7 +878,7 @@ c0
                     ]
                 }
                 {
-                    "CBE" = |u8x 9a 92 00 02 01 9b|
+                    "ToCBE" = |u8x 9a 92 00 02 01 9b|
                     "CTE" = "[
     |c0 01|
 ]"
@@ -889,7 +915,17 @@ c0
                     ]
                 }
                 {
-                    "CBE" = |u8x 9a 97 91 18 68 74 74 70 3a 2f 2f 7a 2e 63 6f 6d 91 18 68 74 74 70 3a 2f 2f 7a 2e 63 6f 6d ff 9b 9b|
+                    "CTE" = "[
+    |c0 \"a\"|
+]"
+                    "Events" = [
+                        "l"
+                        "ct=0 a"
+                        "e"
+                    ]
+                }
+                {
+                    "ToCBE" = |u8x 9a 97 91 18 68 74 74 70 3a 2f 2f 7a 2e 63 6f 6d 91 18 68 74 74 70 3a 2f 2f 7a 2e 63 6f 6d ff 9b 9b|
                     "CTE" = "[
     @(
         @\"http://z.com\"
@@ -955,7 +991,7 @@ c0
                     ]
                 }
                 {
-                    "CBE" = |u8x 9a 7f f3 03 61 2f 62 02 01 9b|
+                    "ToCBE" = |u8x 9a 7f f3 03 61 2f 62 02 01 9b|
                     "CTE" = "[
     |a/b 01|
 ]"
@@ -1050,7 +1086,7 @@ c0
                     ]
                 }
                 {
-                    "CBE" = |u8x 9a 7f f2 02 61 9b|
+                    "ToCBE" = |u8x 9a 7f f2 02 61 9b|
                     "CTE" = "[
     $\"a\"
 ]"
@@ -1061,7 +1097,7 @@ c0
                     ]
                 }
                 {
-                    "CBE" = |u8x 9a 91 18 68 74 74 70 3a 2f 2f 7a 2e 63 6f 6d 9b|
+                    "ToCBE" = |u8x 9a 91 18 68 74 74 70 3a 2f 2f 7a 2e 63 6f 6d 9b|
                     "CTE" = "[
     @\"http://z.com\"
 ]"
@@ -1196,10 +1232,10 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 99 91 02 61 ff 9b|
                     "ToCTE" = "{
     @\"a\" = -1
 }"
+                    "CBE" = |u8x 99 91 02 61 ff 9b|
                     "Events" = [
                         "m"
                         "brid"
@@ -1210,10 +1246,10 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 99 90 02 61 ff 9b|
                     "ToCTE" = "{
     \"a\" = -1
 }"
+                    "CBE" = |u8x 99 90 02 61 ff 9b|
                     "Events" = [
                         "m"
                         "bs"
@@ -1301,7 +1337,7 @@ c0
                     ]
                 }
                 {
-                    "CBE" = |u8x 99 91 18 68 74 74 70 3a 2f 2f 7a 2e 63 6f 6d ff 9b|
+                    "ToCBE" = |u8x 99 91 18 68 74 74 70 3a 2f 2f 7a 2e 63 6f 6d ff 9b|
                     "CTE" = "{
     @\"http://z.com\" = -1
 }"
@@ -1585,6 +1621,14 @@ c0
                 {
                     "Events" = [
                         "m"
+                        "bct=0"
+                        "n=-1"
+                        "e"
+                    ]
+                }
+                {
+                    "Events" = [
+                        "m"
                         "bmedia=a/b"
                         "n=-1"
                         "e"
@@ -1594,6 +1638,14 @@ c0
                     "Events" = [
                         "m"
                         "cb=0 01"
+                        "n=-1"
+                        "e"
+                    ]
+                }
+                {
+                    "Events" = [
+                        "m"
+                        "ct=0 a"
                         "n=-1"
                         "e"
                     ]
@@ -1724,7 +1776,7 @@ c0
             "Name" = "Map Value"
             "MustSucceed" = [
                 {
-                    "CBE" = |u8x 99 ff 94 02 01 9b|
+                    "ToCBE" = |u8x 99 ff 94 02 01 9b|
                     "CTE" = "{
     -1 = |b 1|
 }"
@@ -1868,7 +1920,7 @@ c0
                     ]
                 }
                 {
-                    "CBE" = |u8x 99 ff 93 02 01 9b|
+                    "ToCBE" = |u8x 99 ff 93 02 01 9b|
                     "CTE" = "{
     -1 = |u8 1|
 }"
@@ -1892,10 +1944,10 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 99 ff 94 02 01 9b|
                     "ToCTE" = "{
     -1 = |b 1|
 }"
+                    "CBE" = |u8x 99 ff 94 02 01 9b|
                     "Events" = [
                         "m"
                         "n=-1"
@@ -1906,10 +1958,10 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 99 ff 7f e8 02 80 3f 9b|
                     "ToCTE" = "{
     -1 = |f16x 1|
 }"
+                    "CBE" = |u8x 99 ff 7f e8 02 80 3f 9b|
                     "Events" = [
                         "m"
                         "n=-1"
@@ -1920,10 +1972,10 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 99 ff 7f e9 02 00 00 80 3f 9b|
                     "ToCTE" = "{
     -1 = |f32x 1|
 }"
+                    "CBE" = |u8x 99 ff 7f e9 02 00 00 80 3f 9b|
                     "Events" = [
                         "m"
                         "n=-1"
@@ -1934,10 +1986,10 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 99 ff 7f ea 02 00 00 00 00 00 00 f0 3f 9b|
                     "ToCTE" = "{
     -1 = |f64x 1|
 }"
+                    "CBE" = |u8x 99 ff 7f ea 02 00 00 00 00 00 00 f0 3f 9b|
                     "Events" = [
                         "m"
                         "n=-1"
@@ -1948,10 +2000,10 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 99 ff 7f e3 02 01 00 9b|
                     "ToCTE" = "{
     -1 = |i16 1|
 }"
+                    "CBE" = |u8x 99 ff 7f e3 02 01 00 9b|
                     "Events" = [
                         "m"
                         "n=-1"
@@ -1962,10 +2014,10 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 99 ff 7f e5 02 01 00 00 00 9b|
                     "ToCTE" = "{
     -1 = |i32 1|
 }"
+                    "CBE" = |u8x 99 ff 7f e5 02 01 00 00 00 9b|
                     "Events" = [
                         "m"
                         "n=-1"
@@ -1976,10 +2028,10 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 99 ff 7f e7 02 01 00 00 00 00 00 00 00 9b|
                     "ToCTE" = "{
     -1 = |i64 1|
 }"
+                    "CBE" = |u8x 99 ff 7f e7 02 01 00 00 00 00 00 00 00 9b|
                     "Events" = [
                         "m"
                         "n=-1"
@@ -1990,10 +2042,10 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 99 ff 7f e1 02 01 9b|
                     "ToCTE" = "{
     -1 = |i8 1|
 }"
+                    "CBE" = |u8x 99 ff 7f e1 02 01 9b|
                     "Events" = [
                         "m"
                         "n=-1"
@@ -2004,10 +2056,10 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 99 ff 7f e0 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 9b|
                     "ToCTE" = "{
     -1 = |u 00000000-0000-0000-0000-000000000000|
 }"
+                    "CBE" = |u8x 99 ff 7f e0 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 9b|
                     "Events" = [
                         "m"
                         "n=-1"
@@ -2018,10 +2070,10 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 99 ff 7f e2 02 01 00 9b|
                     "ToCTE" = "{
     -1 = |u16 1|
 }"
+                    "CBE" = |u8x 99 ff 7f e2 02 01 00 9b|
                     "Events" = [
                         "m"
                         "n=-1"
@@ -2032,10 +2084,10 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 99 ff 7f e4 02 01 00 00 00 9b|
                     "ToCTE" = "{
     -1 = |u32 1|
 }"
+                    "CBE" = |u8x 99 ff 7f e4 02 01 00 00 00 9b|
                     "Events" = [
                         "m"
                         "n=-1"
@@ -2046,10 +2098,10 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 99 ff 7f e6 02 01 00 00 00 00 00 00 00 9b|
                     "ToCTE" = "{
     -1 = |u64 1|
 }"
+                    "CBE" = |u8x 99 ff 7f e6 02 01 00 00 00 00 00 00 00 9b|
                     "Events" = [
                         "m"
                         "n=-1"
@@ -2060,10 +2112,10 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 99 ff 93 02 01 9b|
                     "ToCTE" = "{
     -1 = |u8 1|
 }"
+                    "CBE" = |u8x 99 ff 93 02 01 9b|
                     "Events" = [
                         "m"
                         "n=-1"
@@ -2074,10 +2126,10 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 99 ff 92 00 02 01 9b|
                     "ToCTE" = "{
     -1 = |c0 01|
 }"
+                    "CBE" = |u8x 99 ff 92 00 02 01 9b|
                     "Events" = [
                         "m"
                         "n=-1"
@@ -2088,10 +2140,23 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 99 ff 7f f3 03 61 2f 62 02 01 9b|
+                    "ToCTE" = "{
+    -1 = |c0  \"a\"|
+}"
+                    "Events" = [
+                        "m"
+                        "n=-1"
+                        "bct=0"
+                        "acl=1"
+                        "adt=a"
+                        "e"
+                    ]
+                }
+                {
                     "ToCTE" = "{
     -1 = |a/b 01|
 }"
+                    "CBE" = |u8x 99 ff 7f f3 03 61 2f 62 02 01 9b|
                     "Events" = [
                         "m"
                         "n=-1"
@@ -2102,10 +2167,10 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 99 ff 91 02 61 9b|
                     "ToCTE" = "{
     -1 = @\"a\"
 }"
+                    "CBE" = |u8x 99 ff 91 02 61 9b|
                     "Events" = [
                         "m"
                         "n=-1"
@@ -2116,10 +2181,10 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 99 ff 90 02 61 9b|
                     "ToCTE" = "{
     -1 = \"a\"
 }"
+                    "CBE" = |u8x 99 ff 90 02 61 9b|
                     "Events" = [
                         "m"
                         "n=-1"
@@ -2130,7 +2195,7 @@ c0
                     ]
                 }
                 {
-                    "CBE" = |u8x 99 ff 92 00 02 01 9b|
+                    "ToCBE" = |u8x 99 ff 92 00 02 01 9b|
                     "CTE" = "{
     -1 = |c0 01|
 }"
@@ -2170,7 +2235,18 @@ c0
                     ]
                 }
                 {
-                    "CBE" = |u8x 99 ff 97 91 18 68 74 74 70 3a 2f 2f 7a 2e 63 6f 6d 91 18 68 74 74 70 3a 2f 2f 7a 2e 63 6f 6d ff 9b 9b|
+                    "CTE" = "{
+    -1 = |c0 \"a\"|
+}"
+                    "Events" = [
+                        "m"
+                        "n=-1"
+                        "ct=0 a"
+                        "e"
+                    ]
+                }
+                {
+                    "ToCBE" = |u8x 99 ff 97 91 18 68 74 74 70 3a 2f 2f 7a 2e 63 6f 6d 91 18 68 74 74 70 3a 2f 2f 7a 2e 63 6f 6d ff 9b 9b|
                     "CTE" = "{
     -1 = @(
         @\"http://z.com\"
@@ -2241,7 +2317,7 @@ c0
                     ]
                 }
                 {
-                    "CBE" = |u8x 99 ff 7f f3 03 61 2f 62 02 01 9b|
+                    "ToCBE" = |u8x 99 ff 7f f3 03 61 2f 62 02 01 9b|
                     "CTE" = "{
     -1 = |a/b 01|
 }"
@@ -2329,7 +2405,7 @@ c0
                     ]
                 }
                 {
-                    "CBE" = |u8x 99 ff 7f f2 02 61 9b|
+                    "ToCBE" = |u8x 99 ff 7f f2 02 61 9b|
                     "CTE" = "{
     -1 = $\"a\"
 }"
@@ -2341,7 +2417,7 @@ c0
                     ]
                 }
                 {
-                    "CBE" = |u8x 99 ff 91 18 68 74 74 70 3a 2f 2f 7a 2e 63 6f 6d 9b|
+                    "ToCBE" = |u8x 99 ff 91 18 68 74 74 70 3a 2f 2f 7a 2e 63 6f 6d 9b|
                     "CTE" = "{
     -1 = @\"http://z.com\"
 }"
@@ -2480,7 +2556,7 @@ c0
             "Name" = "Edge Source"
             "MustSucceed" = [
                 {
-                    "CBE" = |u8x 97 94 02 01 ff ff 9b|
+                    "ToCBE" = |u8x 97 94 02 01 ff ff 9b|
                     "CTE" = "@(
     |b 1|
     -1
@@ -2660,7 +2736,7 @@ c0
                     ]
                 }
                 {
-                    "CBE" = |u8x 97 93 02 01 ff ff 9b|
+                    "ToCBE" = |u8x 97 93 02 01 ff ff 9b|
                     "CTE" = "@(
     |u8 1|
     -1
@@ -2690,12 +2766,12 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 97 94 02 01 ff ff 9b|
                     "ToCTE" = "@(
     |b 1|
     -1
     -1
 )"
+                    "CBE" = |u8x 97 94 02 01 ff ff 9b|
                     "Events" = [
                         "edge"
                         "bab"
@@ -2707,12 +2783,12 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 97 7f e8 02 80 3f ff ff 9b|
                     "ToCTE" = "@(
     |f16x 1|
     -1
     -1
 )"
+                    "CBE" = |u8x 97 7f e8 02 80 3f ff ff 9b|
                     "Events" = [
                         "edge"
                         "baf16"
@@ -2724,12 +2800,12 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 97 7f e9 02 00 00 80 3f ff ff 9b|
                     "ToCTE" = "@(
     |f32x 1|
     -1
     -1
 )"
+                    "CBE" = |u8x 97 7f e9 02 00 00 80 3f ff ff 9b|
                     "Events" = [
                         "edge"
                         "baf32"
@@ -2741,12 +2817,12 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 97 7f ea 02 00 00 00 00 00 00 f0 3f ff ff 9b|
                     "ToCTE" = "@(
     |f64x 1|
     -1
     -1
 )"
+                    "CBE" = |u8x 97 7f ea 02 00 00 00 00 00 00 f0 3f ff ff 9b|
                     "Events" = [
                         "edge"
                         "baf64"
@@ -2758,12 +2834,12 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 97 7f e3 02 01 00 ff ff 9b|
                     "ToCTE" = "@(
     |i16 1|
     -1
     -1
 )"
+                    "CBE" = |u8x 97 7f e3 02 01 00 ff ff 9b|
                     "Events" = [
                         "edge"
                         "bai16"
@@ -2775,12 +2851,12 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 97 7f e5 02 01 00 00 00 ff ff 9b|
                     "ToCTE" = "@(
     |i32 1|
     -1
     -1
 )"
+                    "CBE" = |u8x 97 7f e5 02 01 00 00 00 ff ff 9b|
                     "Events" = [
                         "edge"
                         "bai32"
@@ -2792,12 +2868,12 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 97 7f e7 02 01 00 00 00 00 00 00 00 ff ff 9b|
                     "ToCTE" = "@(
     |i64 1|
     -1
     -1
 )"
+                    "CBE" = |u8x 97 7f e7 02 01 00 00 00 00 00 00 00 ff ff 9b|
                     "Events" = [
                         "edge"
                         "bai64"
@@ -2809,12 +2885,12 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 97 7f e1 02 01 ff ff 9b|
                     "ToCTE" = "@(
     |i8 1|
     -1
     -1
 )"
+                    "CBE" = |u8x 97 7f e1 02 01 ff ff 9b|
                     "Events" = [
                         "edge"
                         "bai8"
@@ -2826,12 +2902,12 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 97 7f e0 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ff ff 9b|
                     "ToCTE" = "@(
     |u 00000000-0000-0000-0000-000000000000|
     -1
     -1
 )"
+                    "CBE" = |u8x 97 7f e0 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ff ff 9b|
                     "Events" = [
                         "edge"
                         "bau"
@@ -2843,12 +2919,12 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 97 7f e2 02 01 00 ff ff 9b|
                     "ToCTE" = "@(
     |u16 1|
     -1
     -1
 )"
+                    "CBE" = |u8x 97 7f e2 02 01 00 ff ff 9b|
                     "Events" = [
                         "edge"
                         "bau16"
@@ -2860,12 +2936,12 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 97 7f e4 02 01 00 00 00 ff ff 9b|
                     "ToCTE" = "@(
     |u32 1|
     -1
     -1
 )"
+                    "CBE" = |u8x 97 7f e4 02 01 00 00 00 ff ff 9b|
                     "Events" = [
                         "edge"
                         "bau32"
@@ -2877,12 +2953,12 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 97 7f e6 02 01 00 00 00 00 00 00 00 ff ff 9b|
                     "ToCTE" = "@(
     |u64 1|
     -1
     -1
 )"
+                    "CBE" = |u8x 97 7f e6 02 01 00 00 00 00 00 00 00 ff ff 9b|
                     "Events" = [
                         "edge"
                         "bau64"
@@ -2894,12 +2970,12 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 97 93 02 01 ff ff 9b|
                     "ToCTE" = "@(
     |u8 1|
     -1
     -1
 )"
+                    "CBE" = |u8x 97 93 02 01 ff ff 9b|
                     "Events" = [
                         "edge"
                         "bau8"
@@ -2911,12 +2987,12 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 97 92 00 02 01 ff ff 9b|
                     "ToCTE" = "@(
     |c0 01|
     -1
     -1
 )"
+                    "CBE" = |u8x 97 92 00 02 01 ff ff 9b|
                     "Events" = [
                         "edge"
                         "bcb=0"
@@ -2928,12 +3004,28 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 97 7f f3 03 61 2f 62 02 01 ff ff 9b|
+                    "ToCTE" = "@(
+    |c0  \"a\"|
+    -1
+    -1
+)"
+                    "Events" = [
+                        "edge"
+                        "bct=0"
+                        "acl=1"
+                        "adt=a"
+                        "n=-1"
+                        "n=-1"
+                        "e"
+                    ]
+                }
+                {
                     "ToCTE" = "@(
     |a/b 01|
     -1
     -1
 )"
+                    "CBE" = |u8x 97 7f f3 03 61 2f 62 02 01 ff ff 9b|
                     "Events" = [
                         "edge"
                         "bmedia=a/b"
@@ -2945,12 +3037,12 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 97 91 02 61 ff ff 9b|
                     "ToCTE" = "@(
     @\"a\"
     -1
     -1
 )"
+                    "CBE" = |u8x 97 91 02 61 ff ff 9b|
                     "Events" = [
                         "edge"
                         "brid"
@@ -2962,12 +3054,12 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 97 90 02 61 ff ff 9b|
                     "ToCTE" = "@(
     \"a\"
     -1
     -1
 )"
+                    "CBE" = |u8x 97 90 02 61 ff ff 9b|
                     "Events" = [
                         "edge"
                         "bs"
@@ -2979,7 +3071,7 @@ c0
                     ]
                 }
                 {
-                    "CBE" = |u8x 97 92 00 02 01 ff ff 9b|
+                    "ToCBE" = |u8x 97 92 00 02 01 ff ff 9b|
                     "CTE" = "@(
     |c0 01|
     -1
@@ -3028,7 +3120,21 @@ c0
                     ]
                 }
                 {
-                    "CBE" = |u8x 97 97 91 18 68 74 74 70 3a 2f 2f 7a 2e 63 6f 6d 91 18 68 74 74 70 3a 2f 2f 7a 2e 63 6f 6d ff 9b ff ff 9b|
+                    "CTE" = "@(
+    |c0 \"a\"|
+    -1
+    -1
+)"
+                    "Events" = [
+                        "edge"
+                        "ct=0 a"
+                        "n=-1"
+                        "n=-1"
+                        "e"
+                    ]
+                }
+                {
+                    "ToCBE" = |u8x 97 97 91 18 68 74 74 70 3a 2f 2f 7a 2e 63 6f 6d 91 18 68 74 74 70 3a 2f 2f 7a 2e 63 6f 6d ff 9b ff ff 9b|
                     "CTE" = "@(
     @(
         @\"http://z.com\"
@@ -3114,7 +3220,7 @@ c0
                     ]
                 }
                 {
-                    "CBE" = |u8x 97 7f f3 03 61 2f 62 02 01 ff ff 9b|
+                    "ToCBE" = |u8x 97 7f f3 03 61 2f 62 02 01 ff ff 9b|
                     "CTE" = "@(
     |a/b 01|
     -1
@@ -3208,7 +3314,7 @@ c0
                     ]
                 }
                 {
-                    "CBE" = |u8x 97 7f f2 02 61 ff ff 9b|
+                    "ToCBE" = |u8x 97 7f f2 02 61 ff ff 9b|
                     "CTE" = "@(
     $\"a\"
     -1
@@ -3223,7 +3329,7 @@ c0
                     ]
                 }
                 {
-                    "CBE" = |u8x 97 91 18 68 74 74 70 3a 2f 2f 7a 2e 63 6f 6d ff ff 9b|
+                    "ToCBE" = |u8x 97 91 18 68 74 74 70 3a 2f 2f 7a 2e 63 6f 6d ff ff 9b|
                     "CTE" = "@(
     @\"http://z.com\"
     -1
@@ -3398,7 +3504,7 @@ c0
             "Name" = "Edge Description"
             "MustSucceed" = [
                 {
-                    "CBE" = |u8x 97 ff 94 02 01 ff 9b|
+                    "ToCBE" = |u8x 97 ff 94 02 01 ff 9b|
                     "CTE" = "@(
     -1
     |b 1|
@@ -3578,7 +3684,7 @@ c0
                     ]
                 }
                 {
-                    "CBE" = |u8x 97 ff 93 02 01 ff 9b|
+                    "ToCBE" = |u8x 97 ff 93 02 01 ff 9b|
                     "CTE" = "@(
     -1
     |u8 1|
@@ -3608,12 +3714,12 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 97 ff 94 02 01 ff 9b|
                     "ToCTE" = "@(
     -1
     |b 1|
     -1
 )"
+                    "CBE" = |u8x 97 ff 94 02 01 ff 9b|
                     "Events" = [
                         "edge"
                         "n=-1"
@@ -3625,12 +3731,12 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 97 ff 7f e8 02 80 3f ff 9b|
                     "ToCTE" = "@(
     -1
     |f16x 1|
     -1
 )"
+                    "CBE" = |u8x 97 ff 7f e8 02 80 3f ff 9b|
                     "Events" = [
                         "edge"
                         "n=-1"
@@ -3642,12 +3748,12 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 97 ff 7f e9 02 00 00 80 3f ff 9b|
                     "ToCTE" = "@(
     -1
     |f32x 1|
     -1
 )"
+                    "CBE" = |u8x 97 ff 7f e9 02 00 00 80 3f ff 9b|
                     "Events" = [
                         "edge"
                         "n=-1"
@@ -3659,12 +3765,12 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 97 ff 7f ea 02 00 00 00 00 00 00 f0 3f ff 9b|
                     "ToCTE" = "@(
     -1
     |f64x 1|
     -1
 )"
+                    "CBE" = |u8x 97 ff 7f ea 02 00 00 00 00 00 00 f0 3f ff 9b|
                     "Events" = [
                         "edge"
                         "n=-1"
@@ -3676,12 +3782,12 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 97 ff 7f e3 02 01 00 ff 9b|
                     "ToCTE" = "@(
     -1
     |i16 1|
     -1
 )"
+                    "CBE" = |u8x 97 ff 7f e3 02 01 00 ff 9b|
                     "Events" = [
                         "edge"
                         "n=-1"
@@ -3693,12 +3799,12 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 97 ff 7f e5 02 01 00 00 00 ff 9b|
                     "ToCTE" = "@(
     -1
     |i32 1|
     -1
 )"
+                    "CBE" = |u8x 97 ff 7f e5 02 01 00 00 00 ff 9b|
                     "Events" = [
                         "edge"
                         "n=-1"
@@ -3710,12 +3816,12 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 97 ff 7f e7 02 01 00 00 00 00 00 00 00 ff 9b|
                     "ToCTE" = "@(
     -1
     |i64 1|
     -1
 )"
+                    "CBE" = |u8x 97 ff 7f e7 02 01 00 00 00 00 00 00 00 ff 9b|
                     "Events" = [
                         "edge"
                         "n=-1"
@@ -3727,12 +3833,12 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 97 ff 7f e1 02 01 ff 9b|
                     "ToCTE" = "@(
     -1
     |i8 1|
     -1
 )"
+                    "CBE" = |u8x 97 ff 7f e1 02 01 ff 9b|
                     "Events" = [
                         "edge"
                         "n=-1"
@@ -3744,12 +3850,12 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 97 ff 7f e0 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ff 9b|
                     "ToCTE" = "@(
     -1
     |u 00000000-0000-0000-0000-000000000000|
     -1
 )"
+                    "CBE" = |u8x 97 ff 7f e0 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ff 9b|
                     "Events" = [
                         "edge"
                         "n=-1"
@@ -3761,12 +3867,12 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 97 ff 7f e2 02 01 00 ff 9b|
                     "ToCTE" = "@(
     -1
     |u16 1|
     -1
 )"
+                    "CBE" = |u8x 97 ff 7f e2 02 01 00 ff 9b|
                     "Events" = [
                         "edge"
                         "n=-1"
@@ -3778,12 +3884,12 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 97 ff 7f e4 02 01 00 00 00 ff 9b|
                     "ToCTE" = "@(
     -1
     |u32 1|
     -1
 )"
+                    "CBE" = |u8x 97 ff 7f e4 02 01 00 00 00 ff 9b|
                     "Events" = [
                         "edge"
                         "n=-1"
@@ -3795,12 +3901,12 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 97 ff 7f e6 02 01 00 00 00 00 00 00 00 ff 9b|
                     "ToCTE" = "@(
     -1
     |u64 1|
     -1
 )"
+                    "CBE" = |u8x 97 ff 7f e6 02 01 00 00 00 00 00 00 00 ff 9b|
                     "Events" = [
                         "edge"
                         "n=-1"
@@ -3812,12 +3918,12 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 97 ff 93 02 01 ff 9b|
                     "ToCTE" = "@(
     -1
     |u8 1|
     -1
 )"
+                    "CBE" = |u8x 97 ff 93 02 01 ff 9b|
                     "Events" = [
                         "edge"
                         "n=-1"
@@ -3829,12 +3935,12 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 97 ff 92 00 02 01 ff 9b|
                     "ToCTE" = "@(
     -1
     |c0 01|
     -1
 )"
+                    "CBE" = |u8x 97 ff 92 00 02 01 ff 9b|
                     "Events" = [
                         "edge"
                         "n=-1"
@@ -3846,12 +3952,28 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 97 ff 7f f3 03 61 2f 62 02 01 ff 9b|
+                    "ToCTE" = "@(
+    -1
+    |c0  \"a\"|
+    -1
+)"
+                    "Events" = [
+                        "edge"
+                        "n=-1"
+                        "bct=0"
+                        "acl=1"
+                        "adt=a"
+                        "n=-1"
+                        "e"
+                    ]
+                }
+                {
                     "ToCTE" = "@(
     -1
     |a/b 01|
     -1
 )"
+                    "CBE" = |u8x 97 ff 7f f3 03 61 2f 62 02 01 ff 9b|
                     "Events" = [
                         "edge"
                         "n=-1"
@@ -3863,12 +3985,12 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 97 ff 91 02 61 ff 9b|
                     "ToCTE" = "@(
     -1
     @\"a\"
     -1
 )"
+                    "CBE" = |u8x 97 ff 91 02 61 ff 9b|
                     "Events" = [
                         "edge"
                         "n=-1"
@@ -3880,12 +4002,12 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 97 ff 90 02 61 ff 9b|
                     "ToCTE" = "@(
     -1
     \"a\"
     -1
 )"
+                    "CBE" = |u8x 97 ff 90 02 61 ff 9b|
                     "Events" = [
                         "edge"
                         "n=-1"
@@ -3897,7 +4019,7 @@ c0
                     ]
                 }
                 {
-                    "CBE" = |u8x 97 ff 92 00 02 01 ff 9b|
+                    "ToCBE" = |u8x 97 ff 92 00 02 01 ff 9b|
                     "CTE" = "@(
     -1
     |c0 01|
@@ -3946,7 +4068,21 @@ c0
                     ]
                 }
                 {
-                    "CBE" = |u8x 97 ff 97 91 18 68 74 74 70 3a 2f 2f 7a 2e 63 6f 6d 91 18 68 74 74 70 3a 2f 2f 7a 2e 63 6f 6d ff 9b ff 9b|
+                    "CTE" = "@(
+    -1
+    |c0 \"a\"|
+    -1
+)"
+                    "Events" = [
+                        "edge"
+                        "n=-1"
+                        "ct=0 a"
+                        "n=-1"
+                        "e"
+                    ]
+                }
+                {
+                    "ToCBE" = |u8x 97 ff 97 91 18 68 74 74 70 3a 2f 2f 7a 2e 63 6f 6d 91 18 68 74 74 70 3a 2f 2f 7a 2e 63 6f 6d ff 9b ff 9b|
                     "CTE" = "@(
     -1
     @(
@@ -4032,7 +4168,7 @@ c0
                     ]
                 }
                 {
-                    "CBE" = |u8x 97 ff 7f f3 03 61 2f 62 02 01 ff 9b|
+                    "ToCBE" = |u8x 97 ff 7f f3 03 61 2f 62 02 01 ff 9b|
                     "CTE" = "@(
     -1
     |a/b 01|
@@ -4141,7 +4277,7 @@ c0
                     ]
                 }
                 {
-                    "CBE" = |u8x 97 ff 7f f2 02 61 ff 9b|
+                    "ToCBE" = |u8x 97 ff 7f f2 02 61 ff 9b|
                     "CTE" = "@(
     -1
     $\"a\"
@@ -4156,7 +4292,7 @@ c0
                     ]
                 }
                 {
-                    "CBE" = |u8x 97 ff 91 18 68 74 74 70 3a 2f 2f 7a 2e 63 6f 6d ff 9b|
+                    "ToCBE" = |u8x 97 ff 91 18 68 74 74 70 3a 2f 2f 7a 2e 63 6f 6d ff 9b|
                     "CTE" = "@(
     -1
     @\"http://z.com\"
@@ -4322,7 +4458,7 @@ c0
             "Name" = "Edge Destination"
             "MustSucceed" = [
                 {
-                    "CBE" = |u8x 97 ff ff 94 02 01 9b|
+                    "ToCBE" = |u8x 97 ff ff 94 02 01 9b|
                     "CTE" = "@(
     -1
     -1
@@ -4502,7 +4638,7 @@ c0
                     ]
                 }
                 {
-                    "CBE" = |u8x 97 ff ff 93 02 01 9b|
+                    "ToCBE" = |u8x 97 ff ff 93 02 01 9b|
                     "CTE" = "@(
     -1
     -1
@@ -4532,12 +4668,12 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 97 ff ff 94 02 01 9b|
                     "ToCTE" = "@(
     -1
     -1
     |b 1|
 )"
+                    "CBE" = |u8x 97 ff ff 94 02 01 9b|
                     "Events" = [
                         "edge"
                         "n=-1"
@@ -4549,12 +4685,12 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 97 ff ff 7f e8 02 80 3f 9b|
                     "ToCTE" = "@(
     -1
     -1
     |f16x 1|
 )"
+                    "CBE" = |u8x 97 ff ff 7f e8 02 80 3f 9b|
                     "Events" = [
                         "edge"
                         "n=-1"
@@ -4566,12 +4702,12 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 97 ff ff 7f e9 02 00 00 80 3f 9b|
                     "ToCTE" = "@(
     -1
     -1
     |f32x 1|
 )"
+                    "CBE" = |u8x 97 ff ff 7f e9 02 00 00 80 3f 9b|
                     "Events" = [
                         "edge"
                         "n=-1"
@@ -4583,12 +4719,12 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 97 ff ff 7f ea 02 00 00 00 00 00 00 f0 3f 9b|
                     "ToCTE" = "@(
     -1
     -1
     |f64x 1|
 )"
+                    "CBE" = |u8x 97 ff ff 7f ea 02 00 00 00 00 00 00 f0 3f 9b|
                     "Events" = [
                         "edge"
                         "n=-1"
@@ -4600,12 +4736,12 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 97 ff ff 7f e3 02 01 00 9b|
                     "ToCTE" = "@(
     -1
     -1
     |i16 1|
 )"
+                    "CBE" = |u8x 97 ff ff 7f e3 02 01 00 9b|
                     "Events" = [
                         "edge"
                         "n=-1"
@@ -4617,12 +4753,12 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 97 ff ff 7f e5 02 01 00 00 00 9b|
                     "ToCTE" = "@(
     -1
     -1
     |i32 1|
 )"
+                    "CBE" = |u8x 97 ff ff 7f e5 02 01 00 00 00 9b|
                     "Events" = [
                         "edge"
                         "n=-1"
@@ -4634,12 +4770,12 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 97 ff ff 7f e7 02 01 00 00 00 00 00 00 00 9b|
                     "ToCTE" = "@(
     -1
     -1
     |i64 1|
 )"
+                    "CBE" = |u8x 97 ff ff 7f e7 02 01 00 00 00 00 00 00 00 9b|
                     "Events" = [
                         "edge"
                         "n=-1"
@@ -4651,12 +4787,12 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 97 ff ff 7f e1 02 01 9b|
                     "ToCTE" = "@(
     -1
     -1
     |i8 1|
 )"
+                    "CBE" = |u8x 97 ff ff 7f e1 02 01 9b|
                     "Events" = [
                         "edge"
                         "n=-1"
@@ -4668,12 +4804,12 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 97 ff ff 7f e0 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 9b|
                     "ToCTE" = "@(
     -1
     -1
     |u 00000000-0000-0000-0000-000000000000|
 )"
+                    "CBE" = |u8x 97 ff ff 7f e0 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 9b|
                     "Events" = [
                         "edge"
                         "n=-1"
@@ -4685,12 +4821,12 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 97 ff ff 7f e2 02 01 00 9b|
                     "ToCTE" = "@(
     -1
     -1
     |u16 1|
 )"
+                    "CBE" = |u8x 97 ff ff 7f e2 02 01 00 9b|
                     "Events" = [
                         "edge"
                         "n=-1"
@@ -4702,12 +4838,12 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 97 ff ff 7f e4 02 01 00 00 00 9b|
                     "ToCTE" = "@(
     -1
     -1
     |u32 1|
 )"
+                    "CBE" = |u8x 97 ff ff 7f e4 02 01 00 00 00 9b|
                     "Events" = [
                         "edge"
                         "n=-1"
@@ -4719,12 +4855,12 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 97 ff ff 7f e6 02 01 00 00 00 00 00 00 00 9b|
                     "ToCTE" = "@(
     -1
     -1
     |u64 1|
 )"
+                    "CBE" = |u8x 97 ff ff 7f e6 02 01 00 00 00 00 00 00 00 9b|
                     "Events" = [
                         "edge"
                         "n=-1"
@@ -4736,12 +4872,12 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 97 ff ff 93 02 01 9b|
                     "ToCTE" = "@(
     -1
     -1
     |u8 1|
 )"
+                    "CBE" = |u8x 97 ff ff 93 02 01 9b|
                     "Events" = [
                         "edge"
                         "n=-1"
@@ -4753,12 +4889,12 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 97 ff ff 92 00 02 01 9b|
                     "ToCTE" = "@(
     -1
     -1
     |c0 01|
 )"
+                    "CBE" = |u8x 97 ff ff 92 00 02 01 9b|
                     "Events" = [
                         "edge"
                         "n=-1"
@@ -4770,12 +4906,28 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 97 ff ff 7f f3 03 61 2f 62 02 01 9b|
+                    "ToCTE" = "@(
+    -1
+    -1
+    |c0  \"a\"|
+)"
+                    "Events" = [
+                        "edge"
+                        "n=-1"
+                        "n=-1"
+                        "bct=0"
+                        "acl=1"
+                        "adt=a"
+                        "e"
+                    ]
+                }
+                {
                     "ToCTE" = "@(
     -1
     -1
     |a/b 01|
 )"
+                    "CBE" = |u8x 97 ff ff 7f f3 03 61 2f 62 02 01 9b|
                     "Events" = [
                         "edge"
                         "n=-1"
@@ -4787,12 +4939,12 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 97 ff ff 91 02 61 9b|
                     "ToCTE" = "@(
     -1
     -1
     @\"a\"
 )"
+                    "CBE" = |u8x 97 ff ff 91 02 61 9b|
                     "Events" = [
                         "edge"
                         "n=-1"
@@ -4804,12 +4956,12 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 97 ff ff 90 02 61 9b|
                     "ToCTE" = "@(
     -1
     -1
     \"a\"
 )"
+                    "CBE" = |u8x 97 ff ff 90 02 61 9b|
                     "Events" = [
                         "edge"
                         "n=-1"
@@ -4821,7 +4973,7 @@ c0
                     ]
                 }
                 {
-                    "CBE" = |u8x 97 ff ff 92 00 02 01 9b|
+                    "ToCBE" = |u8x 97 ff ff 92 00 02 01 9b|
                     "CTE" = "@(
     -1
     -1
@@ -4870,7 +5022,21 @@ c0
                     ]
                 }
                 {
-                    "CBE" = |u8x 97 ff ff 97 91 18 68 74 74 70 3a 2f 2f 7a 2e 63 6f 6d 91 18 68 74 74 70 3a 2f 2f 7a 2e 63 6f 6d ff 9b 9b|
+                    "CTE" = "@(
+    -1
+    -1
+    |c0 \"a\"|
+)"
+                    "Events" = [
+                        "edge"
+                        "n=-1"
+                        "n=-1"
+                        "ct=0 a"
+                        "e"
+                    ]
+                }
+                {
+                    "ToCBE" = |u8x 97 ff ff 97 91 18 68 74 74 70 3a 2f 2f 7a 2e 63 6f 6d 91 18 68 74 74 70 3a 2f 2f 7a 2e 63 6f 6d ff 9b 9b|
                     "CTE" = "@(
     -1
     -1
@@ -4956,7 +5122,7 @@ c0
                     ]
                 }
                 {
-                    "CBE" = |u8x 97 ff ff 7f f3 03 61 2f 62 02 01 9b|
+                    "ToCBE" = |u8x 97 ff ff 7f f3 03 61 2f 62 02 01 9b|
                     "CTE" = "@(
     -1
     -1
@@ -5050,7 +5216,7 @@ c0
                     ]
                 }
                 {
-                    "CBE" = |u8x 97 ff ff 7f f2 02 61 9b|
+                    "ToCBE" = |u8x 97 ff ff 7f f2 02 61 9b|
                     "CTE" = "@(
     -1
     -1
@@ -5065,7 +5231,7 @@ c0
                     ]
                 }
                 {
-                    "CBE" = |u8x 97 ff ff 91 18 68 74 74 70 3a 2f 2f 7a 2e 63 6f 6d 9b|
+                    "ToCBE" = |u8x 97 ff ff 91 18 68 74 74 70 3a 2f 2f 7a 2e 63 6f 6d 9b|
                     "CTE" = "@(
     -1
     -1
@@ -5240,7 +5406,7 @@ c0
             "Name" = "Node Value"
             "MustSucceed" = [
                 {
-                    "CBE" = |u8x 98 94 02 01 9b|
+                    "ToCBE" = |u8x 98 94 02 01 9b|
                     "CTE" = "(|b 1|
 )"
                     "Events" = [
@@ -5360,7 +5526,7 @@ c0
                     ]
                 }
                 {
-                    "CBE" = |u8x 98 93 02 01 9b|
+                    "ToCBE" = |u8x 98 93 02 01 9b|
                     "CTE" = "(|u8 1|
 )"
                     "Events" = [
@@ -5380,9 +5546,9 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 98 94 02 01 9b|
                     "ToCTE" = "(|b 1|
 )"
+                    "CBE" = |u8x 98 94 02 01 9b|
                     "Events" = [
                         "node"
                         "bab"
@@ -5392,9 +5558,9 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 98 7f e8 02 80 3f 9b|
                     "ToCTE" = "(|f16x 1|
 )"
+                    "CBE" = |u8x 98 7f e8 02 80 3f 9b|
                     "Events" = [
                         "node"
                         "baf16"
@@ -5404,9 +5570,9 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 98 7f e9 02 00 00 80 3f 9b|
                     "ToCTE" = "(|f32x 1|
 )"
+                    "CBE" = |u8x 98 7f e9 02 00 00 80 3f 9b|
                     "Events" = [
                         "node"
                         "baf32"
@@ -5416,9 +5582,9 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 98 7f ea 02 00 00 00 00 00 00 f0 3f 9b|
                     "ToCTE" = "(|f64x 1|
 )"
+                    "CBE" = |u8x 98 7f ea 02 00 00 00 00 00 00 f0 3f 9b|
                     "Events" = [
                         "node"
                         "baf64"
@@ -5428,9 +5594,9 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 98 7f e3 02 01 00 9b|
                     "ToCTE" = "(|i16 1|
 )"
+                    "CBE" = |u8x 98 7f e3 02 01 00 9b|
                     "Events" = [
                         "node"
                         "bai16"
@@ -5440,9 +5606,9 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 98 7f e5 02 01 00 00 00 9b|
                     "ToCTE" = "(|i32 1|
 )"
+                    "CBE" = |u8x 98 7f e5 02 01 00 00 00 9b|
                     "Events" = [
                         "node"
                         "bai32"
@@ -5452,9 +5618,9 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 98 7f e7 02 01 00 00 00 00 00 00 00 9b|
                     "ToCTE" = "(|i64 1|
 )"
+                    "CBE" = |u8x 98 7f e7 02 01 00 00 00 00 00 00 00 9b|
                     "Events" = [
                         "node"
                         "bai64"
@@ -5464,9 +5630,9 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 98 7f e1 02 01 9b|
                     "ToCTE" = "(|i8 1|
 )"
+                    "CBE" = |u8x 98 7f e1 02 01 9b|
                     "Events" = [
                         "node"
                         "bai8"
@@ -5476,9 +5642,9 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 98 7f e0 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 9b|
                     "ToCTE" = "(|u 00000000-0000-0000-0000-000000000000|
 )"
+                    "CBE" = |u8x 98 7f e0 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 9b|
                     "Events" = [
                         "node"
                         "bau"
@@ -5488,9 +5654,9 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 98 7f e2 02 01 00 9b|
                     "ToCTE" = "(|u16 1|
 )"
+                    "CBE" = |u8x 98 7f e2 02 01 00 9b|
                     "Events" = [
                         "node"
                         "bau16"
@@ -5500,9 +5666,9 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 98 7f e4 02 01 00 00 00 9b|
                     "ToCTE" = "(|u32 1|
 )"
+                    "CBE" = |u8x 98 7f e4 02 01 00 00 00 9b|
                     "Events" = [
                         "node"
                         "bau32"
@@ -5512,9 +5678,9 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 98 7f e6 02 01 00 00 00 00 00 00 00 9b|
                     "ToCTE" = "(|u64 1|
 )"
+                    "CBE" = |u8x 98 7f e6 02 01 00 00 00 00 00 00 00 9b|
                     "Events" = [
                         "node"
                         "bau64"
@@ -5524,9 +5690,9 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 98 93 02 01 9b|
                     "ToCTE" = "(|u8 1|
 )"
+                    "CBE" = |u8x 98 93 02 01 9b|
                     "Events" = [
                         "node"
                         "bau8"
@@ -5536,9 +5702,9 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 98 92 00 02 01 9b|
                     "ToCTE" = "(|c0 01|
 )"
+                    "CBE" = |u8x 98 92 00 02 01 9b|
                     "Events" = [
                         "node"
                         "bcb=0"
@@ -5548,9 +5714,20 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 98 7f f3 03 61 2f 62 02 01 9b|
+                    "ToCTE" = "(|c0  \"a\"|
+)"
+                    "Events" = [
+                        "node"
+                        "bct=0"
+                        "acl=1"
+                        "adt=a"
+                        "e"
+                    ]
+                }
+                {
                     "ToCTE" = "(|a/b 01|
 )"
+                    "CBE" = |u8x 98 7f f3 03 61 2f 62 02 01 9b|
                     "Events" = [
                         "node"
                         "bmedia=a/b"
@@ -5560,9 +5737,9 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 98 91 02 61 9b|
                     "ToCTE" = "(@\"a\"
 )"
+                    "CBE" = |u8x 98 91 02 61 9b|
                     "Events" = [
                         "node"
                         "brid"
@@ -5572,9 +5749,9 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 98 90 02 61 9b|
                     "ToCTE" = "(\"a\"
 )"
+                    "CBE" = |u8x 98 90 02 61 9b|
                     "Events" = [
                         "node"
                         "bs"
@@ -5584,7 +5761,7 @@ c0
                     ]
                 }
                 {
-                    "CBE" = |u8x 98 92 00 02 01 9b|
+                    "ToCBE" = |u8x 98 92 00 02 01 9b|
                     "CTE" = "(|c0 01|
 )"
                     "Events" = [
@@ -5618,7 +5795,16 @@ c0
                     ]
                 }
                 {
-                    "CBE" = |u8x 98 97 91 18 68 74 74 70 3a 2f 2f 7a 2e 63 6f 6d 91 18 68 74 74 70 3a 2f 2f 7a 2e 63 6f 6d ff 9b 9b|
+                    "CTE" = "(|c0 \"a\"|
+)"
+                    "Events" = [
+                        "node"
+                        "ct=0 a"
+                        "e"
+                    ]
+                }
+                {
+                    "ToCBE" = |u8x 98 97 91 18 68 74 74 70 3a 2f 2f 7a 2e 63 6f 6d 91 18 68 74 74 70 3a 2f 2f 7a 2e 63 6f 6d ff 9b 9b|
                     "CTE" = "(@(
         @\"http://z.com\"
         @\"http://z.com\"
@@ -5679,7 +5865,7 @@ c0
                     ]
                 }
                 {
-                    "CBE" = |u8x 98 7f f3 03 61 2f 62 02 01 9b|
+                    "ToCBE" = |u8x 98 7f f3 03 61 2f 62 02 01 9b|
                     "CTE" = "(|a/b 01|
 )"
                     "Events" = [
@@ -5766,7 +5952,7 @@ c0
                     ]
                 }
                 {
-                    "CBE" = |u8x 98 7f f2 02 61 9b|
+                    "ToCBE" = |u8x 98 7f f2 02 61 9b|
                     "CTE" = "($\"a\"
 )"
                     "Events" = [
@@ -5776,7 +5962,7 @@ c0
                     ]
                 }
                 {
-                    "CBE" = |u8x 98 91 18 68 74 74 70 3a 2f 2f 7a 2e 63 6f 6d 9b|
+                    "ToCBE" = |u8x 98 91 18 68 74 74 70 3a 2f 2f 7a 2e 63 6f 6d 9b|
                     "CTE" = "(@\"http://z.com\"
 )"
                     "Events" = [
@@ -5890,7 +6076,7 @@ c0
             "Name" = "Node Child"
             "MustSucceed" = [
                 {
-                    "CBE" = |u8x 98 7d 94 02 01 9b|
+                    "ToCBE" = |u8x 98 7d 94 02 01 9b|
                     "CTE" = "(null
     |b 1|
 )"
@@ -6034,7 +6220,7 @@ c0
                     ]
                 }
                 {
-                    "CBE" = |u8x 98 7d 93 02 01 9b|
+                    "ToCBE" = |u8x 98 7d 93 02 01 9b|
                     "CTE" = "(null
     |u8 1|
 )"
@@ -6058,10 +6244,10 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 98 7d 94 02 01 9b|
                     "ToCTE" = "(null
     |b 1|
 )"
+                    "CBE" = |u8x 98 7d 94 02 01 9b|
                     "Events" = [
                         "node"
                         "null"
@@ -6072,10 +6258,10 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 98 7d 7f e8 02 80 3f 9b|
                     "ToCTE" = "(null
     |f16x 1|
 )"
+                    "CBE" = |u8x 98 7d 7f e8 02 80 3f 9b|
                     "Events" = [
                         "node"
                         "null"
@@ -6086,10 +6272,10 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 98 7d 7f e9 02 00 00 80 3f 9b|
                     "ToCTE" = "(null
     |f32x 1|
 )"
+                    "CBE" = |u8x 98 7d 7f e9 02 00 00 80 3f 9b|
                     "Events" = [
                         "node"
                         "null"
@@ -6100,10 +6286,10 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 98 7d 7f ea 02 00 00 00 00 00 00 f0 3f 9b|
                     "ToCTE" = "(null
     |f64x 1|
 )"
+                    "CBE" = |u8x 98 7d 7f ea 02 00 00 00 00 00 00 f0 3f 9b|
                     "Events" = [
                         "node"
                         "null"
@@ -6114,10 +6300,10 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 98 7d 7f e3 02 01 00 9b|
                     "ToCTE" = "(null
     |i16 1|
 )"
+                    "CBE" = |u8x 98 7d 7f e3 02 01 00 9b|
                     "Events" = [
                         "node"
                         "null"
@@ -6128,10 +6314,10 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 98 7d 7f e5 02 01 00 00 00 9b|
                     "ToCTE" = "(null
     |i32 1|
 )"
+                    "CBE" = |u8x 98 7d 7f e5 02 01 00 00 00 9b|
                     "Events" = [
                         "node"
                         "null"
@@ -6142,10 +6328,10 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 98 7d 7f e7 02 01 00 00 00 00 00 00 00 9b|
                     "ToCTE" = "(null
     |i64 1|
 )"
+                    "CBE" = |u8x 98 7d 7f e7 02 01 00 00 00 00 00 00 00 9b|
                     "Events" = [
                         "node"
                         "null"
@@ -6156,10 +6342,10 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 98 7d 7f e1 02 01 9b|
                     "ToCTE" = "(null
     |i8 1|
 )"
+                    "CBE" = |u8x 98 7d 7f e1 02 01 9b|
                     "Events" = [
                         "node"
                         "null"
@@ -6170,10 +6356,10 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 98 7d 7f e0 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 9b|
                     "ToCTE" = "(null
     |u 00000000-0000-0000-0000-000000000000|
 )"
+                    "CBE" = |u8x 98 7d 7f e0 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 9b|
                     "Events" = [
                         "node"
                         "null"
@@ -6184,10 +6370,10 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 98 7d 7f e2 02 01 00 9b|
                     "ToCTE" = "(null
     |u16 1|
 )"
+                    "CBE" = |u8x 98 7d 7f e2 02 01 00 9b|
                     "Events" = [
                         "node"
                         "null"
@@ -6198,10 +6384,10 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 98 7d 7f e4 02 01 00 00 00 9b|
                     "ToCTE" = "(null
     |u32 1|
 )"
+                    "CBE" = |u8x 98 7d 7f e4 02 01 00 00 00 9b|
                     "Events" = [
                         "node"
                         "null"
@@ -6212,10 +6398,10 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 98 7d 7f e6 02 01 00 00 00 00 00 00 00 9b|
                     "ToCTE" = "(null
     |u64 1|
 )"
+                    "CBE" = |u8x 98 7d 7f e6 02 01 00 00 00 00 00 00 00 9b|
                     "Events" = [
                         "node"
                         "null"
@@ -6226,10 +6412,10 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 98 7d 93 02 01 9b|
                     "ToCTE" = "(null
     |u8 1|
 )"
+                    "CBE" = |u8x 98 7d 93 02 01 9b|
                     "Events" = [
                         "node"
                         "null"
@@ -6240,10 +6426,10 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 98 7d 92 00 02 01 9b|
                     "ToCTE" = "(null
     |c0 01|
 )"
+                    "CBE" = |u8x 98 7d 92 00 02 01 9b|
                     "Events" = [
                         "node"
                         "null"
@@ -6254,10 +6440,23 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 98 7d 7f f3 03 61 2f 62 02 01 9b|
+                    "ToCTE" = "(null
+    |c0  \"a\"|
+)"
+                    "Events" = [
+                        "node"
+                        "null"
+                        "bct=0"
+                        "acl=1"
+                        "adt=a"
+                        "e"
+                    ]
+                }
+                {
                     "ToCTE" = "(null
     |a/b 01|
 )"
+                    "CBE" = |u8x 98 7d 7f f3 03 61 2f 62 02 01 9b|
                     "Events" = [
                         "node"
                         "null"
@@ -6268,10 +6467,10 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 98 7d 91 02 61 9b|
                     "ToCTE" = "(null
     @\"a\"
 )"
+                    "CBE" = |u8x 98 7d 91 02 61 9b|
                     "Events" = [
                         "node"
                         "null"
@@ -6282,10 +6481,10 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 98 7d 90 02 61 9b|
                     "ToCTE" = "(null
     \"a\"
 )"
+                    "CBE" = |u8x 98 7d 90 02 61 9b|
                     "Events" = [
                         "node"
                         "null"
@@ -6296,7 +6495,7 @@ c0
                     ]
                 }
                 {
-                    "CBE" = |u8x 98 7d 92 00 02 01 9b|
+                    "ToCBE" = |u8x 98 7d 92 00 02 01 9b|
                     "CTE" = "(null
     |c0 01|
 )"
@@ -6336,7 +6535,18 @@ c0
                     ]
                 }
                 {
-                    "CBE" = |u8x 98 7d 97 91 18 68 74 74 70 3a 2f 2f 7a 2e 63 6f 6d 91 18 68 74 74 70 3a 2f 2f 7a 2e 63 6f 6d ff 9b 9b|
+                    "CTE" = "(null
+    |c0 \"a\"|
+)"
+                    "Events" = [
+                        "node"
+                        "null"
+                        "ct=0 a"
+                        "e"
+                    ]
+                }
+                {
+                    "ToCBE" = |u8x 98 7d 97 91 18 68 74 74 70 3a 2f 2f 7a 2e 63 6f 6d 91 18 68 74 74 70 3a 2f 2f 7a 2e 63 6f 6d ff 9b 9b|
                     "CTE" = "(null
     @(
         @\"http://z.com\"
@@ -6407,7 +6617,7 @@ c0
                     ]
                 }
                 {
-                    "CBE" = |u8x 98 7d 7f f3 03 61 2f 62 02 01 9b|
+                    "ToCBE" = |u8x 98 7d 7f f3 03 61 2f 62 02 01 9b|
                     "CTE" = "(null
     |a/b 01|
 )"
@@ -6510,7 +6720,7 @@ c0
                     ]
                 }
                 {
-                    "CBE" = |u8x 98 7d 7f f2 02 61 9b|
+                    "ToCBE" = |u8x 98 7d 7f f2 02 61 9b|
                     "CTE" = "(null
     $\"a\"
 )"
@@ -6522,7 +6732,7 @@ c0
                     ]
                 }
                 {
-                    "CBE" = |u8x 98 7d 91 18 68 74 74 70 3a 2f 2f 7a 2e 63 6f 6d 9b|
+                    "ToCBE" = |u8x 98 7d 91 18 68 74 74 70 3a 2f 2f 7a 2e 63 6f 6d 9b|
                     "CTE" = "(null
     @\"http://z.com\"
 )"
@@ -6668,11 +6878,11 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 7f f1 01 61 91 02 61 9b ff|
                     "ToCTE" = "@a<
     @\"a\"
 >
 -1"
+                    "CBE" = |u8x 7f f1 01 61 91 02 61 9b ff|
                     "Events" = [
                         "st=a"
                         "brid"
@@ -6683,11 +6893,11 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 7f f1 01 61 90 02 61 9b ff|
                     "ToCTE" = "@a<
     \"a\"
 >
 -1"
+                    "CBE" = |u8x 7f f1 01 61 90 02 61 9b ff|
                     "Events" = [
                         "st=a"
                         "bs"
@@ -6781,7 +6991,7 @@ c0
                     ]
                 }
                 {
-                    "CBE" = |u8x 7f f1 01 61 91 18 68 74 74 70 3a 2f 2f 7a 2e 63 6f 6d 9b ff|
+                    "ToCBE" = |u8x 7f f1 01 61 91 18 68 74 74 70 3a 2f 2f 7a 2e 63 6f 6d 9b ff|
                     "CTE" = "@a<
     @\"http://z.com\"
 >
@@ -7069,6 +7279,14 @@ c0
                 {
                     "Events" = [
                         "st=a"
+                        "bct=0"
+                        "e"
+                        "n=-1"
+                    ]
+                }
+                {
+                    "Events" = [
+                        "st=a"
                         "bmedia=a/b"
                         "e"
                         "n=-1"
@@ -7078,6 +7296,14 @@ c0
                     "Events" = [
                         "st=a"
                         "cb=0 01"
+                        "e"
+                        "n=-1"
+                    ]
+                }
+                {
+                    "Events" = [
+                        "st=a"
+                        "ct=0 a"
                         "e"
                         "n=-1"
                     ]
@@ -7208,7 +7434,7 @@ c0
             "Name" = "Struct Instance"
             "MustSucceed" = [
                 {
-                    "CBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 94 02 01 9b|
+                    "ToCBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 94 02 01 9b|
                     "CTE" = "@a<
     \"a\"
 >
@@ -7412,7 +7638,7 @@ c0
                     ]
                 }
                 {
-                    "CBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 93 02 01 9b|
+                    "ToCBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 93 02 01 9b|
                     "CTE" = "@a<
     \"a\"
 >
@@ -7446,13 +7672,13 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 94 02 01 9b|
                     "ToCTE" = "@a<
     \"a\"
 >
 @a(
     |b 1|
 )"
+                    "CBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 94 02 01 9b|
                     "Events" = [
                         "st=a"
                         "s=a"
@@ -7465,13 +7691,13 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 7f e8 02 80 3f 9b|
                     "ToCTE" = "@a<
     \"a\"
 >
 @a(
     |f16x 1|
 )"
+                    "CBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 7f e8 02 80 3f 9b|
                     "Events" = [
                         "st=a"
                         "s=a"
@@ -7484,13 +7710,13 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 7f e9 02 00 00 80 3f 9b|
                     "ToCTE" = "@a<
     \"a\"
 >
 @a(
     |f32x 1|
 )"
+                    "CBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 7f e9 02 00 00 80 3f 9b|
                     "Events" = [
                         "st=a"
                         "s=a"
@@ -7503,13 +7729,13 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 7f ea 02 00 00 00 00 00 00 f0 3f 9b|
                     "ToCTE" = "@a<
     \"a\"
 >
 @a(
     |f64x 1|
 )"
+                    "CBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 7f ea 02 00 00 00 00 00 00 f0 3f 9b|
                     "Events" = [
                         "st=a"
                         "s=a"
@@ -7522,13 +7748,13 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 7f e3 02 01 00 9b|
                     "ToCTE" = "@a<
     \"a\"
 >
 @a(
     |i16 1|
 )"
+                    "CBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 7f e3 02 01 00 9b|
                     "Events" = [
                         "st=a"
                         "s=a"
@@ -7541,13 +7767,13 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 7f e5 02 01 00 00 00 9b|
                     "ToCTE" = "@a<
     \"a\"
 >
 @a(
     |i32 1|
 )"
+                    "CBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 7f e5 02 01 00 00 00 9b|
                     "Events" = [
                         "st=a"
                         "s=a"
@@ -7560,13 +7786,13 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 7f e7 02 01 00 00 00 00 00 00 00 9b|
                     "ToCTE" = "@a<
     \"a\"
 >
 @a(
     |i64 1|
 )"
+                    "CBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 7f e7 02 01 00 00 00 00 00 00 00 9b|
                     "Events" = [
                         "st=a"
                         "s=a"
@@ -7579,13 +7805,13 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 7f e1 02 01 9b|
                     "ToCTE" = "@a<
     \"a\"
 >
 @a(
     |i8 1|
 )"
+                    "CBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 7f e1 02 01 9b|
                     "Events" = [
                         "st=a"
                         "s=a"
@@ -7598,13 +7824,13 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 7f e0 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 9b|
                     "ToCTE" = "@a<
     \"a\"
 >
 @a(
     |u 00000000-0000-0000-0000-000000000000|
 )"
+                    "CBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 7f e0 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 9b|
                     "Events" = [
                         "st=a"
                         "s=a"
@@ -7617,13 +7843,13 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 7f e2 02 01 00 9b|
                     "ToCTE" = "@a<
     \"a\"
 >
 @a(
     |u16 1|
 )"
+                    "CBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 7f e2 02 01 00 9b|
                     "Events" = [
                         "st=a"
                         "s=a"
@@ -7636,13 +7862,13 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 7f e4 02 01 00 00 00 9b|
                     "ToCTE" = "@a<
     \"a\"
 >
 @a(
     |u32 1|
 )"
+                    "CBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 7f e4 02 01 00 00 00 9b|
                     "Events" = [
                         "st=a"
                         "s=a"
@@ -7655,13 +7881,13 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 7f e6 02 01 00 00 00 00 00 00 00 9b|
                     "ToCTE" = "@a<
     \"a\"
 >
 @a(
     |u64 1|
 )"
+                    "CBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 7f e6 02 01 00 00 00 00 00 00 00 9b|
                     "Events" = [
                         "st=a"
                         "s=a"
@@ -7674,13 +7900,13 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 93 02 01 9b|
                     "ToCTE" = "@a<
     \"a\"
 >
 @a(
     |u8 1|
 )"
+                    "CBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 93 02 01 9b|
                     "Events" = [
                         "st=a"
                         "s=a"
@@ -7693,13 +7919,13 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 92 00 02 01 9b|
                     "ToCTE" = "@a<
     \"a\"
 >
 @a(
     |c0 01|
 )"
+                    "CBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 92 00 02 01 9b|
                     "Events" = [
                         "st=a"
                         "s=a"
@@ -7712,13 +7938,31 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 7f f3 03 61 2f 62 02 01 9b|
+                    "ToCTE" = "@a<
+    \"a\"
+>
+@a(
+    |c0  \"a\"|
+)"
+                    "Events" = [
+                        "st=a"
+                        "s=a"
+                        "e"
+                        "si=a"
+                        "bct=0"
+                        "acl=1"
+                        "adt=a"
+                        "e"
+                    ]
+                }
+                {
                     "ToCTE" = "@a<
     \"a\"
 >
 @a(
     |a/b 01|
 )"
+                    "CBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 7f f3 03 61 2f 62 02 01 9b|
                     "Events" = [
                         "st=a"
                         "s=a"
@@ -7731,13 +7975,13 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 91 02 61 9b|
                     "ToCTE" = "@a<
     \"a\"
 >
 @a(
     @\"a\"
 )"
+                    "CBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 91 02 61 9b|
                     "Events" = [
                         "st=a"
                         "s=a"
@@ -7750,13 +7994,13 @@ c0
                     ]
                 }
                 {
-                    "ToCBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 90 02 61 9b|
                     "ToCTE" = "@a<
     \"a\"
 >
 @a(
     \"a\"
 )"
+                    "CBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 90 02 61 9b|
                     "Events" = [
                         "st=a"
                         "s=a"
@@ -7769,7 +8013,7 @@ c0
                     ]
                 }
                 {
-                    "CBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 92 00 02 01 9b|
+                    "ToCBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 92 00 02 01 9b|
                     "CTE" = "@a<
     \"a\"
 >
@@ -7824,7 +8068,23 @@ c0
                     ]
                 }
                 {
-                    "CBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 97 91 18 68 74 74 70 3a 2f 2f 7a 2e 63 6f 6d 91 18 68 74 74 70 3a 2f 2f 7a 2e 63 6f 6d ff 9b 9b|
+                    "CTE" = "@a<
+    \"a\"
+>
+@a(
+    |c0 \"a\"|
+)"
+                    "Events" = [
+                        "st=a"
+                        "s=a"
+                        "e"
+                        "si=a"
+                        "ct=0 a"
+                        "e"
+                    ]
+                }
+                {
+                    "ToCBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 97 91 18 68 74 74 70 3a 2f 2f 7a 2e 63 6f 6d 91 18 68 74 74 70 3a 2f 2f 7a 2e 63 6f 6d ff 9b 9b|
                     "CTE" = "@a<
     \"a\"
 >
@@ -7920,7 +8180,7 @@ c0
                     ]
                 }
                 {
-                    "CBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 7f f3 03 61 2f 62 02 01 9b|
+                    "ToCBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 7f f3 03 61 2f 62 02 01 9b|
                     "CTE" = "@a<
     \"a\"
 >
@@ -8043,7 +8303,7 @@ c0
                     ]
                 }
                 {
-                    "CBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 7f f2 02 61 9b|
+                    "ToCBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 7f f2 02 61 9b|
                     "CTE" = "@a<
     \"a\"
 >
@@ -8060,7 +8320,7 @@ c0
                     ]
                 }
                 {
-                    "CBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 91 18 68 74 74 70 3a 2f 2f 7a 2e 63 6f 6d 9b|
+                    "ToCBE" = |u8x 7f f1 01 61 81 61 9b 96 01 61 91 18 68 74 74 70 3a 2f 2f 7a 2e 63 6f 6d 9b|
                     "CTE" = "@a<
     \"a\"
 >

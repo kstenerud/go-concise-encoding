@@ -10,54 +10,6 @@ c0
         // ====================================================================
 
         {
-            "name" = "Int8 array"
-            "mustSucceed" = [
-                {"cte"="|i8 1 2 3 127|"  "events"=["ai8=1 2 3 127"]}
-                {"cte"="|i8|"                 "events"=["ai8"]}
-                {"from_cte"="|i8 |"                "events"=["ai8"] }
-                {
-                    "from_cte"="|i8 0 1 127 -128 0b101 -0b101 0o77 -0o77 0x1b -0x1b|"
-                    "events"=["ai8=0 1 127 -128 5 -5 63 -63 27 -27"]
-                }
-                {"from_cte"="|i8b|"                "events"=["ai8"] }
-                {
-                    "from_cte"="|i8b 0 1 1011 -1001101 1111111 -10000000|"
-                    "events"=["ai8=0 1 11 -77 127 -128"]
-                }
-                {"from_cte"="|i8o|"                "events"=["ai8"] }
-                {"from_cte"="|i8o 177 -200 76|"    "events"=["ai8=127 -128 62"] }
-                {"from_cte"="|i8x|"                "events"=["ai8"] }
-                {"from_cte"="|i8x 7f -80 1c -29|"  "events"=["ai8=127 -128 28 -41"] }
-            ]
-            "mustFail" = [
-                {"cte"="|i8 nan|"}         // Non-int digit
-                {"cte"="|i8 snan|"}        // Non-int digit
-                {"cte"="|i8 inf|"}         // Non-int digit
-                {"cte"="|i8 -inf|"}        // Non-int digit
-                {"cte"="|i8b 2|"}          // Non-binary digit
-                {"cte"="|i8b 10000000|"}   // Element too big
-                {"cte"="|i8b -10000001|"}  // Element too big
-                {"cte"="|i8o 9|"}          // Non-octal digit
-                {"cte"="|i8o 178|"}        // Element too big
-                {"cte"="|i8o -179|"}       // Element too big
-                {"cte"="|i8x g|"}          // Non-hex digit
-                {"cte"="|i8x 80|"}         // Element too big
-                {"cte"="|i8x -81|"}        // Element too big
-                {"cte"="|i8 a|"}           // Non-int digit
-                {"cte"="|i8 128|"}         // Element too big
-                {"cte"="|i8 -129|"}        // Element too big
-                {"cte"="|i8 0b10000000|"}  // Element too big
-                {"cte"="|i8 -0b10000001|"} // Element too big
-                {"cte"="|i8 0o178|"}       // Element too big
-                {"cte"="|i8 -0o179|"}      // Element too big
-                {"cte"="|i8 0x80|"}        // Element too big
-                {"cte"="|i8 -0x81|"}       // Element too big
-            ]
-        }
-
-        // ====================================================================
-
-        {
             "name" = "Int16 array"
             "mustSucceed" = [
                 {"cte"="|i16 1 2 3 32767|"         "events"=["ai16=1 2 3 32767"]}

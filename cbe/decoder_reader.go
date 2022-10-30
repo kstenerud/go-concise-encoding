@@ -173,7 +173,7 @@ func (_this *Reader) ReadTimestamp() compact_time.Time {
 	return value
 }
 
-func (_this *Reader) ReadArrayChunkHeader() (length uint64, moreChunksFollow bool) {
+func (_this *Reader) ReadArrayChunkHeader() (elementCount uint64, moreChunksFollow bool) {
 	header := _this.readSmallULEB128("array chunk header", math.MaxUint64)
 	return header >> 1, header&1 == 1
 }

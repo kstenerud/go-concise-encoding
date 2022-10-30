@@ -28,8 +28,8 @@ import (
 
 	"github.com/kstenerud/go-concise-encoding/cbe"
 	"github.com/kstenerud/go-concise-encoding/ce"
-	"github.com/kstenerud/go-concise-encoding/cte"
 	"github.com/kstenerud/go-concise-encoding/configuration"
+	"github.com/kstenerud/go-concise-encoding/cte"
 	"github.com/kstenerud/go-concise-encoding/test"
 	"github.com/kstenerud/go-concise-encoding/test/test_runner"
 	"github.com/kstenerud/go-concise-encoding/version"
@@ -290,6 +290,10 @@ func generateCustomMustFailTest(cteContents string) *test_runner.MustFailTest {
 }
 
 func generateCBE(events ...test.Event) []byte {
+	if !canConvertToCBE(events...) {
+		return []byte{}
+	}
+
 	defer func() {
 		if r := recover(); r != nil {
 			switch v := r.(type) {

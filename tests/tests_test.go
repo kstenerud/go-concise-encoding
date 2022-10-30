@@ -33,6 +33,7 @@ func TestPrimary(t *testing.T) {
 	test_runner.RunTests(t, "float.cte")
 	test_runner.RunTests(t, "time.cte")
 	test_runner.RunTests(t, "arrays.cte")
+	test_runner.RunTests(t, "arrays_int8.cte")
 
 	test_runner.RunTests(t, "cbe-arrays.cte")
 	test_runner.RunTests(t, "cbe-containers.cte")

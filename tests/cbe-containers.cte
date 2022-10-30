@@ -115,7 +115,7 @@ c0
             "name" = "Edge"
             "mustSucceed" = [
                 {"cbe"=|u8x 97 00 00 00 9b|              "events"=["edge" "n=0" "n=0" "n=0" "e"]}
-                {"cbe"=|u8x 97 91 02 61 7d 91 02 62 9b|  "events"=["edge" "rid=a" "null" "rid=b" "e"]}
+                {"cbe"=|u8x 97 91 02 61 7d 91 02 62 9b|  "events"=["edge" "brid" "acl=1" "adt=a" "null" "brid" "acl=1" "adt=b" "e"]}
             ]
             "mustFail" = [
                 {"cbe"=|u8x 97|}              // Unterminated

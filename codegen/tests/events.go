@@ -277,7 +277,7 @@ var allEvents = test.Events{
 	EvAB, EvACL, EvACM, EvAF16, EvAF32, EvAF64, EvAI16, EvAI32, EvAI64, EvAI8,
 	EvAU, EvAU16, EvAU32, EvAU64, EvAU8, EvB, EvBAB, EvBAF16, EvBAF32, EvBAF64,
 	EvBAI16, EvBAI32, EvBAI64, EvBAI8, EvBAU, EvBAU16, EvBAU32, EvBAU64, EvBAU8,
-	EvBCB /*EvBCT,*/, EvBMEDIA, EvBRID, EvBS, EvCB, EvCM, EvCS /*EvCT,*/, EvE,
+	EvBCB, EvBCT, EvBMEDIA, EvBRID, EvBS, EvCB, EvCM, EvCS, EvCT, EvE,
 	EvEDGE, EvINF, EvL, EvM, EvMARK, EvMEDIA, EvN, EvNAN, EvNINF, EvNODE, EvNULL,
 	EvPAD, EvREFL, EvREFR, EvRID, EvS, EvSI, EvSNAN, EvST, EvT, EvUID, EvV,
 }
@@ -319,6 +319,7 @@ var (
 	}
 
 	noFromCTE = map[string]bool{
+		// CTE cannot produce chunked arrays
 		EvACL.Name():    true,
 		EvACM.Name():    true,
 		EvBAB.Name():    true,
@@ -345,36 +346,41 @@ var (
 	}
 
 	noFromCBE = map[string]bool{
-		// Chunked arrays may have been optimized
-		EvACL.Name():    true,
-		EvACM.Name():    true,
-		EvBAB.Name():    true,
-		EvBAF16.Name():  true,
-		EvBAF32.Name():  true,
-		EvBAF64.Name():  true,
-		EvBAI16.Name():  true,
-		EvBAI32.Name():  true,
-		EvBAI64.Name():  true,
-		EvBAI8.Name():   true,
-		EvBAU16.Name():  true,
-		EvBAU32.Name():  true,
-		EvBAU64.Name():  true,
-		EvBAU8.Name():   true,
-		EvBAU.Name():    true,
-		EvBCB.Name():    true,
-		EvBCT.Name():    true,
-		EvBMEDIA.Name(): true,
-		EvBRID.Name():   true,
-		EvBS.Name():     true,
+		// CBE cannot produce non-chunked versions of these
+		EvAB.Name():    true,
+		EvAU8.Name():   true,
+		EvCB.Name():    true,
+		EvMEDIA.Name(): true,
+		EvREFR.Name():  true,
+		EvRID.Name():   true,
 
 		// CBE doesn't have these
-		EvCM.Name(): true,
-		EvCS.Name(): true,
-		EvCT.Name(): true,
+		EvCM.Name():  true,
+		EvCS.Name():  true,
+		EvBCT.Name(): true,
+		EvCT.Name():  true,
+	}
+
+	// Short form arrays are non-chunked
+	arrayHasShortForm = map[string]bool{
+		EvS.Name():    true,
+		EvAU.Name():   true,
+		EvAI8.Name():  true,
+		EvAI16.Name(): true,
+		EvAI32.Name(): true,
+		EvAI64.Name(): true,
+		EvAU16.Name(): true,
+		EvAU32.Name(): true,
+		EvAU64.Name(): true,
+		EvAF16.Name(): true,
+		EvAF32.Name(): true,
+		EvAF64.Name(): true,
 	}
 
 	noToCBE = map[string]bool{
-		EvCT.Name(): true,
+		// CBE errors out if this is attempted
+		EvBCT.Name(): true,
+		EvCT.Name():  true,
 	}
 )
 
@@ -398,6 +404,9 @@ func canConvertFromCBE(events ...test.Event) bool {
 
 func canConvertToCBE(events ...test.Event) bool {
 	for _, event := range events {
+		if arrayHasShortForm[event.Name()] && event.ArrayElementCount() > 15 {
+			return false
+		}
 		if noToCBE[event.Name()] {
 			return false
 		}

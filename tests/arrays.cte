@@ -10,113 +10,6 @@ c0
         // ====================================================================
 
         {
-            "name" = "Int8 array"
-            "mustSucceed" = [
-                {
-                    "cte"      = "|i8 1 2 3 127|"
-                    "cbe"      = |u8x 7f 14 01 02 03 7f|
-                    "events"   = ["ai8=1 2 3 127"]
-                }
-                {
-                    "cte"      = "|i8|"
-                    "cbe"      = |u8x 7f 10|
-                    "events"   = ["ai8"]
-                }
-                {
-                    "from_cte" = "|i8 |"
-                    "cbe"      = |u8x 7f 10|
-                    "events"   = ["ai8"]
-                }
-                {
-                    "from_cte" = "|i8 0 1 127 -128 0b101 -0b101 0o77 -0o77 0x1b -0x1b|"
-                    "cbe"      = |u8x 7f 1a 00 01 7f 80 05 fb 3f c1 1b e5|
-                    "events"   = ["ai8=0 1 127 -128 5 -5 63 -63 27 -27"]
-                }
-                {
-                    "from_cte" = "|i8b|"
-                    "cbe"      = |u8x 7f 10|
-                    "events"   = ["ai8"]
-                }
-                {
-                    "from_cte" = "|i8b 0 1 1011 -1001101 1111111 -10000000|"
-                    "cbe"      = |u8x 7f 16 00 01 0b b3 7f 80|
-                    "events"   = ["ai8=0 1 11 -77 127 -128"]
-                }
-                {
-                    "from_cte" = "|i8o|"
-                    "cbe"      = |u8x 7f 10|
-                    "events"   = ["ai8"]
-                }
-                {
-                    "from_cte" = "|i8o 177 -200 76|"
-                    "cbe"      = |u8x 7f 13 7f 80 3e|
-                    "events"   = ["ai8=127 -128 62"]
-                }
-                {
-                    "from_cte" = "|i8x|"
-                    "cbe"      = |u8x 7f 10|
-                    "events"   = ["ai8"]
-                }
-                {
-                    "from_cte" = "|i8x 7f -80 1c -29|"
-                    "cbe"      = |u8x 7f 14 7f 80 1c d7|
-                    "events"   = ["ai8=127 -128 28 -41"]
-                }
-                {
-                    "cbe"      = |u8x 7f 10|
-                    "cte"      = "|i8|"
-                    "events"   = ["ai8"]
-                }
-//                { TODO
-//                    "from_cbe" = |u8x 7f e1 01 00|
-//                    "cte"      = "|i8|"
-//                    "events"   = ["bai8" "acm=0" "acl=0"]
-//                }
-                {
-                    "cbe"      = |u8x 7f 1f 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|
-                    "cte"      = "|i8 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15|"
-                    "events"   = ["ai8=1 2 3 4 5 6 7 8 9 10 11 12 13 14 15"]
-                }
-                {
-                    "from_cbe" = |u8x 7f e1 1e 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f|
-                    "cte"      = "|i8 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15|"
-                    "events"   = ["ai8=1 2 3 4 5 6 7 8 9 10 11 12 13 14 15"]
-                }
-                {
-                    "cbe"      = |u8x 7f e1 20 01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f 10|
-                    "cte"      = "|i8 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16|"
-                    "events"   = ["ai8=1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16"]
-                }
-            ]
-            "mustFail" = [
-                {"cte"="|i8 nan|"}         // Non-int digit
-                {"cte"="|i8 snan|"}        // Non-int digit
-                {"cte"="|i8 inf|"}         // Non-int digit
-                {"cte"="|i8 -inf|"}        // Non-int digit
-                {"cte"="|i8b 2|"}          // Non-binary digit
-                {"cte"="|i8b 10000000|"}   // Element too big
-                {"cte"="|i8b -10000001|"}  // Element too big
-                {"cte"="|i8o 9|"}          // Non-octal digit
-                {"cte"="|i8o 178|"}        // Element too big
-                {"cte"="|i8o -179|"}       // Element too big
-                {"cte"="|i8x g|"}          // Non-hex digit
-                {"cte"="|i8x 80|"}         // Element too big
-                {"cte"="|i8x -81|"}        // Element too big
-                {"cte"="|i8 a|"}           // Non-int digit
-                {"cte"="|i8 128|"}         // Element too big
-                {"cte"="|i8 -129|"}        // Element too big
-                {"cte"="|i8 0b10000000|"}  // Element too big
-                {"cte"="|i8 -0b10000001|"} // Element too big
-                {"cte"="|i8 0o178|"}       // Element too big
-                {"cte"="|i8 -0o179|"}      // Element too big
-                {"cte"="|i8 0x80|"}        // Element too big
-                {"cte"="|i8 -0x81|"}       // Element too big
-            ]
-        }
-
-        // ====================================================================
-
-        {
             "name" = "Int16 array"
             "mustSucceed" = [
                 {"cte"="|i16 1 2 3 32767|"              "events"=["ai16=1 2 3 32767"]}
@@ -280,8 +173,17 @@ c0
                 {"from_cte"="|u8o 377 22 76|"      "events"=["au8=255 18 62"]}
                 {"from_cte"="|u8x|"                "events"=["au8"]}
                 {"from_cte"="|u8x ff 80 1c 29|"    "events"=["au8=255 128 28 41"]}
+                {
+                    "cbe"      = |u8x 93 07 01 02 03 02 04|
+                    "events"   = ["bau8" "acm=3" "adu8x=01 02 03" "acl=1" "adu8x=04"]
+                }
+                {
+                    "cbe"      = |u8x 93 06 01 02 03|
+                    "events"   = ["bau8" "acl=3" "adu8x=01 02 03"]
+                }
             ]
             "mustFail" = [
+                {"cbe"=|u8x 93 01|}        // Incomplete
                 {"cte"="|u8 nan|"}         // Non-uint digit
                 {"cte"="|u8 snan|"}        // Non-uint digit
                 {"cte"="|u8 inf|"}         // Non-uint digit
@@ -650,20 +552,6 @@ c0
                     "events"=["bau64" "acm=1" "adu64=1234567890123456789" "acl=1" "adu64=9876543210987654321"]
                     "to_cte"="|u64 1234567890123456789 9876543210987654321|"
                 }
-            ]
-        }
-
-        // ====================================================================
-
-        {
-            "name" = "Chunked int8 array"
-            "mustSucceed" = [
-                {"events"=["bai8" "acl=0"]                               "to_cte"="|i8|"}
-                {"events"=["bai8" "acl=1" "adi8=127"]                    "to_cte"="|i8 127|"}
-                {"events"=["bai8" "acl=2" "adi8=127 -97"]                "to_cte"="|i8 127 -97|"}
-                {"events"=["bai8" "acl=2" "adi8=127" "adi8=-97"]         "to_cte"="|i8 127 -97|"}
-                {"events"=["bai8" "acm=2" "adi8=127" "adi8=-97" "acl=0"] "to_cte"="|i8 127 -97|"}
-                {"events"=["bai8" "acm=1" "adi8=127" "acl=1" "adi8=-97"] "to_cte"="|i8 127 -97|"}
             ]
         }
 

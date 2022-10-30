@@ -44,6 +44,7 @@ type EventInvocation func(receiver events.DataEventReceiver)
 type Event interface {
 	Name() string
 	String() string
+	ArrayElementCount() int
 	Invoke(events.DataEventReceiver)
 	IsEquivalentTo(Event) bool
 	Comparable() string
@@ -69,29 +70,43 @@ func (_this Events) AreEquivalentTo(that Events) bool {
 }
 
 type BaseEvent struct {
-	shortName   string
-	invocation  EventInvocation
-	values      []interface{}
-	comparable  string
-	stringified string
+	shortName         string
+	invocation        EventInvocation
+	values            []interface{}
+	comparable        string
+	stringified       string
+	arrayElementCount int
 }
 
 func (_this *BaseEvent) Invoke(receiver events.DataEventReceiver) { _this.invocation(receiver) }
 func (_this *BaseEvent) Name() string                             { return _this.shortName }
 func (_this *BaseEvent) String() string                           { return _this.stringified }
 func (_this *BaseEvent) Comparable() string                       { return _this.comparable }
+func (_this *BaseEvent) ArrayElementCount() int                   { return _this.arrayElementCount }
 func (_this *BaseEvent) IsEquivalentTo(that Event) bool {
 	return _this.Comparable() == that.Comparable()
 }
 
 func ConstructEvent(shortName string, invocation EventInvocation, values ...interface{}) BaseEvent {
 	return BaseEvent{
-		shortName:   shortName,
-		invocation:  invocation,
-		values:      values,
-		comparable:  constructComparable(shortName, values...),
-		stringified: constructStringified(shortName, values...),
+		shortName:         shortName,
+		invocation:        invocation,
+		values:            values,
+		arrayElementCount: getArrayElementCount(values...),
+		comparable:        constructComparable(shortName, values...),
+		stringified:       constructStringified(shortName, values...),
 	}
+}
+
+func getArrayElementCount(values ...interface{}) int {
+	for _, v := range values {
+		rv := reflect.ValueOf(v)
+		switch rv.Kind() {
+		case reflect.String, reflect.Slice, reflect.Array:
+			return rv.Len()
+		}
+	}
+	return 0
 }
 
 func constructComparable(shortName string, values ...interface{}) string {
