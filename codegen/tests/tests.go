@@ -38,24 +38,13 @@ import (
 func generateTestFiles(projectDir string) {
 	testsDir := filepath.Join(projectDir, "tests")
 
-	writeTestFile(filepath.Join(testsDir, "cte-generated-do-not-edit.cte"), generateCteHeaderTests()...)
-	writeTestFile(filepath.Join(testsDir, "enc-dec-generated-do-not-edit.cte"), generateEncodeDecodeTests()...)
-}
-
-func generateEncodeDecodeTests() []*test_runner.UnitTest {
-	return []*test_runner.UnitTest{
-		generateTLOTests(),
-		generateListTests(),
-		generateMapKeyTests(),
-		generateMapValueTests(),
-		generateEdgeSourceTests(),
-		generateEdgeDescriptionTests(),
-		generateEdgeDestinationTests(),
-		generateNodeValueTests(),
-		generateNodeChildTests(),
-		generateStructTemplateTests(),
-		generateStructInstanceTests(),
-	}
+	writeTestFile(filepath.Join(testsDir, "cte-header-generated.cte"), generateCteHeaderTests()...)
+	writeTestFile(filepath.Join(testsDir, "tlo-generated.cte"), generateTLOTests())
+	writeTestFile(filepath.Join(testsDir, "list-generated.cte"), generateListTests())
+	writeTestFile(filepath.Join(testsDir, "map-generated.cte"), generateMapKeyTests(), generateMapValueTests())
+	writeTestFile(filepath.Join(testsDir, "edge-generated.cte"), generateEdgeSourceTests(), generateEdgeDescriptionTests(), generateEdgeDestinationTests())
+	writeTestFile(filepath.Join(testsDir, "node-generated.cte"), generateNodeValueTests(), generateNodeChildTests())
+	writeTestFile(filepath.Join(testsDir, "struct-generated.cte"), generateStructTemplateTests(), generateStructInstanceTests())
 }
 
 func generateTLOTests() *test_runner.UnitTest {
@@ -64,7 +53,7 @@ func generateTLOTests() *test_runner.UnitTest {
 	invalidEvents := test.Events{EvV, EvE, EvACL, EvACM, EvREFL, EvSI}
 	validEvents := complementaryEvents(invalidEvents)
 
-	return generateEncodeDecodeTest("TLO", prefix, suffix, validEvents, invalidEvents)
+	return generateEncodeDecodeTest("Top-level objects", prefix, suffix, validEvents, invalidEvents)
 }
 
 func generateListTests() *test_runner.UnitTest {

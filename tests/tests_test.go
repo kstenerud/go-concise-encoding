@@ -42,8 +42,14 @@ func TestPrimary(t *testing.T) {
 	test_runner.RunTests(t, "cte-comment.cte")
 	test_runner.RunTests(t, "cte-complex.cte")
 	test_runner.RunTests(t, "cte-spacing.cte")
-	test_runner.RunTests(t, "cte-generated-do-not-edit.cte")
-	test_runner.RunTests(t, "enc-dec-generated-do-not-edit.cte")
+
+	test_runner.RunTests(t, "cte-header-generated.cte")
+	test_runner.RunTests(t, "edge-generated.cte")
+	test_runner.RunTests(t, "list-generated.cte")
+	test_runner.RunTests(t, "map-generated.cte")
+	test_runner.RunTests(t, "node-generated.cte")
+	test_runner.RunTests(t, "struct-generated.cte")
+	test_runner.RunTests(t, "tlo-generated.cte")
 }
 
 func TestTemplates(t *testing.T) {
