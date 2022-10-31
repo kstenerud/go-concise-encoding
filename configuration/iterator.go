@@ -34,10 +34,15 @@ import (
 // See https://github.com/kstenerud/concise-encoding/blob/master/cte-specification.md#custom-text
 type ConvertToCustomFunction func(v reflect.Value) (customType uint64, asBytes []byte, err error)
 
-type IteratorConfiguration struct {
+type FieldNameStyle int
 
-	// Use lowercase struct field names
-	LowercaseStructFieldNames bool
+const (
+	FieldNameCamelCase FieldNameStyle = iota
+	FieldNameSnakeCase
+)
+
+type IteratorConfiguration struct {
+	FieldNameStyle FieldNameStyle
 
 	// If RecursionSupport is true, the iterator will also look for duplicate
 	// pointers to data, generating marker and reference events rather than
@@ -73,9 +78,9 @@ func DefaultIteratorConfiguration() IteratorConfiguration {
 }
 
 var defaultIteratorConfiguration = IteratorConfiguration{
-	LowercaseStructFieldNames: true,
-	RecursionSupport:          true,
-	DefaultFieldOmitBehavior:  OmitFieldEmpty,
+	FieldNameStyle:           FieldNameSnakeCase,
+	RecursionSupport:         true,
+	DefaultFieldOmitBehavior: OmitFieldEmpty,
 }
 
 func (_this *IteratorConfiguration) ApplyDefaults() {

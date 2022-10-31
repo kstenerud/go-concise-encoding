@@ -25,6 +25,7 @@ import (
 	"math"
 	"math/big"
 	"reflect"
+	"regexp"
 	"strings"
 	"unicode"
 	"unicode/utf8"
@@ -153,6 +154,14 @@ func init() {
 	for i := 'A'; i <= 'Z'; i++ {
 		lowercaseAdjustAmounts[i] = byte('a' - 'A')
 	}
+}
+
+var snakeCase1 = regexp.MustCompile(`([A-Z]+)([A-Z][a-z])`)
+var snakeCase2 = regexp.MustCompile(`([a-z\d])([A-Z])`)
+
+func CamelCaseToSnakeCase(name string) string {
+	name = snakeCase1.ReplaceAllString(name, "${1}_${2}")
+	return strings.ToLower(snakeCase2.ReplaceAllString(name, "${1}_${2}"))
 }
 
 func ToStructFieldIdentifier(fieldIdentifier string) string {

@@ -239,7 +239,7 @@ type StructTestIterate struct {
 
 func TestIterateStruct(t *testing.T) {
 	config := configuration.DefaultIteratorConfiguration()
-	config.LowercaseStructFieldNames = false
+	config.FieldNameStyle = configuration.FieldNameCamelCase
 
 	assertIterate(t, new(StructTestIterate), M(), S("a"), N(0), E())
 

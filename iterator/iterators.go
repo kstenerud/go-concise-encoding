@@ -264,6 +264,7 @@ func newCustomTextIterator(convert configuration.ConvertToCustomFunction) Iterat
 }
 
 type structField struct {
+	Identifier   string
 	Name         string
 	Type         reflect.Type
 	Index        int
@@ -277,10 +278,16 @@ func (_this *structField) getValueFromStruct(fromValue reflect.Value) reflect.Va
 	return fromValue.Field(_this.Index)
 }
 
-func newStructField(fromField reflect.StructField, index int) structField {
+func newStructField(fromField reflect.StructField, index int, fieldNameStyle configuration.FieldNameStyle) structField {
 	tags := common.DecodeGoTags(fromField)
+	name := tags.Name
+	if fieldNameStyle == configuration.FieldNameSnakeCase {
+		name = common.CamelCaseToSnakeCase(name)
+	}
+
 	return structField{
-		Name:         tags.Name,
+		Identifier:   common.ToStructFieldIdentifier(tags.Name),
+		Name:         name,
 		Type:         fromField.Type,
 		Index:        index,
 		OmitBehavior: tags.OmitBehavior,
@@ -321,10 +328,7 @@ func extractFields(ctx *Context, structType reflect.Type, fields []structField) 
 	for i := 0; i < structType.NumField(); i++ {
 		reflectField := structType.Field(i)
 		if common.IsFieldExported(reflectField.Name) {
-			field := newStructField(reflectField, i)
-			if ctx.Configuration.LowercaseStructFieldNames {
-				field.Name = common.ToStructFieldIdentifier(field.Name)
-			}
+			field := newStructField(reflectField, i, ctx.Configuration.FieldNameStyle)
 
 			if field.OmitBehavior != configuration.OmitFieldAlways {
 				if reflectField.Anonymous {
