@@ -23,9 +23,11 @@ package tests
 import (
 	"bytes"
 	"fmt"
+	"math"
 	"os"
 	"path/filepath"
 
+	compact_time "github.com/kstenerud/go-compact-time"
 	"github.com/kstenerud/go-concise-encoding/cbe"
 	"github.com/kstenerud/go-concise-encoding/ce"
 	"github.com/kstenerud/go-concise-encoding/configuration"
@@ -45,6 +47,128 @@ func generateTestFiles(projectDir string) {
 	writeTestFile(filepath.Join(testsDir, "edge-generated.cte"), generateEdgeSourceTests(), generateEdgeDescriptionTests(), generateEdgeDestinationTests())
 	writeTestFile(filepath.Join(testsDir, "node-generated.cte"), generateNodeValueTests(), generateNodeChildTests())
 	writeTestFile(filepath.Join(testsDir, "struct-generated.cte"), generateStructTemplateTests(), generateStructInstanceTests())
+	writeTestFile(filepath.Join(testsDir, "array-int8-generated.cte"), generateArrayInt8Tests()...)
+}
+
+func generateArrayInt8Tests() []*test_runner.UnitTest {
+	var unitTests []*test_runner.UnitTest
+	var mustSucceed []*test_runner.MustSucceedTest
+	var contents []int8
+
+	// Empty array
+	unitTests = append(unitTests, generateMustSucceedUnitTest("Empty Array (int8)",
+		generateMustSucceedTest(AI8(nil)),
+	))
+
+	// Short array
+	contents = contents[:0]
+	mustSucceed = nil
+	for i := 1; i <= 15; i++ {
+		contents = append(contents, int8(i-8))
+		mustSucceed = append(mustSucceed, generateMustSucceedTest(AI8(contents)))
+	}
+	unitTests = append(unitTests, generateMustSucceedUnitTest("Short Array (int8)", mustSucceed...))
+
+	// Chunked array
+	contents = contents[:0]
+	mustSucceed = nil
+	mustSucceed = append(mustSucceed, generateMustSucceedTest(BAI8(), ACL(0)))
+	for i := 1; i <= 20; i++ {
+		contents = append(contents, int8(i-8))
+		mustSucceed = append(mustSucceed, generateMustSucceedTest(BAI8(), ACL(uint64(i)), ADI8(contents)))
+	}
+	unitTests = append(unitTests, generateMustSucceedUnitTest("Chunked Array (int8)", mustSucceed...))
+
+	// Various element values
+	contents = contents[:0]
+	multiple := math.MaxUint8 / 31
+	for i := math.MinInt8; i < math.MaxInt8; i += multiple {
+		contents = append(contents, int8(math.MinInt8+i))
+	}
+	unitTests = append(unitTests, generateMustSucceedUnitTest("Various Array Elements (int8)",
+		generateMustSucceedTest(BAI8(), ACL(uint64(len(contents))), ADI8(contents))))
+
+	// Edge-case element values
+	contents = contents[:0]
+	for _, v := range intEdgeValues {
+		contents = append(contents, int8(v))
+	}
+	unitTests = append(unitTests, generateMustSucceedUnitTest("Edge Case Element Values (int8)",
+		generateMustSucceedTest(BAI8(), ACL(uint64(len(contents))), ADI8(contents))))
+
+	// TODO: Multiple chunks
+
+	var mustFail []*test_runner.MustFailTest
+
+	// Truncated document
+	mustFail = nil
+	mustFail = append(mustFail, generateMustFailTest(testTypeCbe, BAI8(), ACL(1)))
+	for i := 2; i <= 10; i++ {
+		contents = contents[:i/2]
+		mustFail = append(mustFail, generateMustFailTest(testTypeCbe, BAI8(), ACL(uint64(i)), ADI8(contents)))
+	}
+	unitTests = append(unitTests, generateMustFailUnitTest("Truncated Array (int8)", mustFail...))
+
+	// Invalid event sequences
+	mustFail = nil
+	prefix := test.Events{EvBAI8}
+	for _, event := range complementaryEvents(test.Events{EvACL, EvACM}) {
+		events := append(prefix, event)
+		mustFail = append(mustFail, generateMustFailTest(testTypeEvents, events...))
+	}
+	unitTests = append(unitTests, generateMustFailUnitTest("Invalid Event Sequences (int8)", mustFail...))
+
+	return unitTests
+}
+
+var intEdgeValues = []int64{
+	0,
+	1,
+	0x7f,
+	0x80,
+	0x81,
+	0xff,
+	0x100,
+	0x101,
+	0x7fff,
+	0x8000,
+	0x8001,
+	0xffff,
+	0x10000,
+	0x10001,
+	0x7fffffff,
+	0x80000000,
+	0x80000001,
+	0xffffffff,
+	0x100000000,
+	0x100000001,
+	0x7fffffffffffffff,
+	-1,
+	-0x7f,
+	-0x80,
+	-0x81,
+	-0xff,
+	-0x100,
+	-0x101,
+	-0x7fff,
+	-0x8000,
+	-0x8001,
+	-0xffff,
+	-0x10000,
+	-0x10001,
+	-0x7fffffff,
+	-0x80000000,
+	-0x80000001,
+	-0xffffffff,
+	-0x100000000,
+	-0x100000001,
+	-0x7fffffffffffffff,
+	-0x8000000000000000,
+}
+var uintEdgeValues = []uint64{
+	0x8000000000000000,
+	0x8000000000000001,
+	0xffffffffffffffff,
 }
 
 func generateTLOTests() *test_runner.UnitTest {
@@ -162,7 +286,7 @@ func generateEncodeDecodeTest(name string, prefix test.Events, suffix test.Event
 		mustFail = append(mustFail, generateMustFailTest(testTypeEvents, events...))
 	}
 
-	return generateTest(name, mustSucceed, mustFail)
+	return generateUnitTest(name, mustSucceed, mustFail)
 }
 
 func generateCteHeaderTests() []*test_runner.UnitTest {
@@ -173,7 +297,7 @@ func generateCteHeaderTests() []*test_runner.UnitTest {
 		}
 		wrongSentinelFailureTests = append(wrongSentinelFailureTests, generateCustomMustFailTest(fmt.Sprintf("%c%v 0", rune(i), version.ConciseEncodingVersion)))
 	}
-	wrongSentinelTest := generateTest("Wrong sentinel", nil, wrongSentinelFailureTests)
+	wrongSentinelTest := generateUnitTest("Wrong sentinel", nil, wrongSentinelFailureTests)
 
 	wrongVersionCharFailureTests := []*test_runner.MustFailTest{}
 	for i := 0; i < 0x100; i++ {
@@ -182,7 +306,7 @@ func generateCteHeaderTests() []*test_runner.UnitTest {
 		}
 		wrongVersionCharFailureTests = append(wrongVersionCharFailureTests, generateCustomMustFailTest(fmt.Sprintf("c%c 0", rune(i))))
 	}
-	wrongVersionCharTest := generateTest("Wrong version character", nil, wrongVersionCharFailureTests)
+	wrongVersionCharTest := generateUnitTest("Wrong version character", nil, wrongVersionCharFailureTests)
 
 	wrongVersionFailureTests := []*test_runner.MustFailTest{}
 	for i := 0; i < 0x100; i++ {
@@ -192,14 +316,14 @@ func generateCteHeaderTests() []*test_runner.UnitTest {
 		}
 		wrongVersionFailureTests = append(wrongVersionFailureTests, generateCustomMustFailTest(fmt.Sprintf("c%v 0", i)))
 	}
-	wrongVersionTest := generateTest("Wrong version", nil, wrongVersionFailureTests)
+	wrongVersionTest := generateUnitTest("Wrong version", nil, wrongVersionFailureTests)
 
 	return []*test_runner.UnitTest{wrongSentinelTest, wrongVersionCharTest, wrongVersionTest}
 }
 
 // ===========================================================================
 
-func generateTest(name string, mustSucceed []*test_runner.MustSucceedTest, mustFail []*test_runner.MustFailTest) *test_runner.UnitTest {
+func generateUnitTest(name string, mustSucceed []*test_runner.MustSucceedTest, mustFail []*test_runner.MustFailTest) *test_runner.UnitTest {
 	unitTest := &test_runner.UnitTest{
 		Name: name,
 	}
@@ -212,6 +336,20 @@ func generateTest(name string, mustSucceed []*test_runner.MustSucceedTest, mustF
 	}
 
 	return unitTest
+}
+
+func generateMustSucceedUnitTest(name string, mustSucceed ...*test_runner.MustSucceedTest) *test_runner.UnitTest {
+	return &test_runner.UnitTest{
+		Name:        name,
+		MustSucceed: mustSucceed,
+	}
+}
+
+func generateMustFailUnitTest(name string, mustFail ...*test_runner.MustFailTest) *test_runner.UnitTest {
+	return &test_runner.UnitTest{
+		Name:     name,
+		MustFail: mustFail,
+	}
 }
 
 func generateMustSucceedTest(events ...test.Event) *test_runner.MustSucceedTest {
@@ -372,3 +510,78 @@ func writeTestFile(path string, tests ...*test_runner.UnitTest) {
 	defer f.Close()
 	f.Write(commentedDocument)
 }
+
+func AB(v []bool) test.Event              { return test.AB(v) }
+func ACL(l uint64) test.Event             { return test.ACL(l) }
+func ACM(l uint64) test.Event             { return test.ACM(l) }
+func ADB(v []bool) test.Event             { return test.ADB(v) }
+func ADF16(v []float32) test.Event        { return test.ADF16(v) }
+func ADF32(v []float32) test.Event        { return test.ADF32(v) }
+func ADF64(v []float64) test.Event        { return test.ADF64(v) }
+func ADI16(v []int16) test.Event          { return test.ADI16(v) }
+func ADI32(v []int32) test.Event          { return test.ADI32(v) }
+func ADI64(v []int64) test.Event          { return test.ADI64(v) }
+func ADI8(v []int8) test.Event            { return test.ADI8(v) }
+func ADT(v string) test.Event             { return test.ADT(v) }
+func ADU(v [][]byte) test.Event           { return test.ADU(v) }
+func ADU16(v []uint16) test.Event         { return test.ADU16(v) }
+func ADU32(v []uint32) test.Event         { return test.ADU32(v) }
+func ADU64(v []uint64) test.Event         { return test.ADU64(v) }
+func ADU8(v []uint8) test.Event           { return test.ADU8(v) }
+func AF16(v []float32) test.Event         { return test.AF16(v) }
+func AF32(v []float32) test.Event         { return test.AF32(v) }
+func AF64(v []float64) test.Event         { return test.AF64(v) }
+func AI16(v []int16) test.Event           { return test.AI16(v) }
+func AI32(v []int32) test.Event           { return test.AI32(v) }
+func AI64(v []int64) test.Event           { return test.AI64(v) }
+func AI8(v []int8) test.Event             { return test.AI8(v) }
+func AU(v [][]byte) test.Event            { return test.AU(v) }
+func AU16(v []uint16) test.Event          { return test.AU16(v) }
+func AU32(v []uint32) test.Event          { return test.AU32(v) }
+func AU64(v []uint64) test.Event          { return test.AU64(v) }
+func AU8(v []byte) test.Event             { return test.AU8(v) }
+func B(v bool) test.Event                 { return test.B(v) }
+func BAB() test.Event                     { return test.BAB() }
+func BAF16() test.Event                   { return test.BAF16() }
+func BAF32() test.Event                   { return test.BAF32() }
+func BAF64() test.Event                   { return test.BAF64() }
+func BAI16() test.Event                   { return test.BAI16() }
+func BAI32() test.Event                   { return test.BAI32() }
+func BAI64() test.Event                   { return test.BAI64() }
+func BAI8() test.Event                    { return test.BAI8() }
+func BAU() test.Event                     { return test.BAU() }
+func BAU16() test.Event                   { return test.BAU16() }
+func BAU32() test.Event                   { return test.BAU32() }
+func BAU64() test.Event                   { return test.BAU64() }
+func BAU8() test.Event                    { return test.BAU8() }
+func BCB(v uint64) test.Event             { return test.BCB(v) }
+func BCT(v uint64) test.Event             { return test.BCT(v) }
+func BMEDIA(v string) test.Event          { return test.BMEDIA(v) }
+func BREFR() test.Event                   { return test.BREFR() }
+func BRID() test.Event                    { return test.BRID() }
+func BS() test.Event                      { return test.BS() }
+func CB(t uint64, v []byte) test.Event    { return test.CB(t, v) }
+func CM(v string) test.Event              { return test.CM(v) }
+func CS(v string) test.Event              { return test.CS(v) }
+func CT(t uint64, v string) test.Event    { return test.CT(t, v) }
+func E() test.Event                       { return test.E() }
+func EDGE() test.Event                    { return test.EDGE() }
+func L() test.Event                       { return test.L() }
+func M() test.Event                       { return test.M() }
+func MARK(id string) test.Event           { return test.MARK(id) }
+func MEDIA(t string, v []byte) test.Event { return test.MEDIA(t, v) }
+func N(v interface{}) test.Event          { return test.N(v) }
+func NAN() test.Event                     { return test.NAN() }
+func NODE() test.Event                    { return test.NODE() }
+func NULL() test.Event                    { return test.NULL() }
+func PAD() test.Event                     { return test.PAD() }
+func REFL(id string) test.Event           { return test.REFL(id) }
+func REFR(v string) test.Event            { return test.REFR(v) }
+func RID(v string) test.Event             { return test.RID(v) }
+func S(v string) test.Event               { return test.S(v) }
+func SI(id string) test.Event             { return test.SI(id) }
+func SNAN() test.Event                    { return test.SNAN() }
+func ST(id string) test.Event             { return test.ST(id) }
+func T(v compact_time.Time) test.Event    { return test.T(v) }
+func UID(v []byte) test.Event             { return test.UID(v) }
+func V(v uint64) test.Event               { return test.V(v) }
