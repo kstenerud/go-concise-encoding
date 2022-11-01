@@ -50,6 +50,26 @@ type MustSucceedTest struct {
 	toEvents   test.Events
 }
 
+func (_this *MustSucceedTest) UseFromCTE() {
+	_this.FromCTE = _this.CTE
+	_this.CTE = ""
+}
+
+func (_this *MustSucceedTest) UseToCTE() {
+	_this.ToCTE = _this.CTE
+	_this.CTE = ""
+}
+
+func (_this *MustSucceedTest) UseFromCBE() {
+	_this.FromCBE = _this.CBE
+	_this.CBE = nil
+}
+
+func (_this *MustSucceedTest) UseToCBE() {
+	_this.ToCBE = _this.CBE
+	_this.CBE = nil
+}
+
 func (_this *MustSucceedTest) PostDecodeInit(ceVersion int, context string, index int) error {
 	if _this.Skip {
 		return nil

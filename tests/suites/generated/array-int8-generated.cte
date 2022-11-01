@@ -9,7 +9,7 @@ c0
     "ce_version" = 0
     "tests" = [
         {
-            "name" = "Empty Array (int8)"
+            "name" = "Empty Array"
             "must_succeed" = [
                 {
                     "cbe" = |u8x 7f 10|
@@ -21,7 +21,7 @@ c0
             ]
         }
         {
-            "name" = "Short Array (int8)"
+            "name" = "Short Array"
             "must_succeed" = [
                 {
                     "cbe" = |u8x 7f 11 f9|
@@ -131,7 +131,7 @@ c0
             ]
         }
         {
-            "name" = "Chunked Array (int8)"
+            "name" = "Chunked Array"
             "must_succeed" = [
                 {
                     "to_cte" = "|i8|"
@@ -324,7 +324,7 @@ c0
             ]
         }
         {
-            "name" = "Various Array Elements (int8)"
+            "name" = "Various Array Elements"
             "must_succeed" = [
                 {
                     "to_cte" = "|i8 0 8 16 24 32 40 48 56 64 72 80 88 96 104 112 120 -128 -120 -112 -104 -96 -88 -80 -72 -64 -56 -48 -40 -32 -24 -16 -8|"
@@ -335,24 +335,82 @@ c0
                         "adi8=0 8 16 24 32 40 48 56 64 72 80 88 96 104 112 120 -128 -120 -112 -104 -96 -88 -80 -72 -64 -56 -48 -40 -32 -24 -16 -8"
                     ]
                 }
-            ]
-        }
-        {
-            "name" = "Edge Case Element Values (int8)"
-            "must_succeed" = [
                 {
-                    "to_cte" = "|i8 0 1 127 -128 -127 -1 0 1 -1 0 1 -1 0 1 -1 0 1 -1 0 1 -1 -1 -127 -128 127 1 0 -1 1 0 -1 1 0 -1 1 0 -1 1 0 -1 1 0|"
-                    "cbe" = |u8x 7f e1 54 00 01 7f 80 81 ff 00 01 ff 00 01 ff 00 01 ff 00 01 ff 00 01 ff ff 81 80 7f 01 00 ff 01 00 ff 01 00 ff 01 00 ff 01 00 ff 01 00|
+                    "from_cte" = "|i8b 0 100100 1001000 1101100 -1110000 -1001100 -101000 -100|"
+                    "cbe" = |u8x 7f 18 00 24 48 6c 90 b4 d8 fc|
                     "events" = [
-                        "bai8"
-                        "acl=42"
-                        "adi8=0 1 127 -128 -127 -1 0 1 -1 0 1 -1 0 1 -1 0 1 -1 0 1 -1 -1 -127 -128 127 1 0 -1 1 0 -1 1 0 -1 1 0 -1 1 0 -1 1 0"
+                        "ai8=0 36 72 108 -112 -76 -40 -4"
+                    ]
+                }
+                {
+                    "from_cte" = "|i8o 0 44 110 154 -160 -114 -50 -4|"
+                    "cbe" = |u8x 7f 18 00 24 48 6c 90 b4 d8 fc|
+                    "events" = [
+                        "ai8=0 36 72 108 -112 -76 -40 -4"
+                    ]
+                }
+                {
+                    "from_cte" = "|i8x 0 24 48 6c -70 -4c -28 -4|"
+                    "cbe" = |u8x 7f 18 00 24 48 6c 90 b4 d8 fc|
+                    "events" = [
+                        "ai8=0 36 72 108 -112 -76 -40 -4"
                     ]
                 }
             ]
         }
         {
-            "name" = "Truncated Array (int8)"
+            "name" = "Chunking Variations"
+            "must_succeed" = [
+                {
+                    "to_cte" = "|i8 0 0 36 0 36 72 0 36 72 108 0 36 72 108 -112 0 36 72 108 -112 -76|"
+                    "cbe" = |u8x 7f e1 01 03 00 05 00 24 07 00 24 48 09 00 24 48 6c 0b 00 24 48 6c 90 0d 00 24 48 6c 90 b4 00|
+                    "events" = [
+                        "bai8"
+                        "acm=0"
+                        "acm=1"
+                        "adi8=0"
+                        "acm=2"
+                        "adi8=0 36"
+                        "acm=3"
+                        "adi8=0 36 72"
+                        "acm=4"
+                        "adi8=0 36 72 108"
+                        "acm=5"
+                        "adi8=0 36 72 108 -112"
+                        "acm=6"
+                        "adi8=0 36 72 108 -112 -76"
+                        "acl=0"
+                    ]
+                }
+                {
+                    "to_cte" = "|i8 0 36 72 108 0 36 72|"
+                    "cbe" = |u8x 7f e1 09 00 24 48 6c 06 00 24 48|
+                    "events" = [
+                        "bai8"
+                        "acm=4"
+                        "adi8=0 36 72 108"
+                        "acl=3"
+                        "adi8=0 36 72"
+                    ]
+                }
+            ]
+        }
+        {
+            "name" = "Edge Case Element Values"
+            "must_succeed" = [
+                {
+                    "to_cte" = "|i8 0 1 127 -128 -127 -1 0 1 -1 0 1 -1 0 1 -1 0 1 -1 0 1 -1 -1 -127 -128 127 1 0 -1 1 0 -1 1 0 -1 1 0 -1 1 0 -1 1 0 0 1 -1|"
+                    "cbe" = |u8x 7f e1 5a 00 01 7f 80 81 ff 00 01 ff 00 01 ff 00 01 ff 00 01 ff 00 01 ff ff 81 80 7f 01 00 ff 01 00 ff 01 00 ff 01 00 ff 01 00 ff 01 00 00 01 ff|
+                    "events" = [
+                        "bai8"
+                        "acl=45"
+                        "adi8=0 1 127 -128 -127 -1 0 1 -1 0 1 -1 0 1 -1 0 1 -1 0 1 -1 -1 -127 -128 127 1 0 -1 1 0 -1 1 0 -1 1 0 -1 1 0 -1 1 0 0 1 -1"
+                    ]
+                }
+            ]
+        }
+        {
+            "name" = "Truncated Array"
             "must_fail" = [
                 {
                     "cbe" = |u8x 7f e1 02|
@@ -383,365 +441,6 @@ c0
                 }
                 {
                     "cbe" = |u8x 7f e1 14 00 01 7f 80 81|
-                }
-            ]
-        }
-        {
-            "name" = "Invalid Event Sequences (int8)"
-            "must_fail" = [
-                {
-                    "events" = [
-                        "bai8"
-                        "ab=1"
-                    ]
-                }
-                {
-                    "events" = [
-                        "bai8"
-                        "af16=1"
-                    ]
-                }
-                {
-                    "events" = [
-                        "bai8"
-                        "af32=1"
-                    ]
-                }
-                {
-                    "events" = [
-                        "bai8"
-                        "af64=1"
-                    ]
-                }
-                {
-                    "events" = [
-                        "bai8"
-                        "ai16=1"
-                    ]
-                }
-                {
-                    "events" = [
-                        "bai8"
-                        "ai32=1"
-                    ]
-                }
-                {
-                    "events" = [
-                        "bai8"
-                        "ai64=1"
-                    ]
-                }
-                {
-                    "events" = [
-                        "bai8"
-                        "ai8=1"
-                    ]
-                }
-                {
-                    "events" = [
-                        "bai8"
-                        "au=00000000-0000-0000-0000-000000000000"
-                    ]
-                }
-                {
-                    "events" = [
-                        "bai8"
-                        "au16=1"
-                    ]
-                }
-                {
-                    "events" = [
-                        "bai8"
-                        "au32=1"
-                    ]
-                }
-                {
-                    "events" = [
-                        "bai8"
-                        "au64=1"
-                    ]
-                }
-                {
-                    "events" = [
-                        "bai8"
-                        "au8=0x01"
-                    ]
-                }
-                {
-                    "events" = [
-                        "bai8"
-                        "b=true"
-                    ]
-                }
-                {
-                    "events" = [
-                        "bai8"
-                        "bab"
-                    ]
-                }
-                {
-                    "events" = [
-                        "bai8"
-                        "baf16"
-                    ]
-                }
-                {
-                    "events" = [
-                        "bai8"
-                        "baf32"
-                    ]
-                }
-                {
-                    "events" = [
-                        "bai8"
-                        "baf64"
-                    ]
-                }
-                {
-                    "events" = [
-                        "bai8"
-                        "bai16"
-                    ]
-                }
-                {
-                    "events" = [
-                        "bai8"
-                        "bai32"
-                    ]
-                }
-                {
-                    "events" = [
-                        "bai8"
-                        "bai64"
-                    ]
-                }
-                {
-                    "events" = [
-                        "bai8"
-                        "bai8"
-                    ]
-                }
-                {
-                    "events" = [
-                        "bai8"
-                        "bau"
-                    ]
-                }
-                {
-                    "events" = [
-                        "bai8"
-                        "bau16"
-                    ]
-                }
-                {
-                    "events" = [
-                        "bai8"
-                        "bau32"
-                    ]
-                }
-                {
-                    "events" = [
-                        "bai8"
-                        "bau64"
-                    ]
-                }
-                {
-                    "events" = [
-                        "bai8"
-                        "bau8"
-                    ]
-                }
-                {
-                    "events" = [
-                        "bai8"
-                        "bcb=0"
-                    ]
-                }
-                {
-                    "events" = [
-                        "bai8"
-                        "bct=0"
-                    ]
-                }
-                {
-                    "events" = [
-                        "bai8"
-                        "bmedia=a/b"
-                    ]
-                }
-                {
-                    "events" = [
-                        "bai8"
-                        "brid"
-                    ]
-                }
-                {
-                    "events" = [
-                        "bai8"
-                        "bs"
-                    ]
-                }
-                {
-                    "events" = [
-                        "bai8"
-                        "cb=0 01"
-                    ]
-                }
-                {
-                    "events" = [
-                        "bai8"
-                        "cm=a"
-                    ]
-                }
-                {
-                    "events" = [
-                        "bai8"
-                        "cs=a"
-                    ]
-                }
-                {
-                    "events" = [
-                        "bai8"
-                        "ct=0 a"
-                    ]
-                }
-                {
-                    "events" = [
-                        "bai8"
-                        "e"
-                    ]
-                }
-                {
-                    "events" = [
-                        "bai8"
-                        "edge"
-                    ]
-                }
-                {
-                    "events" = [
-                        "bai8"
-                        "n=inf"
-                    ]
-                }
-                {
-                    "events" = [
-                        "bai8"
-                        "l"
-                    ]
-                }
-                {
-                    "events" = [
-                        "bai8"
-                        "m"
-                    ]
-                }
-                {
-                    "events" = [
-                        "bai8"
-                        "mark=a"
-                    ]
-                }
-                {
-                    "events" = [
-                        "bai8"
-                        "media=a/b 01"
-                    ]
-                }
-                {
-                    "events" = [
-                        "bai8"
-                        "n=-1"
-                    ]
-                }
-                {
-                    "events" = [
-                        "bai8"
-                        "n=nan"
-                    ]
-                }
-                {
-                    "events" = [
-                        "bai8"
-                        "n=-inf"
-                    ]
-                }
-                {
-                    "events" = [
-                        "bai8"
-                        "node"
-                    ]
-                }
-                {
-                    "events" = [
-                        "bai8"
-                        "null"
-                    ]
-                }
-                {
-                    "events" = [
-                        "bai8"
-                        "pad"
-                    ]
-                }
-                {
-                    "events" = [
-                        "bai8"
-                        "refl=a"
-                    ]
-                }
-                {
-                    "events" = [
-                        "bai8"
-                        "refr=a"
-                    ]
-                }
-                {
-                    "events" = [
-                        "bai8"
-                        "rid=http://z.com"
-                    ]
-                }
-                {
-                    "events" = [
-                        "bai8"
-                        "s=a"
-                    ]
-                }
-                {
-                    "events" = [
-                        "bai8"
-                        "si=a"
-                    ]
-                }
-                {
-                    "events" = [
-                        "bai8"
-                        "n=snan"
-                    ]
-                }
-                {
-                    "events" = [
-                        "bai8"
-                        "st=a"
-                    ]
-                }
-                {
-                    "events" = [
-                        "bai8"
-                        "t=2020-01-01/01:01:01.000000001"
-                    ]
-                }
-                {
-                    "events" = [
-                        "bai8"
-                        "uid=00000000-0000-0000-0000-000000000000"
-                    ]
-                }
-                {
-                    "events" = [
-                        "bai8"
-                        "v=0"
-                    ]
                 }
             ]
         }

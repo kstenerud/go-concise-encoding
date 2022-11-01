@@ -54,10 +54,11 @@ func generateArrayInt8Tests() []*test_runner.UnitTest {
 	var unitTests []*test_runner.UnitTest
 	var mustSucceed []*test_runner.MustSucceedTest
 	var contents []int8
+	config := configuration.DefaultCTEEncoderConfiguration()
 
 	// Empty array
-	unitTests = append(unitTests, generateMustSucceedUnitTest("Empty Array (int8)",
-		generateMustSucceedTest(AI8(nil)),
+	unitTests = append(unitTests, newMustSucceedUnitTest("Empty Array",
+		newMustSucceedTest(&config, AI8(nil)),
 	))
 
 	// Short array
@@ -65,58 +66,95 @@ func generateArrayInt8Tests() []*test_runner.UnitTest {
 	mustSucceed = nil
 	for i := 1; i <= 15; i++ {
 		contents = append(contents, int8(i-8))
-		mustSucceed = append(mustSucceed, generateMustSucceedTest(AI8(contents)))
+		mustSucceed = append(mustSucceed, newMustSucceedTest(&config, AI8(contents)))
 	}
-	unitTests = append(unitTests, generateMustSucceedUnitTest("Short Array (int8)", mustSucceed...))
+	unitTests = append(unitTests, newMustSucceedUnitTest("Short Array", mustSucceed...))
 
 	// Chunked array
 	contents = contents[:0]
 	mustSucceed = nil
-	mustSucceed = append(mustSucceed, generateMustSucceedTest(BAI8(), ACL(0)))
+	mustSucceed = append(mustSucceed, newMustSucceedTest(&config, BAI8(), ACL(0)))
 	for i := 1; i <= 20; i++ {
 		contents = append(contents, int8(i-8))
-		mustSucceed = append(mustSucceed, generateMustSucceedTest(BAI8(), ACL(uint64(i)), ADI8(contents)))
+		mustSucceed = append(mustSucceed, newMustSucceedTest(&config, BAI8(), ACL(uint64(i)), ADI8(contents)))
 	}
-	unitTests = append(unitTests, generateMustSucceedUnitTest("Chunked Array (int8)", mustSucceed...))
+	unitTests = append(unitTests, newMustSucceedUnitTest("Chunked Array", mustSucceed...))
 
 	// Various element values
 	contents = contents[:0]
+	mustSucceed = nil
 	multiple := math.MaxUint8 / 31
 	for i := math.MinInt8; i < math.MaxInt8; i += multiple {
 		contents = append(contents, int8(math.MinInt8+i))
 	}
-	unitTests = append(unitTests, generateMustSucceedUnitTest("Various Array Elements (int8)",
-		generateMustSucceedTest(BAI8(), ACL(uint64(len(contents))), ADI8(contents))))
+	mustSucceed = append(mustSucceed, newMustSucceedTest(&config, BAI8(), ACL(uint64(len(contents))), ADI8(contents)))
+
+	contents = contents[:0]
+	multiple = math.MaxUint8 / 7
+	for i := math.MinInt8; i < math.MaxInt8; i += multiple {
+		contents = append(contents, int8(math.MinInt8+i))
+	}
+	config.DefaultNumericFormats.Array.Int8 = configuration.CTEEncodingFormatBinary
+	t := newMustSucceedTest(&config, AI8(contents))
+	t.UseFromCTE()
+	mustSucceed = append(mustSucceed, t)
+	config.DefaultNumericFormats.Array.Int8 = configuration.CTEEncodingFormatOctal
+	t = newMustSucceedTest(&config, AI8(contents))
+	t.UseFromCTE()
+	mustSucceed = append(mustSucceed, t)
+	config.DefaultNumericFormats.Array.Int8 = configuration.CTEEncodingFormatHexadecimal
+	t = newMustSucceedTest(&config, AI8(contents))
+	t.UseFromCTE()
+	mustSucceed = append(mustSucceed, t)
+	config = configuration.DefaultCTEEncoderConfiguration()
+	unitTests = append(unitTests, newMustSucceedUnitTest("Various Array Elements", mustSucceed...))
+
+	// Chunking
+	mustSucceed = nil
+	events := []test.Event{BAI8()}
+	for i := 0; i < 7; i++ {
+		events = append(events, ACM(uint64(i)))
+		if i > 0 {
+			events = append(events, ADI8(contents[:i]))
+		}
+	}
+	events = append(events, ACL(0))
+	mustSucceed = append(mustSucceed, newMustSucceedTest(&config, events...))
+	mustSucceed = append(mustSucceed, newMustSucceedTest(&config, BAI8(), ACM(4), ADI8(contents[:4]), ACL(3), ADI8(contents[:3])))
+	unitTests = append(unitTests, newMustSucceedUnitTest("Chunking Variations", mustSucceed...))
 
 	// Edge-case element values
 	contents = contents[:0]
 	for _, v := range intEdgeValues {
 		contents = append(contents, int8(v))
 	}
-	unitTests = append(unitTests, generateMustSucceedUnitTest("Edge Case Element Values (int8)",
-		generateMustSucceedTest(BAI8(), ACL(uint64(len(contents))), ADI8(contents))))
+	for _, v := range uintEdgeValues {
+		contents = append(contents, int8(v))
+	}
+	unitTests = append(unitTests, newMustSucceedUnitTest("Edge Case Element Values",
+		newMustSucceedTest(&config, BAI8(), ACL(uint64(len(contents))), ADI8(contents))))
 
-	// TODO: Multiple chunks
-
+	// Fail mode tests
 	var mustFail []*test_runner.MustFailTest
 
 	// Truncated document
 	mustFail = nil
-	mustFail = append(mustFail, generateMustFailTest(testTypeCbe, BAI8(), ACL(1)))
+	mustFail = append(mustFail, newMustFailTest(testTypeCbe, BAI8(), ACL(1)))
 	for i := 2; i <= 10; i++ {
 		contents = contents[:i/2]
-		mustFail = append(mustFail, generateMustFailTest(testTypeCbe, BAI8(), ACL(uint64(i)), ADI8(contents)))
+		mustFail = append(mustFail, newMustFailTest(testTypeCbe, BAI8(), ACL(uint64(i)), ADI8(contents)))
 	}
-	unitTests = append(unitTests, generateMustFailUnitTest("Truncated Array (int8)", mustFail...))
+	unitTests = append(unitTests, newMustFailUnitTest("Truncated Array", mustFail...))
 
 	// Invalid event sequences
-	mustFail = nil
-	prefix := test.Events{EvBAI8}
-	for _, event := range complementaryEvents(test.Events{EvACL, EvACM}) {
-		events := append(prefix, event)
-		mustFail = append(mustFail, generateMustFailTest(testTypeEvents, events...))
-	}
-	unitTests = append(unitTests, generateMustFailUnitTest("Invalid Event Sequences (int8)", mustFail...))
+	// TODO: Move these to the rules test file
+	// mustFail = nil
+	// prefix := test.Events{EvBAI8}
+	// for _, event := range complementaryEvents(test.Events{EvACL, EvACM}) {
+	// 	events := append(prefix, event)
+	// 	mustFail = append(mustFail, newMustFailTest(testTypeEvents, events...))
+	// }
+	// unitTests = append(unitTests, newMustFailUnitTest("Invalid Event Sequences", mustFail...))
 
 	return unitTests
 }
@@ -277,13 +315,13 @@ func generateEncodeDecodeTest(name string, prefix test.Events, suffix test.Event
 	for _, eventSet := range generateEventPrefixesAndFollowups(validEvents...) {
 		events := append(prefix, eventSet...)
 		events = append(events, suffix...)
-		mustSucceed = append(mustSucceed, generateMustSucceedTest(events...))
+		mustSucceed = append(mustSucceed, newMustSucceedTest(nil, events...))
 	}
 
 	for _, event := range invalidEvents {
 		events := append(prefix, event)
 		events = append(events, suffix...)
-		mustFail = append(mustFail, generateMustFailTest(testTypeEvents, events...))
+		mustFail = append(mustFail, newMustFailTest(testTypeEvents, events...))
 	}
 
 	return generateUnitTest(name, mustSucceed, mustFail)
@@ -338,25 +376,25 @@ func generateUnitTest(name string, mustSucceed []*test_runner.MustSucceedTest, m
 	return unitTest
 }
 
-func generateMustSucceedUnitTest(name string, mustSucceed ...*test_runner.MustSucceedTest) *test_runner.UnitTest {
+func newMustSucceedUnitTest(name string, mustSucceed ...*test_runner.MustSucceedTest) *test_runner.UnitTest {
 	return &test_runner.UnitTest{
 		Name:        name,
 		MustSucceed: mustSucceed,
 	}
 }
 
-func generateMustFailUnitTest(name string, mustFail ...*test_runner.MustFailTest) *test_runner.UnitTest {
+func newMustFailUnitTest(name string, mustFail ...*test_runner.MustFailTest) *test_runner.UnitTest {
 	return &test_runner.UnitTest{
 		Name:     name,
 		MustFail: mustFail,
 	}
 }
 
-func generateMustSucceedTest(events ...test.Event) *test_runner.MustSucceedTest {
+func newMustSucceedTest(config *configuration.CTEEncoderConfiguration, events ...test.Event) *test_runner.MustSucceedTest {
 	cbe := generateCBE(events...)
 	fromCBE := cbe
 	toCBE := cbe
-	cte := generateCTE(events...)
+	cte := generateCTE(config, events...)
 	toCTE := cte
 
 	if canConvertFromCTE(events...) {
@@ -387,12 +425,12 @@ func generateMustSucceedTest(events ...test.Event) *test_runner.MustSucceedTest 
 	}
 }
 
-func generateMustFailTest(testType testType, events ...test.Event) *test_runner.MustFailTest {
+func newMustFailTest(testType testType, events ...test.Event) *test_runner.MustFailTest {
 	switch testType {
 	case testTypeCbe:
 		return &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CBE: generateCBE(events...)}}
 	case testTypeCte:
-		return &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: generateCTE(events...)}}
+		return &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: generateCTE(nil, events...)}}
 	case testTypeEvents:
 		return &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{Events: stringifyEvents(events...)}}
 	default:
@@ -438,7 +476,7 @@ func generateCBE(events ...test.Event) []byte {
 	return result[2:]
 }
 
-func generateCTE(events ...test.Event) string {
+func generateCTE(config *configuration.CTEEncoderConfiguration, events ...test.Event) string {
 	defer func() {
 		if r := recover(); r != nil {
 			switch v := r.(type) {
@@ -451,7 +489,7 @@ func generateCTE(events ...test.Event) string {
 	}()
 
 	buffer := bytes.Buffer{}
-	encoder := cte.NewEncoder(nil)
+	encoder := cte.NewEncoder(config)
 	encoder.PrepareToEncode(&buffer)
 	encoder.OnBeginDocument()
 	encoder.OnVersion(version.ConciseEncodingVersion)
