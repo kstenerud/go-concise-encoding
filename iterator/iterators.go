@@ -274,6 +274,10 @@ type structField struct {
 	Order        int64
 }
 
+func (_this structField) String() string {
+	return fmt.Sprintf("{%v, %v, %v, %v}", _this.Name, _this.Type, _this.Order, _this.Index)
+}
+
 func (_this *structField) getValueFromStruct(fromValue reflect.Value) reflect.Value {
 	return fromValue.Field(_this.Index)
 }
