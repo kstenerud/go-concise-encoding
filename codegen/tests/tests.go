@@ -40,6 +40,8 @@ import (
 func generateTestFiles(projectDir string) {
 	testsDir := filepath.Join(projectDir, "tests/suites/generated")
 
+	generateRulesTestFiles(testsDir)
+
 	writeTestFile(filepath.Join(testsDir, "cte-header-generated.cte"), generateCteHeaderTests()...)
 	writeTestFile(filepath.Join(testsDir, "tlo-generated.cte"), generateTLOTests())
 	writeTestFile(filepath.Join(testsDir, "list-generated.cte"), generateListTests())
@@ -48,6 +50,25 @@ func generateTestFiles(projectDir string) {
 	writeTestFile(filepath.Join(testsDir, "node-generated.cte"), generateNodeValueTests(), generateNodeChildTests())
 	writeTestFile(filepath.Join(testsDir, "struct-generated.cte"), generateStructTemplateTests(), generateStructInstanceTests())
 	writeTestFile(filepath.Join(testsDir, "array-int8-generated.cte"), generateArrayInt8Tests()...)
+}
+
+func generateRulesTestFiles(testsDir string) {
+	prefixes := test.Events{EvBAB, EvBAF16, EvBAF32, EvBAF64, EvBAI16, EvBAI32, EvBAI64, EvBAI8,
+		EvBAU, EvBAU16, EvBAU32, EvBAU64, EvBAU8, EvBCB, EvBCT, EvBMEDIA, EvBRID, EvBS}
+	for _, prefix := range prefixes {
+		filename := fmt.Sprintf("rules-%v-generated.cte", prefix.Name())
+		writeTestFile(filepath.Join(testsDir, filename), generateRulesInvalidArrayEventsTests(prefix)...)
+	}
+}
+
+func generateRulesInvalidArrayEventsTests(prefix test.Event) []*test_runner.UnitTest {
+	var mustFail []*test_runner.MustFailTest
+	for _, event := range complementaryEvents(test.Events{EvACL, EvACM}) {
+		events := test.Events{prefix, event}
+		mustFail = append(mustFail, newMustFailTest(testTypeEvents, events...))
+	}
+	name := fmt.Sprintf("Invlid %v Event Sequences", prefix.Name())
+	return []*test_runner.UnitTest{newMustFailUnitTest(name, mustFail...)}
 }
 
 func generateArrayInt8Tests() []*test_runner.UnitTest {
@@ -145,16 +166,6 @@ func generateArrayInt8Tests() []*test_runner.UnitTest {
 		mustFail = append(mustFail, newMustFailTest(testTypeCbe, BAI8(), ACL(uint64(i)), ADI8(contents)))
 	}
 	unitTests = append(unitTests, newMustFailUnitTest("Truncated Array", mustFail...))
-
-	// Invalid event sequences
-	// TODO: Move these to the rules test file
-	// mustFail = nil
-	// prefix := test.Events{EvBAI8}
-	// for _, event := range complementaryEvents(test.Events{EvACL, EvACM}) {
-	// 	events := append(prefix, event)
-	// 	mustFail = append(mustFail, newMustFailTest(testTypeEvents, events...))
-	// }
-	// unitTests = append(unitTests, newMustFailUnitTest("Invalid Event Sequences", mustFail...))
 
 	return unitTests
 }
