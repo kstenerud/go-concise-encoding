@@ -23,6 +23,7 @@ package tests
 import (
 	"bytes"
 	"fmt"
+	"io"
 	"math"
 	"os"
 	"path/filepath"
@@ -30,6 +31,7 @@ import (
 	compact_time "github.com/kstenerud/go-compact-time"
 	"github.com/kstenerud/go-concise-encoding/cbe"
 	"github.com/kstenerud/go-concise-encoding/ce"
+	"github.com/kstenerud/go-concise-encoding/codegen/standard"
 	"github.com/kstenerud/go-concise-encoding/configuration"
 	"github.com/kstenerud/go-concise-encoding/cte"
 	"github.com/kstenerud/go-concise-encoding/test"
@@ -38,6 +40,7 @@ import (
 )
 
 func generateTestFiles(projectDir string) {
+	generateTestGenerators(filepath.Join(projectDir, "codegen/tests"))
 	testsDir := filepath.Join(projectDir, "tests/suites/generated")
 
 	generateRulesTestFiles(testsDir)
@@ -50,6 +53,30 @@ func generateTestFiles(projectDir string) {
 	writeTestFile(filepath.Join(testsDir, "node-generated.cte"), generateNodeValueTests(), generateNodeChildTests())
 	writeTestFile(filepath.Join(testsDir, "struct-generated.cte"), generateStructTemplateTests(), generateStructInstanceTests())
 	writeTestFile(filepath.Join(testsDir, "array-int8-generated.cte"), generateArrayInt8Tests()...)
+}
+
+var testsImports = []*standard.Import{
+	// {LocalName: "compact_time", Import: "github.com/kstenerud/go-compact-time"},
+	// {LocalName: "", Import: "github.com/kstenerud/go-concise-encoding/ce/events"},
+}
+
+func generateTestGenerators(basePath string) {
+	generatedFilePath := standard.GetGeneratedCodePath(basePath)
+	writer, err := os.Create(generatedFilePath)
+	standard.PanicIfError(err, "could not open %s", generatedFilePath)
+	defer writer.Close()
+	defer func() {
+		if e := recover(); e != nil {
+			panic(fmt.Errorf("error while generating %v: %v", generatedFilePath, e))
+		}
+	}()
+
+	standard.WriteHeader(writer, "tests", testsImports)
+	generateArrayTestGenerator(writer)
+}
+
+func generateArrayTestGenerator(writer io.Writer) {
+
 }
 
 func generateRulesTestFiles(testsDir string) {
@@ -71,6 +98,11 @@ func generateRulesInvalidArrayEventsTests(prefix test.Event) []*test_runner.Unit
 	return []*test_runner.UnitTest{newMustFailUnitTest(name, mustFail...)}
 }
 
+// Name:   Int8
+// Type:   int8
+// Fields: Int8
+// Consts: MaxInt8, MinInt8
+// Events: AI8, BAI8, ADI8
 func generateArrayInt8Tests() []*test_runner.UnitTest {
 	var unitTests []*test_runner.UnitTest
 	var mustSucceed []*test_runner.MustSucceedTest
@@ -104,7 +136,7 @@ func generateArrayInt8Tests() []*test_runner.UnitTest {
 	// Various element values
 	contents = contents[:0]
 	mustSucceed = nil
-	multiple := math.MaxUint8 / 31
+	multiple := math.MaxInt8 / 31
 	for i := math.MinInt8; i < math.MaxInt8; i += multiple {
 		contents = append(contents, int8(math.MinInt8+i))
 	}

@@ -24,6 +24,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path/filepath"
 
 	"github.com/kstenerud/go-concise-encoding/codegen/datatypes"
 	"github.com/kstenerud/go-concise-encoding/codegen/standard"
@@ -38,7 +39,7 @@ var imports = []*standard.Import{
 }
 
 func GenerateCode(projectDir string) {
-	generatedFilePath := standard.GetGeneratedCodePath(projectDir, path)
+	generatedFilePath := standard.GetGeneratedCodePath(filepath.Join(projectDir, path))
 	writer, err := os.Create(generatedFilePath)
 	standard.PanicIfError(err, "could not open %s", generatedFilePath)
 	defer writer.Close()

@@ -26,6 +26,7 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 	"sort"
 	"strconv"
 	"unicode/utf8"
@@ -47,7 +48,7 @@ func GenerateCode(projectDir string, xmlPath string) {
 	standard.PanicIfError(err, "error reading [%v]", xmlPath)
 	classifyRunes(chars)
 
-	generatedFilePath := standard.GetGeneratedCodePath(projectDir, path)
+	generatedFilePath := standard.GetGeneratedCodePath(filepath.Join(projectDir, path))
 	writer, err := os.Create(generatedFilePath)
 	standard.PanicIfError(err, "error opening [%v] for writing", generatedFilePath)
 	defer writer.Close()

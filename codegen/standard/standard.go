@@ -80,8 +80,8 @@ func WriteHeader(writer io.Writer, path string, imports []*Import) {
 	return
 }
 
-func GetGeneratedCodePath(projectDir, subdir string) string {
-	return filepath.Join(projectDir, subdir, generatedCodeFileName)
+func GetGeneratedCodePath(path string) string {
+	return filepath.Join(path, generatedCodeFileName)
 }
 
 func PanicIfError(err error, format string, args ...interface{}) {

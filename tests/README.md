@@ -5,6 +5,6 @@ This directory contains standard CE compliance tests that can be run against oth
 
 TODO: Flesh this out more.
 
-See [template.cte](template.cte) for test templates.
+See [template.cte](suites/template.cte) for test templates.
 
 Implementors: See [event_parser](../test/event_parser) and [test_runner](../test/test_runner) for sample test runner code.

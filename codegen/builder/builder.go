@@ -24,6 +24,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/kstenerud/go-concise-encoding/codegen/standard"
@@ -335,7 +336,7 @@ var builders = []Builder{
 }
 
 func GenerateCode(projectDir string) {
-	generatedFilePath := standard.GetGeneratedCodePath(projectDir, path)
+	generatedFilePath := standard.GetGeneratedCodePath(filepath.Join(projectDir, path))
 	writer, err := os.Create(generatedFilePath)
 	standard.PanicIfError(err, "could not open %s", generatedFilePath)
 	defer writer.Close()

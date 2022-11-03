@@ -25,6 +25,7 @@ import (
 	"io"
 	"math"
 	"os"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -37,13 +38,13 @@ import (
 
 const codePath = "test"
 
-var imports = []*standard.Import{
+var eventsImports = []*standard.Import{
 	{LocalName: "compact_time", Import: "github.com/kstenerud/go-compact-time"},
 	{LocalName: "", Import: "github.com/kstenerud/go-concise-encoding/ce/events"},
 }
 
 func generateEvents(projectDir string) {
-	generatedFilePath := standard.GetGeneratedCodePath(projectDir, codePath)
+	generatedFilePath := standard.GetGeneratedCodePath(filepath.Join(projectDir, codePath))
 	writer, err := os.Create(generatedFilePath)
 	standard.PanicIfError(err, "could not open %s", generatedFilePath)
 	defer writer.Close()
@@ -53,7 +54,7 @@ func generateEvents(projectDir string) {
 		}
 	}()
 
-	standard.WriteHeader(writer, codePath, imports)
+	standard.WriteHeader(writer, codePath, eventsImports)
 
 	generateOneArgEvent(writer, "ArrayBit", "ab", "elements", "[]bool", "receiver.OnArray(events.ArrayTypeBit, uint64(len(safeArg)), arrayBitsToBytes(safeArg))")
 	generateOneArgEvent(writer, "ArrayDataBit", "adb", "elements", "[]bool", "receiver.OnArrayData(arrayBitsToBytes(safeArg))")
