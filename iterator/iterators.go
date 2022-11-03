@@ -267,7 +267,7 @@ type structField struct {
 	Identifier   string
 	Name         string
 	Type         reflect.Type
-	Index        int
+	IndexPath    []int
 	Iterate      IteratorFunction
 	IncludeName  bool
 	OmitBehavior configuration.FieldOmitBehavior
@@ -275,14 +275,18 @@ type structField struct {
 }
 
 func (_this structField) String() string {
-	return fmt.Sprintf("{%v, %v, %v, %v}", _this.Name, _this.Type, _this.Order, _this.Index)
+	return fmt.Sprintf("{%v, %v, %v, %v}", _this.Name, _this.Type, _this.Order, _this.IndexPath)
 }
 
 func (_this *structField) getValueFromStruct(fromValue reflect.Value) reflect.Value {
-	return fromValue.Field(_this.Index)
+	value := fromValue
+	for _, index := range _this.IndexPath {
+		value = value.Field(index)
+	}
+	return value
 }
 
-func newStructField(fromField reflect.StructField, index int, fieldNameStyle configuration.FieldNameStyle) structField {
+func newStructField(fromField reflect.StructField, indexPath []int, fieldNameStyle configuration.FieldNameStyle) structField {
 	tags := common.DecodeGoTags(fromField)
 	name := tags.Name
 	if fieldNameStyle == configuration.FieldNameSnakeCase {
@@ -293,7 +297,7 @@ func newStructField(fromField reflect.StructField, index int, fieldNameStyle con
 		Identifier:   common.ToStructFieldIdentifier(tags.Name),
 		Name:         name,
 		Type:         fromField.Type,
-		Index:        index,
+		IndexPath:    indexPath,
 		OmitBehavior: tags.OmitBehavior,
 		Order:        tags.Order,
 	}
@@ -328,20 +332,23 @@ func isValueZero(value reflect.Value) bool {
 	return isValueEmpty(value)
 }
 
-func extractFields(ctx *Context, structType reflect.Type, fields []structField) []structField {
+func extractFields(ctx *Context, structType reflect.Type, indexPath []int, fields []structField) []structField {
 	for i := 0; i < structType.NumField(); i++ {
 		reflectField := structType.Field(i)
 		if common.IsFieldExported(reflectField.Name) {
-			field := newStructField(reflectField, i, ctx.Configuration.FieldNameStyle)
-
+			localPath := make([]int, len(indexPath)+1, len(indexPath)+1)
+			copy(localPath, indexPath)
+			localPath[len(indexPath)] = i
+			field := newStructField(reflectField, localPath, ctx.Configuration.FieldNameStyle)
 			if field.OmitBehavior != configuration.OmitFieldAlways {
 				if reflectField.Anonymous {
-					field.Iterate = getEmbeddedFieldIterator(ctx, field.Type)
+					innerStructType := reflectField.Type
+					fields = extractFields(ctx, innerStructType, localPath, fields)
 				} else {
 					field.IncludeName = true
 					field.Iterate = ctx.GetIteratorForType(field.Type)
+					fields = append(fields, field)
 				}
-				fields = append(fields, field)
 			}
 		}
 	}
@@ -373,7 +380,7 @@ func shouldIncludeField(field structField, value reflect.Value, defaultOmitBehav
 }
 
 func newStructIterator(ctx *Context, structType reflect.Type) IteratorFunction {
-	fields := extractFields(ctx, structType, make([]structField, 0, structType.NumField()))
+	fields := extractFields(ctx, structType, []int{}, make([]structField, 0, structType.NumField()))
 	return func(context *Context, value reflect.Value) {
 		context.EventReceiver.OnMap()
 		for _, field := range fields {
@@ -386,21 +393,6 @@ func newStructIterator(ctx *Context, structType reflect.Type) IteratorFunction {
 			}
 		}
 		context.EventReceiver.OnEndContainer()
-	}
-}
-
-func getEmbeddedFieldIterator(ctx *Context, structType reflect.Type) IteratorFunction {
-	fields := extractFields(ctx, structType, make([]structField, 0, structType.NumField()))
-	return func(context *Context, value reflect.Value) {
-		for _, field := range fields {
-			fieldValue := field.getValueFromStruct(value)
-			if shouldIncludeField(field, fieldValue, ctx.Configuration.DefaultFieldOmitBehavior) {
-				if field.IncludeName {
-					context.EventReceiver.OnStringlikeArray(events.ArrayTypeString, field.Name)
-				}
-				field.Iterate(context, fieldValue)
-			}
-		}
 	}
 }
 

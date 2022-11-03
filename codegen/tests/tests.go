@@ -530,6 +530,7 @@ func writeTestFile(path string, tests ...*test_runner.UnitTest) {
 	config := configuration.DefaultCTEMarshalerConfiguration()
 	config.Iterator.FieldNameStyle = configuration.FieldNameSnakeCase
 	config.Encoder.DefaultNumericFormats.Array.Uint8 = configuration.CTEEncodingFormatHexadecimalZeroFilled
+	config.DebugPanics = true
 	document, err := ce.MarshalToCTEDocument(suite, &config)
 	if err != nil {
 		panic(err)

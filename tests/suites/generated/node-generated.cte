@@ -152,9 +152,9 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 98 94 02 01 9b|
                     "to_cte" = "(|b 1|
 )"
-                    "cbe" = |u8x 98 94 02 01 9b|
                     "events" = [
                         "node"
                         "bab"
@@ -164,9 +164,9 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 98 7f e8 02 80 3f 9b|
                     "to_cte" = "(|f16x 1|
 )"
-                    "cbe" = |u8x 98 7f e8 02 80 3f 9b|
                     "events" = [
                         "node"
                         "baf16"
@@ -176,9 +176,9 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 98 7f e9 02 00 00 80 3f 9b|
                     "to_cte" = "(|f32x 1|
 )"
-                    "cbe" = |u8x 98 7f e9 02 00 00 80 3f 9b|
                     "events" = [
                         "node"
                         "baf32"
@@ -188,9 +188,9 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 98 7f ea 02 00 00 00 00 00 00 f0 3f 9b|
                     "to_cte" = "(|f64x 1|
 )"
-                    "cbe" = |u8x 98 7f ea 02 00 00 00 00 00 00 f0 3f 9b|
                     "events" = [
                         "node"
                         "baf64"
@@ -200,9 +200,9 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 98 7f e3 02 01 00 9b|
                     "to_cte" = "(|i16 1|
 )"
-                    "cbe" = |u8x 98 7f e3 02 01 00 9b|
                     "events" = [
                         "node"
                         "bai16"
@@ -212,9 +212,9 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 98 7f e5 02 01 00 00 00 9b|
                     "to_cte" = "(|i32 1|
 )"
-                    "cbe" = |u8x 98 7f e5 02 01 00 00 00 9b|
                     "events" = [
                         "node"
                         "bai32"
@@ -224,9 +224,9 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 98 7f e7 02 01 00 00 00 00 00 00 00 9b|
                     "to_cte" = "(|i64 1|
 )"
-                    "cbe" = |u8x 98 7f e7 02 01 00 00 00 00 00 00 00 9b|
                     "events" = [
                         "node"
                         "bai64"
@@ -236,9 +236,9 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 98 7f e1 02 01 9b|
                     "to_cte" = "(|i8 1|
 )"
-                    "cbe" = |u8x 98 7f e1 02 01 9b|
                     "events" = [
                         "node"
                         "bai8"
@@ -248,9 +248,9 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 98 7f e0 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 9b|
                     "to_cte" = "(|u 00000000-0000-0000-0000-000000000000|
 )"
-                    "cbe" = |u8x 98 7f e0 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 9b|
                     "events" = [
                         "node"
                         "bau"
@@ -260,9 +260,9 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 98 7f e2 02 01 00 9b|
                     "to_cte" = "(|u16 1|
 )"
-                    "cbe" = |u8x 98 7f e2 02 01 00 9b|
                     "events" = [
                         "node"
                         "bau16"
@@ -272,9 +272,9 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 98 7f e4 02 01 00 00 00 9b|
                     "to_cte" = "(|u32 1|
 )"
-                    "cbe" = |u8x 98 7f e4 02 01 00 00 00 9b|
                     "events" = [
                         "node"
                         "bau32"
@@ -284,9 +284,9 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 98 7f e6 02 01 00 00 00 00 00 00 00 9b|
                     "to_cte" = "(|u64 1|
 )"
-                    "cbe" = |u8x 98 7f e6 02 01 00 00 00 00 00 00 00 9b|
                     "events" = [
                         "node"
                         "bau64"
@@ -296,9 +296,9 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 98 93 02 01 9b|
                     "to_cte" = "(|u8 1|
 )"
-                    "cbe" = |u8x 98 93 02 01 9b|
                     "events" = [
                         "node"
                         "bau8"
@@ -308,9 +308,9 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 98 92 00 02 01 9b|
                     "to_cte" = "(|c0 01|
 )"
-                    "cbe" = |u8x 98 92 00 02 01 9b|
                     "events" = [
                         "node"
                         "bcb=0"
@@ -331,9 +331,9 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 98 7f f3 03 61 2f 62 02 01 9b|
                     "to_cte" = "(|a/b 01|
 )"
-                    "cbe" = |u8x 98 7f f3 03 61 2f 62 02 01 9b|
                     "events" = [
                         "node"
                         "bmedia=a/b"
@@ -343,9 +343,9 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 98 91 02 61 9b|
                     "to_cte" = "(@\"a\"
 )"
-                    "cbe" = |u8x 98 91 02 61 9b|
                     "events" = [
                         "node"
                         "brid"
@@ -355,9 +355,9 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 98 90 02 61 9b|
                     "to_cte" = "(\"a\"
 )"
-                    "cbe" = |u8x 98 90 02 61 9b|
                     "events" = [
                         "node"
                         "bs"
@@ -534,9 +534,9 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 98 95 ff 9b|
                     "to_cte" = "(-1
 )"
-                    "cbe" = |u8x 98 95 ff 9b|
                     "events" = [
                         "node"
                         "pad"
@@ -850,10 +850,10 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 98 7d 94 02 01 9b|
                     "to_cte" = "(null
     |b 1|
 )"
-                    "cbe" = |u8x 98 7d 94 02 01 9b|
                     "events" = [
                         "node"
                         "null"
@@ -864,10 +864,10 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 98 7d 7f e8 02 80 3f 9b|
                     "to_cte" = "(null
     |f16x 1|
 )"
-                    "cbe" = |u8x 98 7d 7f e8 02 80 3f 9b|
                     "events" = [
                         "node"
                         "null"
@@ -878,10 +878,10 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 98 7d 7f e9 02 00 00 80 3f 9b|
                     "to_cte" = "(null
     |f32x 1|
 )"
-                    "cbe" = |u8x 98 7d 7f e9 02 00 00 80 3f 9b|
                     "events" = [
                         "node"
                         "null"
@@ -892,10 +892,10 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 98 7d 7f ea 02 00 00 00 00 00 00 f0 3f 9b|
                     "to_cte" = "(null
     |f64x 1|
 )"
-                    "cbe" = |u8x 98 7d 7f ea 02 00 00 00 00 00 00 f0 3f 9b|
                     "events" = [
                         "node"
                         "null"
@@ -906,10 +906,10 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 98 7d 7f e3 02 01 00 9b|
                     "to_cte" = "(null
     |i16 1|
 )"
-                    "cbe" = |u8x 98 7d 7f e3 02 01 00 9b|
                     "events" = [
                         "node"
                         "null"
@@ -920,10 +920,10 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 98 7d 7f e5 02 01 00 00 00 9b|
                     "to_cte" = "(null
     |i32 1|
 )"
-                    "cbe" = |u8x 98 7d 7f e5 02 01 00 00 00 9b|
                     "events" = [
                         "node"
                         "null"
@@ -934,10 +934,10 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 98 7d 7f e7 02 01 00 00 00 00 00 00 00 9b|
                     "to_cte" = "(null
     |i64 1|
 )"
-                    "cbe" = |u8x 98 7d 7f e7 02 01 00 00 00 00 00 00 00 9b|
                     "events" = [
                         "node"
                         "null"
@@ -948,10 +948,10 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 98 7d 7f e1 02 01 9b|
                     "to_cte" = "(null
     |i8 1|
 )"
-                    "cbe" = |u8x 98 7d 7f e1 02 01 9b|
                     "events" = [
                         "node"
                         "null"
@@ -962,10 +962,10 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 98 7d 7f e0 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 9b|
                     "to_cte" = "(null
     |u 00000000-0000-0000-0000-000000000000|
 )"
-                    "cbe" = |u8x 98 7d 7f e0 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 9b|
                     "events" = [
                         "node"
                         "null"
@@ -976,10 +976,10 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 98 7d 7f e2 02 01 00 9b|
                     "to_cte" = "(null
     |u16 1|
 )"
-                    "cbe" = |u8x 98 7d 7f e2 02 01 00 9b|
                     "events" = [
                         "node"
                         "null"
@@ -990,10 +990,10 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 98 7d 7f e4 02 01 00 00 00 9b|
                     "to_cte" = "(null
     |u32 1|
 )"
-                    "cbe" = |u8x 98 7d 7f e4 02 01 00 00 00 9b|
                     "events" = [
                         "node"
                         "null"
@@ -1004,10 +1004,10 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 98 7d 7f e6 02 01 00 00 00 00 00 00 00 9b|
                     "to_cte" = "(null
     |u64 1|
 )"
-                    "cbe" = |u8x 98 7d 7f e6 02 01 00 00 00 00 00 00 00 9b|
                     "events" = [
                         "node"
                         "null"
@@ -1018,10 +1018,10 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 98 7d 93 02 01 9b|
                     "to_cte" = "(null
     |u8 1|
 )"
-                    "cbe" = |u8x 98 7d 93 02 01 9b|
                     "events" = [
                         "node"
                         "null"
@@ -1032,10 +1032,10 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 98 7d 92 00 02 01 9b|
                     "to_cte" = "(null
     |c0 01|
 )"
-                    "cbe" = |u8x 98 7d 92 00 02 01 9b|
                     "events" = [
                         "node"
                         "null"
@@ -1059,10 +1059,10 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 98 7d 7f f3 03 61 2f 62 02 01 9b|
                     "to_cte" = "(null
     |a/b 01|
 )"
-                    "cbe" = |u8x 98 7d 7f f3 03 61 2f 62 02 01 9b|
                     "events" = [
                         "node"
                         "null"
@@ -1073,10 +1073,10 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 98 7d 91 02 61 9b|
                     "to_cte" = "(null
     @\"a\"
 )"
-                    "cbe" = |u8x 98 7d 91 02 61 9b|
                     "events" = [
                         "node"
                         "null"
@@ -1087,10 +1087,10 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 98 7d 90 02 61 9b|
                     "to_cte" = "(null
     \"a\"
 )"
-                    "cbe" = |u8x 98 7d 90 02 61 9b|
                     "events" = [
                         "node"
                         "null"
@@ -1298,10 +1298,10 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 98 7d 95 ff 9b|
                     "to_cte" = "(null
     -1
 )"
-                    "cbe" = |u8x 98 7d 95 ff 9b|
                     "events" = [
                         "node"
                         "null"
