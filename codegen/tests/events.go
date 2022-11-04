@@ -24,6 +24,7 @@ import (
 	"fmt"
 	"io"
 	"math"
+	"math/big"
 	"os"
 	"path/filepath"
 	"strings"
@@ -32,6 +33,7 @@ import (
 	compact_float "github.com/kstenerud/go-compact-float"
 	compact_time "github.com/kstenerud/go-compact-time"
 	"github.com/kstenerud/go-concise-encoding/codegen/standard"
+	"github.com/kstenerud/go-concise-encoding/configuration"
 	"github.com/kstenerud/go-concise-encoding/test"
 	"github.com/kstenerud/go-concise-encoding/version"
 )
@@ -385,7 +387,45 @@ var (
 	}
 )
 
-func canConvertFromCTE(events ...test.Event) bool {
+func hasNonstandardCTEEncoding(formats configuration.CTEEncoderDefaultNumericFormats, event test.Event) bool {
+	switch event.Name() {
+	case EvAI8.Name(), EvBAI8.Name():
+		return formats.Array.Int8 != configuration.CTEEncodingFormatDecimal
+	case EvAI16.Name(), EvBAI16.Name():
+		return formats.Array.Int16 != configuration.CTEEncodingFormatDecimal
+	case EvAI32.Name(), EvBAI32.Name():
+		return formats.Array.Int32 != configuration.CTEEncodingFormatDecimal
+	case EvAI64.Name(), EvBAI64.Name():
+		return formats.Array.Int64 != configuration.CTEEncodingFormatDecimal
+	case EvAU8.Name(), EvBAU8.Name():
+		return formats.Array.Uint8 != configuration.CTEEncodingFormatDecimal
+	case EvAU16.Name(), EvBAU16.Name():
+		return formats.Array.Uint16 != configuration.CTEEncodingFormatDecimal
+	case EvAU32.Name(), EvBAU32.Name():
+		return formats.Array.Uint32 != configuration.CTEEncodingFormatDecimal
+	case EvAU64.Name(), EvBAU64.Name():
+		return formats.Array.Uint64 != configuration.CTEEncodingFormatDecimal
+	case EvAF16.Name(), EvBAF16.Name():
+		return formats.Array.Float16 != configuration.CTEEncodingFormatHexadecimal
+	case EvAF32.Name(), EvBAF32.Name():
+		return formats.Array.Float32 != configuration.CTEEncodingFormatHexadecimal
+	case EvAF64.Name(), EvBAF64.Name():
+		return formats.Array.Float64 != configuration.CTEEncodingFormatHexadecimal
+	}
+
+	switch event.Value().(type) {
+	case int, int8, int16, int32, int64, *big.Int, test.NegFFFFFFFFFFFFFFFF:
+		return formats.Int != configuration.CTEEncodingFormatDecimal
+	case uint, uint8, uint16, uint32, uint64:
+		return formats.Uint != configuration.CTEEncodingFormatDecimal
+	case float32, float64, *big.Float:
+		return formats.BinaryFloat != configuration.CTEEncodingFormatHexadecimal
+	}
+
+	return false
+}
+
+func canConvertFromCTE(config *configuration.CTEEncoderConfiguration, events ...test.Event) bool {
 	for _, event := range events {
 		if noFromCTE[event.Name()] {
 			return false
@@ -394,7 +434,16 @@ func canConvertFromCTE(events ...test.Event) bool {
 	return true
 }
 
-func canConvertFromCBE(events ...test.Event) bool {
+func canConvertToCTE(config *configuration.CTEEncoderConfiguration, events ...test.Event) bool {
+	for _, event := range events {
+		if hasNonstandardCTEEncoding(config.DefaultNumericFormats, event) {
+			return false
+		}
+	}
+	return true
+}
+
+func canConvertFromCBE(config *configuration.CTEEncoderConfiguration, events ...test.Event) bool {
 	for _, event := range events {
 		if noFromCBE[event.Name()] {
 			return false
@@ -403,7 +452,7 @@ func canConvertFromCBE(events ...test.Event) bool {
 	return true
 }
 
-func canConvertToCBE(events ...test.Event) bool {
+func canConvertToCBE(config *configuration.CTEEncoderConfiguration, events ...test.Event) bool {
 	for _, event := range events {
 		if arrayHasShortForm[event.Name()] && event.ArrayElementCount() > 15 {
 			return false
@@ -413,6 +462,15 @@ func canConvertToCBE(events ...test.Event) bool {
 		}
 	}
 	return true
+}
+
+func mustNotConvertToCBE(events ...test.Event) bool {
+	for _, event := range events {
+		if noToCBE[event.Name()] {
+			return true
+		}
+	}
+	return false
 }
 
 func generateEventPrefixesAndFollowups(events ...test.Event) (eventSets []test.Events) {

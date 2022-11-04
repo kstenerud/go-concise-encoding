@@ -103,6 +103,7 @@ func generateRulesInvalidArrayEventsTests(prefix test.Event) []*test_runner.Unit
 // Fields: Int8
 // Consts: MaxInt8, MinInt8
 // Events: AI8, BAI8, ADI8
+// Can probably just do "Int8", "I8" for int types
 func generateArrayInt8Tests() []*test_runner.UnitTest {
 	var unitTests []*test_runner.UnitTest
 	var mustSucceed []*test_runner.MustSucceedTest
@@ -112,6 +113,7 @@ func generateArrayInt8Tests() []*test_runner.UnitTest {
 	// Empty array
 	unitTests = append(unitTests, newMustSucceedUnitTest("Empty Array",
 		newMustSucceedTest(&config, AI8(nil)),
+		newMustSucceedTest(&config, BAI8(), ACL(0)),
 	))
 
 	// Short array
@@ -142,6 +144,7 @@ func generateArrayInt8Tests() []*test_runner.UnitTest {
 	}
 	mustSucceed = append(mustSucceed, newMustSucceedTest(&config, BAI8(), ACL(uint64(len(contents))), ADI8(contents)))
 
+	// Base 2, 8, 16
 	contents = contents[:0]
 	multiple = math.MaxUint8 / 7
 	for i := math.MinInt8; i < math.MaxInt8; i += multiple {
@@ -149,15 +152,12 @@ func generateArrayInt8Tests() []*test_runner.UnitTest {
 	}
 	config.DefaultNumericFormats.Array.Int8 = configuration.CTEEncodingFormatBinary
 	t := newMustSucceedTest(&config, AI8(contents))
-	t.UseFromCTE()
 	mustSucceed = append(mustSucceed, t)
 	config.DefaultNumericFormats.Array.Int8 = configuration.CTEEncodingFormatOctal
 	t = newMustSucceedTest(&config, AI8(contents))
-	t.UseFromCTE()
 	mustSucceed = append(mustSucceed, t)
 	config.DefaultNumericFormats.Array.Int8 = configuration.CTEEncodingFormatHexadecimal
 	t = newMustSucceedTest(&config, AI8(contents))
-	t.UseFromCTE()
 	mustSucceed = append(mustSucceed, t)
 	config = configuration.DefaultCTEEncoderConfiguration()
 	unitTests = append(unitTests, newMustSucceedUnitTest("Various Array Elements", mustSucceed...))
@@ -198,6 +198,12 @@ func generateArrayInt8Tests() []*test_runner.UnitTest {
 		mustFail = append(mustFail, newMustFailTest(testTypeCbe, BAI8(), ACL(uint64(i)), ADI8(contents)))
 	}
 	unitTests = append(unitTests, newMustFailUnitTest("Truncated Array", mustFail...))
+
+	// TODO: Value too big
+	// TODO: non-binary,octal,dec,hex digit
+	// TODO: non-numeric digit
+	// TODO: wrong type (adding dot, exponent marker etc)
+	// TODO: Attempted to use nan, inf, etc
 
 	return unitTests
 }
@@ -354,11 +360,12 @@ func generateStructInstanceTests() *test_runner.UnitTest {
 func generateEncodeDecodeTest(name string, prefix test.Events, suffix test.Events, validEvents test.Events, invalidEvents test.Events) *test_runner.UnitTest {
 	mustSucceed := []*test_runner.MustSucceedTest{}
 	mustFail := []*test_runner.MustFailTest{}
+	config := configuration.DefaultCTEEncoderConfiguration()
 
 	for _, eventSet := range generateEventPrefixesAndFollowups(validEvents...) {
 		events := append(prefix, eventSet...)
 		events = append(events, suffix...)
-		mustSucceed = append(mustSucceed, newMustSucceedTest(nil, events...))
+		mustSucceed = append(mustSucceed, newMustSucceedTest(&config, events...))
 	}
 
 	for _, event := range invalidEvents {
@@ -434,26 +441,32 @@ func newMustFailUnitTest(name string, mustFail ...*test_runner.MustFailTest) *te
 }
 
 func newMustSucceedTest(config *configuration.CTEEncoderConfiguration, events ...test.Event) *test_runner.MustSucceedTest {
-	cbe := generateCBE(events...)
-	fromCBE := cbe
-	toCBE := cbe
-	cte := generateCTE(config, events...)
-	toCTE := cte
+	hasFromCBE := canConvertFromCBE(config, events...)
+	hasToCBE := canConvertToCBE(config, events...)
+	cbeDocument := generateCBE(events...)
+	cbe := []byte{}
+	fromCBE := []byte{}
+	toCBE := []byte{}
+	if hasFromCBE && hasToCBE {
+		cbe = cbeDocument
+	} else if hasFromCBE {
+		fromCBE = cbeDocument
+	} else if hasToCBE {
+		toCBE = cbeDocument
+	}
 
-	if canConvertFromCTE(events...) {
-		toCTE = ""
-	} else {
-		cte = ""
-	}
-	if canConvertFromCBE(events...) {
-		toCBE = nil
-	} else {
-		cbe = nil
-	}
-	if canConvertToCBE(events...) {
-		fromCBE = nil
-	} else {
-		cbe = nil
+	hasFromCTE := canConvertFromCTE(config, events...)
+	hasToCTE := canConvertToCTE(config, events...)
+	cteDocument := generateCTE(config, events...)
+	cte := ""
+	fromCTE := ""
+	toCTE := ""
+	if hasFromCTE && hasToCTE {
+		cte = cteDocument
+	} else if hasFromCTE {
+		fromCTE = cteDocument
+	} else if hasToCTE {
+		toCTE = cteDocument
 	}
 
 	return &test_runner.MustSucceedTest{
@@ -464,6 +477,7 @@ func newMustSucceedTest(config *configuration.CTEEncoderConfiguration, events ..
 		},
 		FromCBE: fromCBE,
 		ToCBE:   toCBE,
+		FromCTE: fromCTE,
 		ToCTE:   toCTE,
 	}
 }
@@ -491,7 +505,7 @@ func generateCustomMustFailTest(cteContents string) *test_runner.MustFailTest {
 }
 
 func generateCBE(events ...test.Event) []byte {
-	if !canConvertToCBE(events...) {
+	if mustNotConvertToCBE(events...) {
 		return []byte{}
 	}
 

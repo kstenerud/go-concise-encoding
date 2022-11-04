@@ -48,6 +48,7 @@ type Event interface {
 	Invoke(events.DataEventReceiver)
 	IsEquivalentTo(Event) bool
 	Comparable() string
+	Value() interface{}
 }
 
 type Events []Event
@@ -85,6 +86,12 @@ func (_this *BaseEvent) Comparable() string                       { return _this
 func (_this *BaseEvent) ArrayElementCount() int                   { return _this.arrayElementCount }
 func (_this *BaseEvent) IsEquivalentTo(that Event) bool {
 	return _this.Comparable() == that.Comparable()
+}
+func (_this *BaseEvent) Value() interface{} {
+	if len(_this.values) == 0 {
+		return nil
+	}
+	return _this.values[len(_this.values)-1]
 }
 
 func ConstructEvent(shortName string, invocation EventInvocation, values ...interface{}) BaseEvent {
