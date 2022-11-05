@@ -200,9 +200,10 @@ func generateArrayInt8Tests() []*test_runner.UnitTest {
 	for i := 2; i <= 10; i++ {
 		contents = contents[:i/2]
 		mustFail = append(mustFail, newMustFailTest(testTypeCbe, BAI8(), ACL(uint64(i)), ADI8(contents)))
+		mustFail = append(mustFail, &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CBE: truncate(generateCBE(AI8(contents)), 1)}})
 	}
-	// TODO: Short form
-	// TODO: Truncated CTE array
+	mustFail = append(mustFail, &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: generateCTE(nil, BAI8())}})
+	mustFail = append(mustFail, &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: generateCTE(nil, BAI8(), ACL(uint64(2)), ADI8(contents[:1]))}})
 	unitTests = append(unitTests, newMustFailUnitTest("Truncated Array", mustFail...))
 
 	// Element value out of range
@@ -258,6 +259,10 @@ func generateArrayInt8Tests() []*test_runner.UnitTest {
 	unitTests = append(unitTests, newMustFailUnitTest("Float value in int array", mustFail...))
 
 	return unitTests
+}
+
+func truncate(data []byte, count int) []byte {
+	return data[:len(data)-count]
 }
 
 var bases = []string{
