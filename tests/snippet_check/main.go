@@ -101,7 +101,7 @@ func addHeaderIfNeeded(data []byte) []byte {
 	if len(data) < 2 {
 		return data
 	}
-	if data[0] == 'c' && (data[1] >= '0' && data[1] <= '9') {
+	if (data[0] == 'c' || data[0] == 'C') && (data[1] >= '0' && data[1] <= '9') {
 		return data
 	}
 
