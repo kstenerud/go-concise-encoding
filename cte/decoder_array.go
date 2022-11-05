@@ -66,7 +66,9 @@ func finishTypedArray(ctx *DecoderContext) {
 		elemCount := uint64(len(data) / ctx.ArrayBytesPerElement)
 		if ctx.ArrayContainsComments {
 			ctx.EventReceiver.OnArrayChunk(elemCount, false)
-			ctx.EventReceiver.OnArrayData(data)
+			if elemCount > 0 {
+				ctx.EventReceiver.OnArrayData(data)
+			}
 		} else {
 			ctx.EventReceiver.OnArray(ctx.ArrayType, elemCount, data)
 		}
