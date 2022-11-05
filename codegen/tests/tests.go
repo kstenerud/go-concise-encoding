@@ -25,6 +25,7 @@ import (
 	"fmt"
 	"io"
 	"math"
+	"math/big"
 	"os"
 	"path/filepath"
 
@@ -143,8 +144,10 @@ func generateArrayInt8Tests() []*test_runner.UnitTest {
 		contents = append(contents, int8(math.MinInt8+i))
 	}
 	mustSucceed = append(mustSucceed, newMustSucceedTest(&config, BAI8(), ACL(uint64(len(contents))), ADI8(contents)))
+	unitTests = append(unitTests, newMustSucceedUnitTest("Various Array Elements", mustSucceed...))
 
 	// Base 2, 8, 16
+	mustSucceed = nil
 	contents = contents[:0]
 	multiple = math.MaxUint8 / 7
 	for i := math.MinInt8; i < math.MaxInt8; i += multiple {
@@ -160,7 +163,7 @@ func generateArrayInt8Tests() []*test_runner.UnitTest {
 	t = newMustSucceedTest(&config, AI8(contents))
 	mustSucceed = append(mustSucceed, t)
 	config = configuration.DefaultCTEEncoderConfiguration()
-	unitTests = append(unitTests, newMustSucceedUnitTest("Various Array Elements", mustSucceed...))
+	unitTests = append(unitTests, newMustSucceedUnitTest("Base 2, 8, 16", mustSucceed...))
 
 	// Chunking
 	mustSucceed = nil
@@ -190,22 +193,100 @@ func generateArrayInt8Tests() []*test_runner.UnitTest {
 	// Fail mode tests
 	var mustFail []*test_runner.MustFailTest
 
-	// Truncated document
+	// Truncated Array
 	mustFail = nil
+	mustFail = append(mustFail, newMustFailTest(testTypeCbe, BAI8()))
 	mustFail = append(mustFail, newMustFailTest(testTypeCbe, BAI8(), ACL(1)))
 	for i := 2; i <= 10; i++ {
 		contents = contents[:i/2]
 		mustFail = append(mustFail, newMustFailTest(testTypeCbe, BAI8(), ACL(uint64(i)), ADI8(contents)))
 	}
+	// TODO: Short form
+	// TODO: Truncated CTE array
 	unitTests = append(unitTests, newMustFailUnitTest("Truncated Array", mustFail...))
 
-	// TODO: Value too big
-	// TODO: non-binary,octal,dec,hex digit
-	// TODO: non-numeric digit
-	// TODO: wrong type (adding dot, exponent marker etc)
-	// TODO: Attempted to use nan, inf, etc
+	// Element value out of range
+	bigValue := big.NewInt(math.MaxInt8)
+	bigValue.Add(bigValue, big.NewInt(1))
+	smallValue := big.NewInt(math.MinInt8)
+	smallValue.Sub(smallValue, big.NewInt(1))
+	smallValue.Neg(smallValue)
+	unitTests = append(unitTests, newMustFailUnitTest(
+		"Element value out of range",
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|i8b %b|", bigValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|i8o %o|", bigValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|i8x %x|", bigValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|i8 %d|", bigValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|i8 0b%b|", bigValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|i8 0o%o|", bigValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|i8 0x%x|", bigValue)}},
+
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|i8b -%b|", smallValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|i8o -%o|", smallValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|i8x -%x|", smallValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|i8 -%d|", smallValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|i8 -0b%b|", smallValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|i8 -0o%o|", smallValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|i8 -0x%x|", smallValue)}},
+	))
+
+	// Numeric digit out of range
+	mustFail = nil
+	for iB, base := range bases {
+		for iV, v := range outOfRange {
+			if iV >= iB {
+				mustFail = append(mustFail, &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|i8%v %v|", base, v)}})
+			}
+		}
+	}
+	unitTests = append(unitTests, newMustFailUnitTest("Numeric digit out of range", mustFail...))
+
+	// Invalid special values
+	mustFail = nil
+	for _, base := range bases {
+		for _, special := range nonIntSpecials {
+			mustFail = append(mustFail, &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|i8%v %v|", base, special)}})
+		}
+	}
+	unitTests = append(unitTests, newMustFailUnitTest("Invalid special values", mustFail...))
+
+	// Float value in int array
+	mustFail = nil
+	for _, base := range bases {
+		mustFail = append(mustFail, &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|i8%v 1.2|", base)}})
+	}
+	unitTests = append(unitTests, newMustFailUnitTest("Float value in int array", mustFail...))
 
 	return unitTests
+}
+
+var bases = []string{
+	"b",
+	"o",
+	"",
+	"x",
+}
+
+var outOfRange = []string{
+	"12",
+	"18",
+	"1a",
+}
+
+var nonIntSpecials = []string{
+	"null",
+	"true",
+	"false",
+	"nan",
+	"snan",
+	"inf",
+	"-inf",
+}
+
+var nonFloatSpecials = []string{
+	"null",
+	"true",
+	"false",
 }
 
 var intEdgeValues = []int64{

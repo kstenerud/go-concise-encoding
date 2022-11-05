@@ -343,6 +343,11 @@ c0
                         "adi8=0 4 8 12 16 20 24 28 32 36 40 44 48 52 56 60 64 68 72 76 80 84 88 92 96 100 104 108 112 116 120 124 -128 -124 -120 -116 -112 -108 -104 -100 -96 -92 -88 -84 -80 -76 -72 -68 -64 -60 -56 -52 -48 -44 -40 -36 -32 -28 -24 -20 -16 -12 -8 -4"
                     ]
                 }
+            ]
+        }
+        {
+            "name" = "Base 2, 8, 16"
+            "must_succeed" = [
                 {
                     "cbe" = |u8x 7f 18 00 24 48 6c 90 b4 d8 fc|
                     "from_cte" = "|i8b 0 100100 1001000 1101100 -1110000 -1001100 -101000 -100|"
@@ -421,6 +426,9 @@ c0
             "name" = "Truncated Array"
             "must_fail" = [
                 {
+                    "cbe" = |u8x 7f e1|
+                }
+                {
                     "cbe" = |u8x 7f e1 02|
                 }
                 {
@@ -449,6 +457,182 @@ c0
                 }
                 {
                     "cbe" = |u8x 7f e1 14 00 01 7f 80 81|
+                }
+            ]
+        }
+        {
+            "name" = "Element value out of range"
+            "must_fail" = [
+                {
+                    "cte" = "|i8b 10000000|"
+                }
+                {
+                    "cte" = "|i8o 200|"
+                }
+                {
+                    "cte" = "|i8x 80|"
+                }
+                {
+                    "cte" = "|i8 128|"
+                }
+                {
+                    "cte" = "|i8 0b10000000|"
+                }
+                {
+                    "cte" = "|i8 0o200|"
+                }
+                {
+                    "cte" = "|i8 0x80|"
+                }
+                {
+                    "cte" = "|i8b -10000001|"
+                }
+                {
+                    "cte" = "|i8o -201|"
+                }
+                {
+                    "cte" = "|i8x -81|"
+                }
+                {
+                    "cte" = "|i8 -129|"
+                }
+                {
+                    "cte" = "|i8 -0b10000001|"
+                }
+                {
+                    "cte" = "|i8 -0o201|"
+                }
+                {
+                    "cte" = "|i8 -0x81|"
+                }
+            ]
+        }
+        {
+            "name" = "Numeric digit out of range"
+            "must_fail" = [
+                {
+                    "cte" = "|i8b 12|"
+                }
+                {
+                    "cte" = "|i8b 18|"
+                }
+                {
+                    "cte" = "|i8b 1a|"
+                }
+                {
+                    "cte" = "|i8o 18|"
+                }
+                {
+                    "cte" = "|i8o 1a|"
+                }
+                {
+                    "cte" = "|i8 1a|"
+                }
+            ]
+        }
+        {
+            "name" = "Invalid special values"
+            "must_fail" = [
+                {
+                    "cte" = "|i8b null|"
+                }
+                {
+                    "cte" = "|i8b true|"
+                }
+                {
+                    "cte" = "|i8b false|"
+                }
+                {
+                    "cte" = "|i8b nan|"
+                }
+                {
+                    "cte" = "|i8b snan|"
+                }
+                {
+                    "cte" = "|i8b inf|"
+                }
+                {
+                    "cte" = "|i8b -inf|"
+                }
+                {
+                    "cte" = "|i8o null|"
+                }
+                {
+                    "cte" = "|i8o true|"
+                }
+                {
+                    "cte" = "|i8o false|"
+                }
+                {
+                    "cte" = "|i8o nan|"
+                }
+                {
+                    "cte" = "|i8o snan|"
+                }
+                {
+                    "cte" = "|i8o inf|"
+                }
+                {
+                    "cte" = "|i8o -inf|"
+                }
+                {
+                    "cte" = "|i8 null|"
+                }
+                {
+                    "cte" = "|i8 true|"
+                }
+                {
+                    "cte" = "|i8 false|"
+                }
+                {
+                    "cte" = "|i8 nan|"
+                }
+                {
+                    "cte" = "|i8 snan|"
+                }
+                {
+                    "cte" = "|i8 inf|"
+                }
+                {
+                    "cte" = "|i8 -inf|"
+                }
+                {
+                    "cte" = "|i8x null|"
+                }
+                {
+                    "cte" = "|i8x true|"
+                }
+                {
+                    "cte" = "|i8x false|"
+                }
+                {
+                    "cte" = "|i8x nan|"
+                }
+                {
+                    "cte" = "|i8x snan|"
+                }
+                {
+                    "cte" = "|i8x inf|"
+                }
+                {
+                    "cte" = "|i8x -inf|"
+                }
+            ]
+        }
+        {
+            "name" = "Float value in int array"
+            "must_fail" = [
+                {
+                    "cte" = "|i8b 1.2|"
+                }
+                {
+                    "cte" = "|i8o 1.2|"
+                }
+                {
+                    "cte" = "|i8 1.2|"
+                }
+                {
+                    "cte" = "|i8x 1.2|"
                 }
             ]
         }
