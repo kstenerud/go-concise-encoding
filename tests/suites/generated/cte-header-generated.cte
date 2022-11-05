@@ -12,39 +12,39 @@ c0
             "name" = "Wrong sentinel"
             "must_fail" = [
                 {
-                    "cte" = "\+0.0 0"
+                    "cte" = "\{0}0 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "\+1.0 0"
+                    "cte" = "\{1}0 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "\+2.0 0"
+                    "cte" = "\{2}0 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "\+3.0 0"
+                    "cte" = "\{3}0 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "\+4.0 0"
+                    "cte" = "\{4}0 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "\+5.0 0"
+                    "cte" = "\{5}0 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "\+6.0 0"
+                    "cte" = "\{6}0 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "\+7.0 0"
+                    "cte" = "\{7}0 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "\+8.0 0"
+                    "cte" = "\{8}0 0"
                     "raw_document" = true
                 }
                 {
@@ -57,11 +57,11 @@ c0
                     "raw_document" = true
                 }
                 {
-                    "cte" = "\+b.0 0"
+                    "cte" = "\{b}0 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "\+c.0 0"
+                    "cte" = "\{c}0 0"
                     "raw_document" = true
                 }
                 {
@@ -69,75 +69,75 @@ c0
                     "raw_document" = true
                 }
                 {
-                    "cte" = "\+e.0 0"
+                    "cte" = "\{e}0 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "\+f.0 0"
+                    "cte" = "\{f}0 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "\+10.0 0"
+                    "cte" = "\{10}0 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "\+11.0 0"
+                    "cte" = "\{11}0 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "\+12.0 0"
+                    "cte" = "\{12}0 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "\+13.0 0"
+                    "cte" = "\{13}0 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "\+14.0 0"
+                    "cte" = "\{14}0 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "\+15.0 0"
+                    "cte" = "\{15}0 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "\+16.0 0"
+                    "cte" = "\{16}0 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "\+17.0 0"
+                    "cte" = "\{17}0 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "\+18.0 0"
+                    "cte" = "\{18}0 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "\+19.0 0"
+                    "cte" = "\{19}0 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "\+1a.0 0"
+                    "cte" = "\{1a}0 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "\+1b.0 0"
+                    "cte" = "\{1b}0 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "\+1c.0 0"
+                    "cte" = "\{1c}0 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "\+1d.0 0"
+                    "cte" = "\{1d}0 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "\+1e.0 0"
+                    "cte" = "\{1e}0 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "\+1f.0 0"
+                    "cte" = "\{1f}0 0"
                     "raw_document" = true
                 }
                 {
@@ -513,135 +513,135 @@ c0
                     "raw_document" = true
                 }
                 {
-                    "cte" = "\+7f.0 0"
+                    "cte" = "\{7f}0 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "\+80.0 0"
+                    "cte" = "\{80}0 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "\+81.0 0"
+                    "cte" = "\{81}0 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "\+82.0 0"
+                    "cte" = "\{82}0 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "\+83.0 0"
+                    "cte" = "\{83}0 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "\+84.0 0"
+                    "cte" = "\{84}0 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "\+85.0 0"
+                    "cte" = "\{85}0 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "\+86.0 0"
+                    "cte" = "\{86}0 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "\+87.0 0"
+                    "cte" = "\{87}0 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "\+88.0 0"
+                    "cte" = "\{88}0 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "\+89.0 0"
+                    "cte" = "\{89}0 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "\+8a.0 0"
+                    "cte" = "\{8a}0 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "\+8b.0 0"
+                    "cte" = "\{8b}0 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "\+8c.0 0"
+                    "cte" = "\{8c}0 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "\+8d.0 0"
+                    "cte" = "\{8d}0 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "\+8e.0 0"
+                    "cte" = "\{8e}0 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "\+8f.0 0"
+                    "cte" = "\{8f}0 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "\+90.0 0"
+                    "cte" = "\{90}0 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "\+91.0 0"
+                    "cte" = "\{91}0 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "\+92.0 0"
+                    "cte" = "\{92}0 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "\+93.0 0"
+                    "cte" = "\{93}0 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "\+94.0 0"
+                    "cte" = "\{94}0 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "\+95.0 0"
+                    "cte" = "\{95}0 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "\+96.0 0"
+                    "cte" = "\{96}0 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "\+97.0 0"
+                    "cte" = "\{97}0 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "\+98.0 0"
+                    "cte" = "\{98}0 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "\+99.0 0"
+                    "cte" = "\{99}0 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "\+9a.0 0"
+                    "cte" = "\{9a}0 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "\+9b.0 0"
+                    "cte" = "\{9b}0 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "\+9c.0 0"
+                    "cte" = "\{9c}0 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "\+9d.0 0"
+                    "cte" = "\{9d}0 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "\+9e.0 0"
+                    "cte" = "\{9e}0 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "\+9f.0 0"
+                    "cte" = "\{9f}0 0"
                     "raw_document" = true
                 }
                 {
@@ -697,7 +697,7 @@ c0
                     "raw_document" = true
                 }
                 {
-                    "cte" = "\+ad.0 0"
+                    "cte" = "\{ad}0 0"
                     "raw_document" = true
                 }
                 {
@@ -1034,39 +1034,39 @@ c0
             "name" = "Wrong version character"
             "must_fail" = [
                 {
-                    "cte" = "c\+0. 0"
+                    "cte" = "c\{0} 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "c\+1. 0"
+                    "cte" = "c\{1} 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "c\+2. 0"
+                    "cte" = "c\{2} 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "c\+3. 0"
+                    "cte" = "c\{3} 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "c\+4. 0"
+                    "cte" = "c\{4} 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "c\+5. 0"
+                    "cte" = "c\{5} 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "c\+6. 0"
+                    "cte" = "c\{6} 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "c\+7. 0"
+                    "cte" = "c\{7} 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "c\+8. 0"
+                    "cte" = "c\{8} 0"
                     "raw_document" = true
                 }
                 {
@@ -1079,11 +1079,11 @@ c0
                     "raw_document" = true
                 }
                 {
-                    "cte" = "c\+b. 0"
+                    "cte" = "c\{b} 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "c\+c. 0"
+                    "cte" = "c\{c} 0"
                     "raw_document" = true
                 }
                 {
@@ -1091,75 +1091,75 @@ c0
                     "raw_document" = true
                 }
                 {
-                    "cte" = "c\+e. 0"
+                    "cte" = "c\{e} 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "c\+f. 0"
+                    "cte" = "c\{f} 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "c\+10. 0"
+                    "cte" = "c\{10} 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "c\+11. 0"
+                    "cte" = "c\{11} 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "c\+12. 0"
+                    "cte" = "c\{12} 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "c\+13. 0"
+                    "cte" = "c\{13} 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "c\+14. 0"
+                    "cte" = "c\{14} 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "c\+15. 0"
+                    "cte" = "c\{15} 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "c\+16. 0"
+                    "cte" = "c\{16} 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "c\+17. 0"
+                    "cte" = "c\{17} 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "c\+18. 0"
+                    "cte" = "c\{18} 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "c\+19. 0"
+                    "cte" = "c\{19} 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "c\+1a. 0"
+                    "cte" = "c\{1a} 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "c\+1b. 0"
+                    "cte" = "c\{1b} 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "c\+1c. 0"
+                    "cte" = "c\{1c} 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "c\+1d. 0"
+                    "cte" = "c\{1d} 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "c\+1e. 0"
+                    "cte" = "c\{1e} 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "c\+1f. 0"
+                    "cte" = "c\{1f} 0"
                     "raw_document" = true
                 }
                 {
@@ -1503,135 +1503,135 @@ c0
                     "raw_document" = true
                 }
                 {
-                    "cte" = "c\+7f. 0"
+                    "cte" = "c\{7f} 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "c\+80. 0"
+                    "cte" = "c\{80} 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "c\+81. 0"
+                    "cte" = "c\{81} 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "c\+82. 0"
+                    "cte" = "c\{82} 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "c\+83. 0"
+                    "cte" = "c\{83} 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "c\+84. 0"
+                    "cte" = "c\{84} 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "c\+85. 0"
+                    "cte" = "c\{85} 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "c\+86. 0"
+                    "cte" = "c\{86} 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "c\+87. 0"
+                    "cte" = "c\{87} 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "c\+88. 0"
+                    "cte" = "c\{88} 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "c\+89. 0"
+                    "cte" = "c\{89} 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "c\+8a. 0"
+                    "cte" = "c\{8a} 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "c\+8b. 0"
+                    "cte" = "c\{8b} 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "c\+8c. 0"
+                    "cte" = "c\{8c} 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "c\+8d. 0"
+                    "cte" = "c\{8d} 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "c\+8e. 0"
+                    "cte" = "c\{8e} 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "c\+8f. 0"
+                    "cte" = "c\{8f} 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "c\+90. 0"
+                    "cte" = "c\{90} 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "c\+91. 0"
+                    "cte" = "c\{91} 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "c\+92. 0"
+                    "cte" = "c\{92} 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "c\+93. 0"
+                    "cte" = "c\{93} 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "c\+94. 0"
+                    "cte" = "c\{94} 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "c\+95. 0"
+                    "cte" = "c\{95} 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "c\+96. 0"
+                    "cte" = "c\{96} 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "c\+97. 0"
+                    "cte" = "c\{97} 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "c\+98. 0"
+                    "cte" = "c\{98} 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "c\+99. 0"
+                    "cte" = "c\{99} 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "c\+9a. 0"
+                    "cte" = "c\{9a} 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "c\+9b. 0"
+                    "cte" = "c\{9b} 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "c\+9c. 0"
+                    "cte" = "c\{9c} 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "c\+9d. 0"
+                    "cte" = "c\{9d} 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "c\+9e. 0"
+                    "cte" = "c\{9e} 0"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "c\+9f. 0"
+                    "cte" = "c\{9f} 0"
                     "raw_document" = true
                 }
                 {
@@ -1687,7 +1687,7 @@ c0
                     "raw_document" = true
                 }
                 {
-                    "cte" = "c\+ad. 0"
+                    "cte" = "c\{ad} 0"
                     "raw_document" = true
                 }
                 {

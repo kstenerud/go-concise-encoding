@@ -486,24 +486,24 @@ c0
                 {"cte"="\"\""                        "events"=["s="]}               // Empty string
                 {"cte"="\"test/*test\""              "events"=["s=test/*test"]}     // Comment initiator inside a string
                 {"cte"="\"test*/test\""              "events"=["s=test*/test"]}     // Comment terminator inside a string
-                {"from_cte"="\.~ "test\ttest"~"           "events"=["s=test\+9.test"] }   // Escaped tab
-                {"from_cte"="\.~ "test\rtest"~"           "events"=["s=test\+d.test"] }   // Escaped CR
+                {"from_cte"="\.~ "test\ttest"~"           "events"=["s=test\{9}test"] }   // Escaped tab
+                {"from_cte"="\.~ "test\rtest"~"           "events"=["s=test\{d}test"] }   // Escaped CR
                 {"from_cte"="\.~ "test\"test"~"           "events"=["s=\.~ test"test~"] } // Escaped quote
                 {"from_cte"="\.~ "test\\test"~"           "events"=["s=\.~ test\test~"] } // Escaped backslash
                 {"from_cte"="\.~ "test\/test"~"           "events"=["s=\.~ test/test~"] } // Escaped slash
                 {"from_cte"="\.~ "test\*test"~"           "events"=["s=\.~ test*test~"] } // Escaped star
                 {"from_cte"="\.~ "test\|test"~"           "events"=["s=\.~ test|test~"] } // Escaped pipe
-                {"from_cte"="\.~ "test\_test"~"           "events"=["s=test\+a0.test"] }  // Escaped non-breaking space
-                {"from_cte"="\.~ "test\-test"~"           "events"=["s=test\+ad.test"] }  // Escaped soft hyphen
-                {"from_cte"="\.~ "test\+a.test"~"         "events"=["s=test\ntest"] }     // Escaped 1-digit codepoint
-                {"from_cte"="\.~ "test\+f7.test"~"        "events"=["s=test÷test"] }      // Escaped 2-digit codepoint
-                {"from_cte"="\.~ "test\+17d.test"~"       "events"=["s=testŽtest"] }      // Escaped 3-digit codepoint
-                {"from_cte"="\.~ "test\+2021.test"~"      "events"=["s=test‡test"] }      // Escaped 4-digit codepoint
-                {"from_cte"="\.~ "test\+1f43a.test"~"     "events"=["s=test🐺test"] }     // Escaped 5-digit codepoint
-                {"from_cte"="\.~ "test\+000020.test"~"    "events"=["s=test test"] }      // Escaped 6-digit codepoint
-                {"from_cte"="\.~ "test\+0000020.test"~"   "events"=["s=test test"] }      // Escaped 7-digit codepoint
-                {"from_cte"="\.~ "test\+00000020.test"~"  "events"=["s=test test"] }      // Escaped 8-digit codepoint
-                {"from_cte"="\.~ "test\+000000020.test"~" "events"=["s=test test"] }      // Escaped 9-digit codepoint
+                {"from_cte"="\.~ "test\_test"~"           "events"=["s=test\{a0}test"] }  // Escaped non-breaking space
+                {"from_cte"="\.~ "test\-test"~"           "events"=["s=test\{ad}test"] }  // Escaped soft hyphen
+                {"from_cte"="\.~ "test\{a}test"~"         "events"=["s=test\ntest"] }     // Escaped 1-digit codepoint
+                {"from_cte"="\.~ "test\{f7}test"~"        "events"=["s=test÷test"] }      // Escaped 2-digit codepoint
+                {"from_cte"="\.~ "test\{17d}test"~"       "events"=["s=testŽtest"] }      // Escaped 3-digit codepoint
+                {"from_cte"="\.~ "test\{2021}test"~"      "events"=["s=test‡test"] }      // Escaped 4-digit codepoint
+                {"from_cte"="\.~ "test\{1f43a}test"~"     "events"=["s=test🐺test"] }     // Escaped 5-digit codepoint
+                {"from_cte"="\.~ "test\{000020}test"~"    "events"=["s=test test"] }      // Escaped 6-digit codepoint
+                {"from_cte"="\.~ "test\{0000020}test"~"   "events"=["s=test test"] }      // Escaped 7-digit codepoint
+                {"from_cte"="\.~ "test\{00000020}test"~"  "events"=["s=test test"] }      // Escaped 8-digit codepoint
+                {"from_cte"="\.~ "test\{000000020}test"~" "events"=["s=test test"] }      // Escaped 9-digit codepoint
                 {"from_cte"="\.~ "test\ntest"~"           "events"=["s=\.~ test
 test~"] }  // Escaped newline
                 {"from_cte"="\.~ "test\
@@ -515,17 +515,17 @@ test"~"  "events"=["s=testtest"] }     // Continuation
                 {"cte"="\.~ "test=test~"}        // Unterminated quotes
                 {"cte"="\.~ test test~"}         // Missing quotes
                 {"cte"="\.~ "test\"~"}           // Unterminated escape
-                {"cte"="\.~ "test\+"~"}          // Unterminated escape
-                {"cte"="\.~ "test\+."~"}         // Empty escape
-                {"cte"="\.~ "test\+1"~"}         // Unterminated codepoint
-                {"cte"="\.~ "test\+21"~"}        // Unterminated codepoint
-                {"cte"="\.~ "test\+301"~"}       // Unterminated codepoint
-                {"cte"="\.~ "test\+4001"~"}      // Unterminated codepoint
-                {"cte"="\.~ "test\+50001"~"}     // Unterminated codepoint
-                {"cte"="\.~ "test\+600001"~"}    // Unterminated codepoint
-                {"cte"="\.~ "test\+7000001"~"}   // Unterminated codepoint
-                {"cte"="\.~ "test\+80000001"~"}  // Unterminated codepoint
-                {"cte"="\.~ "test\+900000001"~"} // Unterminated codepoint
+                {"cte"="\.~ "test\{"~"}          // Unterminated escape
+                {"cte"="\.~ "test\{}"~"}         // Empty escape
+                {"cte"="\.~ "test\{1"~"}         // Unterminated codepoint
+                {"cte"="\.~ "test\{21"~"}        // Unterminated codepoint
+                {"cte"="\.~ "test\{301"~"}       // Unterminated codepoint
+                {"cte"="\.~ "test\{4001"~"}      // Unterminated codepoint
+                {"cte"="\.~ "test\{50001"~"}     // Unterminated codepoint
+                {"cte"="\.~ "test\{600001"~"}    // Unterminated codepoint
+                {"cte"="\.~ "test\{7000001"~"}   // Unterminated codepoint
+                {"cte"="\.~ "test\{80000001"~"}  // Unterminated codepoint
+                {"cte"="\.~ "test\{900000001"~"} // Unterminated codepoint
             ]
         }
 
@@ -535,8 +535,8 @@ test"~"  "events"=["s=testtest"] }     // Continuation
             "name" = "String with NUL character"
             "mustSucceed" = [
                 {
-                    "cte" = "\.^ "test\+0.string"^"
-                    "events" = ["s=test\+0.string"]
+                    "cte" = "\.^ "test\{0}string"^"
+                    "events" = ["s=test\{0}string"]
                 }
             ]
         }
@@ -552,22 +552,22 @@ test"~"  "events"=["s=testtest"] }     // Continuation
                 {"cte"="\.~ @""~"                     "events"=["rid"]}                // Empty string
                 {"cte"="\.~ @"test/*test"~"           "events"=["rid=test/*test"]}     // Comment initiator inside a string
                 {"cte"="\.~ @"test*/test"~"           "events"=["rid=test*/test"]}     // Comment terminator inside a string
-                {"from_cte"="\.~ @"test\ttest"~"           "events"=["rid=test\+9.test"] }   // Escaped tab
-                {"from_cte"="\.~ @"test\rtest"~"           "events"=["rid=test\+d.test"] }   // Escaped CR
+                {"from_cte"="\.~ @"test\ttest"~"           "events"=["rid=test\{9}test"] }   // Escaped tab
+                {"from_cte"="\.~ @"test\rtest"~"           "events"=["rid=test\{d}test"] }   // Escaped CR
                 {"from_cte"="\.~ @"test\"test"~"           "events"=["rid=\.~ test"test~"] } // Escaped quote
                 {"from_cte"="\.~ @"test\\test"~"           "events"=["rid=\.~ test\test~"] } // Escaped backslash
                 {"from_cte"="\.~ @"test\/test"~"           "events"=["rid=\.~ test/test~"] } // Escaped slash
                 {"from_cte"="\.~ @"test\*test"~"           "events"=["rid=\.~ test*test~"] } // Escaped star
                 {"from_cte"="\.~ @"test\|test"~"           "events"=["rid=\.~ test|test~"] } // Escaped pipe
-                {"from_cte"="\.~ @"test\_test"~"           "events"=["rid=test\+a0.test"] }  // Escaped non-breaking space
-                {"from_cte"="\.~ @"test\-test"~"           "events"=["rid=test\+ad.test"] }  // Escaped soft hyphen
-                {"from_cte"="\.~ @"test\+a.test"~"         "events"=["rid=test\ntest"] }     // Escaped 1-digit codepoint
-                {"from_cte"="\.~ @"test\+f7.test"~"        "events"=["rid=test÷test"] }      // Escaped 2-digit codepoint
-                {"from_cte"="\.~ @"test\+17d.test"~"       "events"=["rid=testŽtest"] }      // Escaped 3-digit codepoint
-                {"from_cte"="\.~ @"test\+2021.test"~"      "events"=["rid=test‡test"] }      // Escaped 4-digit codepoint
-                {"from_cte"="\.~ @"test\+1f43a.test"~"     "events"=["rid=test🐺test"] }     // Escaped 5-digit codepoint
-                {"from_cte"="\.~ @"test\+000020.test"~"    "events"=["rid=test test"] }      // Escaped 6-digit codepoint
-                {"from_cte"="\.~ @"test\+000000020.test"~" "events"=["rid=test test"] }      // Escaped 9-digit codepoint
+                {"from_cte"="\.~ @"test\_test"~"           "events"=["rid=test\{a0}test"] }  // Escaped non-breaking space
+                {"from_cte"="\.~ @"test\-test"~"           "events"=["rid=test\{ad}test"] }  // Escaped soft hyphen
+                {"from_cte"="\.~ @"test\{a}test"~"         "events"=["rid=test\ntest"] }     // Escaped 1-digit codepoint
+                {"from_cte"="\.~ @"test\{f7}test"~"        "events"=["rid=test÷test"] }      // Escaped 2-digit codepoint
+                {"from_cte"="\.~ @"test\{17d}test"~"       "events"=["rid=testŽtest"] }      // Escaped 3-digit codepoint
+                {"from_cte"="\.~ @"test\{2021}test"~"      "events"=["rid=test‡test"] }      // Escaped 4-digit codepoint
+                {"from_cte"="\.~ @"test\{1f43a}test"~"     "events"=["rid=test🐺test"] }     // Escaped 5-digit codepoint
+                {"from_cte"="\.~ @"test\{000020}test"~"    "events"=["rid=test test"] }      // Escaped 6-digit codepoint
+                {"from_cte"="\.~ @"test\{000000020}test"~" "events"=["rid=test test"] }      // Escaped 9-digit codepoint
                 {"from_cte"="\.~ @"test\ntest"~"           "events"=["rid=\.~ test
 test~"] }  // Escaped newline
                 {"from_cte"="\.~ @"test\
@@ -579,16 +579,16 @@ test"~"  "events"=["rid=testtest"] }   // Continuation
                 {"cte"="\.~ @"test=test~"}       // Unterminated quotes
                 {"cte"="\.~ @test test~"}        // Missing quotes
                 {"cte"="\.~ @"test\"~"}          // Unterminated escape
-                {"cte"="\.~ @"test\+"~"}         // Unterminated escape
-                {"cte"="\.~ @"test\+."~"}        // Empty escape
-                {"cte"="\.~ @"test\+1"~"}        // Unterminated codepoint
-                {"cte"="\.~ @"test\+01"~"}       // Unterminated codepoint
-                {"cte"="\.~ @"test\+001"~"}      // Unterminated codepoint
-                {"cte"="\.~ @"test\+0001"~"}     // Unterminated codepoint
-                {"cte"="\.~ @"test\+00001"~"}    // Unterminated codepoint
-                {"cte"="\.~ @"test\+000001"~"}   // Unterminated codepoint
-                {"cte"="\.~ @"test\+0000001"~"}  // Unterminated codepoint
-                {"cte"="\.~ @"test\+00000001"~"} // Unterminated codepoint
+                {"cte"="\.~ @"test\{"~"}         // Unterminated escape
+                {"cte"="\.~ @"test\{}"~"}        // Empty escape
+                {"cte"="\.~ @"test\{1"~"}        // Unterminated codepoint
+                {"cte"="\.~ @"test\{01"~"}       // Unterminated codepoint
+                {"cte"="\.~ @"test\{001"~"}      // Unterminated codepoint
+                {"cte"="\.~ @"test\{0001"~"}     // Unterminated codepoint
+                {"cte"="\.~ @"test\{00001"~"}    // Unterminated codepoint
+                {"cte"="\.~ @"test\{000001"~"}   // Unterminated codepoint
+                {"cte"="\.~ @"test\{0000001"~"}  // Unterminated codepoint
+                {"cte"="\.~ @"test\{00000001"~"} // Unterminated codepoint
             ]
         }
 

@@ -332,7 +332,7 @@ func (_this *Reader) TokenReadEscape() {
 	case '\r', '\n':
 		// Continuation
 		_this.SkipWhitespace()
-	case '+':
+	case '{':
 		codepoint := rune(0)
 		cpLength := 0
 	unicode:
@@ -345,7 +345,7 @@ func (_this *Reader) TokenReadEscape() {
 				codepoint = (codepoint << 4) | (rune(b) - 'a' + 10)
 			case chars.ByteHasProperty(b, chars.UpperAF):
 				codepoint = (codepoint << 4) | (rune(b) - 'A' + 10)
-			case b == '.':
+			case b == '}':
 				break unicode
 			default:
 				_this.unexpectedChar("unicode escape")
