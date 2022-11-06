@@ -24,6 +24,8 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"math"
+	"math/big"
 	"os"
 	"path/filepath"
 	"strings"
@@ -56,6 +58,10 @@ func generateTestFiles(projectDir string) {
 	writeTestFile(filepath.Join(testsDir, "array-int16-generated.cte"), generateArrayInt16Tests()...)
 	writeTestFile(filepath.Join(testsDir, "array-int32-generated.cte"), generateArrayInt32Tests()...)
 	writeTestFile(filepath.Join(testsDir, "array-int64-generated.cte"), generateArrayInt64Tests()...)
+	writeTestFile(filepath.Join(testsDir, "array-uint8-generated.cte"), generateArrayUint8Tests()...)
+	writeTestFile(filepath.Join(testsDir, "array-uint16-generated.cte"), generateArrayUint16Tests()...)
+	writeTestFile(filepath.Join(testsDir, "array-uint32-generated.cte"), generateArrayUint32Tests()...)
+	writeTestFile(filepath.Join(testsDir, "array-uint64-generated.cte"), generateArrayUint64Tests()...)
 }
 
 var testsImports = []*standard.Import{
@@ -87,6 +93,11 @@ func generateArrayTestGenerator(writer io.Writer) {
 	writer.Write([]byte(strings.ReplaceAll(intArrayTestTemplate, "32", "16")))
 	writer.Write([]byte(intArrayTestTemplate))
 	writer.Write([]byte(strings.ReplaceAll(intArrayTestTemplate, "32", "64")))
+
+	writer.Write([]byte(strings.ReplaceAll(uintArrayTestTemplate, "32", "8")))
+	writer.Write([]byte(strings.ReplaceAll(uintArrayTestTemplate, "32", "16")))
+	writer.Write([]byte(uintArrayTestTemplate))
+	writer.Write([]byte(strings.ReplaceAll(uintArrayTestTemplate, "32", "64")))
 }
 
 func generateRulesTestFiles(testsDir string) {
@@ -263,7 +274,170 @@ var intArrayTestTemplate = `func generateArrayInt32Tests() []*test_runner.UnitTe
 
 	return unitTests
 }
+
 `
+
+var uintArrayTestTemplate = `func generateArrayUint32Tests() []*test_runner.UnitTest {
+	var unitTests []*test_runner.UnitTest
+	var mustSucceed []*test_runner.MustSucceedTest
+	var contents []uint32
+	config := configuration.DefaultCTEEncoderConfiguration()
+
+	// Empty array
+	unitTests = append(unitTests, newMustSucceedUnitTest("Empty Array",
+		newMustSucceedTest(&config, AU32(nil)),
+		newMustSucceedTest(&config, BAU32(), ACL(0)),
+	))
+
+	// Short array
+	contents = contents[:0]
+	mustSucceed = nil
+	for i := 1; i <= 15; i++ {
+		contents = append(contents, uint32(i-8))
+		mustSucceed = append(mustSucceed, newMustSucceedTest(&config, AU32(contents)))
+	}
+	unitTests = append(unitTests, newMustSucceedUnitTest("Short Array", mustSucceed...))
+
+	// Chunked array
+	contents = contents[:0]
+	mustSucceed = nil
+	mustSucceed = append(mustSucceed, newMustSucceedTest(&config, BAU32(), ACL(0)))
+	for i := 1; i <= 20; i++ {
+		contents = append(contents, uint32(i-8))
+		mustSucceed = append(mustSucceed, newMustSucceedTest(&config, BAU32(), ACL(uint64(i)), ADU32(contents)))
+	}
+	unitTests = append(unitTests, newMustSucceedUnitTest("Chunked Array", mustSucceed...))
+
+	// Various element values
+	contents = contents[:0]
+	mustSucceed = nil
+	multiple := uint64(math.MaxUint32 / 31)
+	for i := uint64(0); i < math.MaxUint32-31; i += multiple {
+		contents = append(contents, uint32(i))
+	}
+	mustSucceed = append(mustSucceed, newMustSucceedTest(&config, BAU32(), ACL(uint64(len(contents))), ADU32(contents)))
+	unitTests = append(unitTests, newMustSucceedUnitTest("Various Array Elements", mustSucceed...))
+
+	// Base 2, 8, 16
+	mustSucceed = nil
+	contents = contents[:0]
+	multiple = uint64(math.MaxUint32 / 7)
+	for i := uint64(0); i < math.MaxUint32-7; i += multiple {
+		contents = append(contents, uint32(i))
+	}
+	config.DefaultNumericFormats.Array.Uint32 = configuration.CTEEncodingFormatBinary
+	t := newMustSucceedTest(&config, AU32(contents))
+	mustSucceed = append(mustSucceed, t)
+	config.DefaultNumericFormats.Array.Uint32 = configuration.CTEEncodingFormatOctal
+	t = newMustSucceedTest(&config, AU32(contents))
+	mustSucceed = append(mustSucceed, t)
+	config.DefaultNumericFormats.Array.Uint32 = configuration.CTEEncodingFormatHexadecimal
+	t = newMustSucceedTest(&config, AU32(contents))
+	mustSucceed = append(mustSucceed, t)
+	config = configuration.DefaultCTEEncoderConfiguration()
+	unitTests = append(unitTests, newMustSucceedUnitTest("Base 2, 8, 16", mustSucceed...))
+
+	// Chunking
+	mustSucceed = nil
+	events := []test.Event{BAU32()}
+	for i := 0; i < 7; i++ {
+		events = append(events, ACM(uint64(i)))
+		if i > 0 {
+			events = append(events, ADU32(contents[:i]))
+		}
+	}
+	events = append(events, ACL(0))
+	mustSucceed = append(mustSucceed, newMustSucceedTest(&config, events...))
+	mustSucceed = append(mustSucceed, newMustSucceedTest(&config, BAU32(), ACM(4), ADU32(contents[:4]), ACL(3), ADU32(contents[:3])))
+	unitTests = append(unitTests, newMustSucceedUnitTest("Chunking Variations", mustSucceed...))
+
+	// Edge-case element values
+	contents = contents[:0]
+	for _, v := range intEdgeValues {
+		contents = append(contents, uint32(v))
+	}
+	for _, v := range uintEdgeValues {
+		contents = append(contents, uint32(v))
+	}
+	unitTests = append(unitTests, newMustSucceedUnitTest("Edge Case Element Values",
+		newMustSucceedTest(&config, BAU32(), ACL(uint64(len(contents))), ADU32(contents))))
+
+	// Fail mode tests
+	var mustFail []*test_runner.MustFailTest
+
+	// Truncated Array
+	mustFail = nil
+	mustFail = append(mustFail, newMustFailTest(testTypeCbe, BAU32()))
+	mustFail = append(mustFail, newMustFailTest(testTypeCbe, BAU32(), ACL(1)))
+	for i := 2; i <= 10; i++ {
+		contents = contents[:i/2]
+		mustFail = append(mustFail, newMustFailTest(testTypeCbe, BAU32(), ACL(uint64(i)), ADU32(contents)))
+		mustFail = append(mustFail, &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CBE: truncate(generateCBE(AU32(contents)), 1)}})
+	}
+	mustFail = append(mustFail, &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: generateCTE(nil, BAU32())}})
+	mustFail = append(mustFail, &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: generateCTE(nil, BAU32(), ACL(uint64(2)), ADU32(contents[:1]))}})
+	unitTests = append(unitTests, newMustFailUnitTest("Truncated Array", mustFail...))
+
+	// Element value out of range
+	bigValue := uint32OutOfRange
+	smallValue := big.NewInt(0)
+	smallValue.Sub(smallValue, big.NewInt(1))
+	smallValue.Neg(smallValue)
+	unitTests = append(unitTests, newMustFailUnitTest(
+		"Element value out of range",
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|u32b %b|", bigValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|u32o %o|", bigValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|u32x %x|", bigValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|u32 %d|", bigValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|u32 0b%b|", bigValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|u32 0o%o|", bigValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|u32 0x%x|", bigValue)}},
+
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|u32b -%b|", smallValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|u32o -%o|", smallValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|u32x -%x|", smallValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|u32 -%d|", smallValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|u32 -0b%b|", smallValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|u32 -0o%o|", smallValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|u32 -0x%x|", smallValue)}},
+	))
+
+	// Numeric digit out of range
+	mustFail = nil
+	for iB, base := range bases {
+		for iV, v := range outOfRange {
+			if iV >= iB {
+				mustFail = append(mustFail, &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|u32%v %v|", base, v)}})
+			}
+		}
+	}
+	unitTests = append(unitTests, newMustFailUnitTest("Numeric digit out of range", mustFail...))
+
+	// Invalid special values
+	mustFail = nil
+	for _, base := range bases {
+		for _, special := range nonIntSpecials {
+			mustFail = append(mustFail, &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|u32%v %v|", base, special)}})
+		}
+	}
+	unitTests = append(unitTests, newMustFailUnitTest("Invalid special values", mustFail...))
+
+	// Float value in int array
+	mustFail = nil
+	for _, base := range bases {
+		mustFail = append(mustFail, &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|u32%v 1.2|", base)}})
+	}
+	unitTests = append(unitTests, newMustFailUnitTest("Float value in int array", mustFail...))
+
+	return unitTests
+}
+
+`
+
+var uint8OutOfRange = big.NewInt(0).Add(big.NewInt(math.MaxUint8), big.NewInt(1))
+var uint16OutOfRange = big.NewInt(0).Add(big.NewInt(math.MaxUint16), big.NewInt(1))
+var uint32OutOfRange = big.NewInt(0).Add(big.NewInt(math.MaxUint32), big.NewInt(1))
+var uint64OutOfRange = big.NewInt(0).Add(big.NewInt(0).Lsh(big.NewInt(math.MaxInt64), 1), big.NewInt(2))
 
 func truncate(data []byte, count int) []byte {
 	return data[:len(data)-count]
