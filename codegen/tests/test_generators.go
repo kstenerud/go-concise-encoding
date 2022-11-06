@@ -22,10 +22,9 @@ package tests
 
 import (
 	"fmt"
-	"os"
 	"path/filepath"
 
-	"github.com/kstenerud/go-concise-encoding/ce"
+	"github.com/kstenerud/go-concise-encoding/codegen/common"
 	"github.com/kstenerud/go-concise-encoding/configuration"
 	"github.com/kstenerud/go-concise-encoding/test"
 	"github.com/kstenerud/go-concise-encoding/test/test_runner"
@@ -39,13 +38,13 @@ func generateTestFiles(projectDir string) {
 
 	generateRulesTestFiles(testsDir)
 
-	writeTestFile(filepath.Join(testsDir, "cte-header-generated.cte"), generateCteHeaderTests()...)
-	writeTestFile(filepath.Join(testsDir, "tlo-generated.cte"), generateTLOTests())
-	writeTestFile(filepath.Join(testsDir, "list-generated.cte"), generateListTests())
-	writeTestFile(filepath.Join(testsDir, "map-generated.cte"), generateMapKeyTests(), generateMapValueTests())
-	writeTestFile(filepath.Join(testsDir, "edge-generated.cte"), generateEdgeSourceTests(), generateEdgeDescriptionTests(), generateEdgeDestinationTests())
-	writeTestFile(filepath.Join(testsDir, "node-generated.cte"), generateNodeValueTests(), generateNodeChildTests())
-	writeTestFile(filepath.Join(testsDir, "struct-generated.cte"), generateStructTemplateTests(), generateStructInstanceTests())
+	common.GenerateTestFile(filepath.Join(testsDir, "cte-header-generated.cte"), generateCteHeaderTests()...)
+	common.GenerateTestFile(filepath.Join(testsDir, "tlo-generated.cte"), generateTLOTests())
+	common.GenerateTestFile(filepath.Join(testsDir, "list-generated.cte"), generateListTests())
+	common.GenerateTestFile(filepath.Join(testsDir, "map-generated.cte"), generateMapKeyTests(), generateMapValueTests())
+	common.GenerateTestFile(filepath.Join(testsDir, "edge-generated.cte"), generateEdgeSourceTests(), generateEdgeDescriptionTests(), generateEdgeDestinationTests())
+	common.GenerateTestFile(filepath.Join(testsDir, "node-generated.cte"), generateNodeValueTests(), generateNodeChildTests())
+	common.GenerateTestFile(filepath.Join(testsDir, "struct-generated.cte"), generateStructTemplateTests(), generateStructInstanceTests())
 	generateArrayTestFiles(testsDir)
 }
 
@@ -54,19 +53,19 @@ func generateRulesTestFiles(testsDir string) {
 		EvBAU, EvBAU16, EvBAU32, EvBAU64, EvBAU8, EvBCB, EvBCT, EvBMEDIA, EvBRID, EvBS}
 	for _, prefix := range prefixes {
 		filename := fmt.Sprintf("rules-%v-generated.cte", prefix.Name())
-		writeTestFile(filepath.Join(testsDir, filename), generateRulesInvalidArrayEventsTests(prefix)...)
+		common.GenerateTestFile(filepath.Join(testsDir, filename), generateRulesInvalidArrayEventsTests(prefix)...)
 	}
 }
 
 func generateArrayTestFiles(testsDir string) {
-	writeTestFile(filepath.Join(testsDir, "array-int8-generated.cte"), generateArrayInt8Tests()...)
-	writeTestFile(filepath.Join(testsDir, "array-int16-generated.cte"), generateArrayInt16Tests()...)
-	writeTestFile(filepath.Join(testsDir, "array-int32-generated.cte"), generateArrayInt32Tests()...)
-	writeTestFile(filepath.Join(testsDir, "array-int64-generated.cte"), generateArrayInt64Tests()...)
-	writeTestFile(filepath.Join(testsDir, "array-uint8-generated.cte"), generateArrayUint8Tests()...)
-	writeTestFile(filepath.Join(testsDir, "array-uint16-generated.cte"), generateArrayUint16Tests()...)
-	writeTestFile(filepath.Join(testsDir, "array-uint32-generated.cte"), generateArrayUint32Tests()...)
-	writeTestFile(filepath.Join(testsDir, "array-uint64-generated.cte"), generateArrayUint64Tests()...)
+	common.GenerateTestFile(filepath.Join(testsDir, "array-int8-generated.cte"), generateArrayInt8Tests()...)
+	common.GenerateTestFile(filepath.Join(testsDir, "array-int16-generated.cte"), generateArrayInt16Tests()...)
+	common.GenerateTestFile(filepath.Join(testsDir, "array-int32-generated.cte"), generateArrayInt32Tests()...)
+	common.GenerateTestFile(filepath.Join(testsDir, "array-int64-generated.cte"), generateArrayInt64Tests()...)
+	common.GenerateTestFile(filepath.Join(testsDir, "array-uint8-generated.cte"), generateArrayUint8Tests()...)
+	common.GenerateTestFile(filepath.Join(testsDir, "array-uint16-generated.cte"), generateArrayUint16Tests()...)
+	common.GenerateTestFile(filepath.Join(testsDir, "array-uint32-generated.cte"), generateArrayUint32Tests()...)
+	common.GenerateTestFile(filepath.Join(testsDir, "array-uint64-generated.cte"), generateArrayUint64Tests()...)
 }
 
 func generateRulesInvalidArrayEventsTests(prefix test.Event) []*test_runner.UnitTest {
@@ -323,38 +322,4 @@ func newCustomMustFailTest(cteContents string) *test_runner.MustFailTest {
 			RawDocument: true,
 		},
 	}
-}
-
-func writeTestFile(path string, tests ...*test_runner.UnitTest) {
-	ceVersion := version.ConciseEncodingVersion
-	suite := &test_runner.TestSuite{
-		Type: test_runner.TestSuiteType{
-			Identifier: "ce-test",
-			Version:    1,
-		},
-		CEVersion: &ceVersion,
-		Tests:     tests,
-	}
-
-	config := configuration.DefaultCTEMarshalerConfiguration()
-	config.Iterator.FieldNameStyle = configuration.FieldNameSnakeCase
-	config.Encoder.DefaultNumericFormats.Array.Uint8 = configuration.CTEEncodingFormatHexadecimalZeroFilled
-	config.DebugPanics = true
-	document, err := ce.MarshalToCTEDocument(suite, &config)
-	if err != nil {
-		panic(err)
-	}
-
-	comment := "// GENERATED FILE, DO NOT EDIT!\n// Generated by https://github.com/kstenerud/go-concise-encoding/tree/master/codegen/tests\n"
-	commentedDocument := make([]byte, 0, len(document)+len(comment))
-	commentedDocument = append(commentedDocument, document[:3]...)
-	commentedDocument = append(commentedDocument, comment...)
-	commentedDocument = append(commentedDocument, document[3:]...)
-
-	f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
-	if err != nil {
-		panic(err)
-	}
-	defer f.Close()
-	f.Write(commentedDocument)
 }

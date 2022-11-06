@@ -45,24 +45,6 @@ func getEscapeCountBytes(str []byte) (escapeCount int) {
 	return
 }
 
-func needsEscapesStringlikeArray(str string) bool {
-	for _, ch := range str {
-		if !chars.IsRuneSafeFor(ch, chars.SafetyArray) {
-			return true
-		}
-	}
-	return false
-}
-
-func needsEscapesStringlikeArrayBytes(str []byte) bool {
-	for _, ch := range string(str) {
-		if !chars.IsRuneSafeFor(ch, chars.SafetyArray) {
-			return true
-		}
-	}
-	return false
-}
-
 // ============================================================================
 
 func escapeCharQuoted(ch rune) []byte {

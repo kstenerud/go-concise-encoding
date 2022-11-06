@@ -23,36 +23,26 @@ package rules
 import (
 	"fmt"
 	"io"
-	"os"
 	"path/filepath"
 
+	"github.com/kstenerud/go-concise-encoding/codegen/common"
 	"github.com/kstenerud/go-concise-encoding/codegen/datatypes"
-	"github.com/kstenerud/go-concise-encoding/codegen/standard"
 )
 
 const path = "rules"
 
-var imports = []*standard.Import{
-	&standard.Import{LocalName: "", Import: "fmt"},
-	&standard.Import{LocalName: "", Import: "strings"},
-	&standard.Import{LocalName: "", Import: "github.com/kstenerud/go-concise-encoding/ce/events"},
+var imports = []*common.Import{
+	{As: "", Import: "fmt"},
+	{As: "", Import: "strings"},
+	{As: "", Import: "github.com/kstenerud/go-concise-encoding/ce/events"},
 }
 
 func GenerateCode(projectDir string) {
-	generatedFilePath := standard.GetGeneratedCodePath(filepath.Join(projectDir, path))
-	writer, err := os.Create(generatedFilePath)
-	standard.PanicIfError(err, "could not open %s", generatedFilePath)
-	defer writer.Close()
-	defer func() {
-		if e := recover(); e != nil {
-			panic(fmt.Errorf("Error while generating %v: %v", generatedFilePath, e))
-		}
-	}()
-
-	standard.WriteHeader(writer, path, imports)
-	generateDataTypeType(writer)
-	generateDefaultMethods(writer)
-	generateBadEventMethods(writer)
+	common.GenerateGoFile(filepath.Join(projectDir, path), path, imports, func(writer io.Writer) {
+		generateDataTypeType(writer)
+		generateDefaultMethods(writer)
+		generateBadEventMethods(writer)
+	})
 }
 
 // ---------------

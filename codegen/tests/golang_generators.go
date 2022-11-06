@@ -21,38 +21,27 @@
 package tests
 
 import (
-	"fmt"
 	"io"
 	"math"
 	"math/big"
-	"os"
 	"strings"
 
-	"github.com/kstenerud/go-concise-encoding/codegen/standard"
+	"github.com/kstenerud/go-concise-encoding/codegen/common"
 )
 
-var testsImports = []*standard.Import{
-	{LocalName: "", Import: "fmt"},
-	{LocalName: "", Import: "math"},
-	{LocalName: "", Import: "math/big"},
-	{LocalName: "", Import: "github.com/kstenerud/go-concise-encoding/configuration"},
-	{LocalName: "", Import: "github.com/kstenerud/go-concise-encoding/test"},
-	{LocalName: "", Import: "github.com/kstenerud/go-concise-encoding/test/test_runner"},
+var testsImports = []*common.Import{
+	{As: "", Import: "fmt"},
+	{As: "", Import: "math"},
+	{As: "", Import: "math/big"},
+	{As: "", Import: "github.com/kstenerud/go-concise-encoding/configuration"},
+	{As: "", Import: "github.com/kstenerud/go-concise-encoding/test"},
+	{As: "", Import: "github.com/kstenerud/go-concise-encoding/test/test_runner"},
 }
 
 func generateTestGenerators(basePath string) {
-	generatedFilePath := standard.GetGeneratedCodePath(basePath)
-	writer, err := os.Create(generatedFilePath)
-	standard.PanicIfError(err, "could not open %s", generatedFilePath)
-	defer writer.Close()
-	defer func() {
-		if e := recover(); e != nil {
-			panic(fmt.Errorf("error while generating %v: %v", generatedFilePath, e))
-		}
-	}()
-
-	standard.WriteHeader(writer, "tests", testsImports)
-	generateArrayTestGenerator(writer)
+	common.GenerateGoFile(basePath, "tests", testsImports, func(writer io.Writer) {
+		generateArrayTestGenerator(writer)
+	})
 }
 
 func generateArrayTestGenerator(writer io.Writer) {

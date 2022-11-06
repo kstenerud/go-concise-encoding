@@ -25,60 +25,49 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	"os"
 	"path/filepath"
 	"sort"
 	"strconv"
 	"unicode/utf8"
 
+	"github.com/kstenerud/go-concise-encoding/codegen/common"
 	"github.com/kstenerud/go-concise-encoding/codegen/datatypes"
-	"github.com/kstenerud/go-concise-encoding/codegen/standard"
 )
 
 const path = "internal/chars"
 
-var imports = []*standard.Import{
-	&standard.Import{LocalName: "", Import: "fmt"},
-	&standard.Import{LocalName: "", Import: "strings"},
-	&standard.Import{LocalName: "", Import: "unicode/utf8"},
+var imports = []*common.Import{
+	{As: "", Import: "fmt"},
+	{As: "", Import: "strings"},
+	{As: "", Import: "unicode/utf8"},
 }
 
 func GenerateCode(projectDir string, xmlPath string) {
 	chars, err := loadUnicodeDB(xmlPath)
-	standard.PanicIfError(err, "error reading [%v]", xmlPath)
+	common.PanicIfError(err, "error reading [%v]", xmlPath)
 	classifyRunes(chars)
 
-	generatedFilePath := standard.GetGeneratedCodePath(filepath.Join(projectDir, path))
-	writer, err := os.Create(generatedFilePath)
-	standard.PanicIfError(err, "error opening [%v] for writing", generatedFilePath)
-	defer writer.Close()
-	defer func() {
-		if e := recover(); e != nil {
-			panic(fmt.Errorf("error while generating %v: %v", generatedFilePath, e))
-		}
-	}()
+	common.GenerateGoFile(filepath.Join(projectDir, path), path, imports, func(writer io.Writer) {
+		generatePropertiesType(writer)
+		generateSpacer(writer)
 
-	standard.WriteHeader(writer, path, imports)
+		generateSafetyFlagsType(writer)
+		generateSpacer(writer)
 
-	generatePropertiesType(writer)
-	generateSpacer(writer)
+		generateRuneByteCounts(writer)
+		generateSpacer(writer)
 
-	generateSafetyFlagsType(writer)
-	generateSpacer(writer)
+		generateStringlikeUnsafeTable(writer)
+		generateSpacer(writer)
 
-	generateRuneByteCounts(writer)
-	generateSpacer(writer)
+		generatePropertiesTable(writer)
+		generateSpacer(writer)
 
-	generateStringlikeUnsafeTable(writer)
-	generateSpacer(writer)
+		generateIdentifierSafeTable(writer)
+		generateSpacer(writer)
 
-	generatePropertiesTable(writer)
-	generateSpacer(writer)
-
-	generateIdentifierSafeTable(writer)
-	generateSpacer(writer)
-
-	generateStringlikeSafeTable(writer)
+		generateStringlikeSafeTable(writer)
+	})
 }
 
 // -----

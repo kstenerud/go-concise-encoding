@@ -23,22 +23,21 @@ package builder
 import (
 	"fmt"
 	"io"
-	"os"
 	"path/filepath"
 	"strings"
 
-	"github.com/kstenerud/go-concise-encoding/codegen/standard"
+	"github.com/kstenerud/go-concise-encoding/codegen/common"
 )
 
 const path = "builder"
 
-var imports = []*standard.Import{
-	{LocalName: "", Import: "math/big"},
-	{LocalName: "", Import: "reflect"},
-	{LocalName: "", Import: "github.com/kstenerud/go-concise-encoding/ce/events"},
-	{LocalName: "", Import: "github.com/cockroachdb/apd/v2"},
-	{LocalName: "", Import: "github.com/kstenerud/go-compact-float"},
-	{LocalName: "", Import: "github.com/kstenerud/go-compact-time"},
+var imports = []*common.Import{
+	{As: "", Import: "math/big"},
+	{As: "", Import: "reflect"},
+	{As: "", Import: "github.com/kstenerud/go-concise-encoding/ce/events"},
+	{As: "", Import: "github.com/cockroachdb/apd/v2"},
+	{As: "", Import: "github.com/kstenerud/go-compact-float"},
+	{As: "", Import: "github.com/kstenerud/go-compact-time"},
 }
 
 var (
@@ -336,18 +335,9 @@ var builders = []Builder{
 }
 
 func GenerateCode(projectDir string) {
-	generatedFilePath := standard.GetGeneratedCodePath(filepath.Join(projectDir, path))
-	writer, err := os.Create(generatedFilePath)
-	standard.PanicIfError(err, "could not open %s", generatedFilePath)
-	defer writer.Close()
-	defer func() {
-		if e := recover(); e != nil {
-			panic(fmt.Errorf("error while generating %v: %v", generatedFilePath, e))
-		}
-	}()
-
-	standard.WriteHeader(writer, path, imports)
-	generateBadEventMethods(writer)
+	common.GenerateGoFile(filepath.Join(projectDir, path), path, imports, func(writer io.Writer) {
+		generateBadEventMethods(writer)
+	})
 }
 
 func contains(lookingFor string, inSlice []string) bool {
