@@ -20,8 +20,309 @@
 
 package tests
 
+import (
+	"fmt"
+	"path/filepath"
+
+	"github.com/kstenerud/go-concise-encoding/codegen/common"
+	"github.com/kstenerud/go-concise-encoding/configuration"
+	"github.com/kstenerud/go-concise-encoding/test"
+	"github.com/kstenerud/go-concise-encoding/test/test_runner"
+	"github.com/kstenerud/go-concise-encoding/version"
+)
+
 func GenerateCode(projectDir string) {
-	generateAntlrCode(projectDir)
-	generateEvents(projectDir)
+	generateTestGenerators(filepath.Join(projectDir, "codegen/tests"))
 	generateTestFiles(projectDir)
+}
+
+func generateTestFiles(projectDir string) {
+	testsDir := filepath.Join(projectDir, "tests/suites/generated")
+
+	generateRulesTestFiles(testsDir)
+
+	common.GenerateTestFile(filepath.Join(testsDir, "cte-header-generated.cte"), generateCteHeaderTests()...)
+	common.GenerateTestFile(filepath.Join(testsDir, "tlo-generated.cte"), generateTLOTests())
+	common.GenerateTestFile(filepath.Join(testsDir, "list-generated.cte"), generateListTests())
+	common.GenerateTestFile(filepath.Join(testsDir, "map-generated.cte"), generateMapKeyTests(), generateMapValueTests())
+	common.GenerateTestFile(filepath.Join(testsDir, "edge-generated.cte"), generateEdgeSourceTests(), generateEdgeDescriptionTests(), generateEdgeDestinationTests())
+	common.GenerateTestFile(filepath.Join(testsDir, "node-generated.cte"), generateNodeValueTests(), generateNodeChildTests())
+	common.GenerateTestFile(filepath.Join(testsDir, "struct-generated.cte"), generateStructTemplateTests(), generateStructInstanceTests())
+	generateArrayTestFiles(testsDir)
+}
+
+func generateRulesTestFiles(testsDir string) {
+	prefixes := test.Events{EvBAB, EvBAF16, EvBAF32, EvBAF64, EvBAI16, EvBAI32, EvBAI64, EvBAI8,
+		EvBAU, EvBAU16, EvBAU32, EvBAU64, EvBAU8, EvBCB, EvBCT, EvBMEDIA, EvBRID, EvBS}
+	for _, prefix := range prefixes {
+		filename := fmt.Sprintf("rules-%v-generated.cte", prefix.Name())
+		common.GenerateTestFile(filepath.Join(testsDir, filename), generateRulesInvalidArrayEventsTests(prefix)...)
+	}
+}
+
+func generateArrayTestFiles(testsDir string) {
+	common.GenerateTestFile(filepath.Join(testsDir, "array-int8-generated.cte"), generateArrayInt8Tests()...)
+	common.GenerateTestFile(filepath.Join(testsDir, "array-int16-generated.cte"), generateArrayInt16Tests()...)
+	common.GenerateTestFile(filepath.Join(testsDir, "array-int32-generated.cte"), generateArrayInt32Tests()...)
+	common.GenerateTestFile(filepath.Join(testsDir, "array-int64-generated.cte"), generateArrayInt64Tests()...)
+	common.GenerateTestFile(filepath.Join(testsDir, "array-uint8-generated.cte"), generateArrayUint8Tests()...)
+	common.GenerateTestFile(filepath.Join(testsDir, "array-uint16-generated.cte"), generateArrayUint16Tests()...)
+	common.GenerateTestFile(filepath.Join(testsDir, "array-uint32-generated.cte"), generateArrayUint32Tests()...)
+	common.GenerateTestFile(filepath.Join(testsDir, "array-uint64-generated.cte"), generateArrayUint64Tests()...)
+}
+
+func generateRulesInvalidArrayEventsTests(prefix test.Event) []*test_runner.UnitTest {
+	var mustFail []*test_runner.MustFailTest
+	for _, event := range complementaryEvents(test.Events{EvACL, EvACM}) {
+		events := test.Events{prefix, event}
+		mustFail = append(mustFail, newMustFailTest(testTypeEvents, events...))
+	}
+	name := fmt.Sprintf("Invlid %v Event Sequences", prefix.Name())
+	return []*test_runner.UnitTest{newMustFailUnitTest(name, mustFail...)}
+}
+
+func generateTLOTests() *test_runner.UnitTest {
+	prefix := test.Events{}
+	suffix := test.Events{}
+	invalidEvents := test.Events{EvV, EvE, EvACL, EvACM, EvREFL, EvSI}
+	validEvents := complementaryEvents(invalidEvents)
+
+	return generateEncodeDecodeTest("Top-level objects", prefix, suffix, validEvents, invalidEvents)
+}
+
+func generateListTests() *test_runner.UnitTest {
+	prefix := test.Events{EvL}
+	suffix := test.Events{EvE}
+	invalidEvents := test.Events{EvV, EvACL, EvACM}
+	validEvents := complementaryEvents(append(invalidEvents, EvE))
+
+	return generateEncodeDecodeTest("List", prefix, suffix, validEvents, invalidEvents)
+}
+
+func generateMapKeyTests() *test_runner.UnitTest {
+	prefix := test.Events{EvM}
+	suffix := test.Events{EvN, EvE}
+	validEvents := test.Events{EvB, EvBRID, EvBS, EvCM, EvCS, EvINF, EvN, EvNINF, EvPAD, EvRID, EvS, EvT, EvUID}
+	invalidEvents := complementaryEvents(validEvents)
+
+	return generateEncodeDecodeTest("Map Key", prefix, suffix, validEvents, invalidEvents)
+}
+
+func generateMapValueTests() *test_runner.UnitTest {
+	prefix := test.Events{EvM, EvN}
+	suffix := test.Events{EvE}
+	invalidEvents := test.Events{EvV, EvACL, EvACM, EvREFL}
+	validEvents := complementaryEvents(append(invalidEvents, EvE))
+
+	return generateEncodeDecodeTest("Map Value", prefix, suffix, validEvents, invalidEvents)
+}
+
+func generateEdgeSourceTests() *test_runner.UnitTest {
+	prefix := test.Events{EvEDGE}
+	suffix := test.Events{EvN, EvN, EvE}
+	invalidEvents := test.Events{EvV, EvACL, EvACM, EvNULL, EvREFL}
+	validEvents := complementaryEvents(append(invalidEvents, EvE))
+
+	return generateEncodeDecodeTest("Edge Source", prefix, suffix, validEvents, invalidEvents)
+}
+
+func generateEdgeDescriptionTests() *test_runner.UnitTest {
+	prefix := test.Events{EvEDGE, EvN}
+	suffix := test.Events{EvN, EvE}
+	invalidEvents := test.Events{EvV, EvACL, EvACM, EvREFL}
+	validEvents := complementaryEvents(append(invalidEvents, EvE))
+
+	return generateEncodeDecodeTest("Edge Description", prefix, suffix, validEvents, invalidEvents)
+}
+
+func generateEdgeDestinationTests() *test_runner.UnitTest {
+	prefix := test.Events{EvEDGE, EvN, EvN}
+	suffix := test.Events{EvE}
+	invalidEvents := test.Events{EvV, EvACL, EvACM, EvNULL, EvREFL}
+	validEvents := complementaryEvents(append(invalidEvents, EvE))
+
+	return generateEncodeDecodeTest("Edge Destination", prefix, suffix, validEvents, invalidEvents)
+}
+
+func generateNodeValueTests() *test_runner.UnitTest {
+	prefix := test.Events{EvNODE}
+	suffix := test.Events{EvE}
+	invalidEvents := test.Events{EvV, EvACL, EvACM}
+	validEvents := complementaryEvents(append(invalidEvents, EvE))
+
+	return generateEncodeDecodeTest("Node Value", prefix, suffix, validEvents, invalidEvents)
+}
+
+func generateNodeChildTests() *test_runner.UnitTest {
+	prefix := test.Events{EvNODE, EvNULL}
+	suffix := test.Events{EvE}
+	invalidEvents := test.Events{EvV, EvACL, EvACM}
+	validEvents := complementaryEvents(append(invalidEvents, EvE))
+
+	return generateEncodeDecodeTest("Node Child", prefix, suffix, validEvents, invalidEvents)
+}
+
+func generateStructTemplateTests() *test_runner.UnitTest {
+	prefix := test.Events{EvST}
+	suffix := test.Events{EvE, EvN}
+	validEvents := test.Events{EvB, EvBRID, EvBS, EvCM, EvCS, EvINF, EvN, EvNINF, EvPAD, EvRID, EvS, EvT, EvUID}
+	invalidEvents := complementaryEvents(validEvents)
+
+	return generateEncodeDecodeTest("Struct Template", prefix, suffix, validEvents, invalidEvents)
+}
+
+func generateStructInstanceTests() *test_runner.UnitTest {
+	prefix := test.Events{EvST, EvS, EvE, EvSI}
+	suffix := test.Events{EvE}
+	invalidEvents := test.Events{EvV, EvACL, EvACM, EvREFL, EvSI, EvST}
+	validEvents := complementaryEvents(append(invalidEvents, EvE))
+
+	return generateEncodeDecodeTest("Struct Instance", prefix, suffix, validEvents, invalidEvents)
+}
+
+func generateEncodeDecodeTest(name string, prefix test.Events, suffix test.Events, validEvents test.Events, invalidEvents test.Events) *test_runner.UnitTest {
+	mustSucceed := []*test_runner.MustSucceedTest{}
+	mustFail := []*test_runner.MustFailTest{}
+	config := configuration.DefaultCTEEncoderConfiguration()
+
+	for _, eventSet := range generateEventPrefixesAndFollowups(validEvents...) {
+		events := append(prefix, eventSet...)
+		events = append(events, suffix...)
+		mustSucceed = append(mustSucceed, newMustSucceedTest(&config, events...))
+	}
+
+	for _, event := range invalidEvents {
+		events := append(prefix, event)
+		events = append(events, suffix...)
+		mustFail = append(mustFail, newMustFailTest(testTypeEvents, events...))
+	}
+
+	return newUnitTest(name, mustSucceed, mustFail)
+}
+
+func generateCteHeaderTests() []*test_runner.UnitTest {
+	wrongSentinelFailureTests := []*test_runner.MustFailTest{}
+	for i := 0; i < 0x100; i++ {
+		if i == 'c' || i == 'C' {
+			continue
+		}
+		wrongSentinelFailureTests = append(wrongSentinelFailureTests, newCustomMustFailTest(fmt.Sprintf("%c%v 0", rune(i), version.ConciseEncodingVersion)))
+	}
+	wrongSentinelTest := newUnitTest("Wrong sentinel", nil, wrongSentinelFailureTests)
+
+	wrongVersionCharFailureTests := []*test_runner.MustFailTest{}
+	for i := 0; i < 0x100; i++ {
+		if i >= '0' && i <= '9' {
+			continue
+		}
+		wrongVersionCharFailureTests = append(wrongVersionCharFailureTests, newCustomMustFailTest(fmt.Sprintf("c%c 0", rune(i))))
+	}
+	wrongVersionCharTest := newUnitTest("Wrong version character", nil, wrongVersionCharFailureTests)
+
+	wrongVersionFailureTests := []*test_runner.MustFailTest{}
+	for i := 0; i < 0x100; i++ {
+		// TODO: Remove i == 1 upon release
+		if i == version.ConciseEncodingVersion || i == 1 {
+			continue
+		}
+		wrongVersionFailureTests = append(wrongVersionFailureTests, newCustomMustFailTest(fmt.Sprintf("c%v 0", i)))
+	}
+	wrongVersionTest := newUnitTest("Wrong version", nil, wrongVersionFailureTests)
+
+	return []*test_runner.UnitTest{wrongSentinelTest, wrongVersionCharTest, wrongVersionTest}
+}
+
+// ===========================================================================
+
+func newUnitTest(name string, mustSucceed []*test_runner.MustSucceedTest, mustFail []*test_runner.MustFailTest) *test_runner.UnitTest {
+	unitTest := &test_runner.UnitTest{
+		Name: name,
+	}
+
+	if mustSucceed != nil {
+		unitTest.MustSucceed = mustSucceed
+	}
+	if mustFail != nil {
+		unitTest.MustFail = mustFail
+	}
+
+	return unitTest
+}
+
+func newMustSucceedUnitTest(name string, mustSucceed ...*test_runner.MustSucceedTest) *test_runner.UnitTest {
+	return &test_runner.UnitTest{
+		Name:        name,
+		MustSucceed: mustSucceed,
+	}
+}
+
+func newMustFailUnitTest(name string, mustFail ...*test_runner.MustFailTest) *test_runner.UnitTest {
+	return &test_runner.UnitTest{
+		Name:     name,
+		MustFail: mustFail,
+	}
+}
+
+func newMustSucceedTest(config *configuration.CTEEncoderConfiguration, events ...test.Event) *test_runner.MustSucceedTest {
+	hasFromCBE := canConvertFromCBE(config, events...)
+	hasToCBE := canConvertToCBE(config, events...)
+	cbeDocument := generateCBE(events...)
+	cbe := []byte{}
+	fromCBE := []byte{}
+	toCBE := []byte{}
+	if hasFromCBE && hasToCBE {
+		cbe = cbeDocument
+	} else if hasFromCBE {
+		fromCBE = cbeDocument
+	} else if hasToCBE {
+		toCBE = cbeDocument
+	}
+
+	hasFromCTE := canConvertFromCTE(config, events...)
+	hasToCTE := canConvertToCTE(config, events...)
+	cteDocument := generateCTE(config, events...)
+	cte := ""
+	fromCTE := ""
+	toCTE := ""
+	if hasFromCTE && hasToCTE {
+		cte = cteDocument
+	} else if hasFromCTE {
+		fromCTE = cteDocument
+	} else if hasToCTE {
+		toCTE = cteDocument
+	}
+
+	return &test_runner.MustSucceedTest{
+		BaseTest: test_runner.BaseTest{
+			CBE:    cbe,
+			CTE:    cte,
+			Events: stringifyEvents(events...),
+		},
+		FromCBE: fromCBE,
+		ToCBE:   toCBE,
+		FromCTE: fromCTE,
+		ToCTE:   toCTE,
+	}
+}
+
+func newMustFailTest(testType testType, events ...test.Event) *test_runner.MustFailTest {
+	switch testType {
+	case testTypeCbe:
+		return &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CBE: generateCBE(events...)}}
+	case testTypeCte:
+		return &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: generateCTE(nil, events...)}}
+	case testTypeEvents:
+		return &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{Events: stringifyEvents(events...)}}
+	default:
+		panic(fmt.Errorf("%v: unknown mustFail test type", testType))
+	}
+}
+
+func newCustomMustFailTest(cteContents string) *test_runner.MustFailTest {
+	return &test_runner.MustFailTest{
+		BaseTest: test_runner.BaseTest{
+			CTE:         cteContents,
+			RawDocument: true,
+		},
+	}
 }

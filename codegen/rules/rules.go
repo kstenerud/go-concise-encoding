@@ -38,7 +38,7 @@ var imports = []*common.Import{
 }
 
 func GenerateCode(projectDir string) {
-	common.GenerateGoFile(filepath.Join(projectDir, path), path, imports, func(writer io.Writer) {
+	common.GenerateGoFile(filepath.Join(projectDir, path), imports, func(writer io.Writer) {
 		generateDataTypeType(writer)
 		generateDefaultMethods(writer)
 		generateBadEventMethods(writer)

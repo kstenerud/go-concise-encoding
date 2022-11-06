@@ -18,47 +18,47 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 
-// Package build generates code for other parts of the library. The lack of
-// generics and inheritance makes a number of things tedious and error prone,
-// which these generators attempt to deal with.
-package main
+package test
 
 import (
-	"flag"
+	"bytes"
+	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
-
-	"github.com/kstenerud/go-concise-encoding/codegen/builder"
-	"github.com/kstenerud/go-concise-encoding/codegen/chars"
-	"github.com/kstenerud/go-concise-encoding/codegen/rules"
-	gentest "github.com/kstenerud/go-concise-encoding/codegen/test"
-	"github.com/kstenerud/go-concise-encoding/codegen/tests"
 )
 
-func main() {
-	projectPath := getProjectPath()
+const parserBasePath = "test/event_parser"
 
-	unicodePath := flag.String("unicode", "", "/path/to/ucd.all.flat.xml. Get it from https://www.unicode.org/Public/UCD/latest/ucdxml/ucd.all.flat.zip")
-	flag.Parse()
-
-	builder.GenerateCode(projectPath)
-	rules.GenerateCode(projectPath)
-	gentest.GenerateCode(projectPath)
-	tests.GenerateCode(projectPath)
-
-	if *unicodePath != "" {
-		chars.GenerateCode(projectPath, *unicodePath)
-	}
-}
-
-func getExePath() string {
-	ex, err := os.Executable()
+func generateAntlrCode(projectDir string) {
+	javaPath, err := exec.LookPath("java")
 	if err != nil {
 		panic(err)
 	}
-	return filepath.Dir(ex)
-}
+	dstPath := filepath.Join(projectDir, parserBasePath, "parser")
+	if err := os.RemoveAll(dstPath); err != nil {
+		panic(err)
+	}
+	if err := os.MkdirAll(dstPath, 0755); err != nil {
+		panic(err)
+	}
 
-func getProjectPath() string {
-	return filepath.Dir(getExePath())
+	antlrPath := filepath.Join(projectDir, "codegen", "antlr-4.10.1-complete.jar")
+	lexerPath := filepath.Join(projectDir, "codegen", "test", "CEEventLexer.g4")
+	parserPath := filepath.Join(projectDir, "codegen", "test", "CEEventParser.g4")
+	cmd := exec.Command(
+		javaPath,
+		"-cp", antlrPath,
+		"org.antlr.v4.Tool",
+		"-o", dstPath,
+		"-Dlanguage=Go",
+		lexerPath, parserPath,
+	)
+	stdout := &bytes.Buffer{}
+	stderr := &bytes.Buffer{}
+	cmd.Stdout = stdout
+	cmd.Stderr = stderr
+	if err := cmd.Run(); err != nil {
+		panic(fmt.Errorf("failed to run %v: %w\nStdout = [%v]\nStderr = [%v]", cmd.Args, err, stdout.String(), stderr.String()))
+	}
 }

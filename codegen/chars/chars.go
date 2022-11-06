@@ -47,7 +47,7 @@ func GenerateCode(projectDir string, xmlPath string) {
 	common.PanicIfError(err, "error reading [%v]", xmlPath)
 	classifyRunes(chars)
 
-	common.GenerateGoFile(filepath.Join(projectDir, path), path, imports, func(writer io.Writer) {
+	common.GenerateGoFile(filepath.Join(projectDir, path), imports, func(writer io.Writer) {
 		generatePropertiesType(writer)
 		generateSpacer(writer)
 

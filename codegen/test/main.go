@@ -18,47 +18,9 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 
-package tests
+package test
 
-import (
-	"bytes"
-	"fmt"
-	"os"
-	"os/exec"
-	"path/filepath"
-)
-
-const parserBasePath = "test/event_parser"
-
-func generateAntlrCode(projectDir string) {
-	javaPath, err := exec.LookPath("java")
-	if err != nil {
-		panic(err)
-	}
-	dstPath := filepath.Join(projectDir, parserBasePath, "parser")
-	if err := os.RemoveAll(dstPath); err != nil {
-		panic(err)
-	}
-	if err := os.MkdirAll(dstPath, 0755); err != nil {
-		panic(err)
-	}
-
-	antlrPath := filepath.Join(projectDir, "codegen", "antlr-4.10.1-complete.jar")
-	lexerPath := filepath.Join(projectDir, "codegen", "tests", "CEEventLexer.g4")
-	parserPath := filepath.Join(projectDir, "codegen", "tests", "CEEventParser.g4")
-	cmd := exec.Command(
-		javaPath,
-		"-cp", antlrPath,
-		"org.antlr.v4.Tool",
-		"-o", dstPath,
-		"-Dlanguage=Go",
-		lexerPath, parserPath,
-	)
-	stdout := &bytes.Buffer{}
-	stderr := &bytes.Buffer{}
-	cmd.Stdout = stdout
-	cmd.Stderr = stderr
-	if err := cmd.Run(); err != nil {
-		panic(fmt.Errorf("failed to run %v: %w\nStdout = [%v]\nStderr = [%v]", cmd.Args, err, stdout.String(), stderr.String()))
-	}
+func GenerateCode(projectDir string) {
+	generateAntlrCode(projectDir)
+	generateEvents(projectDir)
 }

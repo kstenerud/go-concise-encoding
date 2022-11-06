@@ -1,4 +1,4 @@
-// Code generated from /home/karl/Projects/go-concise-encoding/codegen/tests/CEEventLexer.g4 by ANTLR 4.10.1. DO NOT EDIT.
+// Code generated from /home/karl/Projects/go-concise-encoding/codegen/test/CEEventLexer.g4 by ANTLR 4.10.1. DO NOT EDIT.
 
 package parser
 

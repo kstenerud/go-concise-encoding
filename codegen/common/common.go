@@ -34,11 +34,10 @@ import (
 	"github.com/kstenerud/go-concise-encoding/version"
 )
 
-func GenerateGoFile(filePath string,
-	packagePath string, imports []*Import,
+func GenerateGoFile(filePath string, imports []*Import,
 	writeFunc func(writer io.Writer)) {
 	filePath = generateFilePath(filePath, "go")
-	_, packageName := filepath.Split(packagePath)
+	_, packageName := filepath.Split(path.Dir(filePath))
 
 	defer func() {
 		if e := recover(); e != nil {

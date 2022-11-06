@@ -39,7 +39,7 @@ var testsImports = []*common.Import{
 }
 
 func generateTestGenerators(basePath string) {
-	common.GenerateGoFile(basePath, "tests", testsImports, func(writer io.Writer) {
+	common.GenerateGoFile(basePath, testsImports, func(writer io.Writer) {
 		generateArrayTestGenerator(writer)
 	})
 }
