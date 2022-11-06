@@ -33,11 +33,105 @@ import (
 	"github.com/kstenerud/go-concise-encoding/configuration"
 	"github.com/kstenerud/go-concise-encoding/cte"
 	"github.com/kstenerud/go-concise-encoding/test"
+	"github.com/kstenerud/go-concise-encoding/test/test_runner"
 	"github.com/kstenerud/go-concise-encoding/version"
 )
 
 func truncate(data []byte, count int) []byte {
 	return data[:len(data)-count]
+}
+
+func newUnitTest(name string, mustSucceed []*test_runner.MustSucceedTest, mustFail []*test_runner.MustFailTest) *test_runner.UnitTest {
+	unitTest := &test_runner.UnitTest{
+		Name: name,
+	}
+
+	if mustSucceed != nil {
+		unitTest.MustSucceed = mustSucceed
+	}
+	if mustFail != nil {
+		unitTest.MustFail = mustFail
+	}
+
+	return unitTest
+}
+
+func newMustSucceedUnitTest(name string, mustSucceed ...*test_runner.MustSucceedTest) *test_runner.UnitTest {
+	return &test_runner.UnitTest{
+		Name:        name,
+		MustSucceed: mustSucceed,
+	}
+}
+
+func newMustFailUnitTest(name string, mustFail ...*test_runner.MustFailTest) *test_runner.UnitTest {
+	return &test_runner.UnitTest{
+		Name:     name,
+		MustFail: mustFail,
+	}
+}
+
+func newMustSucceedTest(config *configuration.CTEEncoderConfiguration, events ...test.Event) *test_runner.MustSucceedTest {
+	hasFromCBE := canConvertFromCBE(config, events...)
+	hasToCBE := canConvertToCBE(config, events...)
+	cbeDocument := generateCBE(events...)
+	cbe := []byte{}
+	fromCBE := []byte{}
+	toCBE := []byte{}
+	if hasFromCBE && hasToCBE {
+		cbe = cbeDocument
+	} else if hasFromCBE {
+		fromCBE = cbeDocument
+	} else if hasToCBE {
+		toCBE = cbeDocument
+	}
+
+	hasFromCTE := canConvertFromCTE(config, events...)
+	hasToCTE := canConvertToCTE(config, events...)
+	cteDocument := generateCTE(config, events...)
+	cte := ""
+	fromCTE := ""
+	toCTE := ""
+	if hasFromCTE && hasToCTE {
+		cte = cteDocument
+	} else if hasFromCTE {
+		fromCTE = cteDocument
+	} else if hasToCTE {
+		toCTE = cteDocument
+	}
+
+	return &test_runner.MustSucceedTest{
+		BaseTest: test_runner.BaseTest{
+			CBE:    cbe,
+			CTE:    cte,
+			Events: stringifyEvents(events...),
+		},
+		FromCBE: fromCBE,
+		ToCBE:   toCBE,
+		FromCTE: fromCTE,
+		ToCTE:   toCTE,
+	}
+}
+
+func newMustFailTest(testType testType, events ...test.Event) *test_runner.MustFailTest {
+	switch testType {
+	case testTypeCbe:
+		return &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CBE: generateCBE(events...)}}
+	case testTypeCte:
+		return &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: generateCTE(nil, events...)}}
+	case testTypeEvents:
+		return &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{Events: stringifyEvents(events...)}}
+	default:
+		panic(fmt.Errorf("%v: unknown mustFail test type", testType))
+	}
+}
+
+func newCustomMustFailTest(cteContents string) *test_runner.MustFailTest {
+	return &test_runner.MustFailTest{
+		BaseTest: test_runner.BaseTest{
+			CTE:         cteContents,
+			RawDocument: true,
+		},
+	}
 }
 
 func generateCBE(events ...test.Event) []byte {
