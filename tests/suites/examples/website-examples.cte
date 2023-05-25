@@ -84,14 +84,14 @@ c0
                 {
                     "from_cte" = "\.%%%%
 {
-    "string" = "Strings support escape sequences: \n \t \{1f415}"
+    "string" = "Strings support escape sequences: \n \t \[1f415]"
     "url"    = @"https://example.com/"
     "email"  = @"mailto:me@somewhere.com"
 }
 %%%%"
                     "events" = [
                         "m"
-                            "s=string" "s=Strings support escape sequences: \n \t \{1f415}"
+                            "s=string" "s=Strings support escape sequences: \n \t \[1f415]"
                             "s=url"    "rid=https://example.com/"
                             "s=email"  "rid=mailto:me@somewhere.com"
                         "e"
@@ -109,7 +109,7 @@ c0
                                 9b|
                     "events" = [
                         "m"
-                            "s=string" "bs" "acl=42" "adt=Strings support escape sequences: \n \t \{1f415}"
+                            "s=string" "bs" "acl=42" "adt=Strings support escape sequences: \n \t \[1f415]"
                             "s=url"    "brid" "acl=20" "adt=https://example.com/"
                             "s=email"  "brid" "acl=23" "adt=mailto:me@somewhere.com"
                         "e"

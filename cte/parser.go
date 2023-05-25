@@ -413,7 +413,7 @@ func (_this *cteListener) ExitEscapeChar(ctx *parser.EscapeCharContext) {
 	case '_':
 		appendCh = '\u00a0' // SHY
 	default:
-		_this.errorf("BUG: Invalid escape char: [%v]", ch)
+		_this.errorf("BUG: Invalid escape char: [%c]", ch)
 	}
 	_this.appendCodepoint(appendCh)
 }

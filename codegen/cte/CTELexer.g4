@@ -373,7 +373,7 @@ mode MODE_STRING_ESCAPE;
 // ====================
 
 VERBATIM_INIT:  '.' -> mode(MODE_VERBATIM);
-CODEPOINT_INIT: '{' -> mode(MODE_CODEPOINT);
+CODEPOINT_INIT: '[' -> mode(MODE_CODEPOINT);
 CONTINUATION:   [\r\n] CHAR_WS* -> popMode;
 ESCAPE_CHAR:    ([rnt"*-_] | '/' | '\\') -> popMode;
 
@@ -411,7 +411,7 @@ VERBATIM_END: ( {isSentinelChar(this)}? CHAR_VERBATIM_SENTINEL )+ -> popMode;
 mode MODE_CODEPOINT;
 // ================
 
-CODEPOINT: HEX+ '}' -> popMode;
+CODEPOINT: HEX+ ']' -> popMode;
 
 
 // =========================

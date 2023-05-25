@@ -33,7 +33,7 @@ var cteparserParserStaticData struct {
 func cteparserParserInit() {
 	staticData := &cteparserParserStaticData
 	staticData.literalNames = []string{
-		"", "", "", "", "", "", "'['", "']'", "", "'}'", "'='", "'('", "')'",
+		"", "", "", "", "", "", "", "']'", "'{'", "'}'", "'='", "'('", "')'",
 		"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
 		"", "", "", "'|'", "", "'$\"'", "", "", "'>'", "'@\"'", "'@('",
 	}
