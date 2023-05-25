@@ -3,7 +3,6 @@ module github.com/kstenerud/go-concise-encoding
 go 1.14
 
 require (
-	github.com/antlr/antlr4/runtime/Go/antlr v0.0.0-20220626175859-9abda183db8e
 	github.com/antlr/antlr4/runtime/Go/antlr/v4 v4.0.0-20221202181307-76fa05c21b12
 	github.com/cockroachdb/apd/v2 v2.0.2
 	github.com/kstenerud/go-compact-float v1.6.1
