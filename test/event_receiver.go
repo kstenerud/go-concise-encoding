@@ -389,13 +389,13 @@ func (_this *EventReceiver) OnMap() {
 	_this.iterate(M())
 	_this.next.OnMap()
 }
-func (_this *EventReceiver) OnStructTemplate(id []byte) {
-	_this.iterate(ST(string(id)))
-	_this.next.OnStructTemplate(id)
+func (_this *EventReceiver) OnRecordType(id []byte) {
+	_this.iterate(RT(string(id)))
+	_this.next.OnRecordType(id)
 }
-func (_this *EventReceiver) OnStructInstance(id []byte) {
-	_this.iterate(SI(string(id)))
-	_this.next.OnStructInstance(id)
+func (_this *EventReceiver) OnRecord(id []byte) {
+	_this.iterate(REC(string(id)))
+	_this.next.OnRecord(id)
 }
 func (_this *EventReceiver) OnEndContainer() {
 	_this.iterate(E())

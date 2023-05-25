@@ -330,18 +330,18 @@ func (_this *RulesEventReceiver) OnEndContainer() {
 	_this.receiver.OnEndContainer()
 }
 
-func (_this *RulesEventReceiver) OnStructTemplate(identifier []byte) {
+func (_this *RulesEventReceiver) OnRecordType(identifier []byte) {
 	_this.context.NotifyNewObject(false)
 	_this.context.ValidateIdentifier(identifier)
-	_this.context.CurrentEntry.Rule.OnStructTemplate(&_this.context, identifier)
-	_this.receiver.OnStructTemplate(identifier)
+	_this.context.CurrentEntry.Rule.OnRecordType(&_this.context, identifier)
+	_this.receiver.OnRecordType(identifier)
 }
 
-func (_this *RulesEventReceiver) OnStructInstance(identifier []byte) {
+func (_this *RulesEventReceiver) OnRecord(identifier []byte) {
 	_this.context.NotifyNewObject(true)
 	_this.context.ValidateIdentifier(identifier)
-	_this.context.CurrentEntry.Rule.OnStructInstance(&_this.context, identifier)
-	_this.receiver.OnStructInstance(identifier)
+	_this.context.CurrentEntry.Rule.OnRecord(&_this.context, identifier)
+	_this.receiver.OnRecord(identifier)
 }
 
 func (_this *RulesEventReceiver) OnNode() {

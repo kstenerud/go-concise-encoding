@@ -167,8 +167,8 @@ EOF:
 			eventReceiver.OnMap()
 		case cbeTypeList:
 			eventReceiver.OnList()
-		case cbeTypeStructInstance:
-			eventReceiver.OnStructInstance(_this.reader.ReadIdentifier())
+		case cbeTypeRecord:
+			eventReceiver.OnRecord(_this.reader.ReadIdentifier())
 		case cbeTypeEdge:
 			eventReceiver.OnEdge()
 		case cbeTypeNode:
@@ -282,8 +282,8 @@ func (_this *Decoder) decodePlane7f(eventReceiver events.DataEventReceiver) {
 	switch cbeType {
 	case cbeTypeMarker:
 		eventReceiver.OnMarker(_this.reader.ReadIdentifier())
-	case cbeTypeStructTemplate:
-		eventReceiver.OnStructTemplate(_this.reader.ReadIdentifier())
+	case cbeTypeRecordType:
+		eventReceiver.OnRecordType(_this.reader.ReadIdentifier())
 	case cbeTypeRemoteReference:
 		_this.decodeArray(events.ArrayTypeReferenceRemote, eventReceiver)
 	case cbeTypeMedia:

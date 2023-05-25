@@ -239,11 +239,11 @@ type CEEventParserListener interface {
 	// EnterEventString is called when entering the eventString production.
 	EnterEventString(c *EventStringContext)
 
-	// EnterEventStructInstance is called when entering the eventStructInstance production.
-	EnterEventStructInstance(c *EventStructInstanceContext)
+	// EnterEventRecord is called when entering the eventRecord production.
+	EnterEventRecord(c *EventRecordContext)
 
-	// EnterEventStructTemplate is called when entering the eventStructTemplate production.
-	EnterEventStructTemplate(c *EventStructTemplateContext)
+	// EnterEventRecordType is called when entering the eventRecordType production.
+	EnterEventRecordType(c *EventRecordTypeContext)
 
 	// EnterEventTime is called when entering the eventTime production.
 	EnterEventTime(c *EventTimeContext)
@@ -485,11 +485,11 @@ type CEEventParserListener interface {
 	// ExitEventString is called when exiting the eventString production.
 	ExitEventString(c *EventStringContext)
 
-	// ExitEventStructInstance is called when exiting the eventStructInstance production.
-	ExitEventStructInstance(c *EventStructInstanceContext)
+	// ExitEventRecord is called when exiting the eventRecord production.
+	ExitEventRecord(c *EventRecordContext)
 
-	// ExitEventStructTemplate is called when exiting the eventStructTemplate production.
-	ExitEventStructTemplate(c *EventStructTemplateContext)
+	// ExitEventRecordType is called when exiting the eventRecordType production.
+	ExitEventRecordType(c *EventRecordTypeContext)
 
 	// ExitEventTime is called when exiting the eventTime production.
 	ExitEventTime(c *EventTimeContext)

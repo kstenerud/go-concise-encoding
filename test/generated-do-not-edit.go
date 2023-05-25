@@ -278,28 +278,28 @@ func REFL(id string) Event {
 	}
 }
 
-type EventStructInstance struct{ BaseEvent }
+type EventRecord struct{ BaseEvent }
 
-func SI(id string) Event {
+func REC(id string) Event {
 	v := id
 	safeArg := v
 
-	return &EventStructInstance{
-		BaseEvent: ConstructEvent("si", func(receiver events.DataEventReceiver) {
-			receiver.OnStructInstance([]byte(safeArg))
+	return &EventRecord{
+		BaseEvent: ConstructEvent("rec", func(receiver events.DataEventReceiver) {
+			receiver.OnRecord([]byte(safeArg))
 		}, safeArg),
 	}
 }
 
-type EventStructTemplate struct{ BaseEvent }
+type EventRecordType struct{ BaseEvent }
 
-func ST(id string) Event {
+func RT(id string) Event {
 	v := id
 	safeArg := v
 
-	return &EventStructTemplate{
-		BaseEvent: ConstructEvent("st", func(receiver events.DataEventReceiver) {
-			receiver.OnStructTemplate([]byte(safeArg))
+	return &EventRecordType{
+		BaseEvent: ConstructEvent("rt", func(receiver events.DataEventReceiver) {
+			receiver.OnRecordType([]byte(safeArg))
 		}, safeArg),
 	}
 }

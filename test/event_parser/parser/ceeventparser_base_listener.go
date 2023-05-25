@@ -485,17 +485,17 @@ func (s *BaseCEEventParserListener) EnterEventString(ctx *EventStringContext) {}
 // ExitEventString is called when production eventString is exited.
 func (s *BaseCEEventParserListener) ExitEventString(ctx *EventStringContext) {}
 
-// EnterEventStructInstance is called when production eventStructInstance is entered.
-func (s *BaseCEEventParserListener) EnterEventStructInstance(ctx *EventStructInstanceContext) {}
+// EnterEventRecord is called when production eventRecord is entered.
+func (s *BaseCEEventParserListener) EnterEventRecord(ctx *EventRecordContext) {}
 
-// ExitEventStructInstance is called when production eventStructInstance is exited.
-func (s *BaseCEEventParserListener) ExitEventStructInstance(ctx *EventStructInstanceContext) {}
+// ExitEventRecord is called when production eventRecord is exited.
+func (s *BaseCEEventParserListener) ExitEventRecord(ctx *EventRecordContext) {}
 
-// EnterEventStructTemplate is called when production eventStructTemplate is entered.
-func (s *BaseCEEventParserListener) EnterEventStructTemplate(ctx *EventStructTemplateContext) {}
+// EnterEventRecordType is called when production eventRecordType is entered.
+func (s *BaseCEEventParserListener) EnterEventRecordType(ctx *EventRecordTypeContext) {}
 
-// ExitEventStructTemplate is called when production eventStructTemplate is exited.
-func (s *BaseCEEventParserListener) ExitEventStructTemplate(ctx *EventStructTemplateContext) {}
+// ExitEventRecordType is called when production eventRecordType is exited.
+func (s *BaseCEEventParserListener) ExitEventRecordType(ctx *EventRecordTypeContext) {}
 
 // EnterEventTime is called when production eventTime is entered.
 func (s *BaseCEEventParserListener) EnterEventTime(ctx *EventTimeContext) {}

@@ -125,50 +125,50 @@ func (_this MapValueDecorator) EndContainer(ctx *EncoderContext) { errorBadEvent
 
 // ===========================================================================
 
-type StructTemplateDecorator struct{}
+type RecordTypeDecorator struct{}
 
-var structTemplateDecorator StructTemplateDecorator
+var recordTypeDecorator RecordTypeDecorator
 
-func (_this StructTemplateDecorator) String() string { return "StructTemplateDecorator" }
-func (_this StructTemplateDecorator) BeforeValue(ctx *EncoderContext) {
+func (_this RecordTypeDecorator) String() string { return "RecordTypeDecorator" }
+func (_this RecordTypeDecorator) BeforeValue(ctx *EncoderContext) {
 	ctx.WriteNewlineAndOriginAndIndent()
 }
-func (_this StructTemplateDecorator) AfterValue(ctx *EncoderContext) {}
-func (_this StructTemplateDecorator) BeforeComment(ctx *EncoderContext) {
+func (_this RecordTypeDecorator) AfterValue(ctx *EncoderContext) {}
+func (_this RecordTypeDecorator) BeforeComment(ctx *EncoderContext) {
 	ctx.WriteNewlineAndOriginAndIndent()
 }
-func (_this StructTemplateDecorator) AfterComment(ctx *EncoderContext) {}
-func (_this StructTemplateDecorator) EndContainer(ctx *EncoderContext) {
+func (_this RecordTypeDecorator) AfterComment(ctx *EncoderContext) {}
+func (_this RecordTypeDecorator) EndContainer(ctx *EncoderContext) {
 	ctx.Unindent()
 	if ctx.ContainerHasObjects {
 		ctx.WriteNewlineAndOriginAndIndent()
 	}
-	ctx.Stream.WriteStructTemplateEnd()
+	ctx.Stream.WriteRecordTypeEnd()
 	ctx.Unstack()
 	ctx.WriteNewlineAndOriginAndIndent()
 }
 
 // ===========================================================================
 
-type StructInstanceDecorator struct{}
+type RecordDecorator struct{}
 
-var structInstanceDecorator StructInstanceDecorator
+var recordDecorator RecordDecorator
 
-func (_this StructInstanceDecorator) String() string { return "StructInstanceDecorator" }
-func (_this StructInstanceDecorator) BeforeValue(ctx *EncoderContext) {
+func (_this RecordDecorator) String() string { return "RecordDecorator" }
+func (_this RecordDecorator) BeforeValue(ctx *EncoderContext) {
 	ctx.WriteNewlineAndOriginAndIndent()
 }
-func (_this StructInstanceDecorator) AfterValue(ctx *EncoderContext) {}
-func (_this StructInstanceDecorator) BeforeComment(ctx *EncoderContext) {
+func (_this RecordDecorator) AfterValue(ctx *EncoderContext) {}
+func (_this RecordDecorator) BeforeComment(ctx *EncoderContext) {
 	ctx.WriteNewlineAndOriginAndIndent()
 }
-func (_this StructInstanceDecorator) AfterComment(ctx *EncoderContext) {}
-func (_this StructInstanceDecorator) EndContainer(ctx *EncoderContext) {
+func (_this RecordDecorator) AfterComment(ctx *EncoderContext) {}
+func (_this RecordDecorator) EndContainer(ctx *EncoderContext) {
 	ctx.Unindent()
 	if ctx.ContainerHasObjects {
 		ctx.WriteNewlineAndOriginAndIndent()
 	}
-	ctx.Stream.WriteStructInstanceEnd()
+	ctx.Stream.WriteRecordEnd()
 	ctx.Unstack()
 	ctx.AfterValue()
 }

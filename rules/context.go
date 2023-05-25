@@ -46,8 +46,8 @@ type Context struct {
 
 	objectCount uint64
 
-	structTemplates    map[string]int
-	structTemplateName string
+	recordTypes    map[string]int
+	recordTypeName string
 
 	// Stack
 	CurrentEntry   contextStackEntry
@@ -85,7 +85,7 @@ func (_this *Context) Reset() {
 	_this.containerDepth = 0
 	_this.LocalReferenceCount = 0
 	_this.stack = _this.stack[:0]
-	_this.structTemplates = make(map[string]int)
+	_this.recordTypes = make(map[string]int)
 	if _this.markedObjects == nil || len(_this.markedObjects) > 0 {
 		_this.markedObjects = make(map[interface{}]DataType)
 	}
@@ -167,19 +167,19 @@ func (_this *Context) EndContainer(notifyParent bool) {
 	if _this.CurrentEntry.ExpectedObjectCount >= 0 && _this.CurrentEntry.CurrentObjectCount != _this.CurrentEntry.ExpectedObjectCount {
 		panic(fmt.Errorf("container has %v objects but expected object count of %d", _this.CurrentEntry.CurrentObjectCount, _this.CurrentEntry.ExpectedObjectCount))
 	}
-	if _this.CurrentEntry.DataType == DataTypeStructTemplate {
-		_this.addTemplate(_this.structTemplateName, _this.CurrentEntry.CurrentObjectCount)
+	if _this.CurrentEntry.DataType == DataTypeRecordType {
+		_this.addRecordType(_this.recordTypeName, _this.CurrentEntry.CurrentObjectCount)
 	}
 	_this.containerDepth--
 	_this.endContainerLike(notifyParent)
 }
 
-func (_this *Context) addTemplate(id string, objectCount int) {
-	if _, exists := _this.structTemplates[id]; exists {
-		panic(fmt.Errorf("struct template ID [%v] already exists", id))
+func (_this *Context) addRecordType(id string, objectCount int) {
+	if _, exists := _this.recordTypes[id]; exists {
+		panic(fmt.Errorf("record type ID [%v] already exists", id))
 	}
 
-	_this.structTemplates[id] = objectCount
+	_this.recordTypes[id] = objectCount
 }
 
 func (_this *Context) BeginList() {
@@ -190,24 +190,24 @@ func (_this *Context) BeginMap() {
 	_this.beginContainer(&mapKeyRule, DataTypeMap, noObjectCount)
 }
 
-func (_this *Context) areStructTemplatesAllowed() bool {
+func (_this *Context) areRecordTypesAllowed() bool {
 	return len(_this.stack) == 0
 }
 
-func (_this *Context) BeginStructTemplate(id []byte) {
-	if !_this.areStructTemplatesAllowed() {
+func (_this *Context) BeginRecordType(id []byte) {
+	if !_this.areRecordTypesAllowed() {
 		panic(fmt.Errorf("record types are not allowed here"))
 	}
-	_this.beginContainer(&structTemplateRule, DataTypeStructTemplate, noObjectCount)
-	_this.structTemplateName = string(id)
+	_this.beginContainer(&recordTypeRule, DataTypeRecordType, noObjectCount)
+	_this.recordTypeName = string(id)
 }
 
-func (_this *Context) BeginStructInstance(id []byte) {
-	expectedObjectCount, ok := _this.structTemplates[string(id)]
+func (_this *Context) BeginRecord(id []byte) {
+	expectedObjectCount, ok := _this.recordTypes[string(id)]
 	if !ok {
-		panic(fmt.Errorf("%v: no such struct template has been defined", string(id)))
+		panic(fmt.Errorf("%v: no such record type has been defined", string(id)))
 	}
-	_this.beginContainer(&structInstanceRule, DataTypeStructInstance, expectedObjectCount)
+	_this.beginContainer(&recordRule, DataTypeRecord, expectedObjectCount)
 }
 
 func (_this *Context) BeginEdge() {

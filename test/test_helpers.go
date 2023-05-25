@@ -342,8 +342,8 @@ var (
 	EvRID     = RID("http://z.com")
 	EvS       = S("a")
 	EvSB      = BS()
-	EvSI      = SI("a")
-	EvST      = ST("a")
+	EvREC     = REC("a")
+	EvRT      = RT("a")
 	EvUID     = UID([]byte{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0})
 	EvV       = V(version.ConciseEncodingVersion)
 )
@@ -351,7 +351,7 @@ var (
 var allEvents = Events{
 	EvV, EvPAD, EvCS, EvCM, EvNULL, EvB, EvPI, EvNI, EvI,
 	EvBI, EvBINull, EvBF, EvFNAN, EvBBF, EvBBFNull, EvDF, EvDFNAN, EvBDF, EvBDFNull,
-	EvBDFNAN, EvNAN, EvUID, EvT, EvCT, EvL, EvM, EvSI,
+	EvBDFNAN, EvNAN, EvUID, EvT, EvCT, EvL, EvM, EvREC,
 	EvNODE, EvEDGE, EvE,
 	EvMARK, EvREFL, EvREFR, EvAC, EvAD, EvS, EvSB, EvRID, EvBRID,
 	EvCB, EvBCB, EvCUT, EvBCT, EvAB, EvBAB, EvAU8, EvBAU8, EvAU16,
@@ -390,7 +390,7 @@ var (
 	}
 
 	ValidTLOValues   = ComplementaryEvents(InvalidTLOValues)
-	InvalidTLOValues = Events{EvV, EvE, EvAC, EvAD, EvREFL, EvST}
+	InvalidTLOValues = Events{EvV, EvE, EvAC, EvAD, EvREFL, EvRT}
 
 	ValidMapKeys = Events{
 		EvPAD, EvCS, EvCM, EvB, EvPI, EvNI, EvI, EvBI, EvBF, EvBBF, EvDF,
@@ -400,16 +400,16 @@ var (
 	InvalidMapKeys = ComplementaryEvents(ValidMapKeys)
 
 	ValidMapValues   = ComplementaryEvents(InvalidMapValues)
-	InvalidMapValues = Events{EvV, EvE, EvAC, EvAD, EvST}
+	InvalidMapValues = Events{EvV, EvE, EvAC, EvAD, EvRT}
 
 	ValidListValues   = ComplementaryEvents(InvalidListValues)
-	InvalidListValues = Events{EvV, EvAC, EvAD, EvST}
+	InvalidListValues = Events{EvV, EvAC, EvAD, EvRT}
 
-	ValidStructTemplateValues   = ComplementaryEvents(InvalidStructTemplateValues)
-	InvalidStructTemplateValues = Events{EvV, EvAC, EvAD, EvMARK, EvREFL, EvST}
+	ValidRecordTypeValues   = ComplementaryEvents(InvalidRecordTypeValues)
+	InvalidRecordTypeValues = Events{EvV, EvAC, EvAD, EvMARK, EvREFL, EvRT}
 
-	ValidStructInstanceValues   = ComplementaryEvents(InvalidStructInstanceValues)
-	InvalidStructInstanceValues = Events{EvV, EvAC, EvAD, EvST}
+	ValidRecordValues   = ComplementaryEvents(InvalidRecordValues)
+	InvalidRecordValues = Events{EvV, EvAC, EvAD, EvRT}
 
 	ValidAfterNonStringArrayBegin   = Events{EvAC, EvCS, EvCM}
 	InvalidAfterNonStringArrayBegin = ComplementaryEvents(ValidAfterNonStringArrayBegin)
@@ -421,14 +421,14 @@ var (
 	InvalidAfterArrayChunk = ComplementaryEvents(ValidAfterArrayChunk)
 
 	ValidMarkerValues   = ComplementaryEvents(InvalidMarkerValues)
-	InvalidMarkerValues = Events{EvV, EvE, EvAC, EvAD, EvMARK, EvREFL, EvREFR, EvST}
+	InvalidMarkerValues = Events{EvV, EvE, EvAC, EvAD, EvMARK, EvREFL, EvREFR, EvRT}
 
 	Padding                     = Events{EvPAD}
 	CommentsPaddingRefEnd       = Events{EvPAD, EvCS, EvCM, EvREFL, EvE}
 	CommentsPaddingMarkerRefEnd = Events{EvPAD, EvCS, EvCM, EvMARK, EvREFL, EvE}
 
 	ValidEdgeSources   = ComplementaryEvents(InvalidEdgeSources)
-	InvalidEdgeSources = Events{EvV, EvAC, EvAD, EvNULL, EvBDFNull, EvBBFNull, EvBINull, EvST}
+	InvalidEdgeSources = Events{EvV, EvAC, EvAD, EvNULL, EvBDFNull, EvBBFNull, EvBINull, EvRT}
 
 	ValidEdgeDescriptions   = ValidListValues
 	InvalidEdgeDescriptions = InvalidListValues
@@ -437,7 +437,7 @@ var (
 	InvalidOEdgeDestinations = InvalidEdgeSources
 
 	ValidNodeValues   = ComplementaryEvents(InvalidNodeValues)
-	InvalidNodeValues = Events{EvV, EvAC, EvAD, EvST}
+	InvalidNodeValues = Events{EvV, EvAC, EvAD, EvRT}
 )
 
 func containsEventType(events Events, event Event) bool {
@@ -467,8 +467,8 @@ func copyEvents(events Events) Events {
 var basicCompletions = map[reflect.Type]Events{
 	reflect.TypeOf(L()): {E()},
 	reflect.TypeOf(M()): {E()},
-	// reflect.TypeOf(ST("a")):       {E(), N(1)},
-	reflect.TypeOf(SI("a")):       {S("a"), E()},
+	// reflect.TypeOf(RT("a")):       {E(), N(1)},
+	reflect.TypeOf(REC("a")):      {S("a"), E()},
 	reflect.TypeOf(NODE()):        {N(1), E()},
 	reflect.TypeOf(EDGE()):        {RID("a"), RID("b"), N(1), E()},
 	reflect.TypeOf(BS()):          {ACL(1), ADT("a")},
@@ -595,8 +595,8 @@ func GenerateAllVariants(
 	possibleFollowups Events) (events []Events) {
 
 	if containsRecords(docBegin, prefix, suffix, docEnd, possibleFollowups) {
-		// Crude implementation: Add a basic template to the top if necessary
-		docBegin = append(docBegin, EvST, EvS, EvE)
+		// Crude implementation: Add a basic record type to the top if necessary
+		docBegin = append(docBegin, EvRT, EvS, EvE)
 	}
 
 	for _, event := range possibleFollowups {
@@ -609,7 +609,7 @@ func GenerateAllVariants(
 func containsRecords(eventSets ...Events) bool {
 	for _, eventSet := range eventSets {
 		for _, event := range eventSet {
-			if event.IsEquivalentTo(EvSI) {
+			if event.IsEquivalentTo(EvREC) {
 				return true
 			}
 		}

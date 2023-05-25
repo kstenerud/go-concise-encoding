@@ -1559,58 +1559,58 @@ func (_this *mapBuilder) BuildBeginNodeContents(ctx *Context) {
 func (_this *mapBuilder) BuildBeginEdgeContents(ctx *Context) {
 	PanicBadEvent(_this, "BuildBeginEdgeContents")
 }
-func (_this *structTemplateBuilder) BuildFromNull(ctx *Context, dst reflect.Value) reflect.Value {
+func (_this *recordTypeBuilder) BuildFromNull(ctx *Context, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromNull")
 }
-func (_this *structTemplateBuilder) BuildFromCustomBinary(ctx *Context, customType uint64, data []byte, dst reflect.Value) reflect.Value {
+func (_this *recordTypeBuilder) BuildFromCustomBinary(ctx *Context, customType uint64, data []byte, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomBinary")
 }
-func (_this *structTemplateBuilder) BuildFromCustomText(ctx *Context, customType uint64, data string, dst reflect.Value) reflect.Value {
+func (_this *recordTypeBuilder) BuildFromCustomText(ctx *Context, customType uint64, data string, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromCustomText")
 }
-func (_this *structTemplateBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
+func (_this *recordTypeBuilder) BuildFromMedia(ctx *Context, mediaType string, data []byte, dst reflect.Value) reflect.Value {
 	return PanicBadEventBuildingValue(_this, dst, "BuildFromMedia")
 }
-func (_this *structTemplateBuilder) BuildNewList(ctx *Context) {
+func (_this *recordTypeBuilder) BuildNewList(ctx *Context) {
 	PanicBadEvent(_this, "BuildNewList")
 }
-func (_this *structTemplateBuilder) BuildNewMap(ctx *Context) {
+func (_this *recordTypeBuilder) BuildNewMap(ctx *Context) {
 	PanicBadEvent(_this, "BuildNewMap")
 }
-func (_this *structTemplateBuilder) BuildNewNode(ctx *Context) {
+func (_this *recordTypeBuilder) BuildNewNode(ctx *Context) {
 	PanicBadEvent(_this, "BuildNewNode")
 }
-func (_this *structTemplateBuilder) BuildNewEdge(ctx *Context) {
+func (_this *recordTypeBuilder) BuildNewEdge(ctx *Context) {
 	PanicBadEvent(_this, "BuildNewEdge")
 }
-func (_this *structTemplateBuilder) BuildBeginListContents(ctx *Context) {
+func (_this *recordTypeBuilder) BuildBeginListContents(ctx *Context) {
 	PanicBadEvent(_this, "BuildBeginListContents")
 }
-func (_this *structTemplateBuilder) BuildBeginMapContents(ctx *Context) {
+func (_this *recordTypeBuilder) BuildBeginMapContents(ctx *Context) {
 	PanicBadEvent(_this, "BuildBeginMapContents")
 }
-func (_this *structTemplateBuilder) BuildBeginNodeContents(ctx *Context) {
+func (_this *recordTypeBuilder) BuildBeginNodeContents(ctx *Context) {
 	PanicBadEvent(_this, "BuildBeginNodeContents")
 }
-func (_this *structTemplateBuilder) BuildBeginEdgeContents(ctx *Context) {
+func (_this *recordTypeBuilder) BuildBeginEdgeContents(ctx *Context) {
 	PanicBadEvent(_this, "BuildBeginEdgeContents")
 }
-func (_this *structTemplateBuilder) BuildFromLocalReference(ctx *Context, id []byte) {
+func (_this *recordTypeBuilder) BuildFromLocalReference(ctx *Context, id []byte) {
 	PanicBadEvent(_this, "BuildFromLocalReference")
 }
-func (_this *structTemplateBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
+func (_this *recordTypeBuilder) NotifyChildContainerFinished(ctx *Context, container reflect.Value) {
 	PanicBadEvent(_this, "NotifyChildContainerFinished")
 }
-func (_this *structInstanceBuilder) BuildBeginListContents(ctx *Context) {
+func (_this *recordBuilder) BuildBeginListContents(ctx *Context) {
 	PanicBadEvent(_this, "BuildBeginListContents")
 }
-func (_this *structInstanceBuilder) BuildBeginMapContents(ctx *Context) {
+func (_this *recordBuilder) BuildBeginMapContents(ctx *Context) {
 	PanicBadEvent(_this, "BuildBeginMapContents")
 }
-func (_this *structInstanceBuilder) BuildBeginNodeContents(ctx *Context) {
+func (_this *recordBuilder) BuildBeginNodeContents(ctx *Context) {
 	PanicBadEvent(_this, "BuildBeginNodeContents")
 }
-func (_this *structInstanceBuilder) BuildBeginEdgeContents(ctx *Context) {
+func (_this *recordBuilder) BuildBeginEdgeContents(ctx *Context) {
 	PanicBadEvent(_this, "BuildBeginEdgeContents")
 }
 func (_this *markerObjectBuilder) BuildBeginListContents(ctx *Context) {

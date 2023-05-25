@@ -95,8 +95,8 @@ null
 'refr='
 'rid'
 'rid='
-'si='
-'st='
+'rec='
+'rt='
 's'
 's='
 't='
@@ -251,8 +251,8 @@ EVENT_REFR
 EVENT_REFR_ARGS
 EVENT_RID
 EVENT_RID_ARGS
-EVENT_SI
-EVENT_ST
+EVENT_REC
+EVENT_RT
 EVENT_S
 EVENT_S_ARGS
 EVENT_T
@@ -388,8 +388,8 @@ eventLocalReference
 eventRemoteReference
 eventResourceId
 eventString
-eventStructInstance
-eventStructTemplate
+eventRecord
+eventRecordType
 eventTime
 eventUID
 eventVersion

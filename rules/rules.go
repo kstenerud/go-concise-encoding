@@ -43,8 +43,8 @@ type EventRule interface {
 	OnNull(ctx *Context)
 	OnList(ctx *Context)
 	OnMap(ctx *Context)
-	OnStructTemplate(ctx *Context, identifier []byte)
-	OnStructInstance(ctx *Context, identifier []byte)
+	OnRecordType(ctx *Context, identifier []byte)
+	OnRecord(ctx *Context, identifier []byte)
 	OnEdge(ctx *Context)
 	OnNode(ctx *Context)
 	OnEnd(ctx *Context)
@@ -66,8 +66,8 @@ var (
 	listRule                ListRule
 	mapKeyRule              MapKeyRule
 	mapValueRule            MapValueRule
-	structTemplateRule      StructTemplateRule
-	structInstanceRule      StructInstanceRule
+	recordTypeRule      RecordTypeRule
+	recordRule      RecordRule
 	arrayRule               ArrayRule
 	arrayChunkRule          ArrayChunkRule
 	stringRule              StringRule

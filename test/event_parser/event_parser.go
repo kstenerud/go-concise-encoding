@@ -796,11 +796,11 @@ func (_this *eventListener) ExitEventResourceId(ctx *parser.EventResourceIdConte
 func (_this *eventListener) ExitEventString(ctx *parser.EventStringContext) {
 	_this.setEvents(test.S(getStringArg(ctx.GetChildren())))
 }
-func (_this *eventListener) ExitEventStructInstance(ctx *parser.EventStructInstanceContext) {
-	_this.setEvents(test.SI(getStringArg(ctx.GetChildren())))
+func (_this *eventListener) ExitEventRecord(ctx *parser.EventRecordContext) {
+	_this.setEvents(test.REC(getStringArg(ctx.GetChildren())))
 }
-func (_this *eventListener) ExitEventStructTemplate(ctx *parser.EventStructTemplateContext) {
-	_this.setEvents(test.ST(getStringArg(ctx.GetChildren())))
+func (_this *eventListener) ExitEventRecordType(ctx *parser.EventRecordTypeContext) {
+	_this.setEvents(test.RT(getStringArg(ctx.GetChildren())))
 }
 func (_this *eventListener) ExitEventTime(ctx *parser.EventTimeContext) {
 	text := getTokenText(ctx.GetChild(1))

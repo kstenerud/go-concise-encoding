@@ -86,27 +86,27 @@ func (_this *MapValueRule) OnStringlikeArray(ctx *Context, arrayType events.Arra
 
 // =============================================================================
 
-type StructTemplateRule struct{}
+type RecordTypeRule struct{}
 
-func (_this *StructTemplateRule) String() string { return "Struct Template Rule" }
-func (_this *StructTemplateRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
-	ctx.ValidateFullArrayKeyable("struct template", arrayType, elementCount, data)
+func (_this *RecordTypeRule) String() string { return "Record Type Rule" }
+func (_this *RecordTypeRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
+	ctx.ValidateFullArrayKeyable("record type", arrayType, elementCount, data)
 }
-func (_this *StructTemplateRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
-	ctx.ValidateFullArrayStringlikeKeyable("struct template", arrayType, data)
+func (_this *RecordTypeRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
+	ctx.ValidateFullArrayStringlikeKeyable("record type", arrayType, data)
 }
-func (_this *StructTemplateRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
-	ctx.BeginArrayKeyable("struct template", arrayType)
+func (_this *RecordTypeRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
+	ctx.BeginArrayKeyable("record type", arrayType)
 }
-func (_this *StructTemplateRule) OnEnd(ctx *Context) {
+func (_this *RecordTypeRule) OnEnd(ctx *Context) {
 	ctx.EndContainer(false)
 }
 
 // =============================================================================
 
-type StructInstanceRule struct{}
+type RecordRule struct{}
 
-func (_this *StructInstanceRule) String() string { return "Struct Instance Rule" }
+func (_this *RecordRule) String() string { return "Record Rule" }
 
 // =============================================================================
 

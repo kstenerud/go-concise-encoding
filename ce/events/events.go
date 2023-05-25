@@ -178,9 +178,9 @@ type DataEventReceiver interface {
 
 	OnMap()
 
-	OnStructTemplate(identifier []byte)
+	OnRecordType(identifier []byte)
 
-	OnStructInstance(identifier []byte)
+	OnRecord(identifier []byte)
 
 	OnEdge()
 

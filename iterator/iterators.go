@@ -403,7 +403,7 @@ func newRecordIterators(ctx *Context, structType reflect.Type, name string) (typ
 	dummyValue := reflect.ValueOf(1)
 
 	typeIterator = func(context *Context, value reflect.Value) {
-		context.EventReceiver.OnStructTemplate(identifier)
+		context.EventReceiver.OnRecordType(identifier)
 		for _, field := range fields {
 			if shouldIncludeField(field, dummyValue, ctx.Configuration.DefaultFieldOmitBehavior) {
 				if !field.IsAnonymous {
@@ -415,7 +415,7 @@ func newRecordIterators(ctx *Context, structType reflect.Type, name string) (typ
 	}
 
 	recordIterator = func(context *Context, value reflect.Value) {
-		context.EventReceiver.OnStructInstance(identifier)
+		context.EventReceiver.OnRecord(identifier)
 		for _, field := range fields {
 			fieldValue := field.getValueFromStruct(value)
 			if shouldIncludeField(field, fieldValue, ctx.Configuration.DefaultFieldOmitBehavior) {

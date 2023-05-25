@@ -99,7 +99,7 @@ func newMustSucceedTest(directions Directions,
 
 	if containsRecords(events) {
 		oldEvents := events
-		events = []test.Event{test.EvST, test.EvS, test.EvE}
+		events = []test.Event{test.EvRT, test.EvS, test.EvE}
 		events = append(events, oldEvents...)
 	}
 
@@ -147,7 +147,7 @@ func newMustSucceedTest(directions Directions,
 func newMustFailTest(testType testType, events ...test.Event) *test_runner.MustFailTest {
 	if containsRecords(events) {
 		oldEvents := events
-		events = []test.Event{test.EvST, test.EvS, test.EvE}
+		events = []test.Event{test.EvRT, test.EvS, test.EvE}
 		events = append(events, oldEvents...)
 	}
 
@@ -174,7 +174,7 @@ func newCustomMustFailTest(cteContents string) *test_runner.MustFailTest {
 
 func containsRecords(events test.Events) bool {
 	for _, event := range events {
-		if event.IsEquivalentTo(EvSI) {
+		if event.IsEquivalentTo(EvREC) {
 			return true
 		}
 	}
@@ -256,7 +256,7 @@ var allEvents = test.Events{
 	EvBAI16, EvBAI32, EvBAI64, EvBAI8, EvBAU, EvBAU16, EvBAU32, EvBAU64, EvBAU8,
 	EvBCB, EvBCT, EvBMEDIA, EvBRID, EvBS, EvCB, EvCM, EvCS, EvCT, EvE,
 	EvEDGE, EvINF, EvL, EvM, EvMARK, EvMEDIA, EvN, EvNAN, EvNINF, EvNODE, EvNULL,
-	EvPAD, EvREFL, EvREFR, EvRID, EvS, EvSI, EvSNAN, EvST, EvT, EvUID, EvV,
+	EvPAD, EvREFL, EvREFR, EvRID, EvS, EvREC, EvSNAN, EvRT, EvT, EvUID, EvV,
 }
 
 var (
@@ -266,8 +266,8 @@ var (
 	followups = map[string]test.Events{
 		EvL.Name():      {EvE},
 		EvM.Name():      {EvE},
-		EvSI.Name():     {EvS, EvE},
-		EvST.Name():     {EvS, EvE, EvN},
+		EvREC.Name():    {EvS, EvE},
+		EvRT.Name():     {EvS, EvE, EvN},
 		EvNODE.Name():   {EvN, EvE},
 		EvEDGE.Name():   {EvRID, EvRID, EvN, EvE},
 		EvBAB.Name():    {EvACL, EvADB},
@@ -541,13 +541,13 @@ var (
 	EvNODE   = test.NODE()
 	EvNULL   = test.NULL()
 	EvPAD    = test.PAD()
+	EvREC    = test.REC("a")
 	EvREFL   = test.REFL("a")
 	EvREFR   = test.REFR("a")
 	EvRID    = test.RID("http://z.com")
+	EvRT     = test.RT("a")
 	EvS      = test.S("a")
-	EvSI     = test.SI("a")
 	EvSNAN   = test.N(compact_float.SignalingNaN())
-	EvST     = test.ST("a")
 	EvT      = test.T(compact_time.AsCompactTime(time.Date(2020, time.Month(1), 1, 1, 1, 1, 1, time.UTC)))
 	EvUID    = test.UID([]byte{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0})
 	EvV      = test.V(version.ConciseEncodingVersion)
@@ -617,13 +617,13 @@ func NAN() test.Event                     { return test.NAN() }
 func NODE() test.Event                    { return test.NODE() }
 func NULL() test.Event                    { return test.NULL() }
 func PAD() test.Event                     { return test.PAD() }
+func REC(id string) test.Event            { return test.REC(id) }
 func REFL(id string) test.Event           { return test.REFL(id) }
 func REFR(v string) test.Event            { return test.REFR(v) }
 func RID(v string) test.Event             { return test.RID(v) }
+func RT(id string) test.Event             { return test.RT(id) }
 func S(v string) test.Event               { return test.S(v) }
-func SI(id string) test.Event             { return test.SI(id) }
 func SNAN() test.Event                    { return test.SNAN() }
-func ST(id string) test.Event             { return test.ST(id) }
 func T(v compact_time.Time) test.Event    { return test.T(v) }
 func UID(v []byte) test.Event             { return test.UID(v) }
 func V(v uint64) test.Event               { return test.V(v) }

@@ -41,8 +41,8 @@ const (
 	DataTypeTime
 	DataTypeList
 	DataTypeMap
-	DataTypeStructTemplate
-	DataTypeStructInstance
+	DataTypeRecordType
+	DataTypeRecord
 	DataTypeEdge
 	DataTypeNode
 	DataTypeString
@@ -69,10 +69,10 @@ const (
 	DataTypeComment
 	DataTypePadding
 	DataTypeInvalid = 0x0
-	AllowAny = DataTypeNull | DataTypeNan | DataTypeBool | DataTypeInt | DataTypeFloat | DataTypeUID | DataTypeTime | DataTypeList | DataTypeMap | DataTypeStructTemplate | DataTypeStructInstance | DataTypeEdge | DataTypeNode | DataTypeString | DataTypeMedia | DataTypeArrayBit | DataTypeArrayUint8 | DataTypeArrayUint16 | DataTypeArrayUint32 | DataTypeArrayUint64 | DataTypeArrayInt8 | DataTypeArrayInt16 | DataTypeArrayInt32 | DataTypeArrayInt64 | DataTypeArrayFloat16 | DataTypeArrayFloat32 | DataTypeArrayFloat64 | DataTypeArrayUID | DataTypeCustomText | DataTypeCustomBinary | DataTypeMarker | DataTypeLocalReference | DataTypeResourceID | DataTypeRemoteReference | DataTypeComment | DataTypePadding
-	AllowNonNull = DataTypeNan | DataTypeBool | DataTypeInt | DataTypeFloat | DataTypeUID | DataTypeTime | DataTypeList | DataTypeMap | DataTypeStructTemplate | DataTypeStructInstance | DataTypeEdge | DataTypeNode | DataTypeString | DataTypeMedia | DataTypeArrayBit | DataTypeArrayUint8 | DataTypeArrayUint16 | DataTypeArrayUint32 | DataTypeArrayUint64 | DataTypeArrayInt8 | DataTypeArrayInt16 | DataTypeArrayInt32 | DataTypeArrayInt64 | DataTypeArrayFloat16 | DataTypeArrayFloat32 | DataTypeArrayFloat64 | DataTypeArrayUID | DataTypeCustomText | DataTypeCustomBinary | DataTypeMarker | DataTypeLocalReference | DataTypeResourceID | DataTypeRemoteReference | DataTypeComment | DataTypePadding
+	AllowAny = DataTypeNull | DataTypeNan | DataTypeBool | DataTypeInt | DataTypeFloat | DataTypeUID | DataTypeTime | DataTypeList | DataTypeMap | DataTypeRecordType | DataTypeRecord | DataTypeEdge | DataTypeNode | DataTypeString | DataTypeMedia | DataTypeArrayBit | DataTypeArrayUint8 | DataTypeArrayUint16 | DataTypeArrayUint32 | DataTypeArrayUint64 | DataTypeArrayInt8 | DataTypeArrayInt16 | DataTypeArrayInt32 | DataTypeArrayInt64 | DataTypeArrayFloat16 | DataTypeArrayFloat32 | DataTypeArrayFloat64 | DataTypeArrayUID | DataTypeCustomText | DataTypeCustomBinary | DataTypeMarker | DataTypeLocalReference | DataTypeResourceID | DataTypeRemoteReference | DataTypeComment | DataTypePadding
+	AllowNonNull = DataTypeNan | DataTypeBool | DataTypeInt | DataTypeFloat | DataTypeUID | DataTypeTime | DataTypeList | DataTypeMap | DataTypeRecordType | DataTypeRecord | DataTypeEdge | DataTypeNode | DataTypeString | DataTypeMedia | DataTypeArrayBit | DataTypeArrayUint8 | DataTypeArrayUint16 | DataTypeArrayUint32 | DataTypeArrayUint64 | DataTypeArrayInt8 | DataTypeArrayInt16 | DataTypeArrayInt32 | DataTypeArrayInt64 | DataTypeArrayFloat16 | DataTypeArrayFloat32 | DataTypeArrayFloat64 | DataTypeArrayUID | DataTypeCustomText | DataTypeCustomBinary | DataTypeMarker | DataTypeLocalReference | DataTypeResourceID | DataTypeRemoteReference | DataTypeComment | DataTypePadding
 	AllowKeyable = DataTypeBool | DataTypeInt | DataTypeFloat | DataTypeUID | DataTypeTime | DataTypeString | DataTypeMarker | DataTypeLocalReference | DataTypeResourceID | DataTypeComment | DataTypePadding
-	AllowMarkable = DataTypeNull | DataTypeNan | DataTypeBool | DataTypeInt | DataTypeFloat | DataTypeUID | DataTypeTime | DataTypeList | DataTypeMap | DataTypeStructInstance | DataTypeEdge | DataTypeNode | DataTypeString | DataTypeMedia | DataTypeArrayBit | DataTypeArrayUint8 | DataTypeArrayUint16 | DataTypeArrayUint32 | DataTypeArrayUint64 | DataTypeArrayInt8 | DataTypeArrayInt16 | DataTypeArrayInt32 | DataTypeArrayInt64 | DataTypeArrayFloat16 | DataTypeArrayFloat32 | DataTypeArrayFloat64 | DataTypeArrayUID | DataTypeCustomText | DataTypeCustomBinary | DataTypeResourceID | DataTypePadding
+	AllowMarkable = DataTypeNull | DataTypeNan | DataTypeBool | DataTypeInt | DataTypeFloat | DataTypeUID | DataTypeTime | DataTypeList | DataTypeMap | DataTypeRecord | DataTypeEdge | DataTypeNode | DataTypeString | DataTypeMedia | DataTypeArrayBit | DataTypeArrayUint8 | DataTypeArrayUint16 | DataTypeArrayUint32 | DataTypeArrayUint64 | DataTypeArrayInt8 | DataTypeArrayInt16 | DataTypeArrayInt32 | DataTypeArrayInt64 | DataTypeArrayFloat16 | DataTypeArrayFloat32 | DataTypeArrayFloat64 | DataTypeArrayUID | DataTypeCustomText | DataTypeCustomBinary | DataTypeResourceID | DataTypePadding
 	AllowString = DataTypeString
 	AllowResourceID = DataTypeResourceID
 )
@@ -113,8 +113,8 @@ var datatypeNames = map[DataType]string{
 	DataTypeTime: "DataTypeTime",
 	DataTypeList: "DataTypeList",
 	DataTypeMap: "DataTypeMap",
-	DataTypeStructTemplate: "DataTypeStructTemplate",
-	DataTypeStructInstance: "DataTypeStructInstance",
+	DataTypeRecordType: "DataTypeRecordType",
+	DataTypeRecord: "DataTypeRecord",
 	DataTypeEdge: "DataTypeEdge",
 	DataTypeNode: "DataTypeNode",
 	DataTypeString: "DataTypeString",
@@ -153,11 +153,11 @@ func (_this *TopLevelRule) OnList(ctx *Context) {
 func (_this *TopLevelRule) OnMap(ctx *Context) {
 	ctx.BeginMap()
 }
-func (_this *TopLevelRule) OnStructTemplate(ctx *Context, identifier []byte) {
-	ctx.BeginStructTemplate(identifier)
+func (_this *TopLevelRule) OnRecordType(ctx *Context, identifier []byte) {
+	ctx.BeginRecordType(identifier)
 }
-func (_this *TopLevelRule) OnStructInstance(ctx *Context, identifier []byte) {
-	ctx.BeginStructInstance(identifier)
+func (_this *TopLevelRule) OnRecord(ctx *Context, identifier []byte) {
+	ctx.BeginRecord(identifier)
 }
 func (_this *TopLevelRule) OnEdge(ctx *Context) {
 	ctx.BeginEdge()
@@ -195,11 +195,11 @@ func (_this *ListRule) OnList(ctx *Context) {
 func (_this *ListRule) OnMap(ctx *Context) {
 	ctx.BeginMap()
 }
-func (_this *ListRule) OnStructTemplate(ctx *Context, identifier []byte) {
-	ctx.BeginStructTemplate(identifier)
+func (_this *ListRule) OnRecordType(ctx *Context, identifier []byte) {
+	ctx.BeginRecordType(identifier)
 }
-func (_this *ListRule) OnStructInstance(ctx *Context, identifier []byte) {
-	ctx.BeginStructInstance(identifier)
+func (_this *ListRule) OnRecord(ctx *Context, identifier []byte) {
+	ctx.BeginRecord(identifier)
 }
 func (_this *ListRule) OnEdge(ctx *Context) {
 	ctx.BeginEdge()
@@ -246,11 +246,11 @@ func (_this *MapValueRule) OnList(ctx *Context) {
 func (_this *MapValueRule) OnMap(ctx *Context) {
 	ctx.BeginMap()
 }
-func (_this *MapValueRule) OnStructTemplate(ctx *Context, identifier []byte) {
-	ctx.BeginStructTemplate(identifier)
+func (_this *MapValueRule) OnRecordType(ctx *Context, identifier []byte) {
+	ctx.BeginRecordType(identifier)
 }
-func (_this *MapValueRule) OnStructInstance(ctx *Context, identifier []byte) {
-	ctx.BeginStructInstance(identifier)
+func (_this *MapValueRule) OnRecord(ctx *Context, identifier []byte) {
+	ctx.BeginRecord(identifier)
 }
 func (_this *MapValueRule) OnEdge(ctx *Context) {
 	ctx.BeginEdge()
@@ -264,70 +264,70 @@ func (_this *MapValueRule) OnMarker(ctx *Context, identifier []byte) {
 func (_this *MapValueRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
 	ctx.BeginArrayAnyType(arrayType)
 }
-func (_this *StructTemplateRule) OnChildContainerEnded(ctx *Context, containerType DataType) {
+func (_this *RecordTypeRule) OnChildContainerEnded(ctx *Context, containerType DataType) {
 	/* Nothing to do */
 }
-func (_this *StructTemplateRule) OnPadding(ctx *Context) {
+func (_this *RecordTypeRule) OnPadding(ctx *Context) {
 	/* Nothing to do */
 }
-func (_this *StructTemplateRule) OnComment(ctx *Context) {
+func (_this *RecordTypeRule) OnComment(ctx *Context) {
 	/* Nothing to do */
 }
-func (_this *StructTemplateRule) OnKeyableObject(ctx *Context, objType DataType) {
+func (_this *RecordTypeRule) OnKeyableObject(ctx *Context, objType DataType) {
 	/* Nothing to do */
 }
-func (_this *StructInstanceRule) OnChildContainerEnded(ctx *Context, containerType DataType) {
+func (_this *RecordRule) OnChildContainerEnded(ctx *Context, containerType DataType) {
 	/* Nothing to do */
 }
-func (_this *StructInstanceRule) OnPadding(ctx *Context) {
+func (_this *RecordRule) OnPadding(ctx *Context) {
 	/* Nothing to do */
 }
-func (_this *StructInstanceRule) OnComment(ctx *Context) {
+func (_this *RecordRule) OnComment(ctx *Context) {
 	/* Nothing to do */
 }
-func (_this *StructInstanceRule) OnNull(ctx *Context) {
+func (_this *RecordRule) OnNull(ctx *Context) {
 	/* Nothing to do */
 }
-func (_this *StructInstanceRule) OnKeyableObject(ctx *Context, objType DataType) {
+func (_this *RecordRule) OnKeyableObject(ctx *Context, objType DataType) {
 	/* Nothing to do */
 }
-func (_this *StructInstanceRule) OnNonKeyableObject(ctx *Context, objType DataType) {
+func (_this *RecordRule) OnNonKeyableObject(ctx *Context, objType DataType) {
 	/* Nothing to do */
 }
-func (_this *StructInstanceRule) OnList(ctx *Context) {
+func (_this *RecordRule) OnList(ctx *Context) {
 	ctx.BeginList()
 }
-func (_this *StructInstanceRule) OnMap(ctx *Context) {
+func (_this *RecordRule) OnMap(ctx *Context) {
 	ctx.BeginMap()
 }
-func (_this *StructInstanceRule) OnStructTemplate(ctx *Context, identifier []byte) {
-	ctx.BeginStructTemplate(identifier)
+func (_this *RecordRule) OnRecordType(ctx *Context, identifier []byte) {
+	ctx.BeginRecordType(identifier)
 }
-func (_this *StructInstanceRule) OnStructInstance(ctx *Context, identifier []byte) {
-	ctx.BeginStructInstance(identifier)
+func (_this *RecordRule) OnRecord(ctx *Context, identifier []byte) {
+	ctx.BeginRecord(identifier)
 }
-func (_this *StructInstanceRule) OnEdge(ctx *Context) {
+func (_this *RecordRule) OnEdge(ctx *Context) {
 	ctx.BeginEdge()
 }
-func (_this *StructInstanceRule) OnNode(ctx *Context) {
+func (_this *RecordRule) OnNode(ctx *Context) {
 	ctx.BeginNode()
 }
-func (_this *StructInstanceRule) OnEnd(ctx *Context) {
+func (_this *RecordRule) OnEnd(ctx *Context) {
 	ctx.EndContainer(true)
 }
-func (_this *StructInstanceRule) OnMarker(ctx *Context, identifier []byte) {
+func (_this *RecordRule) OnMarker(ctx *Context, identifier []byte) {
 	ctx.BeginMarkerAnyType(identifier, AllowAny)
 }
-func (_this *StructInstanceRule) OnReferenceLocal(ctx *Context, identifier []byte) {
+func (_this *RecordRule) OnReferenceLocal(ctx *Context, identifier []byte) {
 	ctx.LocalReferenceAnyType(identifier)
 }
-func (_this *StructInstanceRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
+func (_this *RecordRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	ctx.ValidateFullArrayAnyType(arrayType, elementCount, data)
 }
-func (_this *StructInstanceRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
+func (_this *RecordRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
 	ctx.ValidateFullArrayStringlike(arrayType, data)
 }
-func (_this *StructInstanceRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
+func (_this *RecordRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
 	ctx.BeginArrayAnyType(arrayType)
 }
 func (_this *MarkedObjectKeyableRule) OnPadding(ctx *Context) {
@@ -348,11 +348,11 @@ func (_this *EdgeSourceRule) OnList(ctx *Context) {
 func (_this *EdgeSourceRule) OnMap(ctx *Context) {
 	ctx.BeginMap()
 }
-func (_this *EdgeSourceRule) OnStructTemplate(ctx *Context, identifier []byte) {
-	ctx.BeginStructTemplate(identifier)
+func (_this *EdgeSourceRule) OnRecordType(ctx *Context, identifier []byte) {
+	ctx.BeginRecordType(identifier)
 }
-func (_this *EdgeSourceRule) OnStructInstance(ctx *Context, identifier []byte) {
-	ctx.BeginStructInstance(identifier)
+func (_this *EdgeSourceRule) OnRecord(ctx *Context, identifier []byte) {
+	ctx.BeginRecord(identifier)
 }
 func (_this *EdgeSourceRule) OnEdge(ctx *Context) {
 	ctx.BeginEdge()
@@ -372,11 +372,11 @@ func (_this *EdgeDescriptionRule) OnList(ctx *Context) {
 func (_this *EdgeDescriptionRule) OnMap(ctx *Context) {
 	ctx.BeginMap()
 }
-func (_this *EdgeDescriptionRule) OnStructTemplate(ctx *Context, identifier []byte) {
-	ctx.BeginStructTemplate(identifier)
+func (_this *EdgeDescriptionRule) OnRecordType(ctx *Context, identifier []byte) {
+	ctx.BeginRecordType(identifier)
 }
-func (_this *EdgeDescriptionRule) OnStructInstance(ctx *Context, identifier []byte) {
-	ctx.BeginStructInstance(identifier)
+func (_this *EdgeDescriptionRule) OnRecord(ctx *Context, identifier []byte) {
+	ctx.BeginRecord(identifier)
 }
 func (_this *EdgeDescriptionRule) OnEdge(ctx *Context) {
 	ctx.BeginEdge()
@@ -405,11 +405,11 @@ func (_this *EdgeDestinationRule) OnList(ctx *Context) {
 func (_this *EdgeDestinationRule) OnMap(ctx *Context) {
 	ctx.BeginMap()
 }
-func (_this *EdgeDestinationRule) OnStructTemplate(ctx *Context, identifier []byte) {
-	ctx.BeginStructTemplate(identifier)
+func (_this *EdgeDestinationRule) OnRecordType(ctx *Context, identifier []byte) {
+	ctx.BeginRecordType(identifier)
 }
-func (_this *EdgeDestinationRule) OnStructInstance(ctx *Context, identifier []byte) {
-	ctx.BeginStructInstance(identifier)
+func (_this *EdgeDestinationRule) OnRecord(ctx *Context, identifier []byte) {
+	ctx.BeginRecord(identifier)
 }
 func (_this *EdgeDestinationRule) OnEdge(ctx *Context) {
 	ctx.BeginEdge()
@@ -447,11 +447,11 @@ func (_this *NodeRule) OnList(ctx *Context) {
 func (_this *NodeRule) OnMap(ctx *Context) {
 	ctx.BeginMap()
 }
-func (_this *NodeRule) OnStructTemplate(ctx *Context, identifier []byte) {
-	ctx.BeginStructTemplate(identifier)
+func (_this *NodeRule) OnRecordType(ctx *Context, identifier []byte) {
+	ctx.BeginRecordType(identifier)
 }
-func (_this *NodeRule) OnStructInstance(ctx *Context, identifier []byte) {
-	ctx.BeginStructInstance(identifier)
+func (_this *NodeRule) OnRecord(ctx *Context, identifier []byte) {
+	ctx.BeginRecord(identifier)
 }
 func (_this *NodeRule) OnEdge(ctx *Context) {
 	ctx.BeginEdge()
@@ -498,11 +498,11 @@ func (_this *BeginDocumentRule) OnList(ctx *Context) {
 func (_this *BeginDocumentRule) OnMap(ctx *Context) {
 	wrongType("begin document", "map")
 }
-func (_this *BeginDocumentRule) OnStructTemplate(ctx *Context, identifier []byte) {
-	wrongType("begin document", "structTemplate")
+func (_this *BeginDocumentRule) OnRecordType(ctx *Context, identifier []byte) {
+	wrongType("begin document", "recordType")
 }
-func (_this *BeginDocumentRule) OnStructInstance(ctx *Context, identifier []byte) {
-	wrongType("begin document", "structInstance")
+func (_this *BeginDocumentRule) OnRecord(ctx *Context, identifier []byte) {
+	wrongType("begin document", "record")
 }
 func (_this *BeginDocumentRule) OnEdge(ctx *Context) {
 	wrongType("begin document", "edge")
@@ -564,11 +564,11 @@ func (_this *EndDocumentRule) OnList(ctx *Context) {
 func (_this *EndDocumentRule) OnMap(ctx *Context) {
 	wrongType("end document", "map")
 }
-func (_this *EndDocumentRule) OnStructTemplate(ctx *Context, identifier []byte) {
-	wrongType("end document", "structTemplate")
+func (_this *EndDocumentRule) OnRecordType(ctx *Context, identifier []byte) {
+	wrongType("end document", "recordType")
 }
-func (_this *EndDocumentRule) OnStructInstance(ctx *Context, identifier []byte) {
-	wrongType("end document", "structInstance")
+func (_this *EndDocumentRule) OnRecord(ctx *Context, identifier []byte) {
+	wrongType("end document", "record")
 }
 func (_this *EndDocumentRule) OnEdge(ctx *Context) {
 	wrongType("end document", "edge")
@@ -633,11 +633,11 @@ func (_this *TerminalRule) OnList(ctx *Context) {
 func (_this *TerminalRule) OnMap(ctx *Context) {
 	wrongType("terminal", "map")
 }
-func (_this *TerminalRule) OnStructTemplate(ctx *Context, identifier []byte) {
-	wrongType("terminal", "structTemplate")
+func (_this *TerminalRule) OnRecordType(ctx *Context, identifier []byte) {
+	wrongType("terminal", "recordType")
 }
-func (_this *TerminalRule) OnStructInstance(ctx *Context, identifier []byte) {
-	wrongType("terminal", "structInstance")
+func (_this *TerminalRule) OnRecord(ctx *Context, identifier []byte) {
+	wrongType("terminal", "record")
 }
 func (_this *TerminalRule) OnEdge(ctx *Context) {
 	wrongType("terminal", "edge")
@@ -699,11 +699,11 @@ func (_this *VersionRule) OnList(ctx *Context) {
 func (_this *VersionRule) OnMap(ctx *Context) {
 	wrongType("version", "map")
 }
-func (_this *VersionRule) OnStructTemplate(ctx *Context, identifier []byte) {
-	wrongType("version", "structTemplate")
+func (_this *VersionRule) OnRecordType(ctx *Context, identifier []byte) {
+	wrongType("version", "recordType")
 }
-func (_this *VersionRule) OnStructInstance(ctx *Context, identifier []byte) {
-	wrongType("version", "structInstance")
+func (_this *VersionRule) OnRecord(ctx *Context, identifier []byte) {
+	wrongType("version", "record")
 }
 func (_this *VersionRule) OnEdge(ctx *Context) {
 	wrongType("version", "edge")
@@ -792,11 +792,11 @@ func (_this *MapKeyRule) OnList(ctx *Context) {
 func (_this *MapKeyRule) OnMap(ctx *Context) {
 	wrongType("map key", "map")
 }
-func (_this *MapKeyRule) OnStructTemplate(ctx *Context, identifier []byte) {
-	wrongType("map key", "structTemplate")
+func (_this *MapKeyRule) OnRecordType(ctx *Context, identifier []byte) {
+	wrongType("map key", "recordType")
 }
-func (_this *MapKeyRule) OnStructInstance(ctx *Context, identifier []byte) {
-	wrongType("map key", "structInstance")
+func (_this *MapKeyRule) OnRecord(ctx *Context, identifier []byte) {
+	wrongType("map key", "record")
 }
 func (_this *MapKeyRule) OnEdge(ctx *Context) {
 	wrongType("map key", "edge")
@@ -828,65 +828,65 @@ func (_this *MapValueRule) OnArrayChunk(ctx *Context, length uint64, moreChunksF
 func (_this *MapValueRule) OnArrayData(ctx *Context, data []byte) {
 	wrongType("map value", "array data")
 }
-func (_this *StructTemplateRule) OnBeginDocument(ctx *Context) {
-	wrongType("structTemplate", "begin document")
+func (_this *RecordTypeRule) OnBeginDocument(ctx *Context) {
+	wrongType("recordType", "begin document")
 }
-func (_this *StructTemplateRule) OnEndDocument(ctx *Context) {
-	wrongType("structTemplate", "end document")
+func (_this *RecordTypeRule) OnEndDocument(ctx *Context) {
+	wrongType("recordType", "end document")
 }
-func (_this *StructTemplateRule) OnVersion(ctx *Context, version uint64) {
-	wrongType("structTemplate", "version")
+func (_this *RecordTypeRule) OnVersion(ctx *Context, version uint64) {
+	wrongType("recordType", "version")
 }
-func (_this *StructTemplateRule) OnNull(ctx *Context) {
-	wrongType("structTemplate", "Null")
+func (_this *RecordTypeRule) OnNull(ctx *Context) {
+	wrongType("recordType", "Null")
 }
-func (_this *StructTemplateRule) OnNonKeyableObject(ctx *Context, objType DataType) {
-	wrongType("structTemplate", objType)
+func (_this *RecordTypeRule) OnNonKeyableObject(ctx *Context, objType DataType) {
+	wrongType("recordType", objType)
 }
-func (_this *StructTemplateRule) OnList(ctx *Context) {
-	wrongType("structTemplate", "list")
+func (_this *RecordTypeRule) OnList(ctx *Context) {
+	wrongType("recordType", "list")
 }
-func (_this *StructTemplateRule) OnMap(ctx *Context) {
-	wrongType("structTemplate", "map")
+func (_this *RecordTypeRule) OnMap(ctx *Context) {
+	wrongType("recordType", "map")
 }
-func (_this *StructTemplateRule) OnStructTemplate(ctx *Context, identifier []byte) {
-	wrongType("structTemplate", "structTemplate")
+func (_this *RecordTypeRule) OnRecordType(ctx *Context, identifier []byte) {
+	wrongType("recordType", "recordType")
 }
-func (_this *StructTemplateRule) OnStructInstance(ctx *Context, identifier []byte) {
-	wrongType("structTemplate", "structInstance")
+func (_this *RecordTypeRule) OnRecord(ctx *Context, identifier []byte) {
+	wrongType("recordType", "record")
 }
-func (_this *StructTemplateRule) OnEdge(ctx *Context) {
-	wrongType("structTemplate", "edge")
+func (_this *RecordTypeRule) OnEdge(ctx *Context) {
+	wrongType("recordType", "edge")
 }
-func (_this *StructTemplateRule) OnNode(ctx *Context) {
-	wrongType("structTemplate", "node")
+func (_this *RecordTypeRule) OnNode(ctx *Context) {
+	wrongType("recordType", "node")
 }
-func (_this *StructTemplateRule) OnMarker(ctx *Context, identifier []byte) {
-	wrongType("structTemplate", "marker")
+func (_this *RecordTypeRule) OnMarker(ctx *Context, identifier []byte) {
+	wrongType("recordType", "marker")
 }
-func (_this *StructTemplateRule) OnReferenceLocal(ctx *Context, identifier []byte) {
-	wrongType("structTemplate", "LocalReference")
+func (_this *RecordTypeRule) OnReferenceLocal(ctx *Context, identifier []byte) {
+	wrongType("recordType", "LocalReference")
 }
-func (_this *StructTemplateRule) OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool) {
-	wrongType("structTemplate", "array chunk")
+func (_this *RecordTypeRule) OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool) {
+	wrongType("recordType", "array chunk")
 }
-func (_this *StructTemplateRule) OnArrayData(ctx *Context, data []byte) {
-	wrongType("structTemplate", "array data")
+func (_this *RecordTypeRule) OnArrayData(ctx *Context, data []byte) {
+	wrongType("recordType", "array data")
 }
-func (_this *StructInstanceRule) OnBeginDocument(ctx *Context) {
-	wrongType("structInstance", "begin document")
+func (_this *RecordRule) OnBeginDocument(ctx *Context) {
+	wrongType("record", "begin document")
 }
-func (_this *StructInstanceRule) OnEndDocument(ctx *Context) {
-	wrongType("structInstance", "end document")
+func (_this *RecordRule) OnEndDocument(ctx *Context) {
+	wrongType("record", "end document")
 }
-func (_this *StructInstanceRule) OnVersion(ctx *Context, version uint64) {
-	wrongType("structInstance", "version")
+func (_this *RecordRule) OnVersion(ctx *Context, version uint64) {
+	wrongType("record", "version")
 }
-func (_this *StructInstanceRule) OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool) {
-	wrongType("structInstance", "array chunk")
+func (_this *RecordRule) OnArrayChunk(ctx *Context, length uint64, moreChunksFollow bool) {
+	wrongType("record", "array chunk")
 }
-func (_this *StructInstanceRule) OnArrayData(ctx *Context, data []byte) {
-	wrongType("structInstance", "array data")
+func (_this *RecordRule) OnArrayData(ctx *Context, data []byte) {
+	wrongType("record", "array data")
 }
 func (_this *ArrayRule) OnBeginDocument(ctx *Context) {
 	wrongType("array", "begin document")
@@ -918,11 +918,11 @@ func (_this *ArrayRule) OnList(ctx *Context) {
 func (_this *ArrayRule) OnMap(ctx *Context) {
 	wrongType("array", "map")
 }
-func (_this *ArrayRule) OnStructTemplate(ctx *Context, identifier []byte) {
-	wrongType("array", "structTemplate")
+func (_this *ArrayRule) OnRecordType(ctx *Context, identifier []byte) {
+	wrongType("array", "recordType")
 }
-func (_this *ArrayRule) OnStructInstance(ctx *Context, identifier []byte) {
-	wrongType("array", "structInstance")
+func (_this *ArrayRule) OnRecord(ctx *Context, identifier []byte) {
+	wrongType("array", "record")
 }
 func (_this *ArrayRule) OnEdge(ctx *Context) {
 	wrongType("array", "edge")
@@ -984,11 +984,11 @@ func (_this *ArrayChunkRule) OnList(ctx *Context) {
 func (_this *ArrayChunkRule) OnMap(ctx *Context) {
 	wrongType("array chunk", "map")
 }
-func (_this *ArrayChunkRule) OnStructTemplate(ctx *Context, identifier []byte) {
-	wrongType("array chunk", "structTemplate")
+func (_this *ArrayChunkRule) OnRecordType(ctx *Context, identifier []byte) {
+	wrongType("array chunk", "recordType")
 }
-func (_this *ArrayChunkRule) OnStructInstance(ctx *Context, identifier []byte) {
-	wrongType("array chunk", "structInstance")
+func (_this *ArrayChunkRule) OnRecord(ctx *Context, identifier []byte) {
+	wrongType("array chunk", "record")
 }
 func (_this *ArrayChunkRule) OnEdge(ctx *Context) {
 	wrongType("array chunk", "edge")
@@ -1050,11 +1050,11 @@ func (_this *StringRule) OnList(ctx *Context) {
 func (_this *StringRule) OnMap(ctx *Context) {
 	wrongType("string", "map")
 }
-func (_this *StringRule) OnStructTemplate(ctx *Context, identifier []byte) {
-	wrongType("string", "structTemplate")
+func (_this *StringRule) OnRecordType(ctx *Context, identifier []byte) {
+	wrongType("string", "recordType")
 }
-func (_this *StringRule) OnStructInstance(ctx *Context, identifier []byte) {
-	wrongType("string", "structInstance")
+func (_this *StringRule) OnRecord(ctx *Context, identifier []byte) {
+	wrongType("string", "record")
 }
 func (_this *StringRule) OnEdge(ctx *Context) {
 	wrongType("string", "edge")
@@ -1116,11 +1116,11 @@ func (_this *StringChunkRule) OnList(ctx *Context) {
 func (_this *StringChunkRule) OnMap(ctx *Context) {
 	wrongType("string chunk", "map")
 }
-func (_this *StringChunkRule) OnStructTemplate(ctx *Context, identifier []byte) {
-	wrongType("string chunk", "structTemplate")
+func (_this *StringChunkRule) OnRecordType(ctx *Context, identifier []byte) {
+	wrongType("string chunk", "recordType")
 }
-func (_this *StringChunkRule) OnStructInstance(ctx *Context, identifier []byte) {
-	wrongType("string chunk", "structInstance")
+func (_this *StringChunkRule) OnRecord(ctx *Context, identifier []byte) {
+	wrongType("string chunk", "record")
 }
 func (_this *StringChunkRule) OnEdge(ctx *Context) {
 	wrongType("string chunk", "edge")
@@ -1182,11 +1182,11 @@ func (_this *StringBuilderRule) OnList(ctx *Context) {
 func (_this *StringBuilderRule) OnMap(ctx *Context) {
 	wrongType("string", "map")
 }
-func (_this *StringBuilderRule) OnStructTemplate(ctx *Context, identifier []byte) {
-	wrongType("string", "structTemplate")
+func (_this *StringBuilderRule) OnRecordType(ctx *Context, identifier []byte) {
+	wrongType("string", "recordType")
 }
-func (_this *StringBuilderRule) OnStructInstance(ctx *Context, identifier []byte) {
-	wrongType("string", "structInstance")
+func (_this *StringBuilderRule) OnRecord(ctx *Context, identifier []byte) {
+	wrongType("string", "record")
 }
 func (_this *StringBuilderRule) OnEdge(ctx *Context) {
 	wrongType("string", "edge")
@@ -1248,11 +1248,11 @@ func (_this *StringBuilderChunkRule) OnList(ctx *Context) {
 func (_this *StringBuilderChunkRule) OnMap(ctx *Context) {
 	wrongType("string chunk", "map")
 }
-func (_this *StringBuilderChunkRule) OnStructTemplate(ctx *Context, identifier []byte) {
-	wrongType("string chunk", "structTemplate")
+func (_this *StringBuilderChunkRule) OnRecordType(ctx *Context, identifier []byte) {
+	wrongType("string chunk", "recordType")
 }
-func (_this *StringBuilderChunkRule) OnStructInstance(ctx *Context, identifier []byte) {
-	wrongType("string chunk", "structInstance")
+func (_this *StringBuilderChunkRule) OnRecord(ctx *Context, identifier []byte) {
+	wrongType("string chunk", "record")
 }
 func (_this *StringBuilderChunkRule) OnEdge(ctx *Context) {
 	wrongType("string chunk", "edge")
@@ -1305,11 +1305,11 @@ func (_this *MarkedObjectKeyableRule) OnList(ctx *Context) {
 func (_this *MarkedObjectKeyableRule) OnMap(ctx *Context) {
 	wrongType("marked object", "map")
 }
-func (_this *MarkedObjectKeyableRule) OnStructTemplate(ctx *Context, identifier []byte) {
-	wrongType("marked object", "structTemplate")
+func (_this *MarkedObjectKeyableRule) OnRecordType(ctx *Context, identifier []byte) {
+	wrongType("marked object", "recordType")
 }
-func (_this *MarkedObjectKeyableRule) OnStructInstance(ctx *Context, identifier []byte) {
-	wrongType("marked object", "structInstance")
+func (_this *MarkedObjectKeyableRule) OnRecord(ctx *Context, identifier []byte) {
+	wrongType("marked object", "record")
 }
 func (_this *MarkedObjectKeyableRule) OnEdge(ctx *Context) {
 	wrongType("marked object", "edge")
@@ -1344,8 +1344,8 @@ func (_this *MarkedObjectAnyTypeRule) OnVersion(ctx *Context, version uint64) {
 func (_this *MarkedObjectAnyTypeRule) OnComment(ctx *Context) {
 	wrongType("marked object", "comment")
 }
-func (_this *MarkedObjectAnyTypeRule) OnStructTemplate(ctx *Context, identifier []byte) {
-	wrongType("marked object", "structTemplate")
+func (_this *MarkedObjectAnyTypeRule) OnRecordType(ctx *Context, identifier []byte) {
+	wrongType("marked object", "recordType")
 }
 func (_this *MarkedObjectAnyTypeRule) OnEnd(ctx *Context) {
 	wrongType("marked object", "end container")
@@ -1464,11 +1464,11 @@ func (_this *AwaitEndRule) OnList(ctx *Context) {
 func (_this *AwaitEndRule) OnMap(ctx *Context) {
 	wrongType("awaitEnd", "map")
 }
-func (_this *AwaitEndRule) OnStructTemplate(ctx *Context, identifier []byte) {
-	wrongType("awaitEnd", "structTemplate")
+func (_this *AwaitEndRule) OnRecordType(ctx *Context, identifier []byte) {
+	wrongType("awaitEnd", "recordType")
 }
-func (_this *AwaitEndRule) OnStructInstance(ctx *Context, identifier []byte) {
-	wrongType("awaitEnd", "structInstance")
+func (_this *AwaitEndRule) OnRecord(ctx *Context, identifier []byte) {
+	wrongType("awaitEnd", "record")
 }
 func (_this *AwaitEndRule) OnEdge(ctx *Context) {
 	wrongType("awaitEnd", "edge")

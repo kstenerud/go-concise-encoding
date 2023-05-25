@@ -117,16 +117,16 @@ c0
         // ====================================================================
 
         {
-            "name" = "Struct"
+            "name" = "Record"
             "mustSucceed" = [
                 {
-                    "events"=["st=a" "e" "si=a" "e"]
+                    "events"=["rt=a" "e" "rec=a" "e"]
                     "cte"="\.^
 @a<>
 @a{}^"
                 }
                 {
-                    "events"=["st=a" "n=1" "e" "si=a" "s=x" "e"]
+                    "events"=["rt=a" "n=1" "e" "rec=a" "s=x" "e"]
                     "cte"="\.^
 @a<
     1

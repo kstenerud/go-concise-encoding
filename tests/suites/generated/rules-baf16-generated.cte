@@ -331,11 +331,11 @@ c0
                 }
                 {
                     "events" = [
-                        "st=a"
+                        "rt=a"
                         "s=a"
                         "e"
                         "baf16"
-                        "si=a"
+                        "rec=a"
                     ]
                 }
                 {
@@ -347,7 +347,7 @@ c0
                 {
                     "events" = [
                         "baf16"
-                        "st=a"
+                        "rt=a"
                     ]
                 }
                 {

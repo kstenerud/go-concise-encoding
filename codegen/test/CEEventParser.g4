@@ -79,8 +79,8 @@ event
     | eventRemoteReference
     | eventResourceId
     | eventString
-    | eventStructInstance
-    | eventStructTemplate
+    | eventRecord
+    | eventRecordType
     | eventTime
     | eventUID
     | eventVersion
@@ -161,8 +161,8 @@ eventLocalReference:       EVENT_REFL   STRING;
 eventRemoteReference:      EVENT_REFR   | (EVENT_REFR_ARGS STRING?);
 eventResourceId:           EVENT_RID    | (EVENT_RID_ARGS STRING?);
 eventString:               EVENT_S      | (EVENT_S_ARGS STRING?);
-eventStructInstance:       EVENT_SI     STRING;
-eventStructTemplate:       EVENT_ST     STRING;
+eventRecord:               EVENT_REC    STRING;
+eventRecordType:           EVENT_RT     STRING;
 eventTime:                 EVENT_T      (DATE | TIME | DATETIME);
 eventUID:                  EVENT_UID    UID;
 eventVersion:              EVENT_V      VALUE_UINT_DEC;

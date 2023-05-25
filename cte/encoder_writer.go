@@ -717,23 +717,23 @@ func (_this *Writer) WriteMapEnd() {
 	_this.WriteByteNotLF('}')
 }
 
-func (_this *Writer) WriteStructTemplateBegin(id []byte) {
+func (_this *Writer) WriteRecordTypeBegin(id []byte) {
 	_this.WriteByteNotLF('@')
 	_this.WriteBytesNotLF(id)
 	_this.WriteByteNotLF('<')
 }
 
-func (_this *Writer) WriteStructTemplateEnd() {
+func (_this *Writer) WriteRecordTypeEnd() {
 	_this.WriteByteNotLF('>')
 }
 
-func (_this *Writer) WriteStructInstanceBegin(id []byte) {
+func (_this *Writer) WriteRecordBegin(id []byte) {
 	_this.WriteByteNotLF('@')
 	_this.WriteBytesNotLF(id)
 	_this.WriteByteNotLF('{')
 }
 
-func (_this *Writer) WriteStructInstanceEnd() {
+func (_this *Writer) WriteRecordEnd() {
 	_this.WriteByteNotLF('}')
 }
 

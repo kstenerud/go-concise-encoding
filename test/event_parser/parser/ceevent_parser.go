@@ -46,7 +46,7 @@ func ceeventparserParserInit() {
 		"'bcb='", "'bct='", "'bmedia='", "'brefr'", "'brid'", "'bs'", "'cb='",
 		"'cm'", "'cm='", "'cs'", "'cs='", "'ct='", "'e'", "'edge'", "'l'", "'m'",
 		"'mark='", "'media='", "'n='", "'node'", "'null'", "'pad'", "'refl='",
-		"'refr'", "'refr='", "'rid'", "'rid='", "'si='", "'st='", "'s'", "'s='",
+		"'refr'", "'refr='", "'rid'", "'rid='", "'rec='", "'rt='", "'s'", "'s='",
 		"'t='", "'uid='", "'v='", "'true'", "'false'", "", "", "", "", "", "",
 		"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
 		"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
@@ -71,8 +71,8 @@ func ceeventparserParserInit() {
 		"EVENT_BS", "EVENT_CB", "EVENT_CM", "EVENT_CM_ARGS", "EVENT_CS", "EVENT_CS_ARGS",
 		"EVENT_CT", "EVENT_E", "EVENT_EDGE", "EVENT_L", "EVENT_M", "EVENT_MARK",
 		"EVENT_MEDIA", "EVENT_N", "EVENT_NODE", "EVENT_NULL", "EVENT_PAD", "EVENT_REFL",
-		"EVENT_REFR", "EVENT_REFR_ARGS", "EVENT_RID", "EVENT_RID_ARGS", "EVENT_SI",
-		"EVENT_ST", "EVENT_S", "EVENT_S_ARGS", "EVENT_T", "EVENT_UID", "EVENT_V",
+		"EVENT_REFR", "EVENT_REFR_ARGS", "EVENT_RID", "EVENT_RID_ARGS", "EVENT_REC",
+		"EVENT_RT", "EVENT_S", "EVENT_S_ARGS", "EVENT_T", "EVENT_UID", "EVENT_V",
 		"TRUE", "FALSE", "FLOAT_NAN", "FLOAT_SNAN", "FLOAT_INF", "FLOAT_DEC",
 		"FLOAT_HEX", "INT_BIN", "INT_OCT", "INT_DEC", "INT_HEX", "UID", "VALUE_UINT_BIN",
 		"VALUE_UINT_OCT", "VALUE_UINT_DEC", "VALUE_UINT_HEX", "MODE_UINT_WS",
@@ -106,8 +106,8 @@ func ceeventparserParserInit() {
 		"eventCustomText", "eventEdge", "eventEndContainer", "eventList", "eventMap",
 		"eventMarker", "eventMedia", "eventNode", "eventNull", "eventNumber",
 		"eventPad", "eventLocalReference", "eventRemoteReference", "eventResourceId",
-		"eventString", "eventStructInstance", "eventStructTemplate", "eventTime",
-		"eventUID", "eventVersion",
+		"eventString", "eventRecord", "eventRecordType", "eventTime", "eventUID",
+		"eventVersion",
 	}
 	staticData.predictionContextCache = antlr.NewPredictionContextCache()
 	staticData.serializedATN = []int32{
@@ -563,8 +563,8 @@ const (
 	CEEventParserEVENT_REFR_ARGS       = 93
 	CEEventParserEVENT_RID             = 94
 	CEEventParserEVENT_RID_ARGS        = 95
-	CEEventParserEVENT_SI              = 96
-	CEEventParserEVENT_ST              = 97
+	CEEventParserEVENT_REC             = 96
+	CEEventParserEVENT_RT              = 97
 	CEEventParserEVENT_S               = 98
 	CEEventParserEVENT_S_ARGS          = 99
 	CEEventParserEVENT_T               = 100
@@ -702,8 +702,8 @@ const (
 	CEEventParserRULE_eventRemoteReference      = 74
 	CEEventParserRULE_eventResourceId           = 75
 	CEEventParserRULE_eventString               = 76
-	CEEventParserRULE_eventStructInstance       = 77
-	CEEventParserRULE_eventStructTemplate       = 78
+	CEEventParserRULE_eventRecord               = 77
+	CEEventParserRULE_eventRecordType           = 78
 	CEEventParserRULE_eventTime                 = 79
 	CEEventParserRULE_eventUID                  = 80
 	CEEventParserRULE_eventVersion              = 81
@@ -910,8 +910,8 @@ type IEventContext interface {
 	EventRemoteReference() IEventRemoteReferenceContext
 	EventResourceId() IEventResourceIdContext
 	EventString() IEventStringContext
-	EventStructInstance() IEventStructInstanceContext
-	EventStructTemplate() IEventStructTemplateContext
+	EventRecord() IEventRecordContext
+	EventRecordType() IEventRecordTypeContext
 	EventTime() IEventTimeContext
 	EventUID() IEventUIDContext
 	EventVersion() IEventVersionContext
@@ -2147,10 +2147,10 @@ func (s *EventContext) EventString() IEventStringContext {
 	return t.(IEventStringContext)
 }
 
-func (s *EventContext) EventStructInstance() IEventStructInstanceContext {
+func (s *EventContext) EventRecord() IEventRecordContext {
 	var t antlr.RuleContext
 	for _, ctx := range s.GetChildren() {
-		if _, ok := ctx.(IEventStructInstanceContext); ok {
+		if _, ok := ctx.(IEventRecordContext); ok {
 			t = ctx.(antlr.RuleContext)
 			break
 		}
@@ -2160,13 +2160,13 @@ func (s *EventContext) EventStructInstance() IEventStructInstanceContext {
 		return nil
 	}
 
-	return t.(IEventStructInstanceContext)
+	return t.(IEventRecordContext)
 }
 
-func (s *EventContext) EventStructTemplate() IEventStructTemplateContext {
+func (s *EventContext) EventRecordType() IEventRecordTypeContext {
 	var t antlr.RuleContext
 	for _, ctx := range s.GetChildren() {
-		if _, ok := ctx.(IEventStructTemplateContext); ok {
+		if _, ok := ctx.(IEventRecordTypeContext); ok {
 			t = ctx.(antlr.RuleContext)
 			break
 		}
@@ -2176,7 +2176,7 @@ func (s *EventContext) EventStructTemplate() IEventStructTemplateContext {
 		return nil
 	}
 
-	return t.(IEventStructTemplateContext)
+	return t.(IEventRecordTypeContext)
 }
 
 func (s *EventContext) EventTime() IEventTimeContext {
@@ -2799,18 +2799,18 @@ func (p *CEEventParser) Event() (localctx IEventContext) {
 			p.EventString()
 		}
 
-	case CEEventParserEVENT_SI:
+	case CEEventParserEVENT_REC:
 		p.EnterOuterAlt(localctx, 76)
 		{
 			p.SetState(242)
-			p.EventStructInstance()
+			p.EventRecord()
 		}
 
-	case CEEventParserEVENT_ST:
+	case CEEventParserEVENT_RT:
 		p.EnterOuterAlt(localctx, 77)
 		{
 			p.SetState(243)
-			p.EventStructTemplate()
+			p.EventRecordType()
 		}
 
 	case CEEventParserEVENT_T:
@@ -12672,82 +12672,82 @@ func (p *CEEventParser) EventString() (localctx IEventStringContext) {
 	return localctx
 }
 
-// IEventStructInstanceContext is an interface to support dynamic dispatch.
-type IEventStructInstanceContext interface {
+// IEventRecordContext is an interface to support dynamic dispatch.
+type IEventRecordContext interface {
 	antlr.ParserRuleContext
 
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
 
 	// Getter signatures
-	EVENT_SI() antlr.TerminalNode
+	EVENT_REC() antlr.TerminalNode
 	STRING() antlr.TerminalNode
 
-	// IsEventStructInstanceContext differentiates from other interfaces.
-	IsEventStructInstanceContext()
+	// IsEventRecordContext differentiates from other interfaces.
+	IsEventRecordContext()
 }
 
-type EventStructInstanceContext struct {
+type EventRecordContext struct {
 	*antlr.BaseParserRuleContext
 	parser antlr.Parser
 }
 
-func NewEmptyEventStructInstanceContext() *EventStructInstanceContext {
-	var p = new(EventStructInstanceContext)
+func NewEmptyEventRecordContext() *EventRecordContext {
+	var p = new(EventRecordContext)
 	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(nil, -1)
-	p.RuleIndex = CEEventParserRULE_eventStructInstance
+	p.RuleIndex = CEEventParserRULE_eventRecord
 	return p
 }
 
-func (*EventStructInstanceContext) IsEventStructInstanceContext() {}
+func (*EventRecordContext) IsEventRecordContext() {}
 
-func NewEventStructInstanceContext(parser antlr.Parser, parent antlr.ParserRuleContext, invokingState int) *EventStructInstanceContext {
-	var p = new(EventStructInstanceContext)
+func NewEventRecordContext(parser antlr.Parser, parent antlr.ParserRuleContext, invokingState int) *EventRecordContext {
+	var p = new(EventRecordContext)
 
 	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(parent, invokingState)
 
 	p.parser = parser
-	p.RuleIndex = CEEventParserRULE_eventStructInstance
+	p.RuleIndex = CEEventParserRULE_eventRecord
 
 	return p
 }
 
-func (s *EventStructInstanceContext) GetParser() antlr.Parser { return s.parser }
+func (s *EventRecordContext) GetParser() antlr.Parser { return s.parser }
 
-func (s *EventStructInstanceContext) EVENT_SI() antlr.TerminalNode {
-	return s.GetToken(CEEventParserEVENT_SI, 0)
+func (s *EventRecordContext) EVENT_REC() antlr.TerminalNode {
+	return s.GetToken(CEEventParserEVENT_REC, 0)
 }
 
-func (s *EventStructInstanceContext) STRING() antlr.TerminalNode {
+func (s *EventRecordContext) STRING() antlr.TerminalNode {
 	return s.GetToken(CEEventParserSTRING, 0)
 }
 
-func (s *EventStructInstanceContext) GetRuleContext() antlr.RuleContext {
+func (s *EventRecordContext) GetRuleContext() antlr.RuleContext {
 	return s
 }
 
-func (s *EventStructInstanceContext) ToStringTree(ruleNames []string, recog antlr.Recognizer) string {
+func (s *EventRecordContext) ToStringTree(ruleNames []string, recog antlr.Recognizer) string {
 	return antlr.TreesStringTree(s, ruleNames, recog)
 }
 
-func (s *EventStructInstanceContext) EnterRule(listener antlr.ParseTreeListener) {
+func (s *EventRecordContext) EnterRule(listener antlr.ParseTreeListener) {
 	if listenerT, ok := listener.(CEEventParserListener); ok {
-		listenerT.EnterEventStructInstance(s)
+		listenerT.EnterEventRecord(s)
 	}
 }
 
-func (s *EventStructInstanceContext) ExitRule(listener antlr.ParseTreeListener) {
+func (s *EventRecordContext) ExitRule(listener antlr.ParseTreeListener) {
 	if listenerT, ok := listener.(CEEventParserListener); ok {
-		listenerT.ExitEventStructInstance(s)
+		listenerT.ExitEventRecord(s)
 	}
 }
 
-func (p *CEEventParser) EventStructInstance() (localctx IEventStructInstanceContext) {
+func (p *CEEventParser) EventRecord() (localctx IEventRecordContext) {
 	this := p
 	_ = this
 
-	localctx = NewEventStructInstanceContext(p, p.GetParserRuleContext(), p.GetState())
-	p.EnterRule(localctx, 154, CEEventParserRULE_eventStructInstance)
+	localctx = NewEventRecordContext(p, p.GetParserRuleContext(), p.GetState())
+	p.EnterRule(localctx, 154, CEEventParserRULE_eventRecord)
 
 	defer func() {
 		p.ExitRule()
@@ -12768,7 +12768,7 @@ func (p *CEEventParser) EventStructInstance() (localctx IEventStructInstanceCont
 	p.EnterOuterAlt(localctx, 1)
 	{
 		p.SetState(679)
-		p.Match(CEEventParserEVENT_SI)
+		p.Match(CEEventParserEVENT_REC)
 	}
 	{
 		p.SetState(680)
@@ -12778,82 +12778,82 @@ func (p *CEEventParser) EventStructInstance() (localctx IEventStructInstanceCont
 	return localctx
 }
 
-// IEventStructTemplateContext is an interface to support dynamic dispatch.
-type IEventStructTemplateContext interface {
+// IEventRecordTypeContext is an interface to support dynamic dispatch.
+type IEventRecordTypeContext interface {
 	antlr.ParserRuleContext
 
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
 
 	// Getter signatures
-	EVENT_ST() antlr.TerminalNode
+	EVENT_RT() antlr.TerminalNode
 	STRING() antlr.TerminalNode
 
-	// IsEventStructTemplateContext differentiates from other interfaces.
-	IsEventStructTemplateContext()
+	// IsEventRecordTypeContext differentiates from other interfaces.
+	IsEventRecordTypeContext()
 }
 
-type EventStructTemplateContext struct {
+type EventRecordTypeContext struct {
 	*antlr.BaseParserRuleContext
 	parser antlr.Parser
 }
 
-func NewEmptyEventStructTemplateContext() *EventStructTemplateContext {
-	var p = new(EventStructTemplateContext)
+func NewEmptyEventRecordTypeContext() *EventRecordTypeContext {
+	var p = new(EventRecordTypeContext)
 	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(nil, -1)
-	p.RuleIndex = CEEventParserRULE_eventStructTemplate
+	p.RuleIndex = CEEventParserRULE_eventRecordType
 	return p
 }
 
-func (*EventStructTemplateContext) IsEventStructTemplateContext() {}
+func (*EventRecordTypeContext) IsEventRecordTypeContext() {}
 
-func NewEventStructTemplateContext(parser antlr.Parser, parent antlr.ParserRuleContext, invokingState int) *EventStructTemplateContext {
-	var p = new(EventStructTemplateContext)
+func NewEventRecordTypeContext(parser antlr.Parser, parent antlr.ParserRuleContext, invokingState int) *EventRecordTypeContext {
+	var p = new(EventRecordTypeContext)
 
 	p.BaseParserRuleContext = antlr.NewBaseParserRuleContext(parent, invokingState)
 
 	p.parser = parser
-	p.RuleIndex = CEEventParserRULE_eventStructTemplate
+	p.RuleIndex = CEEventParserRULE_eventRecordType
 
 	return p
 }
 
-func (s *EventStructTemplateContext) GetParser() antlr.Parser { return s.parser }
+func (s *EventRecordTypeContext) GetParser() antlr.Parser { return s.parser }
 
-func (s *EventStructTemplateContext) EVENT_ST() antlr.TerminalNode {
-	return s.GetToken(CEEventParserEVENT_ST, 0)
+func (s *EventRecordTypeContext) EVENT_RT() antlr.TerminalNode {
+	return s.GetToken(CEEventParserEVENT_RT, 0)
 }
 
-func (s *EventStructTemplateContext) STRING() antlr.TerminalNode {
+func (s *EventRecordTypeContext) STRING() antlr.TerminalNode {
 	return s.GetToken(CEEventParserSTRING, 0)
 }
 
-func (s *EventStructTemplateContext) GetRuleContext() antlr.RuleContext {
+func (s *EventRecordTypeContext) GetRuleContext() antlr.RuleContext {
 	return s
 }
 
-func (s *EventStructTemplateContext) ToStringTree(ruleNames []string, recog antlr.Recognizer) string {
+func (s *EventRecordTypeContext) ToStringTree(ruleNames []string, recog antlr.Recognizer) string {
 	return antlr.TreesStringTree(s, ruleNames, recog)
 }
 
-func (s *EventStructTemplateContext) EnterRule(listener antlr.ParseTreeListener) {
+func (s *EventRecordTypeContext) EnterRule(listener antlr.ParseTreeListener) {
 	if listenerT, ok := listener.(CEEventParserListener); ok {
-		listenerT.EnterEventStructTemplate(s)
+		listenerT.EnterEventRecordType(s)
 	}
 }
 
-func (s *EventStructTemplateContext) ExitRule(listener antlr.ParseTreeListener) {
+func (s *EventRecordTypeContext) ExitRule(listener antlr.ParseTreeListener) {
 	if listenerT, ok := listener.(CEEventParserListener); ok {
-		listenerT.ExitEventStructTemplate(s)
+		listenerT.ExitEventRecordType(s)
 	}
 }
 
-func (p *CEEventParser) EventStructTemplate() (localctx IEventStructTemplateContext) {
+func (p *CEEventParser) EventRecordType() (localctx IEventRecordTypeContext) {
 	this := p
 	_ = this
 
-	localctx = NewEventStructTemplateContext(p, p.GetParserRuleContext(), p.GetState())
-	p.EnterRule(localctx, 156, CEEventParserRULE_eventStructTemplate)
+	localctx = NewEventRecordTypeContext(p, p.GetParserRuleContext(), p.GetState())
+	p.EnterRule(localctx, 156, CEEventParserRULE_eventRecordType)
 
 	defer func() {
 		p.ExitRule()
@@ -12874,7 +12874,7 @@ func (p *CEEventParser) EventStructTemplate() (localctx IEventStructTemplateCont
 	p.EnterOuterAlt(localctx, 1)
 	{
 		p.SetState(682)
-		p.Match(CEEventParserEVENT_ST)
+		p.Match(CEEventParserEVENT_RT)
 	}
 	{
 		p.SetState(683)

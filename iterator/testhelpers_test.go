@@ -153,13 +153,13 @@ func NAN() test.Event                     { return test.NAN() }
 func NODE() test.Event                    { return test.NODE() }
 func NULL() test.Event                    { return test.NULL() }
 func PAD() test.Event                     { return test.PAD() }
+func REC(id string) test.Event            { return test.REC(id) }
 func REFL(id string) test.Event           { return test.REFL(id) }
 func REFR(v string) test.Event            { return test.REFR(v) }
 func RID(v string) test.Event             { return test.RID(v) }
+func RT(id string) test.Event             { return test.RT(id) }
 func S(v string) test.Event               { return test.S(v) }
-func SI(id string) test.Event             { return test.SI(id) }
 func SNAN() test.Event                    { return test.SNAN() }
-func ST(id string) test.Event             { return test.ST(id) }
 func T(v compact_time.Time) test.Event    { return test.T(v) }
 func UID(v []byte) test.Event             { return test.UID(v) }
 func V(v uint64) test.Event               { return test.V(v) }

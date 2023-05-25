@@ -85,7 +85,7 @@ const (
 	cbeTypeArrayUint8     cbeTypeField = 0x93
 	cbeTypeArrayBit       cbeTypeField = 0x94
 	cbeTypePadding        cbeTypeField = 0x95
-	cbeTypeStructInstance cbeTypeField = 0x96
+	cbeTypeRecord         cbeTypeField = 0x96
 	cbeTypeEdge           cbeTypeField = 0x97
 	cbeTypeNode           cbeTypeField = 0x98
 	cbeTypeMap            cbeTypeField = 0x99
@@ -116,7 +116,7 @@ const (
 	cbeTypeArrayFloat32      cbeTypeField = 0xe9
 	cbeTypeArrayFloat64      cbeTypeField = 0xea
 	cbeTypeMarker            cbeTypeField = 0xf0
-	cbeTypeStructTemplate    cbeTypeField = 0xf1
+	cbeTypeRecordType        cbeTypeField = 0xf1
 	cbeTypeRemoteReference   cbeTypeField = 0xf2
 	cbeTypeMedia             cbeTypeField = 0xf3
 

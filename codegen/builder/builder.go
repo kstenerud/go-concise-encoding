@@ -204,12 +204,12 @@ var builders = []Builder{
 			Node, Edge, MapContents, End, Ref, NotifyFinished},
 	},
 	{
-		Name: "structTemplate",
+		Name: "recordType",
 		Methods: []string{Bool, Int, Uint, BigInt, Float, BigFloat, DFloat,
 			BigDFloat, UID, Array, SArray, Time, End},
 	},
 	{
-		Name: "structInstance",
+		Name: "record",
 		Methods: []string{Null, Bool, Int, Uint, BigInt, Float, BigFloat, DFloat,
 			BigDFloat, UID, Array, SArray, CustomBinary, CustomText, Media, Time, List, Map,
 			Node, Edge, End, Ref, NotifyFinished},

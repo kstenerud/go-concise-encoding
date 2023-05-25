@@ -30,7 +30,7 @@ import (
 	"github.com/kstenerud/go-concise-encoding/configuration"
 )
 
-type structTemplateKey func(*Context, Builder)
+type recordTypeKey func(*Context, Builder)
 
 var unusedValue reflect.Value
 
@@ -50,9 +50,9 @@ type Context struct {
 	moreChunksFollow        bool
 	arrayCompletionCallback func(*Context)
 
-	structTemplates    map[string][]structTemplateKey
-	structTemplate     []structTemplateKey
-	structTemplateName string
+	recordTypes    map[string][]recordTypeKey
+	recordType     []recordTypeKey
+	recordTypeName string
 }
 
 func (_this *Context) Init(config *configuration.BuilderConfiguration,
@@ -73,7 +73,7 @@ func (_this *Context) Init(config *configuration.BuilderConfiguration,
 	_this.CustomTextBuildFunction = customTextBuildFunction
 	_this.GetBuilderGeneratorForType = getBuilderGeneratorForType
 	_this.builderStack = make([]Builder, 0, 16)
-	_this.structTemplates = make(map[string][]structTemplateKey)
+	_this.recordTypes = make(map[string][]recordTypeKey)
 
 	_this.referenceFiller.Init()
 }
@@ -112,25 +112,25 @@ func (_this *Context) IgnoreNext() {
 	_this.StackBuilder(globalIgnoreBuilder)
 }
 
-func (_this *Context) BeginStructTemplate(id []byte) {
-	_this.StackBuilder(generateStructTemplateBuilder(_this))
-	_this.structTemplateName = string(id)
-	_this.structTemplate = _this.structTemplate[:0]
+func (_this *Context) BeginRecordType(id []byte) {
+	_this.StackBuilder(generateRecordTypeBuilder(_this))
+	_this.recordTypeName = string(id)
+	_this.recordType = _this.recordType[:0]
 }
 
-func (_this *Context) BeginStructInstance(id []byte) {
-	keys := _this.structTemplates[string(id)]
+func (_this *Context) BeginRecord(id []byte) {
+	keys := _this.recordTypes[string(id)]
 	_this.CurrentBuilder.BuildNewMap(_this)
 	builder := _this.UnstackBuilder()
-	_this.StackBuilder(generateStructInstanceBuilder(_this, keys, builder))
+	_this.StackBuilder(generateRecordBuilder(_this, keys, builder))
 }
 
-func (_this *Context) AddStructTemplateKey(key structTemplateKey) {
-	_this.structTemplate = append(_this.structTemplate, key)
+func (_this *Context) AddRecordTypeKey(key recordTypeKey) {
+	_this.recordType = append(_this.recordType, key)
 }
 
-func (_this *Context) EndStructTemplate() {
-	_this.structTemplates[_this.structTemplateName] = _this.structTemplate
+func (_this *Context) EndRecordType() {
+	_this.recordTypes[_this.recordTypeName] = _this.recordType
 	_this.UnstackBuilder()
 }
 

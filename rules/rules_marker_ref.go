@@ -80,8 +80,8 @@ func (_this *MarkedObjectAnyTypeRule) OnList(ctx *Context) {
 func (_this *MarkedObjectAnyTypeRule) OnMap(ctx *Context) {
 	ctx.ParentRule().OnMap(ctx)
 }
-func (_this *MarkedObjectAnyTypeRule) OnStructInstance(ctx *Context, identifier []byte) {
-	ctx.ParentRule().OnStructInstance(ctx, identifier)
+func (_this *MarkedObjectAnyTypeRule) OnRecord(ctx *Context, identifier []byte) {
+	ctx.ParentRule().OnRecord(ctx, identifier)
 }
 func (_this *MarkedObjectAnyTypeRule) OnNode(ctx *Context) { ctx.BeginNode() }
 func (_this *MarkedObjectAnyTypeRule) OnEdge(ctx *Context) { ctx.BeginEdge() }

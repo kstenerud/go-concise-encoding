@@ -78,10 +78,10 @@ c0
         // ====================================================================
 
         {
-            "name" = "Struct"
+            "name" = "Record"
             "mustSucceed" = [
-                {"cbe"=|u8x 7f f1 01 61 9b 96 01 61 9b| "events"=["st=a" "e" "si=a" "e"]}
-                {"cbe"=|u8x 7f f1 01 61 01 9b 96 01 61 01 9b| "events"=["st=a" "n=1" "e" "si=a" "n=1" "e"]}
+                {"cbe"=|u8x 7f f1 01 61 9b 96 01 61 9b| "events"=["rt=a" "e" "rec=a" "e"]}
+                {"cbe"=|u8x 7f f1 01 61 01 9b 96 01 61 01 9b| "events"=["rt=a" "n=1" "e" "rec=a" "n=1" "e"]}
             ]
             "mustFail" = [
                 // Incomplete

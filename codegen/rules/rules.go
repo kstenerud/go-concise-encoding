@@ -149,8 +149,8 @@ const (
 	DataTypeTime
 	DataTypeList
 	DataTypeMap
-	DataTypeStructTemplate
-	DataTypeStructInstance
+	DataTypeRecordType
+	DataTypeRecord
 	DataTypeEdge
 	DataTypeNode
 	DataTypeString
@@ -194,7 +194,7 @@ const (
 		DataTypePadding |
 		DataTypeComment
 	DataTypesNonKeyable = ^DataTypesKeyable
-	DataTypesMarkable   = ^(DataTypeMarker | DataTypeLocalReference | DataTypeRemoteReference | DataTypeComment | DataTypeStructTemplate)
+	DataTypesMarkable   = ^(DataTypeMarker | DataTypeLocalReference | DataTypeRemoteReference | DataTypeComment | DataTypeRecordType)
 	DataTypesTopLevel   = ^(DataTypeLocalReference)
 	DataTypesContainer  = DataTypeList | DataTypeMap | DataTypeEdge | DataTypeNode
 	DataTypesStringlike = DataTypeString |
@@ -233,8 +233,8 @@ var dataTypeNames = map[interface{}]string{
 	DataTypeTime:            "DataTypeTime",
 	DataTypeList:            "DataTypeList",
 	DataTypeMap:             "DataTypeMap",
-	DataTypeStructTemplate:  "DataTypeStructTemplate",
-	DataTypeStructInstance:  "DataTypeStructInstance",
+	DataTypeRecordType:      "DataTypeRecordType",
+	DataTypeRecord:          "DataTypeRecord",
 	DataTypeEdge:            "DataTypeEdge",
 	DataTypeNode:            "DataTypeNode",
 	DataTypeString:          "DataTypeString",
@@ -288,11 +288,11 @@ var (
 	beginMapImplementation = `
 	ctx.BeginMap()
 `
-	beginStructTemplateImplementation = `
-	ctx.BeginStructTemplate(identifier)
+	beginRecordTypeImplementation = `
+	ctx.BeginRecordType(identifier)
 `
-	beginStructInstanceImplementation = `
-	ctx.BeginStructInstance(identifier)
+	beginRecordImplementation = `
+	ctx.BeginRecord(identifier)
 `
 	beginNodeImplementation = `
 	ctx.BeginNode()
@@ -396,19 +396,19 @@ var (
 		AssociatedTypes:       DataTypeMap,
 		DefaultImplementation: beginMapImplementation,
 	}
-	StructTemplate = &Method{
-		Name:                  "structTemplate",
+	RecordType = &Method{
+		Name:                  "recordType",
 		MethodType:            MethodTypeOther,
-		Signature:             "OnStructTemplate(ctx *Context, identifier []byte)",
-		AssociatedTypes:       DataTypeStructTemplate,
-		DefaultImplementation: beginStructTemplateImplementation,
+		Signature:             "OnRecordType(ctx *Context, identifier []byte)",
+		AssociatedTypes:       DataTypeRecordType,
+		DefaultImplementation: beginRecordTypeImplementation,
 	}
-	StructInstance = &Method{
-		Name:                  "structInstance",
+	Record = &Method{
+		Name:                  "record",
 		MethodType:            MethodTypeOther,
-		Signature:             "OnStructInstance(ctx *Context, identifier []byte)",
-		AssociatedTypes:       DataTypeStructInstance,
-		DefaultImplementation: beginStructInstanceImplementation,
+		Signature:             "OnRecord(ctx *Context, identifier []byte)",
+		AssociatedTypes:       DataTypeRecord,
+		DefaultImplementation: beginRecordImplementation,
 	}
 	Edge = &Method{
 		Name:                  "edge",
@@ -480,7 +480,7 @@ var (
 	}
 
 	allMethods = []*Method{BDoc, EDoc, Child, Ver, Pad, Comment, Null, Key,
-		NonKey, List, Map, StructTemplate, StructInstance, Edge, Node, End,
+		NonKey, List, Map, RecordType, Record, Edge, Node, End,
 		Marker, Ref, Array, Stringlike, ABegin, AChunk, AData}
 )
 
@@ -550,8 +550,8 @@ var allRules = []Rule{
 		FriendlyName: "top level",
 		AllowedTypes: DataTypesTopLevel,
 		DefaultMethods: []*Method{
-			Pad, Comment, List, Map, StructTemplate,
-			StructInstance, Node, Edge, Marker, ABegin,
+			Pad, Comment, List, Map, RecordType,
+			Record, Node, Edge, Marker, ABegin,
 		},
 	},
 	{
@@ -560,8 +560,8 @@ var allRules = []Rule{
 		AllowedTypes:   DataTypesAll,
 		IncludeMethods: []*Method{End},
 		DefaultMethods: []*Method{
-			Child, Pad, Comment, Null, Key, NonKey, List, Map, StructTemplate,
-			StructInstance, Node, Edge, End, Marker, Ref, Array, Stringlike, ABegin,
+			Child, Pad, Comment, Null, Key, NonKey, List, Map, RecordType,
+			Record, Node, Edge, End, Marker, Ref, Array, Stringlike, ABegin,
 		},
 	},
 	{
@@ -576,13 +576,13 @@ var allRules = []Rule{
 		FriendlyName: "map value",
 		AllowedTypes: DataTypesAll,
 		DefaultMethods: []*Method{
-			Pad, Comment, List, Map, StructTemplate,
-			StructInstance, Node, Edge, Marker, ABegin,
+			Pad, Comment, List, Map, RecordType,
+			Record, Node, Edge, Marker, ABegin,
 		},
 	},
 	{
-		Name:           "StructTemplateRule",
-		FriendlyName:   "structTemplate",
+		Name:           "RecordTypeRule",
+		FriendlyName:   "recordType",
 		AllowedTypes:   DataTypesKeyable & (^DataTypeMarker),
 		IncludeMethods: []*Method{End},
 		ExcludeMethods: []*Method{Marker, Ref},
@@ -591,13 +591,13 @@ var allRules = []Rule{
 		},
 	},
 	{
-		Name:           "StructInstanceRule",
-		FriendlyName:   "structInstance",
+		Name:           "RecordRule",
+		FriendlyName:   "record",
 		AllowedTypes:   DataTypesAll,
 		IncludeMethods: []*Method{End},
 		DefaultMethods: []*Method{
-			Child, Pad, Comment, Null, Key, NonKey, List, Map, StructTemplate,
-			StructInstance, Node, Edge, End, Marker, Ref, Array, Stringlike, ABegin,
+			Child, Pad, Comment, Null, Key, NonKey, List, Map, RecordType,
+			Record, Node, Edge, End, Marker, Ref, Array, Stringlike, ABegin,
 		},
 	},
 	{
@@ -653,8 +653,8 @@ var allRules = []Rule{
 		FriendlyName: "edge source",
 		AllowedTypes: DataTypesNonNull,
 		DefaultMethods: []*Method{
-			Pad, Comment, List, Map, StructTemplate,
-			StructInstance, Node, Edge,
+			Pad, Comment, List, Map, RecordType,
+			Record, Node, Edge,
 		},
 	},
 	{
@@ -662,8 +662,8 @@ var allRules = []Rule{
 		FriendlyName: "edge description",
 		AllowedTypes: DataTypesAll,
 		DefaultMethods: []*Method{
-			Pad, Comment, List, Map, StructTemplate,
-			StructInstance, Node, Edge,
+			Pad, Comment, List, Map, RecordType,
+			Record, Node, Edge,
 		},
 	},
 	{
@@ -672,8 +672,8 @@ var allRules = []Rule{
 		AllowedTypes:   DataTypesNonNull,
 		IncludeMethods: []*Method{End},
 		DefaultMethods: []*Method{
-			Child, Pad, Comment, Key, NonKey, List, Map, StructTemplate,
-			StructInstance, Node, Edge, End, Marker, Ref, Array, Stringlike, ABegin,
+			Child, Pad, Comment, Key, NonKey, List, Map, RecordType,
+			Record, Node, Edge, End, Marker, Ref, Array, Stringlike, ABegin,
 		},
 	},
 	{
@@ -681,8 +681,8 @@ var allRules = []Rule{
 		FriendlyName: "node",
 		AllowedTypes: DataTypesAll,
 		DefaultMethods: []*Method{
-			Pad, Comment, List, Map, StructTemplate,
-			StructInstance, Node, Edge,
+			Pad, Comment, List, Map, RecordType,
+			Record, Node, Edge,
 		},
 	},
 	{

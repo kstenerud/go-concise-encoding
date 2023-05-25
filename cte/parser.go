@@ -607,7 +607,7 @@ func (_this *cteListener) EnterContainerRecordType(ctx *parser.ContainerRecordTy
 
 	identifier := ctx.GetText()
 	cutoff := strings.IndexByte(identifier, '<')
-	_this.eventReceiver.OnStructTemplate([]byte(identifier[1:cutoff]))
+	_this.eventReceiver.OnRecordType([]byte(identifier[1:cutoff]))
 }
 
 func (_this *cteListener) ExitContainerRecordType(ctx *parser.ContainerRecordTypeContext) {
@@ -625,7 +625,7 @@ func (_this *cteListener) EnterContainerRecord(ctx *parser.ContainerRecordContex
 
 	identifier := ctx.GetText()
 	cutoff := strings.IndexByte(identifier, '{')
-	_this.eventReceiver.OnStructInstance([]byte(identifier[1:cutoff]))
+	_this.eventReceiver.OnRecord([]byte(identifier[1:cutoff]))
 }
 
 func (_this *cteListener) ExitContainerRecord(ctx *parser.ContainerRecordContext) {

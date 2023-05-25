@@ -532,11 +532,11 @@ c0
                 }
                 {
                     "events" = [
-                        "st=a"
+                        "rt=a"
                         "s=a"
                         "e"
                         "m"
-                        "si=a"
+                        "rec=a"
                         "n=-1"
                         "e"
                     ]
@@ -552,7 +552,7 @@ c0
                 {
                     "events" = [
                         "m"
-                        "st=a"
+                        "rt=a"
                         "n=-1"
                         "e"
                     ]
@@ -1246,12 +1246,12 @@ c0
     }
 }"
                     "events" = [
-                        "st=a"
+                        "rt=a"
                         "s=a"
                         "e"
                         "m"
                         "n=-1"
-                        "si=a"
+                        "rec=a"
                         "s=a"
                         "e"
                         "e"
@@ -1331,7 +1331,7 @@ c0
                     "events" = [
                         "m"
                         "n=-1"
-                        "st=a"
+                        "rt=a"
                         "e"
                     ]
                 }

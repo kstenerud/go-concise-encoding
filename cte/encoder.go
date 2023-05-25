@@ -254,20 +254,20 @@ func (_this *EncoderEventReceiver) OnMap() {
 	_this.context.Stack(mapKeyDecorator)
 }
 
-func (_this *EncoderEventReceiver) OnStructTemplate(id []byte) {
+func (_this *EncoderEventReceiver) OnRecordType(id []byte) {
 	_this.context.BeforeValue()
 	_this.context.BeginContainer()
-	_this.context.Stream.WriteStructTemplateBegin(id)
+	_this.context.Stream.WriteRecordTypeBegin(id)
 	_this.context.Indent()
-	_this.context.Stack(structTemplateDecorator)
+	_this.context.Stack(recordTypeDecorator)
 }
 
-func (_this *EncoderEventReceiver) OnStructInstance(id []byte) {
+func (_this *EncoderEventReceiver) OnRecord(id []byte) {
 	_this.context.BeforeValue()
 	_this.context.BeginContainer()
-	_this.context.Stream.WriteStructInstanceBegin(id)
+	_this.context.Stream.WriteRecordBegin(id)
 	_this.context.Indent()
-	_this.context.Stack(structInstanceDecorator)
+	_this.context.Stack(recordDecorator)
 }
 
 func (_this *EncoderEventReceiver) OnEdge() {

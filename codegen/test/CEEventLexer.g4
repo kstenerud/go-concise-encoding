@@ -95,8 +95,8 @@ EVENT_REFR:        'refr';                             // Reference: Remote
 EVENT_REFR_ARGS:   'refr='   -> pushMode(MODE_STRING); // Reference: Remote
 EVENT_RID:         'rid';                              // Resource ID
 EVENT_RID_ARGS:    'rid='    -> pushMode(MODE_STRING); // Resource ID
-EVENT_SI:          'si='     -> pushMode(MODE_STRING); // Struct Instance
-EVENT_ST:          'st='     -> pushMode(MODE_STRING); // Struct Template
+EVENT_REC:         'rec='    -> pushMode(MODE_STRING); // Record
+EVENT_RT:          'rt='     -> pushMode(MODE_STRING); // Record Type
 EVENT_S:           's';                                // String
 EVENT_S_ARGS:      's='      -> pushMode(MODE_STRING); // String
 EVENT_T:           't='      -> pushMode(MODE_TIME);   // Time

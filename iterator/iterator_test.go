@@ -252,12 +252,12 @@ func TestIterateRecord(t *testing.T) {
 	config := configuration.DefaultIteratorConfiguration()
 	config.RecordTypes[reflect.TypeOf(StructTestIterate{})] = "x"
 
-	assertIterateWithConfiguration(t, &config, new(StructTestIterate), ST("x"), S("a"), E(), SI("x"), N(0), E())
+	assertIterateWithConfiguration(t, &config, new(StructTestIterate), RT("x"), S("a"), E(), REC("x"), N(0), E())
 
 	config.FieldNameStyle = configuration.FieldNameCamelCase
-	assertIterateWithConfiguration(t, &config, new(StructTestIterate), ST("x"), S("A"), E(), SI("x"), N(0), E())
+	assertIterateWithConfiguration(t, &config, new(StructTestIterate), RT("x"), S("A"), E(), REC("x"), N(0), E())
 
-	assertIterateWithConfiguration(t, &config, (*StructTestIterate)(nil), ST("x"), S("A"), E(), NULL())
+	assertIterateWithConfiguration(t, &config, (*StructTestIterate)(nil), RT("x"), S("A"), E(), NULL())
 }
 
 func TestIterateNilConfig(t *testing.T) {

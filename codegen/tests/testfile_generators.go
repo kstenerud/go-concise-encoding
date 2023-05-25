@@ -42,7 +42,7 @@ func generateTestFiles(projectDir string) {
 	common.GenerateTestFile(filepath.Join(testsDir, "map-generated.cte"), generateMapKeyTests(), generateMapValueTests())
 	common.GenerateTestFile(filepath.Join(testsDir, "edge-generated.cte"), generateEdgeSourceTests(), generateEdgeDescriptionTests(), generateEdgeDestinationTests())
 	common.GenerateTestFile(filepath.Join(testsDir, "node-generated.cte"), generateNodeValueTests(), generateNodeChildTests())
-	common.GenerateTestFile(filepath.Join(testsDir, "struct-generated.cte"), generateStructInstanceTests())
+	common.GenerateTestFile(filepath.Join(testsDir, "record-generated.cte"), generateRecordTests())
 	generateArrayTestFiles(testsDir)
 }
 
@@ -90,7 +90,7 @@ func generateTLOTests() *test_runner.UnitTest {
 func generateListTests() *test_runner.UnitTest {
 	prefix := test.Events{EvL}
 	suffix := test.Events{EvE}
-	invalidEvents := test.Events{EvV, EvACL, EvACM, EvST}
+	invalidEvents := test.Events{EvV, EvACL, EvACM, EvRT}
 	validEvents := complementaryEvents(append(invalidEvents, EvE))
 
 	return generateEncodeDecodeTest("List", prefix, suffix, validEvents, invalidEvents)
@@ -108,7 +108,7 @@ func generateMapKeyTests() *test_runner.UnitTest {
 func generateMapValueTests() *test_runner.UnitTest {
 	prefix := test.Events{EvM, EvN}
 	suffix := test.Events{EvE}
-	invalidEvents := test.Events{EvV, EvACL, EvACM, EvREFL, EvST}
+	invalidEvents := test.Events{EvV, EvACL, EvACM, EvREFL, EvRT}
 	validEvents := complementaryEvents(append(invalidEvents, EvE))
 
 	return generateEncodeDecodeTest("Map Value", prefix, suffix, validEvents, invalidEvents)
@@ -117,7 +117,7 @@ func generateMapValueTests() *test_runner.UnitTest {
 func generateEdgeSourceTests() *test_runner.UnitTest {
 	prefix := test.Events{EvEDGE}
 	suffix := test.Events{EvN, EvN, EvE}
-	invalidEvents := test.Events{EvV, EvACL, EvACM, EvNULL, EvREFL, EvST}
+	invalidEvents := test.Events{EvV, EvACL, EvACM, EvNULL, EvREFL, EvRT}
 	validEvents := complementaryEvents(append(invalidEvents, EvE))
 
 	return generateEncodeDecodeTest("Edge Source", prefix, suffix, validEvents, invalidEvents)
@@ -126,7 +126,7 @@ func generateEdgeSourceTests() *test_runner.UnitTest {
 func generateEdgeDescriptionTests() *test_runner.UnitTest {
 	prefix := test.Events{EvEDGE, EvN}
 	suffix := test.Events{EvN, EvE}
-	invalidEvents := test.Events{EvV, EvACL, EvACM, EvREFL, EvST}
+	invalidEvents := test.Events{EvV, EvACL, EvACM, EvREFL, EvRT}
 	validEvents := complementaryEvents(append(invalidEvents, EvE))
 
 	return generateEncodeDecodeTest("Edge Description", prefix, suffix, validEvents, invalidEvents)
@@ -135,7 +135,7 @@ func generateEdgeDescriptionTests() *test_runner.UnitTest {
 func generateEdgeDestinationTests() *test_runner.UnitTest {
 	prefix := test.Events{EvEDGE, EvN, EvN}
 	suffix := test.Events{EvE}
-	invalidEvents := test.Events{EvV, EvACL, EvACM, EvNULL, EvREFL, EvST}
+	invalidEvents := test.Events{EvV, EvACL, EvACM, EvNULL, EvREFL, EvRT}
 	validEvents := complementaryEvents(append(invalidEvents, EvE))
 
 	return generateEncodeDecodeTest("Edge Destination", prefix, suffix, validEvents, invalidEvents)
@@ -144,7 +144,7 @@ func generateEdgeDestinationTests() *test_runner.UnitTest {
 func generateNodeValueTests() *test_runner.UnitTest {
 	prefix := test.Events{EvNODE}
 	suffix := test.Events{EvE}
-	invalidEvents := test.Events{EvV, EvACL, EvACM, EvST}
+	invalidEvents := test.Events{EvV, EvACL, EvACM, EvRT}
 	validEvents := complementaryEvents(append(invalidEvents, EvE))
 
 	return generateEncodeDecodeTest("Node Value", prefix, suffix, validEvents, invalidEvents)
@@ -153,19 +153,19 @@ func generateNodeValueTests() *test_runner.UnitTest {
 func generateNodeChildTests() *test_runner.UnitTest {
 	prefix := test.Events{EvNODE, EvNULL}
 	suffix := test.Events{EvE}
-	invalidEvents := test.Events{EvV, EvACL, EvACM, EvST}
+	invalidEvents := test.Events{EvV, EvACL, EvACM, EvRT}
 	validEvents := complementaryEvents(append(invalidEvents, EvE))
 
 	return generateEncodeDecodeTest("Node Child", prefix, suffix, validEvents, invalidEvents)
 }
 
-func generateStructInstanceTests() *test_runner.UnitTest {
-	prefix := test.Events{EvSI}
+func generateRecordTests() *test_runner.UnitTest {
+	prefix := test.Events{EvREC}
 	suffix := test.Events{EvE}
-	invalidEvents := test.Events{EvV, EvACL, EvACM, EvREFL, EvSI, EvST}
+	invalidEvents := test.Events{EvV, EvACL, EvACM, EvREFL, EvREC, EvRT}
 	validEvents := complementaryEvents(append(invalidEvents, EvE))
 
-	return generateEncodeDecodeTest("Struct Instance", prefix, suffix, validEvents, invalidEvents)
+	return generateEncodeDecodeTest("Record", prefix, suffix, validEvents, invalidEvents)
 }
 
 func generateEncodeDecodeTest(name string, prefix test.Events, suffix test.Events, validEvents test.Events, invalidEvents test.Events) *test_runner.UnitTest {

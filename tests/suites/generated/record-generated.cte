@@ -9,7 +9,7 @@ c0
     "ce_version" = 0
     "tests" = [
         {
-            "name" = "Struct Instance"
+            "name" = "Record"
             "must_succeed" = [
                 {
                     "to_cbe" = |u8x 7f f1 01 61 81 61 9b 96 01 61 94 02 01 9b|
@@ -20,10 +20,10 @@ c0
     |b 1|
 }"
                     "events" = [
-                        "st=a"
+                        "rt=a"
                         "s=a"
                         "e"
-                        "si=a"
+                        "rec=a"
                         "ab=1"
                         "e"
                     ]
@@ -37,10 +37,10 @@ c0
     |f16x 1|
 }"
                     "events" = [
-                        "st=a"
+                        "rt=a"
                         "s=a"
                         "e"
-                        "si=a"
+                        "rec=a"
                         "af16=1"
                         "e"
                     ]
@@ -54,10 +54,10 @@ c0
     |f32x 1|
 }"
                     "events" = [
-                        "st=a"
+                        "rt=a"
                         "s=a"
                         "e"
-                        "si=a"
+                        "rec=a"
                         "af32=1"
                         "e"
                     ]
@@ -71,10 +71,10 @@ c0
     |f64x 1|
 }"
                     "events" = [
-                        "st=a"
+                        "rt=a"
                         "s=a"
                         "e"
-                        "si=a"
+                        "rec=a"
                         "af64=1"
                         "e"
                     ]
@@ -88,10 +88,10 @@ c0
     |i16 1|
 }"
                     "events" = [
-                        "st=a"
+                        "rt=a"
                         "s=a"
                         "e"
-                        "si=a"
+                        "rec=a"
                         "ai16=1"
                         "e"
                     ]
@@ -105,10 +105,10 @@ c0
     |i32 1|
 }"
                     "events" = [
-                        "st=a"
+                        "rt=a"
                         "s=a"
                         "e"
-                        "si=a"
+                        "rec=a"
                         "ai32=1"
                         "e"
                     ]
@@ -122,10 +122,10 @@ c0
     |i64 1|
 }"
                     "events" = [
-                        "st=a"
+                        "rt=a"
                         "s=a"
                         "e"
-                        "si=a"
+                        "rec=a"
                         "ai64=1"
                         "e"
                     ]
@@ -139,10 +139,10 @@ c0
     |i8 1|
 }"
                     "events" = [
-                        "st=a"
+                        "rt=a"
                         "s=a"
                         "e"
-                        "si=a"
+                        "rec=a"
                         "ai8=1"
                         "e"
                     ]
@@ -156,10 +156,10 @@ c0
     |u 00000000-0000-0000-0000-000000000000|
 }"
                     "events" = [
-                        "st=a"
+                        "rt=a"
                         "s=a"
                         "e"
-                        "si=a"
+                        "rec=a"
                         "au=00000000-0000-0000-0000-000000000000"
                         "e"
                     ]
@@ -173,10 +173,10 @@ c0
     |u16 1|
 }"
                     "events" = [
-                        "st=a"
+                        "rt=a"
                         "s=a"
                         "e"
-                        "si=a"
+                        "rec=a"
                         "au16=1"
                         "e"
                     ]
@@ -190,10 +190,10 @@ c0
     |u32 1|
 }"
                     "events" = [
-                        "st=a"
+                        "rt=a"
                         "s=a"
                         "e"
-                        "si=a"
+                        "rec=a"
                         "au32=1"
                         "e"
                     ]
@@ -207,10 +207,10 @@ c0
     |u64 1|
 }"
                     "events" = [
-                        "st=a"
+                        "rt=a"
                         "s=a"
                         "e"
-                        "si=a"
+                        "rec=a"
                         "au64=1"
                         "e"
                     ]
@@ -224,10 +224,10 @@ c0
     |u8 1|
 }"
                     "events" = [
-                        "st=a"
+                        "rt=a"
                         "s=a"
                         "e"
-                        "si=a"
+                        "rec=a"
                         "au8=0x01"
                         "e"
                     ]
@@ -241,10 +241,10 @@ c0
     true
 }"
                     "events" = [
-                        "st=a"
+                        "rt=a"
                         "s=a"
                         "e"
-                        "si=a"
+                        "rec=a"
                         "b=true"
                         "e"
                     ]
@@ -258,10 +258,10 @@ c0
     |b 1|
 }"
                     "events" = [
-                        "st=a"
+                        "rt=a"
                         "s=a"
                         "e"
-                        "si=a"
+                        "rec=a"
                         "bab"
                         "acl=1"
                         "adb=1"
@@ -277,10 +277,10 @@ c0
     |f16x 1|
 }"
                     "events" = [
-                        "st=a"
+                        "rt=a"
                         "s=a"
                         "e"
-                        "si=a"
+                        "rec=a"
                         "baf16"
                         "acl=1"
                         "adf16=1"
@@ -296,10 +296,10 @@ c0
     |f32x 1|
 }"
                     "events" = [
-                        "st=a"
+                        "rt=a"
                         "s=a"
                         "e"
-                        "si=a"
+                        "rec=a"
                         "baf32"
                         "acl=1"
                         "adf32=1"
@@ -315,10 +315,10 @@ c0
     |f64x 1|
 }"
                     "events" = [
-                        "st=a"
+                        "rt=a"
                         "s=a"
                         "e"
-                        "si=a"
+                        "rec=a"
                         "baf64"
                         "acl=1"
                         "adf64=1"
@@ -334,10 +334,10 @@ c0
     |i16 1|
 }"
                     "events" = [
-                        "st=a"
+                        "rt=a"
                         "s=a"
                         "e"
-                        "si=a"
+                        "rec=a"
                         "bai16"
                         "acl=1"
                         "adi16=1"
@@ -353,10 +353,10 @@ c0
     |i32 1|
 }"
                     "events" = [
-                        "st=a"
+                        "rt=a"
                         "s=a"
                         "e"
-                        "si=a"
+                        "rec=a"
                         "bai32"
                         "acl=1"
                         "adi32=1"
@@ -372,10 +372,10 @@ c0
     |i64 1|
 }"
                     "events" = [
-                        "st=a"
+                        "rt=a"
                         "s=a"
                         "e"
-                        "si=a"
+                        "rec=a"
                         "bai64"
                         "acl=1"
                         "adi64=1"
@@ -391,10 +391,10 @@ c0
     |i8 1|
 }"
                     "events" = [
-                        "st=a"
+                        "rt=a"
                         "s=a"
                         "e"
-                        "si=a"
+                        "rec=a"
                         "bai8"
                         "acl=1"
                         "adi8=1"
@@ -410,10 +410,10 @@ c0
     |u 00000000-0000-0000-0000-000000000000|
 }"
                     "events" = [
-                        "st=a"
+                        "rt=a"
                         "s=a"
                         "e"
-                        "si=a"
+                        "rec=a"
                         "bau"
                         "acl=1"
                         "adu=00000000-0000-0000-0000-000000000000"
@@ -429,10 +429,10 @@ c0
     |u16 1|
 }"
                     "events" = [
-                        "st=a"
+                        "rt=a"
                         "s=a"
                         "e"
-                        "si=a"
+                        "rec=a"
                         "bau16"
                         "acl=1"
                         "adu16=1"
@@ -448,10 +448,10 @@ c0
     |u32 1|
 }"
                     "events" = [
-                        "st=a"
+                        "rt=a"
                         "s=a"
                         "e"
-                        "si=a"
+                        "rec=a"
                         "bau32"
                         "acl=1"
                         "adu32=1"
@@ -467,10 +467,10 @@ c0
     |u64 1|
 }"
                     "events" = [
-                        "st=a"
+                        "rt=a"
                         "s=a"
                         "e"
-                        "si=a"
+                        "rec=a"
                         "bau64"
                         "acl=1"
                         "adu64=1"
@@ -486,10 +486,10 @@ c0
     |u8 1|
 }"
                     "events" = [
-                        "st=a"
+                        "rt=a"
                         "s=a"
                         "e"
-                        "si=a"
+                        "rec=a"
                         "bau8"
                         "acl=1"
                         "adu8=0x01"
@@ -505,10 +505,10 @@ c0
     |c0 01|
 }"
                     "events" = [
-                        "st=a"
+                        "rt=a"
                         "s=a"
                         "e"
-                        "si=a"
+                        "rec=a"
                         "bcb=0"
                         "acl=1"
                         "adu8=0x01"
@@ -523,10 +523,10 @@ c0
     |c0 \"a\"|
 }"
                     "events" = [
-                        "st=a"
+                        "rt=a"
                         "s=a"
                         "e"
-                        "si=a"
+                        "rec=a"
                         "bct=0"
                         "acl=1"
                         "adt=a"
@@ -542,10 +542,10 @@ c0
     |.a/b 01|
 }"
                     "events" = [
-                        "st=a"
+                        "rt=a"
                         "s=a"
                         "e"
-                        "si=a"
+                        "rec=a"
                         "bmedia=a/b"
                         "acl=1"
                         "adu8=0x01"
@@ -561,10 +561,10 @@ c0
     @\"a\"
 }"
                     "events" = [
-                        "st=a"
+                        "rt=a"
                         "s=a"
                         "e"
-                        "si=a"
+                        "rec=a"
                         "brid"
                         "acl=1"
                         "adt=a"
@@ -580,10 +580,10 @@ c0
     \"a\"
 }"
                     "events" = [
-                        "st=a"
+                        "rt=a"
                         "s=a"
                         "e"
-                        "si=a"
+                        "rec=a"
                         "bs"
                         "acl=1"
                         "adt=a"
@@ -599,10 +599,10 @@ c0
     |c0 01|
 }"
                     "events" = [
-                        "st=a"
+                        "rt=a"
                         "s=a"
                         "e"
-                        "si=a"
+                        "rec=a"
                         "cb=0 01"
                         "e"
                     ]
@@ -617,10 +617,10 @@ c0
     -1
 }"
                     "events" = [
-                        "st=a"
+                        "rt=a"
                         "s=a"
                         "e"
-                        "si=a"
+                        "rec=a"
                         "cm=a"
                         "n=-1"
                         "e"
@@ -636,10 +636,10 @@ c0
     -1
 }"
                     "events" = [
-                        "st=a"
+                        "rt=a"
                         "s=a"
                         "e"
-                        "si=a"
+                        "rec=a"
                         "cs=a"
                         "n=-1"
                         "e"
@@ -653,10 +653,10 @@ c0
     |c0 \"a\"|
 }"
                     "events" = [
-                        "st=a"
+                        "rt=a"
                         "s=a"
                         "e"
-                        "si=a"
+                        "rec=a"
                         "ct=0 a"
                         "e"
                     ]
@@ -674,10 +674,10 @@ c0
     )
 }"
                     "events" = [
-                        "st=a"
+                        "rt=a"
                         "s=a"
                         "e"
-                        "si=a"
+                        "rec=a"
                         "edge"
                         "rid=http://z.com"
                         "rid=http://z.com"
@@ -695,10 +695,10 @@ c0
     inf
 }"
                     "events" = [
-                        "st=a"
+                        "rt=a"
                         "s=a"
                         "e"
-                        "si=a"
+                        "rec=a"
                         "n=inf"
                         "e"
                     ]
@@ -712,10 +712,10 @@ c0
     []
 }"
                     "events" = [
-                        "st=a"
+                        "rt=a"
                         "s=a"
                         "e"
-                        "si=a"
+                        "rec=a"
                         "l"
                         "e"
                         "e"
@@ -730,10 +730,10 @@ c0
     {}
 }"
                     "events" = [
-                        "st=a"
+                        "rt=a"
                         "s=a"
                         "e"
-                        "si=a"
+                        "rec=a"
                         "m"
                         "e"
                         "e"
@@ -748,10 +748,10 @@ c0
     &a:-1
 }"
                     "events" = [
-                        "st=a"
+                        "rt=a"
                         "s=a"
                         "e"
-                        "si=a"
+                        "rec=a"
                         "mark=a"
                         "n=-1"
                         "e"
@@ -766,10 +766,10 @@ c0
     |.a/b 01|
 }"
                     "events" = [
-                        "st=a"
+                        "rt=a"
                         "s=a"
                         "e"
-                        "si=a"
+                        "rec=a"
                         "media=a/b 01"
                         "e"
                     ]
@@ -783,10 +783,10 @@ c0
     -1
 }"
                     "events" = [
-                        "st=a"
+                        "rt=a"
                         "s=a"
                         "e"
-                        "si=a"
+                        "rec=a"
                         "n=-1"
                         "e"
                     ]
@@ -800,10 +800,10 @@ c0
     nan
 }"
                     "events" = [
-                        "st=a"
+                        "rt=a"
                         "s=a"
                         "e"
-                        "si=a"
+                        "rec=a"
                         "n=nan"
                         "e"
                     ]
@@ -817,10 +817,10 @@ c0
     -inf
 }"
                     "events" = [
-                        "st=a"
+                        "rt=a"
                         "s=a"
                         "e"
-                        "si=a"
+                        "rec=a"
                         "n=-inf"
                         "e"
                     ]
@@ -835,10 +835,10 @@ c0
     )
 }"
                     "events" = [
-                        "st=a"
+                        "rt=a"
                         "s=a"
                         "e"
-                        "si=a"
+                        "rec=a"
                         "node"
                         "n=-1"
                         "e"
@@ -854,10 +854,10 @@ c0
     null
 }"
                     "events" = [
-                        "st=a"
+                        "rt=a"
                         "s=a"
                         "e"
-                        "si=a"
+                        "rec=a"
                         "null"
                         "e"
                     ]
@@ -871,10 +871,10 @@ c0
     -1
 }"
                     "events" = [
-                        "st=a"
+                        "rt=a"
                         "s=a"
                         "e"
-                        "si=a"
+                        "rec=a"
                         "pad"
                         "n=-1"
                         "e"
@@ -889,10 +889,10 @@ c0
     $\"a\"
 }"
                     "events" = [
-                        "st=a"
+                        "rt=a"
                         "s=a"
                         "e"
-                        "si=a"
+                        "rec=a"
                         "refr=a"
                         "e"
                     ]
@@ -906,10 +906,10 @@ c0
     @\"http://z.com\"
 }"
                     "events" = [
-                        "st=a"
+                        "rt=a"
                         "s=a"
                         "e"
-                        "si=a"
+                        "rec=a"
                         "rid=http://z.com"
                         "e"
                     ]
@@ -923,10 +923,10 @@ c0
     \"a\"
 }"
                     "events" = [
-                        "st=a"
+                        "rt=a"
                         "s=a"
                         "e"
-                        "si=a"
+                        "rec=a"
                         "s=a"
                         "e"
                     ]
@@ -940,10 +940,10 @@ c0
     snan
 }"
                     "events" = [
-                        "st=a"
+                        "rt=a"
                         "s=a"
                         "e"
-                        "si=a"
+                        "rec=a"
                         "n=snan"
                         "e"
                     ]
@@ -957,10 +957,10 @@ c0
     2020-01-01/01:01:01.000000001
 }"
                     "events" = [
-                        "st=a"
+                        "rt=a"
                         "s=a"
                         "e"
-                        "si=a"
+                        "rec=a"
                         "t=2020-01-01/01:01:01.000000001"
                         "e"
                     ]
@@ -974,10 +974,10 @@ c0
     00000000-0000-0000-0000-000000000000
 }"
                     "events" = [
-                        "st=a"
+                        "rt=a"
                         "s=a"
                         "e"
-                        "si=a"
+                        "rec=a"
                         "uid=00000000-0000-0000-0000-000000000000"
                         "e"
                     ]
@@ -986,61 +986,61 @@ c0
             "must_fail" = [
                 {
                     "events" = [
-                        "st=a"
+                        "rt=a"
                         "s=a"
                         "e"
-                        "si=a"
+                        "rec=a"
                         "v=0"
                         "e"
                     ]
                 }
                 {
                     "events" = [
-                        "st=a"
+                        "rt=a"
                         "s=a"
                         "e"
-                        "si=a"
+                        "rec=a"
                         "acl=1"
                         "e"
                     ]
                 }
                 {
                     "events" = [
-                        "st=a"
+                        "rt=a"
                         "s=a"
                         "e"
-                        "si=a"
+                        "rec=a"
                         "acm=1"
                         "e"
                     ]
                 }
                 {
                     "events" = [
-                        "st=a"
+                        "rt=a"
                         "s=a"
                         "e"
-                        "si=a"
+                        "rec=a"
                         "refl=a"
                         "e"
                     ]
                 }
                 {
                     "events" = [
-                        "st=a"
+                        "rt=a"
                         "s=a"
                         "e"
-                        "si=a"
-                        "si=a"
+                        "rec=a"
+                        "rec=a"
                         "e"
                     ]
                 }
                 {
                     "events" = [
-                        "st=a"
+                        "rt=a"
                         "s=a"
                         "e"
-                        "si=a"
-                        "st=a"
+                        "rec=a"
+                        "rt=a"
                         "e"
                     ]
                 }

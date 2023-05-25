@@ -57,8 +57,8 @@ func generateEvents(projectDir string) {
 
 		generateIDEvent(writer, "Marker", "mark")
 		generateIDEvent(writer, "ReferenceLocal", "refl")
-		generateIDEvent(writer, "StructInstance", "si")
-		generateIDEvent(writer, "StructTemplate", "st")
+		generateIDEvent(writer, "Record", "rec")
+		generateIDEvent(writer, "RecordType", "rt")
 
 		generateStringArrayEvent(writer, "String", "s")
 		generateStringArrayEvent(writer, "ReferenceRemote", "refr")
