@@ -48,34 +48,34 @@ var defaultDocumentLimits = DocumentLimits{
 
 func (_this *DocumentLimits) ApplyDefaults() {
 	if _this.MaxDocumentSizeBytes == 0 {
-		_this.MaxDocumentSizeBytes = defaultDecoderConfiguration.DocumentLimits.MaxDocumentSizeBytes
+		_this.MaxDocumentSizeBytes = defaultCEDecoderConfiguration.DocumentLimits.MaxDocumentSizeBytes
 	}
 	if _this.MaxArraySizeBytes == 0 {
-		_this.MaxArraySizeBytes = defaultDecoderConfiguration.DocumentLimits.MaxArraySizeBytes
+		_this.MaxArraySizeBytes = defaultCEDecoderConfiguration.DocumentLimits.MaxArraySizeBytes
 	}
 	if _this.MaxObjectCount == 0 {
-		_this.MaxObjectCount = defaultDecoderConfiguration.DocumentLimits.MaxObjectCount
+		_this.MaxObjectCount = defaultCEDecoderConfiguration.DocumentLimits.MaxObjectCount
 	}
 	if _this.MaxContainerDepth == 0 {
-		_this.MaxContainerDepth = defaultDecoderConfiguration.DocumentLimits.MaxContainerDepth
+		_this.MaxContainerDepth = defaultCEDecoderConfiguration.DocumentLimits.MaxContainerDepth
 	}
 	if _this.MaxIntegerDigitCount == 0 {
-		_this.MaxIntegerDigitCount = defaultDecoderConfiguration.DocumentLimits.MaxIntegerDigitCount
+		_this.MaxIntegerDigitCount = defaultCEDecoderConfiguration.DocumentLimits.MaxIntegerDigitCount
 	}
 	if _this.MaxFloatCoefficientDigitCount == 0 {
-		_this.MaxFloatCoefficientDigitCount = defaultDecoderConfiguration.DocumentLimits.MaxFloatCoefficientDigitCount
+		_this.MaxFloatCoefficientDigitCount = defaultCEDecoderConfiguration.DocumentLimits.MaxFloatCoefficientDigitCount
 	}
 	if _this.MaxFloatExponentDigitCount == 0 {
-		_this.MaxFloatExponentDigitCount = defaultDecoderConfiguration.DocumentLimits.MaxFloatExponentDigitCount
+		_this.MaxFloatExponentDigitCount = defaultCEDecoderConfiguration.DocumentLimits.MaxFloatExponentDigitCount
 	}
 	if _this.MaxYearDigitCount == 0 {
-		_this.MaxYearDigitCount = defaultDecoderConfiguration.DocumentLimits.MaxYearDigitCount
+		_this.MaxYearDigitCount = defaultCEDecoderConfiguration.DocumentLimits.MaxYearDigitCount
 	}
 	if _this.MaxMarkerCount == 0 {
-		_this.MaxMarkerCount = defaultDecoderConfiguration.DocumentLimits.MaxMarkerCount
+		_this.MaxMarkerCount = defaultCEDecoderConfiguration.DocumentLimits.MaxMarkerCount
 	}
 	if _this.MaxLocalReferenceCount == 0 {
-		_this.MaxLocalReferenceCount = defaultDecoderConfiguration.DocumentLimits.MaxLocalReferenceCount
+		_this.MaxLocalReferenceCount = defaultCEDecoderConfiguration.DocumentLimits.MaxLocalReferenceCount
 	}
 }
 
@@ -91,7 +91,7 @@ type CEDecoderConfiguration struct {
 	DebugPanics                   bool
 }
 
-var defaultDecoderConfiguration = CEDecoderConfiguration{
+var defaultCEDecoderConfiguration = CEDecoderConfiguration{
 	AllowRecursiveLocalReferences: false,
 	FollowRemoteReferences:        false,
 	CompleteTruncatedDocument:     false,
@@ -101,7 +101,7 @@ var defaultDecoderConfiguration = CEDecoderConfiguration{
 }
 
 func DefaultCEDecoderConfiguration() CEDecoderConfiguration {
-	return defaultDecoderConfiguration
+	return defaultCEDecoderConfiguration
 }
 
 func (_this *CEDecoderConfiguration) ApplyDefaults() {
@@ -143,6 +143,7 @@ func (_this *CEUnmarshalerConfiguration) ApplyDefaults() {
 	_this.Builder.ApplyDefaults()
 	_this.Session.ApplyDefaults()
 	_this.Rules.ApplyDefaults()
+	_this.Decoder.DebugPanics = _this.DebugPanics
 }
 
 func (_this *CEUnmarshalerConfiguration) Validate() error {

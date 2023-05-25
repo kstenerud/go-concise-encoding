@@ -11,28 +11,15 @@ c0
 
         {
             "name" = "Comments in array"
-            "mustSucceed" = [
-                {
-                    "to_cbe" = |u8x 93 00|
-                    "from_cte" = "|u8 /**/|"
-                    "events" = ["bau8" "cm" "acl=0"]
-                }
-                {
-                    "from_cte" = "\.%%%%
+            "mustFail" = [
+                {"cte" = "|u8 /**/|"}
+                {"cte" = "\.%%%%
 |u8x // Comment at the start of the array
          01 02 03 // A comment inside the binary array
          04 05 06 07 /* Another comment inside */ 08 09 0a
          /* One more before closing */|
 
-%%%%"
-                    "to_cbe"    = |u8x 93 07 01 02 03 09 04 05 06 07 07 08 09 0a 00|
-                    "to_events" = [
-                        "bau8" "cs= Comment at the start of the array"
-                            "acm=3" "adu8x=01 02 03" "cs= A comment inside the binary array"
-                            "acm=4" "adu8x=04 05 06 07" "cm= Another comment inside " "acm=3" "adu8x=08 09 0a"
-                            "cm= One more before closing " "acl=0"
-                    ]
-                }
+%%%%"           }
             ]
         }
 

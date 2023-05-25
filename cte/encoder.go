@@ -114,19 +114,19 @@ func (_this *EncoderEventReceiver) OnFalse() {
 
 func (_this *EncoderEventReceiver) OnPositiveInt(value uint64) {
 	_this.context.BeforeValue()
-	_this.context.Stream.WritePositiveInt(value)
+	_this.context.Stream.WritePositiveInt(value, 10)
 	_this.context.AfterValue()
 }
 
 func (_this *EncoderEventReceiver) OnNegativeInt(value uint64) {
 	_this.context.BeforeValue()
-	_this.context.Stream.WriteNegativeInt(value)
+	_this.context.Stream.WriteNegativeInt(value, 10)
 	_this.context.AfterValue()
 }
 
 func (_this *EncoderEventReceiver) OnInt(value int64) {
 	_this.context.BeforeValue()
-	_this.context.Stream.WriteInt(value)
+	_this.context.Stream.WriteInt(value, 10)
 	_this.context.AfterValue()
 }
 

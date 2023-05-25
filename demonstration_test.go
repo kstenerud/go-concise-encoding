@@ -38,7 +38,7 @@ func demonstrateCTEMarshal() error {
 	var buffer bytes.Buffer
 	err := ce.MarshalCTE(dict, &buffer, nil)
 	if err != nil {
-		fmt.Printf("Error marshaling: %v", err)
+		fmt.Printf("Error marshaling: %v\n", err)
 		return err
 	}
 	fmt.Printf("Marshaled CTE: %v\n", buffer.String())
@@ -52,7 +52,7 @@ func demonstrateCTEUnmarshal() error {
 
 	value, err := ce.UnmarshalCTE(data, nil, nil)
 	if err != nil {
-		fmt.Printf("Error unmarshaling: %v", err)
+		fmt.Printf("Error unmarshaling: %v\n", err)
 		return err
 	}
 	fmt.Printf("Unmarshaled CTE: %v\n", value)
@@ -69,7 +69,7 @@ func demonstrateCBEMarshal() error {
 	var buffer bytes.Buffer
 	err := ce.MarshalCBE(dict, &buffer, nil)
 	if err != nil {
-		fmt.Printf("Error marshaling: %v", err)
+		fmt.Printf("Error marshaling: %v\n", err)
 		return err
 	}
 	fmt.Printf("Marshaled CBE: %v\n", buffer.Bytes())
@@ -87,7 +87,7 @@ func demonstrateCBEUnmarshal() error {
 
 	value, err := ce.UnmarshalCBE(data, nil, nil)
 	if err != nil {
-		fmt.Printf("Error unmarshaling: %v", err)
+		fmt.Printf("Error unmarshaling: %v\n", err)
 		return err
 	}
 	fmt.Printf("Unmarshaled CBE: %v\n", value)
@@ -107,7 +107,7 @@ func demonstrateRecursiveStructInMap() error {
 	template := map[string]*SomeStruct{}
 	result, err := ce.UnmarshalFromCTEDocument([]byte(document), template, nil)
 	if err != nil {
-		fmt.Printf("Error unmarshaling CTE document: %v", err)
+		fmt.Printf("Error unmarshaling CTE document: %v\n", err)
 		return err
 	}
 	v := result.(map[string]*SomeStruct)
@@ -118,7 +118,7 @@ func demonstrateRecursiveStructInMap() error {
 
 	encodedDocument, err := ce.MarshalToCTEDocument(v, nil)
 	if err != nil {
-		fmt.Printf("Error marshaling CTE document: %v", err)
+		fmt.Printf("Error marshaling CTE document: %v\n", err)
 		return err
 	}
 	fmt.Printf("Re-encoded CTE: %v\n", string(encodedDocument))
@@ -126,7 +126,7 @@ func demonstrateRecursiveStructInMap() error {
 
 	encodedDocument, err = ce.MarshalToCBEDocument(v, nil)
 	if err != nil {
-		fmt.Printf("Error marshaling CBE document: %v", err)
+		fmt.Printf("Error marshaling CBE document: %v\n", err)
 		return err
 	}
 	fmt.Printf("Re-encoded CBE: %v\n", encodedDocument)

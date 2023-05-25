@@ -96,8 +96,8 @@ c0
                 {"cte"="{{}=1}"}       // Invalid key type
                 {"cte"="{(1)=1}"}      // Invalid key type
                 {"cte"="{@(1 2 3)=1}"} // Invalid key type
-                {"cte"="{|ct a|=1}"}   // Invalid key type
-                {"cte"="{|cb 00|=1}"}  // Invalid key type
+                {"cte"="\.@ {|c0 "x"|=1}@"} // Invalid key type
+                {"cte"="{|c0 00|=1}"}  // Invalid key type
                 {"cte"="{|b|=1}"}      // Invalid key type
                 {"cte"="{|i8|=1}"}     // Invalid key type
                 {"cte"="{|i16|=1}"}    // Invalid key type
@@ -123,7 +123,7 @@ c0
                     "events"=["st=a" "e" "si=a" "e"]
                     "cte"="\.^
 @a<>
-@a()^"
+@a{}^"
                 }
                 {
                     "events"=["st=a" "n=1" "e" "si=a" "s=x" "e"]
@@ -131,9 +131,9 @@ c0
 @a<
     1
 >
-@a(
+@a{
     "x"
-)^"
+}^"
                 }
                 {
                     "cte"="@abcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefghijabcdefgh<>

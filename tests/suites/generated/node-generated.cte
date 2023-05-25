@@ -332,7 +332,7 @@ c0
                 }
                 {
                     "cbe" = |u8x 98 7f f3 03 61 2f 62 02 01 9b|
-                    "to_cte" = "(|a/b 01|
+                    "to_cte" = "(|.a/b 01|
 )"
                     "events" = [
                         "node"
@@ -472,7 +472,7 @@ c0
                 }
                 {
                     "to_cbe" = |u8x 98 7f f3 03 61 2f 62 02 01 9b|
-                    "cte" = "(|a/b 01|
+                    "cte" = "(|.a/b 01|
 )"
                     "events" = [
                         "node"
@@ -588,19 +588,19 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 98 7f f1 01 61 81 61 9b 96 01 61 81 61 9b 9b|
-                    "cte" = "(@a<
+                    "cbe" = |u8x 7f f1 01 61 81 61 9b 98 96 01 61 81 61 9b 9b|
+                    "cte" = "@a<
+    \"a\"
+>
+(@a{
         \"a\"
-    >
-    @a(
-        \"a\"
-    )
+    }
 )"
                     "events" = [
-                        "node"
                         "st=a"
                         "s=a"
                         "e"
+                        "node"
                         "si=a"
                         "s=a"
                         "e"
@@ -614,22 +614,6 @@ c0
                     "events" = [
                         "node"
                         "n=snan"
-                        "e"
-                    ]
-                }
-                {
-                    "cbe" = |u8x 98 7f f1 01 61 81 61 9b ff 9b|
-                    "cte" = "(@a<
-        \"a\"
-    >
-    -1
-)"
-                    "events" = [
-                        "node"
-                        "st=a"
-                        "s=a"
-                        "e"
-                        "n=-1"
                         "e"
                     ]
                 }
@@ -673,6 +657,13 @@ c0
                     "events" = [
                         "node"
                         "acm=1"
+                        "e"
+                    ]
+                }
+                {
+                    "events" = [
+                        "node"
+                        "st=a"
                         "e"
                     ]
                 }
@@ -1061,7 +1052,7 @@ c0
                 {
                     "cbe" = |u8x 98 7d 7f f3 03 61 2f 62 02 01 9b|
                     "to_cte" = "(null
-    |a/b 01|
+    |.a/b 01|
 )"
                     "events" = [
                         "node"
@@ -1225,7 +1216,7 @@ c0
                 {
                     "to_cbe" = |u8x 98 7d 7f f3 03 61 2f 62 02 01 9b|
                     "cte" = "(null
-    |a/b 01|
+    |.a/b 01|
 )"
                     "events" = [
                         "node"
@@ -1362,22 +1353,21 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 98 7d 7f f1 01 61 81 61 9b 96 01 61 81 61 9b 9b|
-                    "cte" = "(null
-    @a<
+                    "cbe" = |u8x 7f f1 01 61 81 61 9b 98 7d 96 01 61 81 61 9b 9b|
+                    "cte" = "@a<
+    \"a\"
+>
+(null
+    @a{
         \"a\"
-    >
-    
-    @a(
-        \"a\"
-    )
+    }
 )"
                     "events" = [
-                        "node"
-                        "null"
                         "st=a"
                         "s=a"
                         "e"
+                        "node"
+                        "null"
                         "si=a"
                         "s=a"
                         "e"
@@ -1393,25 +1383,6 @@ c0
                         "node"
                         "null"
                         "n=snan"
-                        "e"
-                    ]
-                }
-                {
-                    "cbe" = |u8x 98 7d 7f f1 01 61 81 61 9b ff 9b|
-                    "cte" = "(null
-    @a<
-        \"a\"
-    >
-    
-    -1
-)"
-                    "events" = [
-                        "node"
-                        "null"
-                        "st=a"
-                        "s=a"
-                        "e"
-                        "n=-1"
                         "e"
                     ]
                 }
@@ -1462,6 +1433,14 @@ c0
                         "node"
                         "null"
                         "acm=1"
+                        "e"
+                    ]
+                }
+                {
+                    "events" = [
+                        "node"
+                        "null"
+                        "st=a"
                         "e"
                     ]
                 }

@@ -70,9 +70,41 @@ func newMustFailUnitTest(name string, mustFail ...*test_runner.MustFailTest) *te
 	}
 }
 
-func newMustSucceedTest(config *configuration.CTEEncoderConfiguration, events ...test.Event) *test_runner.MustSucceedTest {
-	hasFromCBE := canConvertFromCBE(config, events...)
-	hasToCBE := canConvertToCBE(config, events...)
+type Directions int
+
+const (
+	DirectionsNone   Directions = 0
+	DirectionFromCBE Directions = 1 << iota
+	DirectionToCBE
+	DirectionFromCTE
+	DirectionToCTE
+	DirectionsAll Directions = math.MaxInt
+)
+
+func (_this Directions) includes(direction Directions) bool {
+	return (_this & direction) != 0
+}
+
+func (_this Directions) except(direction Directions) Directions {
+	return _this & ^direction
+}
+
+func (_this Directions) and(direction Directions) Directions {
+	return _this | direction
+}
+
+func newMustSucceedTest(directions Directions,
+	config *configuration.CTEEncoderConfiguration,
+	events ...test.Event) *test_runner.MustSucceedTest {
+
+	if containsRecords(events) {
+		oldEvents := events
+		events = []test.Event{test.EvST, test.EvS, test.EvE}
+		events = append(events, oldEvents...)
+	}
+
+	hasFromCBE := directions.includes(DirectionFromCBE) && canConvertFromCBE(config, events...)
+	hasToCBE := directions.includes(DirectionToCBE) && canConvertToCBE(config, events...)
 	cbeDocument := generateCBE(events...)
 	cbe := []byte{}
 	fromCBE := []byte{}
@@ -85,8 +117,8 @@ func newMustSucceedTest(config *configuration.CTEEncoderConfiguration, events ..
 		toCBE = cbeDocument
 	}
 
-	hasFromCTE := canConvertFromCTE(config, events...)
-	hasToCTE := canConvertToCTE(config, events...)
+	hasFromCTE := directions.includes(DirectionFromCTE) && canConvertFromCTE(config, events...)
+	hasToCTE := directions.includes(DirectionToCTE) && canConvertToCTE(config, events...)
 	cteDocument := generateCTE(config, events...)
 	cte := ""
 	fromCTE := ""
@@ -113,6 +145,12 @@ func newMustSucceedTest(config *configuration.CTEEncoderConfiguration, events ..
 }
 
 func newMustFailTest(testType testType, events ...test.Event) *test_runner.MustFailTest {
+	if containsRecords(events) {
+		oldEvents := events
+		events = []test.Event{test.EvST, test.EvS, test.EvE}
+		events = append(events, oldEvents...)
+	}
+
 	switch testType {
 	case testTypeCbe:
 		return &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CBE: generateCBE(events...)}}
@@ -132,6 +170,15 @@ func newCustomMustFailTest(cteContents string) *test_runner.MustFailTest {
 			RawDocument: true,
 		},
 	}
+}
+
+func containsRecords(events test.Events) bool {
+	for _, event := range events {
+		if event.IsEquivalentTo(EvSI) {
+			return true
+		}
+	}
+	return false
 }
 
 func generateCBE(events ...test.Event) []byte {
@@ -214,7 +261,6 @@ var allEvents = test.Events{
 
 var (
 	prefixes = map[string]test.Events{
-		EvSI.Name():   {EvST, EvS, EvE},
 		EvREFL.Name(): {EvMARK, EvN},
 	}
 	followups = map[string]test.Events{

@@ -135,8 +135,6 @@ multiline*/
                 {"cte"="/*/**/"}         // Unterminated
                 {"cte"="/* /* */"}       // Unterminated
                 {"cte"="/* /* /* */ */"} // Unterminated
-                {"cte"="1//"}            // Comment after TLO
-                {"cte"="1/**/"}          // Comment after TLO
             ]
         }
 

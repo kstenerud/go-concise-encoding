@@ -331,6 +331,9 @@ c0
                 }
                 {
                     "events" = [
+                        "st=a"
+                        "s=a"
+                        "e"
                         "bs"
                         "si=a"
                     ]

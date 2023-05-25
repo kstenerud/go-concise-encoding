@@ -25,6 +25,7 @@ import (
 	"os"
 
 	"github.com/kstenerud/go-concise-encoding/ce"
+	"github.com/kstenerud/go-concise-encoding/configuration"
 	"github.com/kstenerud/go-concise-encoding/version"
 )
 
@@ -96,10 +97,13 @@ func loadTestSuite(testDescriptorFile string) (suite *TestSuite, errors []error)
 		panic(fmt.Errorf("unexpected error opening test suite file %v: %w", testDescriptorFile, err))
 	}
 
-	loadedTest, err := ce.UnmarshalCTE(file, suite, nil)
+	config := configuration.DefaultCEUnmarshalerConfiguration()
+	config.DebugPanics = true
+	loadedTest, err := ce.UnmarshalCTE(file, suite, &config)
 	if err != nil {
 		panic(fmt.Errorf("malformed unit test: Unexpected CTE decode error in test suite file %v: %w", testDescriptorFile, err))
 	}
+
 	suite = loadedTest.(*TestSuite)
 	errors = suite.PostDecodeInit(testDescriptorFile)
 

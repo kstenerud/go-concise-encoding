@@ -383,8 +383,8 @@ c0
                 {"cte"="\.^ c0 {$mykey=1000 "My key"=&mykey:{}}^"}       // Referenced object not keyable type
                 {"cte"="\.^ c0 {$mykey=1000 "My key"=&mykey:(1)}^"}      // Referenced object not keyable type
                 {"cte"="\.^ c0 {$mykey=1000 "My key"=&mykey:@(1 2 3)}^"} // Referenced object not keyable type
-                {"cte"="\.^ c0 {$mykey=1000 "My key"=&mykey:|ct a|}^"}   // Referenced object not keyable type
-                {"cte"="\.^ c0 {$mykey=1000 "My key"=&mykey:|cb 00|}^"}  // Referenced object not keyable type
+                {"cte"="\.^ c0 {$mykey=1000 "My key"=&mykey:|c0 "x"|}^"} // Referenced object not keyable type
+                {"cte"="\.^ c0 {$mykey=1000 "My key"=&mykey:|c0 00|}^"}  // Referenced object not keyable type
                 {"cte"="\.^ c0 {$mykey=1000 "My key"=&mykey:|b|}^"}      // Referenced object not keyable type
                 {"cte"="\.^ c0 {$mykey=1000 "My key"=&mykey:|i8|}^"}     // Referenced object not keyable type
                 {"cte"="\.^ c0 {$mykey=1000 "My key"=&mykey:|i16|}^"}    // Referenced object not keyable type

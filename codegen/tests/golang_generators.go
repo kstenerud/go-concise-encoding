@@ -21,13 +21,151 @@
 package tests
 
 import (
+	"fmt"
 	"io"
 	"math"
 	"math/big"
 	"strings"
 
 	"github.com/kstenerud/go-concise-encoding/codegen/common"
+	"github.com/kstenerud/go-concise-encoding/configuration"
+	"github.com/kstenerud/go-concise-encoding/test"
+	"github.com/kstenerud/go-concise-encoding/test/test_runner"
 )
+
+func generateArrayFloat32Tests() []*test_runner.UnitTest {
+	// Trick golang into producing negative zero
+	float32ZeroValues[1] = -float32ZeroValues[0]
+
+	var unitTests []*test_runner.UnitTest
+	var mustSucceed []*test_runner.MustSucceedTest
+	var contents []float32
+	config := configuration.DefaultCTEEncoderConfiguration()
+
+	// Empty array
+	unitTests = append(unitTests, newMustSucceedUnitTest("Empty Array",
+		newMustSucceedTest(DirectionsAll, &config, AF32(nil)),
+		newMustSucceedTest(DirectionsAll, &config, BAF32(), ACL(0)),
+	))
+
+	// Short array
+	contents = contents[:0]
+	mustSucceed = nil
+	for i := 1; i <= 15; i++ {
+		contents = append(contents, float32(i-8))
+		mustSucceed = append(mustSucceed, newMustSucceedTest(DirectionsAll, &config, AF32(contents)))
+	}
+	unitTests = append(unitTests, newMustSucceedUnitTest("Short Array", mustSucceed...))
+
+	// Chunked array
+	contents = contents[:0]
+	mustSucceed = nil
+	mustSucceed = append(mustSucceed, newMustSucceedTest(DirectionsAll, &config, BAF32(), ACL(0)))
+	for i := 1; i <= 20; i++ {
+		contents = append(contents, float32(1)/float32(i-10))
+		mustSucceed = append(mustSucceed, newMustSucceedTest(DirectionsAll, &config, BAF32(), ACL(uint64(i)), ADF32(contents)))
+	}
+	unitTests = append(unitTests, newMustSucceedUnitTest("Chunked Array", mustSucceed...))
+
+	// Various element values
+	contents = contents[:0]
+	mustSucceed = nil
+	multiple := math.MaxInt32 / 31
+	for i := math.MinInt32; i < math.MaxInt32-31; i += multiple {
+		contents = append(contents, float32(i))
+	}
+	mustSucceed = append(mustSucceed, newMustSucceedTest(DirectionsAll, &config, BAF32(), ACL(uint64(len(contents))), ADF32(contents)))
+	unitTests = append(unitTests, newMustSucceedUnitTest("Various Array Elements", mustSucceed...))
+
+	// Base 16
+	mustSucceed = nil
+	contents = contents[:0]
+	multiple = math.MaxUint32 / 7
+	for i := math.MinInt32; i < math.MaxInt32-7; i += multiple {
+		contents = append(contents, float32(i))
+	}
+	config.DefaultNumericFormats.Array.Float32 = configuration.CTEEncodingFormatHexadecimal
+	t := newMustSucceedTest(DirectionsAll, &config, AF32(contents))
+	mustSucceed = append(mustSucceed, t)
+	config = configuration.DefaultCTEEncoderConfiguration()
+	unitTests = append(unitTests, newMustSucceedUnitTest("Base 16", mustSucceed...))
+
+	// Chunking
+	mustSucceed = nil
+	events := []test.Event{BAF32()}
+	for i := 0; i < 7; i++ {
+		events = append(events, ACM(uint64(i)))
+		if i > 0 {
+			events = append(events, ADF32(contents[:i]))
+		}
+	}
+	events = append(events, ACL(0))
+	mustSucceed = append(mustSucceed, newMustSucceedTest(DirectionsAll, &config, events...))
+	mustSucceed = append(mustSucceed, newMustSucceedTest(DirectionsAll, &config, BAF32(), ACM(4), ADF32(contents[:4]), ACL(3), ADF32(contents[:3])))
+	unitTests = append(unitTests, newMustSucceedUnitTest("Chunking Variations", mustSucceed...))
+
+	// Edge-case element values
+	contents = contents[:0]
+	contents = append(contents, float32ZeroValues...)
+	unitTests = append(unitTests, newMustSucceedUnitTest("Edge Case Element Values",
+		newMustSucceedTest(DirectionsAll, &config, BAF32(), ACL(uint64(len(contents))), ADF32(contents))))
+
+	// Edge-case element values
+	contents = contents[:0]
+	contents = append(contents, float32NanValues...)
+	unitTests = append(unitTests, newMustSucceedUnitTest("NaN Element Values",
+		newMustSucceedTest(DirectionsAll.except(DirectionToCBE), &config, BAF32(), ACL(uint64(len(contents))), ADF32(contents))))
+
+	// Fail mode tests
+	var mustFail []*test_runner.MustFailTest
+
+	// Truncated Array
+	mustFail = nil
+	mustFail = append(mustFail, newMustFailTest(testTypeCbe, BAF32()))
+	mustFail = append(mustFail, newMustFailTest(testTypeCbe, BAF32(), ACL(1)))
+	for i := 2; i <= 10; i++ {
+		contents = contents[:i/2]
+		mustFail = append(mustFail, newMustFailTest(testTypeCbe, BAF32(), ACL(uint64(i)), ADF32(contents)))
+		mustFail = append(mustFail, &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CBE: truncate(generateCBE(AF32(contents)), 1)}})
+	}
+	mustFail = append(mustFail, &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: generateCTE(nil, BAF32())}})
+	mustFail = append(mustFail, &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: generateCTE(nil, BAF32(), ACL(uint64(2)), ADF32(contents[:1]))}})
+	unitTests = append(unitTests, newMustFailUnitTest("Truncated Array", mustFail...))
+
+	// Element value out of range
+	unitTests = append(unitTests, newMustFailUnitTest(
+		"Element value out of range",
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: "|f32x 1.23456p128|"}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: "|f32 1.234567e40|"}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: "|f32 0x1.23456p128|"}},
+
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: "|f32x 1.23456p-151|"}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: "|f32 1.234567e-50|"}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: "|f32 -0x1.23456p-151|"}},
+	))
+
+	// Numeric digit out of range
+	mustFail = nil
+	for iB, base := range floatBases {
+		for iV, v := range baseOutOfRange {
+			if iV <= iB {
+				mustFail = append(mustFail, &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|f32%v %v|", base, v)}})
+			}
+		}
+	}
+	unitTests = append(unitTests, newMustFailUnitTest("Numeric digit out of range", mustFail...))
+
+	// Invalid special values
+	mustFail = nil
+	for _, base := range intBases {
+		for _, special := range nonFloatSpecials {
+			mustFail = append(mustFail, &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|f32%v %v|", base, special)}})
+		}
+	}
+	unitTests = append(unitTests, newMustFailUnitTest("Invalid special values", mustFail...))
+
+	return unitTests
+}
 
 var testsImports = []*common.Import{
 	{As: "", Import: "fmt"},
@@ -64,8 +202,8 @@ var intArrayTestTemplate = `func generateArrayInt32Tests() []*test_runner.UnitTe
 
 	// Empty array
 	unitTests = append(unitTests, newMustSucceedUnitTest("Empty Array",
-		newMustSucceedTest(&config, AI32(nil)),
-		newMustSucceedTest(&config, BAI32(), ACL(0)),
+		newMustSucceedTest(DirectionsAll,  &config, AI32(nil)),
+		newMustSucceedTest(DirectionsAll,  &config, BAI32(), ACL(0)),
 	))
 
 	// Short array
@@ -73,17 +211,17 @@ var intArrayTestTemplate = `func generateArrayInt32Tests() []*test_runner.UnitTe
 	mustSucceed = nil
 	for i := 1; i <= 15; i++ {
 		contents = append(contents, int32(i-8))
-		mustSucceed = append(mustSucceed, newMustSucceedTest(&config, AI32(contents)))
+		mustSucceed = append(mustSucceed, newMustSucceedTest(DirectionsAll,  &config, AI32(contents)))
 	}
 	unitTests = append(unitTests, newMustSucceedUnitTest("Short Array", mustSucceed...))
 
 	// Chunked array
 	contents = contents[:0]
 	mustSucceed = nil
-	mustSucceed = append(mustSucceed, newMustSucceedTest(&config, BAI32(), ACL(0)))
+	mustSucceed = append(mustSucceed, newMustSucceedTest(DirectionsAll,  &config, BAI32(), ACL(0)))
 	for i := 1; i <= 20; i++ {
 		contents = append(contents, int32(i-8))
-		mustSucceed = append(mustSucceed, newMustSucceedTest(&config, BAI32(), ACL(uint64(i)), ADI32(contents)))
+		mustSucceed = append(mustSucceed, newMustSucceedTest(DirectionsAll,  &config, BAI32(), ACL(uint64(i)), ADI32(contents)))
 	}
 	unitTests = append(unitTests, newMustSucceedUnitTest("Chunked Array", mustSucceed...))
 
@@ -92,9 +230,9 @@ var intArrayTestTemplate = `func generateArrayInt32Tests() []*test_runner.UnitTe
 	mustSucceed = nil
 	multiple := math.MaxInt32 / 31
 	for i := math.MinInt32; i < math.MaxInt32-31; i += multiple {
-		contents = append(contents, int32(math.MinInt32+i))
+		contents = append(contents, int32(i))
 	}
-	mustSucceed = append(mustSucceed, newMustSucceedTest(&config, BAI32(), ACL(uint64(len(contents))), ADI32(contents)))
+	mustSucceed = append(mustSucceed, newMustSucceedTest(DirectionsAll,  &config, BAI32(), ACL(uint64(len(contents))), ADI32(contents)))
 	unitTests = append(unitTests, newMustSucceedUnitTest("Various Array Elements", mustSucceed...))
 
 	// Base 2, 8, 16
@@ -102,16 +240,16 @@ var intArrayTestTemplate = `func generateArrayInt32Tests() []*test_runner.UnitTe
 	contents = contents[:0]
 	multiple = math.MaxUint32 / 7
 	for i := math.MinInt32; i < math.MaxInt32-7; i += multiple {
-		contents = append(contents, int32(math.MinInt32+i))
+		contents = append(contents, int32(i))
 	}
 	config.DefaultNumericFormats.Array.Int32 = configuration.CTEEncodingFormatBinary
-	t := newMustSucceedTest(&config, AI32(contents))
+	t := newMustSucceedTest(DirectionsAll,  &config, AI32(contents))
 	mustSucceed = append(mustSucceed, t)
 	config.DefaultNumericFormats.Array.Int32 = configuration.CTEEncodingFormatOctal
-	t = newMustSucceedTest(&config, AI32(contents))
+	t = newMustSucceedTest(DirectionsAll,  &config, AI32(contents))
 	mustSucceed = append(mustSucceed, t)
 	config.DefaultNumericFormats.Array.Int32 = configuration.CTEEncodingFormatHexadecimal
-	t = newMustSucceedTest(&config, AI32(contents))
+	t = newMustSucceedTest(DirectionsAll,  &config, AI32(contents))
 	mustSucceed = append(mustSucceed, t)
 	config = configuration.DefaultCTEEncoderConfiguration()
 	unitTests = append(unitTests, newMustSucceedUnitTest("Base 2, 8, 16", mustSucceed...))
@@ -126,8 +264,8 @@ var intArrayTestTemplate = `func generateArrayInt32Tests() []*test_runner.UnitTe
 		}
 	}
 	events = append(events, ACL(0))
-	mustSucceed = append(mustSucceed, newMustSucceedTest(&config, events...))
-	mustSucceed = append(mustSucceed, newMustSucceedTest(&config, BAI32(), ACM(4), ADI32(contents[:4]), ACL(3), ADI32(contents[:3])))
+	mustSucceed = append(mustSucceed, newMustSucceedTest(DirectionsAll,  &config, events...))
+	mustSucceed = append(mustSucceed, newMustSucceedTest(DirectionsAll,  &config, BAI32(), ACM(4), ADI32(contents[:4]), ACL(3), ADI32(contents[:3])))
 	unitTests = append(unitTests, newMustSucceedUnitTest("Chunking Variations", mustSucceed...))
 
 	// Edge-case element values
@@ -139,7 +277,7 @@ var intArrayTestTemplate = `func generateArrayInt32Tests() []*test_runner.UnitTe
 		contents = append(contents, int32(v))
 	}
 	unitTests = append(unitTests, newMustSucceedUnitTest("Edge Case Element Values",
-		newMustSucceedTest(&config, BAI32(), ACL(uint64(len(contents))), ADI32(contents))))
+		newMustSucceedTest(DirectionsAll,  &config, BAI32(), ACL(uint64(len(contents))), ADI32(contents))))
 
 	// Fail mode tests
 	var mustFail []*test_runner.MustFailTest
@@ -184,9 +322,9 @@ var intArrayTestTemplate = `func generateArrayInt32Tests() []*test_runner.UnitTe
 
 	// Numeric digit out of range
 	mustFail = nil
-	for iB, base := range bases {
-		for iV, v := range outOfRange {
-			if iV >= iB {
+	for iB, base := range intBases {
+		for iV, v := range baseOutOfRange {
+			if iV <= iB {
 				mustFail = append(mustFail, &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|i32%v %v|", base, v)}})
 			}
 		}
@@ -195,7 +333,7 @@ var intArrayTestTemplate = `func generateArrayInt32Tests() []*test_runner.UnitTe
 
 	// Invalid special values
 	mustFail = nil
-	for _, base := range bases {
+	for _, base := range intBases {
 		for _, special := range nonIntSpecials {
 			mustFail = append(mustFail, &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|i32%v %v|", base, special)}})
 		}
@@ -204,7 +342,7 @@ var intArrayTestTemplate = `func generateArrayInt32Tests() []*test_runner.UnitTe
 
 	// Float value in int array
 	mustFail = nil
-	for _, base := range bases {
+	for _, base := range intBases {
 		mustFail = append(mustFail, &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|i32%v 1.2|", base)}})
 	}
 	unitTests = append(unitTests, newMustFailUnitTest("Float value in int array", mustFail...))
@@ -222,8 +360,8 @@ var uintArrayTestTemplate = `func generateArrayUint32Tests() []*test_runner.Unit
 
 	// Empty array
 	unitTests = append(unitTests, newMustSucceedUnitTest("Empty Array",
-		newMustSucceedTest(&config, AU32(nil)),
-		newMustSucceedTest(&config, BAU32(), ACL(0)),
+		newMustSucceedTest(DirectionsAll,  &config, AU32(nil)),
+		newMustSucceedTest(DirectionsAll,  &config, BAU32(), ACL(0)),
 	))
 
 	// Short array
@@ -231,17 +369,17 @@ var uintArrayTestTemplate = `func generateArrayUint32Tests() []*test_runner.Unit
 	mustSucceed = nil
 	for i := 1; i <= 15; i++ {
 		contents = append(contents, uint32(i-8))
-		mustSucceed = append(mustSucceed, newMustSucceedTest(&config, AU32(contents)))
+		mustSucceed = append(mustSucceed, newMustSucceedTest(DirectionsAll,  &config, AU32(contents)))
 	}
 	unitTests = append(unitTests, newMustSucceedUnitTest("Short Array", mustSucceed...))
 
 	// Chunked array
 	contents = contents[:0]
 	mustSucceed = nil
-	mustSucceed = append(mustSucceed, newMustSucceedTest(&config, BAU32(), ACL(0)))
+	mustSucceed = append(mustSucceed, newMustSucceedTest(DirectionsAll,  &config, BAU32(), ACL(0)))
 	for i := 1; i <= 20; i++ {
 		contents = append(contents, uint32(i-8))
-		mustSucceed = append(mustSucceed, newMustSucceedTest(&config, BAU32(), ACL(uint64(i)), ADU32(contents)))
+		mustSucceed = append(mustSucceed, newMustSucceedTest(DirectionsAll,  &config, BAU32(), ACL(uint64(i)), ADU32(contents)))
 	}
 	unitTests = append(unitTests, newMustSucceedUnitTest("Chunked Array", mustSucceed...))
 
@@ -252,7 +390,7 @@ var uintArrayTestTemplate = `func generateArrayUint32Tests() []*test_runner.Unit
 	for i := uint64(0); i < math.MaxUint32-31; i += multiple {
 		contents = append(contents, uint32(i))
 	}
-	mustSucceed = append(mustSucceed, newMustSucceedTest(&config, BAU32(), ACL(uint64(len(contents))), ADU32(contents)))
+	mustSucceed = append(mustSucceed, newMustSucceedTest(DirectionsAll,  &config, BAU32(), ACL(uint64(len(contents))), ADU32(contents)))
 	unitTests = append(unitTests, newMustSucceedUnitTest("Various Array Elements", mustSucceed...))
 
 	// Base 2, 8, 16
@@ -263,13 +401,13 @@ var uintArrayTestTemplate = `func generateArrayUint32Tests() []*test_runner.Unit
 		contents = append(contents, uint32(i))
 	}
 	config.DefaultNumericFormats.Array.Uint32 = configuration.CTEEncodingFormatBinary
-	t := newMustSucceedTest(&config, AU32(contents))
+	t := newMustSucceedTest(DirectionsAll,  &config, AU32(contents))
 	mustSucceed = append(mustSucceed, t)
 	config.DefaultNumericFormats.Array.Uint32 = configuration.CTEEncodingFormatOctal
-	t = newMustSucceedTest(&config, AU32(contents))
+	t = newMustSucceedTest(DirectionsAll,  &config, AU32(contents))
 	mustSucceed = append(mustSucceed, t)
 	config.DefaultNumericFormats.Array.Uint32 = configuration.CTEEncodingFormatHexadecimal
-	t = newMustSucceedTest(&config, AU32(contents))
+	t = newMustSucceedTest(DirectionsAll,  &config, AU32(contents))
 	mustSucceed = append(mustSucceed, t)
 	config = configuration.DefaultCTEEncoderConfiguration()
 	unitTests = append(unitTests, newMustSucceedUnitTest("Base 2, 8, 16", mustSucceed...))
@@ -284,8 +422,8 @@ var uintArrayTestTemplate = `func generateArrayUint32Tests() []*test_runner.Unit
 		}
 	}
 	events = append(events, ACL(0))
-	mustSucceed = append(mustSucceed, newMustSucceedTest(&config, events...))
-	mustSucceed = append(mustSucceed, newMustSucceedTest(&config, BAU32(), ACM(4), ADU32(contents[:4]), ACL(3), ADU32(contents[:3])))
+	mustSucceed = append(mustSucceed, newMustSucceedTest(DirectionsAll,  &config, events...))
+	mustSucceed = append(mustSucceed, newMustSucceedTest(DirectionsAll,  &config, BAU32(), ACM(4), ADU32(contents[:4]), ACL(3), ADU32(contents[:3])))
 	unitTests = append(unitTests, newMustSucceedUnitTest("Chunking Variations", mustSucceed...))
 
 	// Edge-case element values
@@ -297,7 +435,7 @@ var uintArrayTestTemplate = `func generateArrayUint32Tests() []*test_runner.Unit
 		contents = append(contents, uint32(v))
 	}
 	unitTests = append(unitTests, newMustSucceedUnitTest("Edge Case Element Values",
-		newMustSucceedTest(&config, BAU32(), ACL(uint64(len(contents))), ADU32(contents))))
+		newMustSucceedTest(DirectionsAll,  &config, BAU32(), ACL(uint64(len(contents))), ADU32(contents))))
 
 	// Fail mode tests
 	var mustFail []*test_runner.MustFailTest
@@ -341,9 +479,9 @@ var uintArrayTestTemplate = `func generateArrayUint32Tests() []*test_runner.Unit
 
 	// Numeric digit out of range
 	mustFail = nil
-	for iB, base := range bases {
-		for iV, v := range outOfRange {
-			if iV >= iB {
+	for iB, base := range intBases {
+		for iV, v := range baseOutOfRange {
+			if iV <= iB {
 				mustFail = append(mustFail, &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|u32%v %v|", base, v)}})
 			}
 		}
@@ -352,7 +490,7 @@ var uintArrayTestTemplate = `func generateArrayUint32Tests() []*test_runner.Unit
 
 	// Invalid special values
 	mustFail = nil
-	for _, base := range bases {
+	for _, base := range intBases {
 		for _, special := range nonIntSpecials {
 			mustFail = append(mustFail, &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|u32%v %v|", base, special)}})
 		}
@@ -361,7 +499,7 @@ var uintArrayTestTemplate = `func generateArrayUint32Tests() []*test_runner.Unit
 
 	// Float value in int array
 	mustFail = nil
-	for _, base := range bases {
+	for _, base := range intBases {
 		mustFail = append(mustFail, &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|u32%v 1.2|", base)}})
 	}
 	unitTests = append(unitTests, newMustFailUnitTest("Float value in int array", mustFail...))
@@ -376,17 +514,23 @@ var uint16OutOfRange = big.NewInt(0).Add(big.NewInt(math.MaxUint16), big.NewInt(
 var uint32OutOfRange = big.NewInt(0).Add(big.NewInt(math.MaxUint32), big.NewInt(1))
 var uint64OutOfRange = big.NewInt(0).Add(big.NewInt(0).Lsh(big.NewInt(math.MaxInt64), 1), big.NewInt(2))
 
-var bases = []string{
-	"b",
-	"o",
-	"",
+var intBases = []string{
 	"x",
+	"",
+	"o",
+	"b",
 }
 
-var outOfRange = []string{
-	"12",
-	"18",
+var floatBases = []string{
+	"x",
+	"",
+}
+
+var baseOutOfRange = []string{
+	"1g",
 	"1a",
+	"18",
+	"12",
 }
 
 var nonIntSpecials = []string{
@@ -449,8 +593,33 @@ var intEdgeValues = []int64{
 	-0x7fffffffffffffff,
 	-0x8000000000000000,
 }
+
 var uintEdgeValues = []uint64{
 	0x8000000000000000,
 	0x8000000000000001,
 	0xffffffffffffffff,
+}
+
+const (
+	float32QuietNanBits     = uint32(0x7fe00000)
+	float32SignalingNanBits = uint32(0x7fa00000)
+	float64QuietNanBits     = uint64(0x7ffc000000000000)
+	float64SignalingNanBits = uint64(0x7ff4000000000000)
+)
+
+var (
+	float32SignalingNan = math.Float32frombits(float32SignalingNanBits)
+	float32QuietNan     = math.Float32frombits(float32QuietNanBits)
+	float64SignalingNan = math.Float64frombits(float64SignalingNanBits)
+	float64QuietNan     = math.Float64frombits(float64QuietNanBits)
+)
+
+var float32ZeroValues = []float32{
+	0,
+	0,
+}
+
+var float32NanValues = []float32{
+	float32SignalingNan,
+	float32QuietNan,
 }

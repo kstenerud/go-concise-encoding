@@ -95,7 +95,7 @@ func (_this *arrayEncoderEngine) EncodeArray(arrayType events.ArrayType, element
 }
 
 func (_this *arrayEncoderEngine) EncodeMedia(mediaType string, data []byte) {
-	_this.stream.WriteFmtNotLF("|%v", mediaType)
+	_this.stream.WriteFmtNotLF("|.%v", mediaType)
 	_this.stream.WriteHexBytes(data)
 	_this.stream.WriteArrayEnd()
 }
@@ -135,7 +135,7 @@ func (_this *arrayEncoderEngine) BeginMedia(mediaType string, onComplete func())
 	_this.hasWrittenElements = false
 
 	_this.setElementByteWidth(1)
-	_this.stream.WriteFmtNotLF("|%v", mediaType)
+	_this.stream.WriteFmtNotLF("|.%v", mediaType)
 	_this.addElementsFunc = func(data []byte) { _this.stream.WriteHexBytes(data) }
 	_this.onComplete = func() {
 		_this.stream.WriteArrayEnd()
@@ -499,21 +499,6 @@ func (_this *arrayEncoderEngine) beginArrayUID(onComplete func()) {
 	}
 }
 
-func (_this *arrayEncoderEngine) beginArrayMedia(onComplete func()) {
-	_this.setElementByteWidth(1)
-	_this.stream.WriteStringNotLF("|m ")
-	_this.addElementsFunc = func(data []byte) { _this.appendStringbuffer(data) }
-	_this.onComplete = func() {
-		_this.stream.WriteBytesNotLF(_this.stringBuffer)
-		_this.stringBuffer = _this.stringBuffer[:0]
-		_this.addElementsFunc = func(data []byte) { _this.stream.WriteHexBytes(data) }
-		_this.onComplete = func() {
-			_this.stream.WriteByteNotLF('|')
-			onComplete()
-		}
-	}
-}
-
 func (_this *arrayEncoderEngine) appendStringbuffer(data []byte) {
 	_this.stringBuffer = append(_this.stringBuffer, data...)
 }
@@ -538,7 +523,6 @@ var arrayEncodeBeginOps = []func(*arrayEncoderEngine, func()){
 	events.ArrayTypeFloat32:    (*arrayEncoderEngine).beginArrayFloat32,
 	events.ArrayTypeFloat64:    (*arrayEncoderEngine).beginArrayFloat64,
 	events.ArrayTypeUID:        (*arrayEncoderEngine).beginArrayUID,
-	events.ArrayTypeMedia:      (*arrayEncoderEngine).beginArrayMedia,
 }
 
 var arrayFormatsGeneral = []string{

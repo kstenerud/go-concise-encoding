@@ -190,7 +190,14 @@ func (_this *Context) BeginMap() {
 	_this.beginContainer(&mapKeyRule, DataTypeMap, noObjectCount)
 }
 
+func (_this *Context) areStructTemplatesAllowed() bool {
+	return len(_this.stack) == 0
+}
+
 func (_this *Context) BeginStructTemplate(id []byte) {
+	if !_this.areStructTemplatesAllowed() {
+		panic(fmt.Errorf("record types are not allowed here"))
+	}
 	_this.beginContainer(&structTemplateRule, DataTypeStructTemplate, noObjectCount)
 	_this.structTemplateName = string(id)
 }

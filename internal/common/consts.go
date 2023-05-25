@@ -55,26 +55,32 @@ const (
 	Float64DecimalExponentMax = 308
 	Float64CoefficientMax     = (uint64(1) << 54) - 1
 
-	Bfloat16SignMask         = uint16(0x8000)
-	Bfloat16SpecialMask      = uint16(0x7f80)
-	Bfloat16FractionMask     = uint16(0x007f)
-	Bfloat16QuietNanBit      = uint16(0x0040)
-	Bfloat16QuietNanBits     = uint16(0x7fc1)
-	Bfloat16SignalingNanBits = uint16(0x7f81)
+	Bfloat16SignMask         = uint16(Float32SignMask >> 16 & 0xffff)
+	Bfloat16SpecialMask      = uint16(Float32SpecialMask >> 16 & 0xffff)
+	Bfloat16FractionMask     = uint16(Float32FractionMask >> 16 & 0xffff)
+	Bfloat16QuietNanBit      = uint16(Float32QuietNanBit >> 16 & 0xffff)
+	Bfloat16QuietNanBits     = uint16(Float32QuietNanBits >> 16 & 0xffff)
+	Bfloat16SignalingNanBits = uint16(Float32SignalingNanBits >> 16 & 0xffff)
+	Bfloat16InfBits          = uint16(Float32InfBits >> 16 & 0xffff)
+	Bfloat16NegInfBits       = uint16(Float32NegInfBits >> 16 & 0xffff)
 
 	Float32SignMask         = uint32(0x80000000)
 	Float32SpecialMask      = uint32(0x7f800000)
 	Float32FractionMask     = uint32(0x007fffff)
 	Float32QuietNanBit      = uint32(0x00400000)
-	Float32QuietNanBits     = uint32(0x7fc00001)
-	Float32SignalingNanBits = uint32(0x7f800001)
+	Float32QuietNanBits     = uint32(0x7fe00000)
+	Float32SignalingNanBits = uint32(0x7fa00000)
+	Float32InfBits          = uint32(0x7f800000)
+	Float32NegInfBits       = uint32(0xff800000)
 
 	Float64SignMask         = uint64(0x8000000000000000)
 	Float64SpecialMask      = uint64(0x7ff0000000000000)
 	Float64FractionMask     = uint64(0x000fffffffffffff)
 	Float64QuietNanBit      = uint64(0x0008000000000000)
-	Float64QuietNanBits     = uint64(0x7ff8000000000001)
-	Float64SignalingNanBits = uint64(0x7ff0000000000001)
+	Float64QuietNanBits     = uint64(0x7ffc000000000000)
+	Float64SignalingNanBits = uint64(0x7ff4000000000000)
+	Float64InfBits          = uint64(0x7ff0000000000000)
+	Float64NegInfBits       = uint64(0xfff0000000000000)
 )
 
 var (

@@ -82,6 +82,7 @@ func (_this *RootObjectIterator) Init(context *Context,
 func (_this *RootObjectIterator) Iterate(object interface{}) {
 	_this.context.EventReceiver.OnBeginDocument()
 	_this.context.EventReceiver.OnVersion(version.ConciseEncodingVersion)
+
 	if object == nil {
 		_this.context.NotifyNil()
 		_this.context.EventReceiver.OnEndDocument()
@@ -91,6 +92,11 @@ func (_this *RootObjectIterator) Iterate(object interface{}) {
 	if _this.config.RecursionSupport {
 		_this.foundReferences = duplicates.FindDuplicatePointers(object)
 		_this.namedReferences = make(map[duplicates.TypedPointer]uint32)
+	}
+
+	// Generate all record types at the top of the document
+	for _, entry := range _this.context.RecordTypeOrder {
+		entry.Iterator(&_this.context, reflect.ValueOf(nil))
 	}
 
 	rv := reflect.ValueOf(object)

@@ -269,7 +269,7 @@ type structField struct {
 	Type         reflect.Type
 	IndexPath    []int
 	Iterate      IteratorFunction
-	IncludeName  bool
+	IsAnonymous  bool
 	OmitBehavior configuration.FieldOmitBehavior
 	Order        int64
 }
@@ -335,17 +335,18 @@ func isValueZero(value reflect.Value) bool {
 func extractFields(ctx *Context, structType reflect.Type, indexPath []int, fields []structField) []structField {
 	for i := 0; i < structType.NumField(); i++ {
 		reflectField := structType.Field(i)
-		if common.IsFieldExported(reflectField.Name) {
-			localPath := make([]int, len(indexPath)+1, len(indexPath)+1)
+		if common.IsFieldExported(reflectField) {
+			localPath := make([]int, len(indexPath)+1)
 			copy(localPath, indexPath)
 			localPath[len(indexPath)] = i
 			field := newStructField(reflectField, localPath, ctx.Configuration.FieldNameStyle)
 			if field.OmitBehavior != configuration.OmitFieldAlways {
 				if reflectField.Anonymous {
+					field.IsAnonymous = true
 					innerStructType := reflectField.Type
 					fields = extractFields(ctx, innerStructType, localPath, fields)
 				} else {
-					field.IncludeName = true
+					field.IsAnonymous = false
 					field.Iterate = ctx.GetIteratorForType(field.Type)
 					fields = append(fields, field)
 				}
@@ -386,7 +387,7 @@ func newStructIterator(ctx *Context, structType reflect.Type) IteratorFunction {
 		for _, field := range fields {
 			fieldValue := field.getValueFromStruct(value)
 			if shouldIncludeField(field, fieldValue, ctx.Configuration.DefaultFieldOmitBehavior) {
-				if field.IncludeName {
+				if !field.IsAnonymous {
 					context.EventReceiver.OnStringlikeArray(events.ArrayTypeString, field.Name)
 				}
 				field.Iterate(context, fieldValue)
@@ -394,6 +395,37 @@ func newStructIterator(ctx *Context, structType reflect.Type) IteratorFunction {
 		}
 		context.EventReceiver.OnEndContainer()
 	}
+}
+
+func newRecordIterators(ctx *Context, structType reflect.Type, name string) (typeIterator IteratorFunction, recordIterator IteratorFunction) {
+	fields := extractFields(ctx, structType, []int{}, make([]structField, 0, structType.NumField()))
+	identifier := []byte(name)
+	dummyValue := reflect.ValueOf(1)
+
+	typeIterator = func(context *Context, value reflect.Value) {
+		context.EventReceiver.OnStructTemplate(identifier)
+		for _, field := range fields {
+			if shouldIncludeField(field, dummyValue, ctx.Configuration.DefaultFieldOmitBehavior) {
+				if !field.IsAnonymous {
+					context.EventReceiver.OnStringlikeArray(events.ArrayTypeString, field.Name)
+				}
+			}
+		}
+		context.EventReceiver.OnEndContainer()
+	}
+
+	recordIterator = func(context *Context, value reflect.Value) {
+		context.EventReceiver.OnStructInstance(identifier)
+		for _, field := range fields {
+			fieldValue := field.getValueFromStruct(value)
+			if shouldIncludeField(field, fieldValue, ctx.Configuration.DefaultFieldOmitBehavior) {
+				field.Iterate(context, fieldValue)
+			}
+		}
+		context.EventReceiver.OnEndContainer()
+	}
+
+	return
 }
 
 func iterateSliceUint8(context *Context, v reflect.Value) {

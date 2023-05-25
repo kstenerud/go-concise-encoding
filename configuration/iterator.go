@@ -57,6 +57,13 @@ type IteratorConfiguration struct {
 	// Defaults to OmitFieldEmpty
 	DefaultFieldOmitBehavior FieldOmitBehavior
 
+	// Every struct type added here will have a record type with the associated
+	// name generated at the top of the file, and all instances will be generated
+	// as records instead of maps.
+	// Only go struct types are allowed.
+	// Don't map multiple types to the same name unless you're sure you know what you're doing.
+	RecordTypes map[reflect.Type]string
+
 	// Specifies which types to convert to custom binary data, and how to do it.
 	// Note: You should only fill out one of these maps, depending on your
 	// intended encoding (binary or text). The iterator session will consult
@@ -74,6 +81,7 @@ func DefaultIteratorConfiguration() IteratorConfiguration {
 	config := defaultIteratorConfiguration
 	config.CustomBinaryConverters = make(map[reflect.Type]ConvertToCustomFunction)
 	config.CustomTextConverters = make(map[reflect.Type]ConvertToCustomFunction)
+	config.RecordTypes = make(map[reflect.Type]string)
 	return config
 }
 

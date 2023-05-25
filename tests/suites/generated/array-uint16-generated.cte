@@ -544,22 +544,34 @@ c0
             "name" = "Numeric digit out of range"
             "must_fail" = [
                 {
-                    "cte" = "|u16b 12|"
+                    "cte" = "|u16x 1g|"
                 }
                 {
-                    "cte" = "|u16b 18|"
+                    "cte" = "|u16 1g|"
                 }
                 {
-                    "cte" = "|u16b 1a|"
+                    "cte" = "|u16 1a|"
                 }
                 {
-                    "cte" = "|u16o 18|"
+                    "cte" = "|u16o 1g|"
                 }
                 {
                     "cte" = "|u16o 1a|"
                 }
                 {
-                    "cte" = "|u16 1a|"
+                    "cte" = "|u16o 18|"
+                }
+                {
+                    "cte" = "|u16b 1g|"
+                }
+                {
+                    "cte" = "|u16b 1a|"
+                }
+                {
+                    "cte" = "|u16b 18|"
+                }
+                {
+                    "cte" = "|u16b 12|"
                 }
             ]
         }
@@ -567,46 +579,25 @@ c0
             "name" = "Invalid special values"
             "must_fail" = [
                 {
-                    "cte" = "|u16b null|"
+                    "cte" = "|u16x null|"
                 }
                 {
-                    "cte" = "|u16b true|"
+                    "cte" = "|u16x true|"
                 }
                 {
-                    "cte" = "|u16b false|"
+                    "cte" = "|u16x false|"
                 }
                 {
-                    "cte" = "|u16b nan|"
+                    "cte" = "|u16x nan|"
                 }
                 {
-                    "cte" = "|u16b snan|"
+                    "cte" = "|u16x snan|"
                 }
                 {
-                    "cte" = "|u16b inf|"
+                    "cte" = "|u16x inf|"
                 }
                 {
-                    "cte" = "|u16b -inf|"
-                }
-                {
-                    "cte" = "|u16o null|"
-                }
-                {
-                    "cte" = "|u16o true|"
-                }
-                {
-                    "cte" = "|u16o false|"
-                }
-                {
-                    "cte" = "|u16o nan|"
-                }
-                {
-                    "cte" = "|u16o snan|"
-                }
-                {
-                    "cte" = "|u16o inf|"
-                }
-                {
-                    "cte" = "|u16o -inf|"
+                    "cte" = "|u16x -inf|"
                 }
                 {
                     "cte" = "|u16 null|"
@@ -630,25 +621,46 @@ c0
                     "cte" = "|u16 -inf|"
                 }
                 {
-                    "cte" = "|u16x null|"
+                    "cte" = "|u16o null|"
                 }
                 {
-                    "cte" = "|u16x true|"
+                    "cte" = "|u16o true|"
                 }
                 {
-                    "cte" = "|u16x false|"
+                    "cte" = "|u16o false|"
                 }
                 {
-                    "cte" = "|u16x nan|"
+                    "cte" = "|u16o nan|"
                 }
                 {
-                    "cte" = "|u16x snan|"
+                    "cte" = "|u16o snan|"
                 }
                 {
-                    "cte" = "|u16x inf|"
+                    "cte" = "|u16o inf|"
                 }
                 {
-                    "cte" = "|u16x -inf|"
+                    "cte" = "|u16o -inf|"
+                }
+                {
+                    "cte" = "|u16b null|"
+                }
+                {
+                    "cte" = "|u16b true|"
+                }
+                {
+                    "cte" = "|u16b false|"
+                }
+                {
+                    "cte" = "|u16b nan|"
+                }
+                {
+                    "cte" = "|u16b snan|"
+                }
+                {
+                    "cte" = "|u16b inf|"
+                }
+                {
+                    "cte" = "|u16b -inf|"
                 }
             ]
         }
@@ -656,16 +668,16 @@ c0
             "name" = "Float value in int array"
             "must_fail" = [
                 {
-                    "cte" = "|u16b 1.2|"
-                }
-                {
-                    "cte" = "|u16o 1.2|"
+                    "cte" = "|u16x 1.2|"
                 }
                 {
                     "cte" = "|u16 1.2|"
                 }
                 {
-                    "cte" = "|u16x 1.2|"
+                    "cte" = "|u16o 1.2|"
+                }
+                {
+                    "cte" = "|u16b 1.2|"
                 }
             ]
         }

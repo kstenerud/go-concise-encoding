@@ -69,8 +69,8 @@ func Is64BitArch() bool {
 
 // Reflect
 
-func IsFieldExported(name string) bool {
-	ch, _ := utf8.DecodeRuneInString(name)
+func IsFieldExported(field reflect.StructField) bool {
+	ch, _ := utf8.DecodeRuneInString(field.Name)
 	return unicode.IsUpper(ch)
 }
 

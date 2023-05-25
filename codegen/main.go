@@ -30,6 +30,7 @@ import (
 
 	"github.com/kstenerud/go-concise-encoding/codegen/builder"
 	"github.com/kstenerud/go-concise-encoding/codegen/chars"
+	"github.com/kstenerud/go-concise-encoding/codegen/cte"
 	"github.com/kstenerud/go-concise-encoding/codegen/rules"
 	gentest "github.com/kstenerud/go-concise-encoding/codegen/test"
 	"github.com/kstenerud/go-concise-encoding/codegen/tests"
@@ -41,6 +42,7 @@ func main() {
 	unicodePath := flag.String("unicode", "", "/path/to/ucd.all.flat.xml. Get it from https://www.unicode.org/Public/UCD/latest/ucdxml/ucd.all.flat.zip")
 	flag.Parse()
 
+	cte.GenerateCode(projectPath)
 	builder.GenerateCode(projectPath)
 	rules.GenerateCode(projectPath)
 	gentest.GenerateCode(projectPath)

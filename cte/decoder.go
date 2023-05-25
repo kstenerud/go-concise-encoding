@@ -21,16 +21,13 @@
 package cte
 
 import (
-	"bytes"
 	"fmt"
 	"io"
+	"strings"
 
 	"github.com/kstenerud/go-concise-encoding/ce/events"
 	"github.com/kstenerud/go-concise-encoding/configuration"
-	"github.com/kstenerud/go-concise-encoding/internal/chars"
 )
-
-type DecoderOp func(*DecoderContext)
 
 type Decoder struct {
 	config *configuration.CEDecoderConfiguration
@@ -70,65 +67,27 @@ func (_this *Decoder) Decode(reader io.Reader, eventReceiver events.DataEventRec
 		}
 	}()
 
-	ctx := DecoderContext{}
-	ctx.Init(_this.config, reader, eventReceiver)
-	ctx.StackDecoder(decodeDocumentBegin)
-
-	for !ctx.IsDocumentComplete {
-		ctx.DecodeNext()
+	buf := new(strings.Builder)
+	if _, err = io.Copy(buf, reader); err != nil {
+		return
 	}
-	return
+
+	return ParseDocument(buf.String(), eventReceiver)
 }
 
 func (_this *Decoder) DecodeDocument(document []byte, eventReceiver events.DataEventReceiver) (err error) {
-	return _this.Decode(bytes.NewBuffer(document), eventReceiver)
-}
+	defer func() {
+		if !_this.config.DebugPanics {
+			if r := recover(); r != nil {
+				switch v := r.(type) {
+				case error:
+					err = v
+				default:
+					err = fmt.Errorf("%v", r)
+				}
+			}
+		}
+	}()
 
-var decoderOpsByFirstChar [0x101]DecoderOp
-
-func init() {
-	for i := 0; i < 0x100; i++ {
-		decoderOpsByFirstChar[i] = decodeInvalidChar
-	}
-
-	decoderOpsByFirstChar['\r'] = decodeWhitespace
-	decoderOpsByFirstChar['\n'] = decodeWhitespace
-	decoderOpsByFirstChar['\t'] = decodeWhitespace
-	decoderOpsByFirstChar[' '] = decodeWhitespace
-	decoderOpsByFirstChar['"'] = advanceAndDecodeQuotedString
-	decoderOpsByFirstChar['0'] = decode0Based
-	for i := '1'; i <= '9'; i++ {
-		decoderOpsByFirstChar[i] = decodeNumericPositive
-	}
-	for i := 'a'; i <= 'f'; i++ {
-		decoderOpsByFirstChar[i] = decodeUID
-	}
-	for i := 'A'; i <= 'F'; i++ {
-		decoderOpsByFirstChar[i] = decodeUID
-	}
-	decoderOpsByFirstChar['f'] = decodeFalseOrUID
-	decoderOpsByFirstChar['F'] = decodeFalseOrUID
-	decoderOpsByFirstChar['i'] = decodeNamedValueI
-	decoderOpsByFirstChar['I'] = decodeNamedValueI
-	decoderOpsByFirstChar['n'] = decodeNamedValueN
-	decoderOpsByFirstChar['N'] = decodeNamedValueN
-	decoderOpsByFirstChar['s'] = decodeNamedValueS
-	decoderOpsByFirstChar['S'] = decodeNamedValueS
-	decoderOpsByFirstChar['t'] = decodeNamedValueT
-	decoderOpsByFirstChar['T'] = decodeNamedValueT
-	decoderOpsByFirstChar['-'] = advanceAndDecodeNumericNegative
-	decoderOpsByFirstChar['@'] = advanceAndDecodeAt
-	decoderOpsByFirstChar['$'] = advanceAndDecodeLocalReference
-	decoderOpsByFirstChar['&'] = advanceAndDecodeMarker
-	decoderOpsByFirstChar['/'] = advanceAndDecodeComment
-	decoderOpsByFirstChar['{'] = advanceAndDecodeMapBegin
-	decoderOpsByFirstChar['}'] = advanceAndDecodeMapEnd
-	decoderOpsByFirstChar['['] = advanceAndDecodeListBegin
-	decoderOpsByFirstChar[']'] = advanceAndDecodeListEnd
-	decoderOpsByFirstChar['|'] = advanceAndDecodeTypedArrayBegin
-	decoderOpsByFirstChar['('] = advanceAndDecodeNodeBegin
-	decoderOpsByFirstChar[')'] = advanceAndDecodeNodeOrEdgeOrStructTemplateEnd
-	decoderOpsByFirstChar['>'] = advanceAndDecodeStructTemplateEnd
-
-	decoderOpsByFirstChar[chars.EOFMarker] = decodeInvalidChar
+	return ParseDocument(string(document), eventReceiver)
 }

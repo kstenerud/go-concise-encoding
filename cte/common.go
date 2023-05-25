@@ -25,3 +25,4 @@ const charNumericWhitespace = '_'
 var byteStringNan = []byte("nan")
 var byteStringSnan = []byte("snan")
 var byteStringInf = []byte("inf")
+var byteStringNinf = []byte("-inf")

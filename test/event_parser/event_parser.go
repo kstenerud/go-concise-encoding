@@ -10,7 +10,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/antlr/antlr4/runtime/Go/antlr"
+	"github.com/antlr/antlr4/runtime/Go/antlr/v4"
 	"github.com/cockroachdb/apd/v2"
 	compact_float "github.com/kstenerud/go-compact-float"
 	compact_time "github.com/kstenerud/go-compact-time"
@@ -153,14 +153,11 @@ func parseSmallUintX(str string) uint64 {
 }
 
 func parseBinaryFloat(str string) (smallFloat float64, bigFloat *big.Float) {
-	const quietNanBits = uint64(0x7ff8000000000001)
-	const signalingNanBits = uint64(0x7ff0000000000001)
-
 	switch str {
 	case "nan":
-		return math.Float64frombits(quietNanBits), nil
+		return math.Float64frombits(common.Float64QuietNanBits), nil
 	case "snan":
-		return math.Float64frombits(signalingNanBits), nil
+		return math.Float64frombits(common.Float64SignalingNanBits), nil
 	}
 
 	var accuracy big.Accuracy
@@ -205,14 +202,11 @@ func parseFloat64(str string) float64 {
 }
 
 func parseFloat32(str string) float32 {
-	const quietNanBits = uint32(0x7fc10000)
-	const signalingNanBits = uint32(0x7f810000)
-
 	switch str {
 	case "nan":
-		return math.Float32frombits(quietNanBits)
+		return math.Float32frombits(common.Float32QuietNanBits)
 	case "snan":
-		return math.Float32frombits(signalingNanBits)
+		return math.Float32frombits(common.Float32SignalingNanBits)
 	default:
 		return float32(parseFloat64(str))
 	}

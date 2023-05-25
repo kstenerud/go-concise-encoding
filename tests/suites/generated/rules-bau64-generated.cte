@@ -331,6 +331,9 @@ c0
                 }
                 {
                     "events" = [
+                        "st=a"
+                        "s=a"
+                        "e"
                         "bau64"
                         "si=a"
                     ]

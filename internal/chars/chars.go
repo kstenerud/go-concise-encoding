@@ -128,3 +128,5 @@ func init() {
 }
 
 var HexChars = "0123456789abcdef"
+
+const DigitBase16 = DigitBase10 | LowerAF | UpperAF

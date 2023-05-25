@@ -351,7 +351,7 @@ var (
 var allEvents = Events{
 	EvV, EvPAD, EvCS, EvCM, EvNULL, EvB, EvPI, EvNI, EvI,
 	EvBI, EvBINull, EvBF, EvFNAN, EvBBF, EvBBFNull, EvDF, EvDFNAN, EvBDF, EvBDFNull,
-	EvBDFNAN, EvNAN, EvUID, EvT, EvCT, EvL, EvM, EvST, /*EvSI, TODO: Some way to handle this */
+	EvBDFNAN, EvNAN, EvUID, EvT, EvCT, EvL, EvM, EvSI,
 	EvNODE, EvEDGE, EvE,
 	EvMARK, EvREFL, EvREFR, EvAC, EvAD, EvS, EvSB, EvRID, EvBRID,
 	EvCB, EvBCB, EvCUT, EvBCT, EvAB, EvBAB, EvAU8, EvBAU8, EvAU16,
@@ -390,7 +390,7 @@ var (
 	}
 
 	ValidTLOValues   = ComplementaryEvents(InvalidTLOValues)
-	InvalidTLOValues = Events{EvV, EvE, EvAC, EvAD, EvREFL}
+	InvalidTLOValues = Events{EvV, EvE, EvAC, EvAD, EvREFL, EvST}
 
 	ValidMapKeys = Events{
 		EvPAD, EvCS, EvCM, EvB, EvPI, EvNI, EvI, EvBI, EvBF, EvBBF, EvDF,
@@ -400,16 +400,16 @@ var (
 	InvalidMapKeys = ComplementaryEvents(ValidMapKeys)
 
 	ValidMapValues   = ComplementaryEvents(InvalidMapValues)
-	InvalidMapValues = Events{EvV, EvE, EvAC, EvAD}
+	InvalidMapValues = Events{EvV, EvE, EvAC, EvAD, EvST}
 
 	ValidListValues   = ComplementaryEvents(InvalidListValues)
-	InvalidListValues = Events{EvV, EvAC, EvAD}
+	InvalidListValues = Events{EvV, EvAC, EvAD, EvST}
 
 	ValidStructTemplateValues   = ComplementaryEvents(InvalidStructTemplateValues)
-	InvalidStructTemplateValues = Events{EvV, EvAC, EvAD, EvMARK, EvREFL}
+	InvalidStructTemplateValues = Events{EvV, EvAC, EvAD, EvMARK, EvREFL, EvST}
 
 	ValidStructInstanceValues   = ComplementaryEvents(InvalidStructInstanceValues)
-	InvalidStructInstanceValues = Events{EvV, EvAC, EvAD}
+	InvalidStructInstanceValues = Events{EvV, EvAC, EvAD, EvST}
 
 	ValidAfterNonStringArrayBegin   = Events{EvAC, EvCS, EvCM}
 	InvalidAfterNonStringArrayBegin = ComplementaryEvents(ValidAfterNonStringArrayBegin)
@@ -428,7 +428,7 @@ var (
 	CommentsPaddingMarkerRefEnd = Events{EvPAD, EvCS, EvCM, EvMARK, EvREFL, EvE}
 
 	ValidEdgeSources   = ComplementaryEvents(InvalidEdgeSources)
-	InvalidEdgeSources = Events{EvV, EvAC, EvAD, EvNULL, EvBDFNull, EvBBFNull, EvBINull}
+	InvalidEdgeSources = Events{EvV, EvAC, EvAD, EvNULL, EvBDFNull, EvBBFNull, EvBINull, EvST}
 
 	ValidEdgeDescriptions   = ValidListValues
 	InvalidEdgeDescriptions = InvalidListValues
@@ -437,7 +437,7 @@ var (
 	InvalidOEdgeDestinations = InvalidEdgeSources
 
 	ValidNodeValues   = ComplementaryEvents(InvalidNodeValues)
-	InvalidNodeValues = Events{EvV, EvAC, EvAD}
+	InvalidNodeValues = Events{EvV, EvAC, EvAD, EvST}
 )
 
 func containsEventType(events Events, event Event) bool {
@@ -465,10 +465,10 @@ func copyEvents(events Events) Events {
 }
 
 var basicCompletions = map[reflect.Type]Events{
-	reflect.TypeOf(L()):           {E()},
-	reflect.TypeOf(M()):           {E()},
-	reflect.TypeOf(ST("a")):       {E(), N(1)},
-	reflect.TypeOf(SI("a")):       {E()},
+	reflect.TypeOf(L()): {E()},
+	reflect.TypeOf(M()): {E()},
+	// reflect.TypeOf(ST("a")):       {E(), N(1)},
+	reflect.TypeOf(SI("a")):       {S("a"), E()},
 	reflect.TypeOf(NODE()):        {N(1), E()},
 	reflect.TypeOf(EDGE()):        {RID("a"), RID("b"), N(1), E()},
 	reflect.TypeOf(BS()):          {ACL(1), ADT("a")},
@@ -594,11 +594,27 @@ func GenerateAllVariants(
 	docEnd Events,
 	possibleFollowups Events) (events []Events) {
 
+	if containsRecords(docBegin, prefix, suffix, docEnd, possibleFollowups) {
+		// Crude implementation: Add a basic template to the top if necessary
+		docBegin = append(docBegin, EvST, EvS, EvE)
+	}
+
 	for _, event := range possibleFollowups {
 		events = append(events, allPossibleEventStreams(docBegin, prefix, suffix, docEnd, event, possibleFollowups)...)
 	}
 
 	return
+}
+
+func containsRecords(eventSets ...Events) bool {
+	for _, eventSet := range eventSets {
+		for _, event := range eventSet {
+			if event.IsEquivalentTo(EvSI) {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 // Converts a go value into a stored event

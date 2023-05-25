@@ -1,8 +1,8 @@
-// Code generated from /home/karl/Projects/go-concise-encoding/codegen/test/CEEventParser.g4 by ANTLR 4.10.1. DO NOT EDIT.
+// Code generated from /home/karl/Projects/go-concise-encoding/codegen/test/CEEventParser.g4 by ANTLR 4.12.0. DO NOT EDIT.
 
 package parser // CEEventParser
 
-import "github.com/antlr/antlr4/runtime/Go/antlr"
+import "github.com/antlr/antlr4/runtime/Go/antlr/v4"
 
 // BaseCEEventParserListener is a complete listener for a parse tree produced by CEEventParser.
 type BaseCEEventParserListener struct{}

@@ -1,4 +1,4 @@
-// Code generated from /home/karl/Projects/go-concise-encoding/codegen/test/CEEventParser.g4 by ANTLR 4.10.1. DO NOT EDIT.
+// Code generated from /home/karl/Projects/go-concise-encoding/codegen/test/CEEventParser.g4 by ANTLR 4.12.0. DO NOT EDIT.
 
 package parser // CEEventParser
 
@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"sync"
 
-	"github.com/antlr/antlr4/runtime/Go/antlr"
+	"github.com/antlr/antlr4/runtime/Go/antlr/v4"
 )
 
 // Suppress unused import errors
@@ -716,6 +716,10 @@ type IStartContext interface {
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
 
+	// Getter signatures
+	Event() IEventContext
+	EOF() antlr.TerminalNode
+
 	// IsStartContext differentiates from other interfaces.
 	IsStartContext()
 }
@@ -829,6 +833,88 @@ type IEventContext interface {
 
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
+
+	// Getter signatures
+	EventArrayBits() IEventArrayBitsContext
+	EventArrayChunkLast() IEventArrayChunkLastContext
+	EventArrayChunkMore() IEventArrayChunkMoreContext
+	EventArrayDataBits() IEventArrayDataBitsContext
+	EventArrayDataFloat16() IEventArrayDataFloat16Context
+	EventArrayDataFloat32() IEventArrayDataFloat32Context
+	EventArrayDataFloat64() IEventArrayDataFloat64Context
+	EventArrayDataInt16() IEventArrayDataInt16Context
+	EventArrayDataInt32() IEventArrayDataInt32Context
+	EventArrayDataInt64() IEventArrayDataInt64Context
+	EventArrayDataInt8() IEventArrayDataInt8Context
+	EventArrayDataText() IEventArrayDataTextContext
+	EventArrayDataUID() IEventArrayDataUIDContext
+	EventArrayDataUint16() IEventArrayDataUint16Context
+	EventArrayDataUint16X() IEventArrayDataUint16XContext
+	EventArrayDataUint32() IEventArrayDataUint32Context
+	EventArrayDataUint32X() IEventArrayDataUint32XContext
+	EventArrayDataUint64() IEventArrayDataUint64Context
+	EventArrayDataUint64X() IEventArrayDataUint64XContext
+	EventArrayDataUint8() IEventArrayDataUint8Context
+	EventArrayDataUint8X() IEventArrayDataUint8XContext
+	EventArrayFloat16() IEventArrayFloat16Context
+	EventArrayFloat32() IEventArrayFloat32Context
+	EventArrayFloat64() IEventArrayFloat64Context
+	EventArrayInt16() IEventArrayInt16Context
+	EventArrayInt32() IEventArrayInt32Context
+	EventArrayInt64() IEventArrayInt64Context
+	EventArrayInt8() IEventArrayInt8Context
+	EventArrayUID() IEventArrayUIDContext
+	EventArrayUint16() IEventArrayUint16Context
+	EventArrayUint16X() IEventArrayUint16XContext
+	EventArrayUint32() IEventArrayUint32Context
+	EventArrayUint32X() IEventArrayUint32XContext
+	EventArrayUint64() IEventArrayUint64Context
+	EventArrayUint64X() IEventArrayUint64XContext
+	EventArrayUint8() IEventArrayUint8Context
+	EventArrayUint8X() IEventArrayUint8XContext
+	EventBeginArrayBits() IEventBeginArrayBitsContext
+	EventBeginArrayFloat16() IEventBeginArrayFloat16Context
+	EventBeginArrayFloat32() IEventBeginArrayFloat32Context
+	EventBeginArrayFloat64() IEventBeginArrayFloat64Context
+	EventBeginArrayInt16() IEventBeginArrayInt16Context
+	EventBeginArrayInt32() IEventBeginArrayInt32Context
+	EventBeginArrayInt64() IEventBeginArrayInt64Context
+	EventBeginArrayInt8() IEventBeginArrayInt8Context
+	EventBeginArrayUID() IEventBeginArrayUIDContext
+	EventBeginArrayUint16() IEventBeginArrayUint16Context
+	EventBeginArrayUint32() IEventBeginArrayUint32Context
+	EventBeginArrayUint64() IEventBeginArrayUint64Context
+	EventBeginArrayUint8() IEventBeginArrayUint8Context
+	EventBeginCustomBinary() IEventBeginCustomBinaryContext
+	EventBeginCustomText() IEventBeginCustomTextContext
+	EventBeginMedia() IEventBeginMediaContext
+	EventBeginResourceId() IEventBeginResourceIdContext
+	EventBeginRemoteReference() IEventBeginRemoteReferenceContext
+	EventBeginString() IEventBeginStringContext
+	EventBoolean() IEventBooleanContext
+	EventCommentSingleLine() IEventCommentSingleLineContext
+	EventCommentMultiline() IEventCommentMultilineContext
+	EventCustomBinary() IEventCustomBinaryContext
+	EventCustomText() IEventCustomTextContext
+	EventEdge() IEventEdgeContext
+	EventEndContainer() IEventEndContainerContext
+	EventList() IEventListContext
+	EventMap() IEventMapContext
+	EventMarker() IEventMarkerContext
+	EventMedia() IEventMediaContext
+	EventNode() IEventNodeContext
+	EventNull() IEventNullContext
+	EventNumber() IEventNumberContext
+	EventPad() IEventPadContext
+	EventLocalReference() IEventLocalReferenceContext
+	EventRemoteReference() IEventRemoteReferenceContext
+	EventResourceId() IEventResourceIdContext
+	EventString() IEventStringContext
+	EventStructInstance() IEventStructInstanceContext
+	EventStructTemplate() IEventStructTemplateContext
+	EventTime() IEventTimeContext
+	EventUID() IEventUIDContext
+	EventVersion() IEventVersionContext
 
 	// IsEventContext differentiates from other interfaces.
 	IsEventContext()
@@ -2762,6 +2848,12 @@ type IEventArrayBitsContext interface {
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
 
+	// Getter signatures
+	EVENT_AB() antlr.TerminalNode
+	EVENT_AB_ARGS() antlr.TerminalNode
+	AllVALUE_BIT() []antlr.TerminalNode
+	VALUE_BIT(i int) antlr.TerminalNode
+
 	// IsEventArrayBitsContext differentiates from other interfaces.
 	IsEventArrayBitsContext()
 }
@@ -2899,6 +2991,11 @@ type IEventArrayChunkLastContext interface {
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
 
+	// Getter signatures
+	EVENT_ACL() antlr.TerminalNode
+	AllVALUE_UINT_DEC() []antlr.TerminalNode
+	VALUE_UINT_DEC(i int) antlr.TerminalNode
+
 	// IsEventArrayChunkLastContext differentiates from other interfaces.
 	IsEventArrayChunkLastContext()
 }
@@ -3015,6 +3112,11 @@ type IEventArrayChunkMoreContext interface {
 
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
+
+	// Getter signatures
+	EVENT_ACM() antlr.TerminalNode
+	AllVALUE_UINT_DEC() []antlr.TerminalNode
+	VALUE_UINT_DEC(i int) antlr.TerminalNode
 
 	// IsEventArrayChunkMoreContext differentiates from other interfaces.
 	IsEventArrayChunkMoreContext()
@@ -3133,6 +3235,11 @@ type IEventArrayDataBitsContext interface {
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
 
+	// Getter signatures
+	EVENT_ADB() antlr.TerminalNode
+	AllVALUE_BIT() []antlr.TerminalNode
+	VALUE_BIT(i int) antlr.TerminalNode
+
 	// IsEventArrayDataBitsContext differentiates from other interfaces.
 	IsEventArrayDataBitsContext()
 }
@@ -3249,6 +3356,19 @@ type IEventArrayDataFloat16Context interface {
 
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
+
+	// Getter signatures
+	EVENT_ADF16() antlr.TerminalNode
+	AllVALUE_FLOAT_DEC() []antlr.TerminalNode
+	VALUE_FLOAT_DEC(i int) antlr.TerminalNode
+	AllVALUE_FLOAT_HEX() []antlr.TerminalNode
+	VALUE_FLOAT_HEX(i int) antlr.TerminalNode
+	AllVALUE_FLOAT_INF() []antlr.TerminalNode
+	VALUE_FLOAT_INF(i int) antlr.TerminalNode
+	AllVALUE_FLOAT_NAN() []antlr.TerminalNode
+	VALUE_FLOAT_NAN(i int) antlr.TerminalNode
+	AllVALUE_FLOAT_SNAN() []antlr.TerminalNode
+	VALUE_FLOAT_SNAN(i int) antlr.TerminalNode
 
 	// IsEventArrayDataFloat16Context differentiates from other interfaces.
 	IsEventArrayDataFloat16Context()
@@ -3378,12 +3498,12 @@ func (p *CEEventParser) EventArrayDataFloat16() (localctx IEventArrayDataFloat16
 	p.GetErrorHandler().Sync(p)
 	_la = p.GetTokenStream().LA(1)
 
-	for ((_la-127)&-(0x1f+1)) == 0 && ((1<<uint((_la-127)))&((1<<(CEEventParserVALUE_FLOAT_NAN-127))|(1<<(CEEventParserVALUE_FLOAT_SNAN-127))|(1<<(CEEventParserVALUE_FLOAT_INF-127))|(1<<(CEEventParserVALUE_FLOAT_DEC-127))|(1<<(CEEventParserVALUE_FLOAT_HEX-127)))) != 0 {
+	for (int64((_la-127)) & ^0x3f) == 0 && ((int64(1)<<(_la-127))&31) != 0 {
 		{
 			p.SetState(281)
 			_la = p.GetTokenStream().LA(1)
 
-			if !(((_la-127)&-(0x1f+1)) == 0 && ((1<<uint((_la-127)))&((1<<(CEEventParserVALUE_FLOAT_NAN-127))|(1<<(CEEventParserVALUE_FLOAT_SNAN-127))|(1<<(CEEventParserVALUE_FLOAT_INF-127))|(1<<(CEEventParserVALUE_FLOAT_DEC-127))|(1<<(CEEventParserVALUE_FLOAT_HEX-127)))) != 0) {
+			if !((int64((_la-127)) & ^0x3f) == 0 && ((int64(1)<<(_la-127))&31) != 0) {
 				p.GetErrorHandler().RecoverInline(p)
 			} else {
 				p.GetErrorHandler().ReportMatch(p)
@@ -3405,6 +3525,19 @@ type IEventArrayDataFloat32Context interface {
 
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
+
+	// Getter signatures
+	EVENT_ADF32() antlr.TerminalNode
+	AllVALUE_FLOAT_DEC() []antlr.TerminalNode
+	VALUE_FLOAT_DEC(i int) antlr.TerminalNode
+	AllVALUE_FLOAT_HEX() []antlr.TerminalNode
+	VALUE_FLOAT_HEX(i int) antlr.TerminalNode
+	AllVALUE_FLOAT_INF() []antlr.TerminalNode
+	VALUE_FLOAT_INF(i int) antlr.TerminalNode
+	AllVALUE_FLOAT_NAN() []antlr.TerminalNode
+	VALUE_FLOAT_NAN(i int) antlr.TerminalNode
+	AllVALUE_FLOAT_SNAN() []antlr.TerminalNode
+	VALUE_FLOAT_SNAN(i int) antlr.TerminalNode
 
 	// IsEventArrayDataFloat32Context differentiates from other interfaces.
 	IsEventArrayDataFloat32Context()
@@ -3534,12 +3667,12 @@ func (p *CEEventParser) EventArrayDataFloat32() (localctx IEventArrayDataFloat32
 	p.GetErrorHandler().Sync(p)
 	_la = p.GetTokenStream().LA(1)
 
-	for ((_la-127)&-(0x1f+1)) == 0 && ((1<<uint((_la-127)))&((1<<(CEEventParserVALUE_FLOAT_NAN-127))|(1<<(CEEventParserVALUE_FLOAT_SNAN-127))|(1<<(CEEventParserVALUE_FLOAT_INF-127))|(1<<(CEEventParserVALUE_FLOAT_DEC-127))|(1<<(CEEventParserVALUE_FLOAT_HEX-127)))) != 0 {
+	for (int64((_la-127)) & ^0x3f) == 0 && ((int64(1)<<(_la-127))&31) != 0 {
 		{
 			p.SetState(288)
 			_la = p.GetTokenStream().LA(1)
 
-			if !(((_la-127)&-(0x1f+1)) == 0 && ((1<<uint((_la-127)))&((1<<(CEEventParserVALUE_FLOAT_NAN-127))|(1<<(CEEventParserVALUE_FLOAT_SNAN-127))|(1<<(CEEventParserVALUE_FLOAT_INF-127))|(1<<(CEEventParserVALUE_FLOAT_DEC-127))|(1<<(CEEventParserVALUE_FLOAT_HEX-127)))) != 0) {
+			if !((int64((_la-127)) & ^0x3f) == 0 && ((int64(1)<<(_la-127))&31) != 0) {
 				p.GetErrorHandler().RecoverInline(p)
 			} else {
 				p.GetErrorHandler().ReportMatch(p)
@@ -3561,6 +3694,19 @@ type IEventArrayDataFloat64Context interface {
 
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
+
+	// Getter signatures
+	EVENT_ADF64() antlr.TerminalNode
+	AllVALUE_FLOAT_DEC() []antlr.TerminalNode
+	VALUE_FLOAT_DEC(i int) antlr.TerminalNode
+	AllVALUE_FLOAT_HEX() []antlr.TerminalNode
+	VALUE_FLOAT_HEX(i int) antlr.TerminalNode
+	AllVALUE_FLOAT_INF() []antlr.TerminalNode
+	VALUE_FLOAT_INF(i int) antlr.TerminalNode
+	AllVALUE_FLOAT_NAN() []antlr.TerminalNode
+	VALUE_FLOAT_NAN(i int) antlr.TerminalNode
+	AllVALUE_FLOAT_SNAN() []antlr.TerminalNode
+	VALUE_FLOAT_SNAN(i int) antlr.TerminalNode
 
 	// IsEventArrayDataFloat64Context differentiates from other interfaces.
 	IsEventArrayDataFloat64Context()
@@ -3690,12 +3836,12 @@ func (p *CEEventParser) EventArrayDataFloat64() (localctx IEventArrayDataFloat64
 	p.GetErrorHandler().Sync(p)
 	_la = p.GetTokenStream().LA(1)
 
-	for ((_la-127)&-(0x1f+1)) == 0 && ((1<<uint((_la-127)))&((1<<(CEEventParserVALUE_FLOAT_NAN-127))|(1<<(CEEventParserVALUE_FLOAT_SNAN-127))|(1<<(CEEventParserVALUE_FLOAT_INF-127))|(1<<(CEEventParserVALUE_FLOAT_DEC-127))|(1<<(CEEventParserVALUE_FLOAT_HEX-127)))) != 0 {
+	for (int64((_la-127)) & ^0x3f) == 0 && ((int64(1)<<(_la-127))&31) != 0 {
 		{
 			p.SetState(295)
 			_la = p.GetTokenStream().LA(1)
 
-			if !(((_la-127)&-(0x1f+1)) == 0 && ((1<<uint((_la-127)))&((1<<(CEEventParserVALUE_FLOAT_NAN-127))|(1<<(CEEventParserVALUE_FLOAT_SNAN-127))|(1<<(CEEventParserVALUE_FLOAT_INF-127))|(1<<(CEEventParserVALUE_FLOAT_DEC-127))|(1<<(CEEventParserVALUE_FLOAT_HEX-127)))) != 0) {
+			if !((int64((_la-127)) & ^0x3f) == 0 && ((int64(1)<<(_la-127))&31) != 0) {
 				p.GetErrorHandler().RecoverInline(p)
 			} else {
 				p.GetErrorHandler().ReportMatch(p)
@@ -3717,6 +3863,17 @@ type IEventArrayDataInt16Context interface {
 
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
+
+	// Getter signatures
+	EVENT_ADI16() antlr.TerminalNode
+	AllVALUE_INT_BIN() []antlr.TerminalNode
+	VALUE_INT_BIN(i int) antlr.TerminalNode
+	AllVALUE_INT_OCT() []antlr.TerminalNode
+	VALUE_INT_OCT(i int) antlr.TerminalNode
+	AllVALUE_INT_DEC() []antlr.TerminalNode
+	VALUE_INT_DEC(i int) antlr.TerminalNode
+	AllVALUE_INT_HEX() []antlr.TerminalNode
+	VALUE_INT_HEX(i int) antlr.TerminalNode
 
 	// IsEventArrayDataInt16Context differentiates from other interfaces.
 	IsEventArrayDataInt16Context()
@@ -3838,12 +3995,12 @@ func (p *CEEventParser) EventArrayDataInt16() (localctx IEventArrayDataInt16Cont
 	p.GetErrorHandler().Sync(p)
 	_la = p.GetTokenStream().LA(1)
 
-	for ((_la-122)&-(0x1f+1)) == 0 && ((1<<uint((_la-122)))&((1<<(CEEventParserVALUE_INT_BIN-122))|(1<<(CEEventParserVALUE_INT_OCT-122))|(1<<(CEEventParserVALUE_INT_DEC-122))|(1<<(CEEventParserVALUE_INT_HEX-122)))) != 0 {
+	for (int64((_la-122)) & ^0x3f) == 0 && ((int64(1)<<(_la-122))&15) != 0 {
 		{
 			p.SetState(302)
 			_la = p.GetTokenStream().LA(1)
 
-			if !(((_la-122)&-(0x1f+1)) == 0 && ((1<<uint((_la-122)))&((1<<(CEEventParserVALUE_INT_BIN-122))|(1<<(CEEventParserVALUE_INT_OCT-122))|(1<<(CEEventParserVALUE_INT_DEC-122))|(1<<(CEEventParserVALUE_INT_HEX-122)))) != 0) {
+			if !((int64((_la-122)) & ^0x3f) == 0 && ((int64(1)<<(_la-122))&15) != 0) {
 				p.GetErrorHandler().RecoverInline(p)
 			} else {
 				p.GetErrorHandler().ReportMatch(p)
@@ -3865,6 +4022,17 @@ type IEventArrayDataInt32Context interface {
 
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
+
+	// Getter signatures
+	EVENT_ADI32() antlr.TerminalNode
+	AllVALUE_INT_BIN() []antlr.TerminalNode
+	VALUE_INT_BIN(i int) antlr.TerminalNode
+	AllVALUE_INT_OCT() []antlr.TerminalNode
+	VALUE_INT_OCT(i int) antlr.TerminalNode
+	AllVALUE_INT_DEC() []antlr.TerminalNode
+	VALUE_INT_DEC(i int) antlr.TerminalNode
+	AllVALUE_INT_HEX() []antlr.TerminalNode
+	VALUE_INT_HEX(i int) antlr.TerminalNode
 
 	// IsEventArrayDataInt32Context differentiates from other interfaces.
 	IsEventArrayDataInt32Context()
@@ -3986,12 +4154,12 @@ func (p *CEEventParser) EventArrayDataInt32() (localctx IEventArrayDataInt32Cont
 	p.GetErrorHandler().Sync(p)
 	_la = p.GetTokenStream().LA(1)
 
-	for ((_la-122)&-(0x1f+1)) == 0 && ((1<<uint((_la-122)))&((1<<(CEEventParserVALUE_INT_BIN-122))|(1<<(CEEventParserVALUE_INT_OCT-122))|(1<<(CEEventParserVALUE_INT_DEC-122))|(1<<(CEEventParserVALUE_INT_HEX-122)))) != 0 {
+	for (int64((_la-122)) & ^0x3f) == 0 && ((int64(1)<<(_la-122))&15) != 0 {
 		{
 			p.SetState(309)
 			_la = p.GetTokenStream().LA(1)
 
-			if !(((_la-122)&-(0x1f+1)) == 0 && ((1<<uint((_la-122)))&((1<<(CEEventParserVALUE_INT_BIN-122))|(1<<(CEEventParserVALUE_INT_OCT-122))|(1<<(CEEventParserVALUE_INT_DEC-122))|(1<<(CEEventParserVALUE_INT_HEX-122)))) != 0) {
+			if !((int64((_la-122)) & ^0x3f) == 0 && ((int64(1)<<(_la-122))&15) != 0) {
 				p.GetErrorHandler().RecoverInline(p)
 			} else {
 				p.GetErrorHandler().ReportMatch(p)
@@ -4013,6 +4181,17 @@ type IEventArrayDataInt64Context interface {
 
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
+
+	// Getter signatures
+	EVENT_ADI64() antlr.TerminalNode
+	AllVALUE_INT_BIN() []antlr.TerminalNode
+	VALUE_INT_BIN(i int) antlr.TerminalNode
+	AllVALUE_INT_OCT() []antlr.TerminalNode
+	VALUE_INT_OCT(i int) antlr.TerminalNode
+	AllVALUE_INT_DEC() []antlr.TerminalNode
+	VALUE_INT_DEC(i int) antlr.TerminalNode
+	AllVALUE_INT_HEX() []antlr.TerminalNode
+	VALUE_INT_HEX(i int) antlr.TerminalNode
 
 	// IsEventArrayDataInt64Context differentiates from other interfaces.
 	IsEventArrayDataInt64Context()
@@ -4134,12 +4313,12 @@ func (p *CEEventParser) EventArrayDataInt64() (localctx IEventArrayDataInt64Cont
 	p.GetErrorHandler().Sync(p)
 	_la = p.GetTokenStream().LA(1)
 
-	for ((_la-122)&-(0x1f+1)) == 0 && ((1<<uint((_la-122)))&((1<<(CEEventParserVALUE_INT_BIN-122))|(1<<(CEEventParserVALUE_INT_OCT-122))|(1<<(CEEventParserVALUE_INT_DEC-122))|(1<<(CEEventParserVALUE_INT_HEX-122)))) != 0 {
+	for (int64((_la-122)) & ^0x3f) == 0 && ((int64(1)<<(_la-122))&15) != 0 {
 		{
 			p.SetState(316)
 			_la = p.GetTokenStream().LA(1)
 
-			if !(((_la-122)&-(0x1f+1)) == 0 && ((1<<uint((_la-122)))&((1<<(CEEventParserVALUE_INT_BIN-122))|(1<<(CEEventParserVALUE_INT_OCT-122))|(1<<(CEEventParserVALUE_INT_DEC-122))|(1<<(CEEventParserVALUE_INT_HEX-122)))) != 0) {
+			if !((int64((_la-122)) & ^0x3f) == 0 && ((int64(1)<<(_la-122))&15) != 0) {
 				p.GetErrorHandler().RecoverInline(p)
 			} else {
 				p.GetErrorHandler().ReportMatch(p)
@@ -4161,6 +4340,17 @@ type IEventArrayDataInt8Context interface {
 
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
+
+	// Getter signatures
+	EVENT_ADI8() antlr.TerminalNode
+	AllVALUE_INT_BIN() []antlr.TerminalNode
+	VALUE_INT_BIN(i int) antlr.TerminalNode
+	AllVALUE_INT_OCT() []antlr.TerminalNode
+	VALUE_INT_OCT(i int) antlr.TerminalNode
+	AllVALUE_INT_DEC() []antlr.TerminalNode
+	VALUE_INT_DEC(i int) antlr.TerminalNode
+	AllVALUE_INT_HEX() []antlr.TerminalNode
+	VALUE_INT_HEX(i int) antlr.TerminalNode
 
 	// IsEventArrayDataInt8Context differentiates from other interfaces.
 	IsEventArrayDataInt8Context()
@@ -4282,12 +4472,12 @@ func (p *CEEventParser) EventArrayDataInt8() (localctx IEventArrayDataInt8Contex
 	p.GetErrorHandler().Sync(p)
 	_la = p.GetTokenStream().LA(1)
 
-	for ((_la-122)&-(0x1f+1)) == 0 && ((1<<uint((_la-122)))&((1<<(CEEventParserVALUE_INT_BIN-122))|(1<<(CEEventParserVALUE_INT_OCT-122))|(1<<(CEEventParserVALUE_INT_DEC-122))|(1<<(CEEventParserVALUE_INT_HEX-122)))) != 0 {
+	for (int64((_la-122)) & ^0x3f) == 0 && ((int64(1)<<(_la-122))&15) != 0 {
 		{
 			p.SetState(323)
 			_la = p.GetTokenStream().LA(1)
 
-			if !(((_la-122)&-(0x1f+1)) == 0 && ((1<<uint((_la-122)))&((1<<(CEEventParserVALUE_INT_BIN-122))|(1<<(CEEventParserVALUE_INT_OCT-122))|(1<<(CEEventParserVALUE_INT_DEC-122))|(1<<(CEEventParserVALUE_INT_HEX-122)))) != 0) {
+			if !((int64((_la-122)) & ^0x3f) == 0 && ((int64(1)<<(_la-122))&15) != 0) {
 				p.GetErrorHandler().RecoverInline(p)
 			} else {
 				p.GetErrorHandler().ReportMatch(p)
@@ -4309,6 +4499,10 @@ type IEventArrayDataTextContext interface {
 
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
+
+	// Getter signatures
+	EVENT_ADT() antlr.TerminalNode
+	STRING() antlr.TerminalNode
 
 	// IsEventArrayDataTextContext differentiates from other interfaces.
 	IsEventArrayDataTextContext()
@@ -4419,6 +4613,11 @@ type IEventArrayDataUIDContext interface {
 
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
+
+	// Getter signatures
+	EVENT_ADU() antlr.TerminalNode
+	AllVALUE_UID() []antlr.TerminalNode
+	VALUE_UID(i int) antlr.TerminalNode
 
 	// IsEventArrayDataUIDContext differentiates from other interfaces.
 	IsEventArrayDataUIDContext()
@@ -4536,6 +4735,17 @@ type IEventArrayDataUint16Context interface {
 
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
+
+	// Getter signatures
+	EVENT_ADU16() antlr.TerminalNode
+	AllVALUE_UINT_BIN() []antlr.TerminalNode
+	VALUE_UINT_BIN(i int) antlr.TerminalNode
+	AllVALUE_UINT_OCT() []antlr.TerminalNode
+	VALUE_UINT_OCT(i int) antlr.TerminalNode
+	AllVALUE_UINT_DEC() []antlr.TerminalNode
+	VALUE_UINT_DEC(i int) antlr.TerminalNode
+	AllVALUE_UINT_HEX() []antlr.TerminalNode
+	VALUE_UINT_HEX(i int) antlr.TerminalNode
 
 	// IsEventArrayDataUint16Context differentiates from other interfaces.
 	IsEventArrayDataUint16Context()
@@ -4657,12 +4867,12 @@ func (p *CEEventParser) EventArrayDataUint16() (localctx IEventArrayDataUint16Co
 	p.GetErrorHandler().Sync(p)
 	_la = p.GetTokenStream().LA(1)
 
-	for ((_la-115)&-(0x1f+1)) == 0 && ((1<<uint((_la-115)))&((1<<(CEEventParserVALUE_UINT_BIN-115))|(1<<(CEEventParserVALUE_UINT_OCT-115))|(1<<(CEEventParserVALUE_UINT_DEC-115))|(1<<(CEEventParserVALUE_UINT_HEX-115)))) != 0 {
+	for (int64((_la-115)) & ^0x3f) == 0 && ((int64(1)<<(_la-115))&15) != 0 {
 		{
 			p.SetState(341)
 			_la = p.GetTokenStream().LA(1)
 
-			if !(((_la-115)&-(0x1f+1)) == 0 && ((1<<uint((_la-115)))&((1<<(CEEventParserVALUE_UINT_BIN-115))|(1<<(CEEventParserVALUE_UINT_OCT-115))|(1<<(CEEventParserVALUE_UINT_DEC-115))|(1<<(CEEventParserVALUE_UINT_HEX-115)))) != 0) {
+			if !((int64((_la-115)) & ^0x3f) == 0 && ((int64(1)<<(_la-115))&15) != 0) {
 				p.GetErrorHandler().RecoverInline(p)
 			} else {
 				p.GetErrorHandler().ReportMatch(p)
@@ -4684,6 +4894,11 @@ type IEventArrayDataUint16XContext interface {
 
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
+
+	// Getter signatures
+	EVENT_ADU16X() antlr.TerminalNode
+	AllVALUE_UINTX() []antlr.TerminalNode
+	VALUE_UINTX(i int) antlr.TerminalNode
 
 	// IsEventArrayDataUint16XContext differentiates from other interfaces.
 	IsEventArrayDataUint16XContext()
@@ -4801,6 +5016,17 @@ type IEventArrayDataUint32Context interface {
 
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
+
+	// Getter signatures
+	EVENT_ADU32() antlr.TerminalNode
+	AllVALUE_UINT_BIN() []antlr.TerminalNode
+	VALUE_UINT_BIN(i int) antlr.TerminalNode
+	AllVALUE_UINT_OCT() []antlr.TerminalNode
+	VALUE_UINT_OCT(i int) antlr.TerminalNode
+	AllVALUE_UINT_DEC() []antlr.TerminalNode
+	VALUE_UINT_DEC(i int) antlr.TerminalNode
+	AllVALUE_UINT_HEX() []antlr.TerminalNode
+	VALUE_UINT_HEX(i int) antlr.TerminalNode
 
 	// IsEventArrayDataUint32Context differentiates from other interfaces.
 	IsEventArrayDataUint32Context()
@@ -4922,12 +5148,12 @@ func (p *CEEventParser) EventArrayDataUint32() (localctx IEventArrayDataUint32Co
 	p.GetErrorHandler().Sync(p)
 	_la = p.GetTokenStream().LA(1)
 
-	for ((_la-115)&-(0x1f+1)) == 0 && ((1<<uint((_la-115)))&((1<<(CEEventParserVALUE_UINT_BIN-115))|(1<<(CEEventParserVALUE_UINT_OCT-115))|(1<<(CEEventParserVALUE_UINT_DEC-115))|(1<<(CEEventParserVALUE_UINT_HEX-115)))) != 0 {
+	for (int64((_la-115)) & ^0x3f) == 0 && ((int64(1)<<(_la-115))&15) != 0 {
 		{
 			p.SetState(355)
 			_la = p.GetTokenStream().LA(1)
 
-			if !(((_la-115)&-(0x1f+1)) == 0 && ((1<<uint((_la-115)))&((1<<(CEEventParserVALUE_UINT_BIN-115))|(1<<(CEEventParserVALUE_UINT_OCT-115))|(1<<(CEEventParserVALUE_UINT_DEC-115))|(1<<(CEEventParserVALUE_UINT_HEX-115)))) != 0) {
+			if !((int64((_la-115)) & ^0x3f) == 0 && ((int64(1)<<(_la-115))&15) != 0) {
 				p.GetErrorHandler().RecoverInline(p)
 			} else {
 				p.GetErrorHandler().ReportMatch(p)
@@ -4949,6 +5175,11 @@ type IEventArrayDataUint32XContext interface {
 
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
+
+	// Getter signatures
+	EVENT_ADU32X() antlr.TerminalNode
+	AllVALUE_UINTX() []antlr.TerminalNode
+	VALUE_UINTX(i int) antlr.TerminalNode
 
 	// IsEventArrayDataUint32XContext differentiates from other interfaces.
 	IsEventArrayDataUint32XContext()
@@ -5066,6 +5297,17 @@ type IEventArrayDataUint64Context interface {
 
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
+
+	// Getter signatures
+	EVENT_ADU64() antlr.TerminalNode
+	AllVALUE_UINT_BIN() []antlr.TerminalNode
+	VALUE_UINT_BIN(i int) antlr.TerminalNode
+	AllVALUE_UINT_OCT() []antlr.TerminalNode
+	VALUE_UINT_OCT(i int) antlr.TerminalNode
+	AllVALUE_UINT_DEC() []antlr.TerminalNode
+	VALUE_UINT_DEC(i int) antlr.TerminalNode
+	AllVALUE_UINT_HEX() []antlr.TerminalNode
+	VALUE_UINT_HEX(i int) antlr.TerminalNode
 
 	// IsEventArrayDataUint64Context differentiates from other interfaces.
 	IsEventArrayDataUint64Context()
@@ -5187,12 +5429,12 @@ func (p *CEEventParser) EventArrayDataUint64() (localctx IEventArrayDataUint64Co
 	p.GetErrorHandler().Sync(p)
 	_la = p.GetTokenStream().LA(1)
 
-	for ((_la-115)&-(0x1f+1)) == 0 && ((1<<uint((_la-115)))&((1<<(CEEventParserVALUE_UINT_BIN-115))|(1<<(CEEventParserVALUE_UINT_OCT-115))|(1<<(CEEventParserVALUE_UINT_DEC-115))|(1<<(CEEventParserVALUE_UINT_HEX-115)))) != 0 {
+	for (int64((_la-115)) & ^0x3f) == 0 && ((int64(1)<<(_la-115))&15) != 0 {
 		{
 			p.SetState(369)
 			_la = p.GetTokenStream().LA(1)
 
-			if !(((_la-115)&-(0x1f+1)) == 0 && ((1<<uint((_la-115)))&((1<<(CEEventParserVALUE_UINT_BIN-115))|(1<<(CEEventParserVALUE_UINT_OCT-115))|(1<<(CEEventParserVALUE_UINT_DEC-115))|(1<<(CEEventParserVALUE_UINT_HEX-115)))) != 0) {
+			if !((int64((_la-115)) & ^0x3f) == 0 && ((int64(1)<<(_la-115))&15) != 0) {
 				p.GetErrorHandler().RecoverInline(p)
 			} else {
 				p.GetErrorHandler().ReportMatch(p)
@@ -5214,6 +5456,11 @@ type IEventArrayDataUint64XContext interface {
 
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
+
+	// Getter signatures
+	EVENT_ADU64X() antlr.TerminalNode
+	AllVALUE_UINTX() []antlr.TerminalNode
+	VALUE_UINTX(i int) antlr.TerminalNode
 
 	// IsEventArrayDataUint64XContext differentiates from other interfaces.
 	IsEventArrayDataUint64XContext()
@@ -5331,6 +5578,17 @@ type IEventArrayDataUint8Context interface {
 
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
+
+	// Getter signatures
+	EVENT_ADU8() antlr.TerminalNode
+	AllVALUE_UINT_BIN() []antlr.TerminalNode
+	VALUE_UINT_BIN(i int) antlr.TerminalNode
+	AllVALUE_UINT_OCT() []antlr.TerminalNode
+	VALUE_UINT_OCT(i int) antlr.TerminalNode
+	AllVALUE_UINT_DEC() []antlr.TerminalNode
+	VALUE_UINT_DEC(i int) antlr.TerminalNode
+	AllVALUE_UINT_HEX() []antlr.TerminalNode
+	VALUE_UINT_HEX(i int) antlr.TerminalNode
 
 	// IsEventArrayDataUint8Context differentiates from other interfaces.
 	IsEventArrayDataUint8Context()
@@ -5452,12 +5710,12 @@ func (p *CEEventParser) EventArrayDataUint8() (localctx IEventArrayDataUint8Cont
 	p.GetErrorHandler().Sync(p)
 	_la = p.GetTokenStream().LA(1)
 
-	for ((_la-115)&-(0x1f+1)) == 0 && ((1<<uint((_la-115)))&((1<<(CEEventParserVALUE_UINT_BIN-115))|(1<<(CEEventParserVALUE_UINT_OCT-115))|(1<<(CEEventParserVALUE_UINT_DEC-115))|(1<<(CEEventParserVALUE_UINT_HEX-115)))) != 0 {
+	for (int64((_la-115)) & ^0x3f) == 0 && ((int64(1)<<(_la-115))&15) != 0 {
 		{
 			p.SetState(383)
 			_la = p.GetTokenStream().LA(1)
 
-			if !(((_la-115)&-(0x1f+1)) == 0 && ((1<<uint((_la-115)))&((1<<(CEEventParserVALUE_UINT_BIN-115))|(1<<(CEEventParserVALUE_UINT_OCT-115))|(1<<(CEEventParserVALUE_UINT_DEC-115))|(1<<(CEEventParserVALUE_UINT_HEX-115)))) != 0) {
+			if !((int64((_la-115)) & ^0x3f) == 0 && ((int64(1)<<(_la-115))&15) != 0) {
 				p.GetErrorHandler().RecoverInline(p)
 			} else {
 				p.GetErrorHandler().ReportMatch(p)
@@ -5479,6 +5737,11 @@ type IEventArrayDataUint8XContext interface {
 
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
+
+	// Getter signatures
+	EVENT_ADU8X() antlr.TerminalNode
+	AllVALUE_UINTX() []antlr.TerminalNode
+	VALUE_UINTX(i int) antlr.TerminalNode
 
 	// IsEventArrayDataUint8XContext differentiates from other interfaces.
 	IsEventArrayDataUint8XContext()
@@ -5596,6 +5859,20 @@ type IEventArrayFloat16Context interface {
 
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
+
+	// Getter signatures
+	EVENT_AF16() antlr.TerminalNode
+	EVENT_AF16_ARGS() antlr.TerminalNode
+	AllVALUE_FLOAT_DEC() []antlr.TerminalNode
+	VALUE_FLOAT_DEC(i int) antlr.TerminalNode
+	AllVALUE_FLOAT_HEX() []antlr.TerminalNode
+	VALUE_FLOAT_HEX(i int) antlr.TerminalNode
+	AllVALUE_FLOAT_INF() []antlr.TerminalNode
+	VALUE_FLOAT_INF(i int) antlr.TerminalNode
+	AllVALUE_FLOAT_NAN() []antlr.TerminalNode
+	VALUE_FLOAT_NAN(i int) antlr.TerminalNode
+	AllVALUE_FLOAT_SNAN() []antlr.TerminalNode
+	VALUE_FLOAT_SNAN(i int) antlr.TerminalNode
 
 	// IsEventArrayFloat16Context differentiates from other interfaces.
 	IsEventArrayFloat16Context()
@@ -5741,12 +6018,12 @@ func (p *CEEventParser) EventArrayFloat16() (localctx IEventArrayFloat16Context)
 		p.GetErrorHandler().Sync(p)
 		_la = p.GetTokenStream().LA(1)
 
-		for ((_la-127)&-(0x1f+1)) == 0 && ((1<<uint((_la-127)))&((1<<(CEEventParserVALUE_FLOAT_NAN-127))|(1<<(CEEventParserVALUE_FLOAT_SNAN-127))|(1<<(CEEventParserVALUE_FLOAT_INF-127))|(1<<(CEEventParserVALUE_FLOAT_DEC-127))|(1<<(CEEventParserVALUE_FLOAT_HEX-127)))) != 0 {
+		for (int64((_la-127)) & ^0x3f) == 0 && ((int64(1)<<(_la-127))&31) != 0 {
 			{
 				p.SetState(398)
 				_la = p.GetTokenStream().LA(1)
 
-				if !(((_la-127)&-(0x1f+1)) == 0 && ((1<<uint((_la-127)))&((1<<(CEEventParserVALUE_FLOAT_NAN-127))|(1<<(CEEventParserVALUE_FLOAT_SNAN-127))|(1<<(CEEventParserVALUE_FLOAT_INF-127))|(1<<(CEEventParserVALUE_FLOAT_DEC-127))|(1<<(CEEventParserVALUE_FLOAT_HEX-127)))) != 0) {
+				if !((int64((_la-127)) & ^0x3f) == 0 && ((int64(1)<<(_la-127))&31) != 0) {
 					p.GetErrorHandler().RecoverInline(p)
 				} else {
 					p.GetErrorHandler().ReportMatch(p)
@@ -5772,6 +6049,20 @@ type IEventArrayFloat32Context interface {
 
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
+
+	// Getter signatures
+	EVENT_AF32() antlr.TerminalNode
+	EVENT_AF32_ARGS() antlr.TerminalNode
+	AllVALUE_FLOAT_DEC() []antlr.TerminalNode
+	VALUE_FLOAT_DEC(i int) antlr.TerminalNode
+	AllVALUE_FLOAT_HEX() []antlr.TerminalNode
+	VALUE_FLOAT_HEX(i int) antlr.TerminalNode
+	AllVALUE_FLOAT_INF() []antlr.TerminalNode
+	VALUE_FLOAT_INF(i int) antlr.TerminalNode
+	AllVALUE_FLOAT_NAN() []antlr.TerminalNode
+	VALUE_FLOAT_NAN(i int) antlr.TerminalNode
+	AllVALUE_FLOAT_SNAN() []antlr.TerminalNode
+	VALUE_FLOAT_SNAN(i int) antlr.TerminalNode
 
 	// IsEventArrayFloat32Context differentiates from other interfaces.
 	IsEventArrayFloat32Context()
@@ -5917,12 +6208,12 @@ func (p *CEEventParser) EventArrayFloat32() (localctx IEventArrayFloat32Context)
 		p.GetErrorHandler().Sync(p)
 		_la = p.GetTokenStream().LA(1)
 
-		for ((_la-127)&-(0x1f+1)) == 0 && ((1<<uint((_la-127)))&((1<<(CEEventParserVALUE_FLOAT_NAN-127))|(1<<(CEEventParserVALUE_FLOAT_SNAN-127))|(1<<(CEEventParserVALUE_FLOAT_INF-127))|(1<<(CEEventParserVALUE_FLOAT_DEC-127))|(1<<(CEEventParserVALUE_FLOAT_HEX-127)))) != 0 {
+		for (int64((_la-127)) & ^0x3f) == 0 && ((int64(1)<<(_la-127))&31) != 0 {
 			{
 				p.SetState(408)
 				_la = p.GetTokenStream().LA(1)
 
-				if !(((_la-127)&-(0x1f+1)) == 0 && ((1<<uint((_la-127)))&((1<<(CEEventParserVALUE_FLOAT_NAN-127))|(1<<(CEEventParserVALUE_FLOAT_SNAN-127))|(1<<(CEEventParserVALUE_FLOAT_INF-127))|(1<<(CEEventParserVALUE_FLOAT_DEC-127))|(1<<(CEEventParserVALUE_FLOAT_HEX-127)))) != 0) {
+				if !((int64((_la-127)) & ^0x3f) == 0 && ((int64(1)<<(_la-127))&31) != 0) {
 					p.GetErrorHandler().RecoverInline(p)
 				} else {
 					p.GetErrorHandler().ReportMatch(p)
@@ -5948,6 +6239,20 @@ type IEventArrayFloat64Context interface {
 
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
+
+	// Getter signatures
+	EVENT_AF64() antlr.TerminalNode
+	EVENT_AF64_ARGS() antlr.TerminalNode
+	AllVALUE_FLOAT_DEC() []antlr.TerminalNode
+	VALUE_FLOAT_DEC(i int) antlr.TerminalNode
+	AllVALUE_FLOAT_HEX() []antlr.TerminalNode
+	VALUE_FLOAT_HEX(i int) antlr.TerminalNode
+	AllVALUE_FLOAT_INF() []antlr.TerminalNode
+	VALUE_FLOAT_INF(i int) antlr.TerminalNode
+	AllVALUE_FLOAT_NAN() []antlr.TerminalNode
+	VALUE_FLOAT_NAN(i int) antlr.TerminalNode
+	AllVALUE_FLOAT_SNAN() []antlr.TerminalNode
+	VALUE_FLOAT_SNAN(i int) antlr.TerminalNode
 
 	// IsEventArrayFloat64Context differentiates from other interfaces.
 	IsEventArrayFloat64Context()
@@ -6093,12 +6398,12 @@ func (p *CEEventParser) EventArrayFloat64() (localctx IEventArrayFloat64Context)
 		p.GetErrorHandler().Sync(p)
 		_la = p.GetTokenStream().LA(1)
 
-		for ((_la-127)&-(0x1f+1)) == 0 && ((1<<uint((_la-127)))&((1<<(CEEventParserVALUE_FLOAT_NAN-127))|(1<<(CEEventParserVALUE_FLOAT_SNAN-127))|(1<<(CEEventParserVALUE_FLOAT_INF-127))|(1<<(CEEventParserVALUE_FLOAT_DEC-127))|(1<<(CEEventParserVALUE_FLOAT_HEX-127)))) != 0 {
+		for (int64((_la-127)) & ^0x3f) == 0 && ((int64(1)<<(_la-127))&31) != 0 {
 			{
 				p.SetState(418)
 				_la = p.GetTokenStream().LA(1)
 
-				if !(((_la-127)&-(0x1f+1)) == 0 && ((1<<uint((_la-127)))&((1<<(CEEventParserVALUE_FLOAT_NAN-127))|(1<<(CEEventParserVALUE_FLOAT_SNAN-127))|(1<<(CEEventParserVALUE_FLOAT_INF-127))|(1<<(CEEventParserVALUE_FLOAT_DEC-127))|(1<<(CEEventParserVALUE_FLOAT_HEX-127)))) != 0) {
+				if !((int64((_la-127)) & ^0x3f) == 0 && ((int64(1)<<(_la-127))&31) != 0) {
 					p.GetErrorHandler().RecoverInline(p)
 				} else {
 					p.GetErrorHandler().ReportMatch(p)
@@ -6124,6 +6429,18 @@ type IEventArrayInt16Context interface {
 
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
+
+	// Getter signatures
+	EVENT_AI16() antlr.TerminalNode
+	EVENT_AI16_ARGS() antlr.TerminalNode
+	AllVALUE_INT_BIN() []antlr.TerminalNode
+	VALUE_INT_BIN(i int) antlr.TerminalNode
+	AllVALUE_INT_OCT() []antlr.TerminalNode
+	VALUE_INT_OCT(i int) antlr.TerminalNode
+	AllVALUE_INT_DEC() []antlr.TerminalNode
+	VALUE_INT_DEC(i int) antlr.TerminalNode
+	AllVALUE_INT_HEX() []antlr.TerminalNode
+	VALUE_INT_HEX(i int) antlr.TerminalNode
 
 	// IsEventArrayInt16Context differentiates from other interfaces.
 	IsEventArrayInt16Context()
@@ -6261,12 +6578,12 @@ func (p *CEEventParser) EventArrayInt16() (localctx IEventArrayInt16Context) {
 		p.GetErrorHandler().Sync(p)
 		_la = p.GetTokenStream().LA(1)
 
-		for ((_la-122)&-(0x1f+1)) == 0 && ((1<<uint((_la-122)))&((1<<(CEEventParserVALUE_INT_BIN-122))|(1<<(CEEventParserVALUE_INT_OCT-122))|(1<<(CEEventParserVALUE_INT_DEC-122))|(1<<(CEEventParserVALUE_INT_HEX-122)))) != 0 {
+		for (int64((_la-122)) & ^0x3f) == 0 && ((int64(1)<<(_la-122))&15) != 0 {
 			{
 				p.SetState(428)
 				_la = p.GetTokenStream().LA(1)
 
-				if !(((_la-122)&-(0x1f+1)) == 0 && ((1<<uint((_la-122)))&((1<<(CEEventParserVALUE_INT_BIN-122))|(1<<(CEEventParserVALUE_INT_OCT-122))|(1<<(CEEventParserVALUE_INT_DEC-122))|(1<<(CEEventParserVALUE_INT_HEX-122)))) != 0) {
+				if !((int64((_la-122)) & ^0x3f) == 0 && ((int64(1)<<(_la-122))&15) != 0) {
 					p.GetErrorHandler().RecoverInline(p)
 				} else {
 					p.GetErrorHandler().ReportMatch(p)
@@ -6292,6 +6609,18 @@ type IEventArrayInt32Context interface {
 
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
+
+	// Getter signatures
+	EVENT_AI32() antlr.TerminalNode
+	EVENT_AI32_ARGS() antlr.TerminalNode
+	AllVALUE_INT_BIN() []antlr.TerminalNode
+	VALUE_INT_BIN(i int) antlr.TerminalNode
+	AllVALUE_INT_OCT() []antlr.TerminalNode
+	VALUE_INT_OCT(i int) antlr.TerminalNode
+	AllVALUE_INT_DEC() []antlr.TerminalNode
+	VALUE_INT_DEC(i int) antlr.TerminalNode
+	AllVALUE_INT_HEX() []antlr.TerminalNode
+	VALUE_INT_HEX(i int) antlr.TerminalNode
 
 	// IsEventArrayInt32Context differentiates from other interfaces.
 	IsEventArrayInt32Context()
@@ -6429,12 +6758,12 @@ func (p *CEEventParser) EventArrayInt32() (localctx IEventArrayInt32Context) {
 		p.GetErrorHandler().Sync(p)
 		_la = p.GetTokenStream().LA(1)
 
-		for ((_la-122)&-(0x1f+1)) == 0 && ((1<<uint((_la-122)))&((1<<(CEEventParserVALUE_INT_BIN-122))|(1<<(CEEventParserVALUE_INT_OCT-122))|(1<<(CEEventParserVALUE_INT_DEC-122))|(1<<(CEEventParserVALUE_INT_HEX-122)))) != 0 {
+		for (int64((_la-122)) & ^0x3f) == 0 && ((int64(1)<<(_la-122))&15) != 0 {
 			{
 				p.SetState(438)
 				_la = p.GetTokenStream().LA(1)
 
-				if !(((_la-122)&-(0x1f+1)) == 0 && ((1<<uint((_la-122)))&((1<<(CEEventParserVALUE_INT_BIN-122))|(1<<(CEEventParserVALUE_INT_OCT-122))|(1<<(CEEventParserVALUE_INT_DEC-122))|(1<<(CEEventParserVALUE_INT_HEX-122)))) != 0) {
+				if !((int64((_la-122)) & ^0x3f) == 0 && ((int64(1)<<(_la-122))&15) != 0) {
 					p.GetErrorHandler().RecoverInline(p)
 				} else {
 					p.GetErrorHandler().ReportMatch(p)
@@ -6460,6 +6789,18 @@ type IEventArrayInt64Context interface {
 
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
+
+	// Getter signatures
+	EVENT_AI64() antlr.TerminalNode
+	EVENT_AI64_ARGS() antlr.TerminalNode
+	AllVALUE_INT_BIN() []antlr.TerminalNode
+	VALUE_INT_BIN(i int) antlr.TerminalNode
+	AllVALUE_INT_OCT() []antlr.TerminalNode
+	VALUE_INT_OCT(i int) antlr.TerminalNode
+	AllVALUE_INT_DEC() []antlr.TerminalNode
+	VALUE_INT_DEC(i int) antlr.TerminalNode
+	AllVALUE_INT_HEX() []antlr.TerminalNode
+	VALUE_INT_HEX(i int) antlr.TerminalNode
 
 	// IsEventArrayInt64Context differentiates from other interfaces.
 	IsEventArrayInt64Context()
@@ -6597,12 +6938,12 @@ func (p *CEEventParser) EventArrayInt64() (localctx IEventArrayInt64Context) {
 		p.GetErrorHandler().Sync(p)
 		_la = p.GetTokenStream().LA(1)
 
-		for ((_la-122)&-(0x1f+1)) == 0 && ((1<<uint((_la-122)))&((1<<(CEEventParserVALUE_INT_BIN-122))|(1<<(CEEventParserVALUE_INT_OCT-122))|(1<<(CEEventParserVALUE_INT_DEC-122))|(1<<(CEEventParserVALUE_INT_HEX-122)))) != 0 {
+		for (int64((_la-122)) & ^0x3f) == 0 && ((int64(1)<<(_la-122))&15) != 0 {
 			{
 				p.SetState(448)
 				_la = p.GetTokenStream().LA(1)
 
-				if !(((_la-122)&-(0x1f+1)) == 0 && ((1<<uint((_la-122)))&((1<<(CEEventParserVALUE_INT_BIN-122))|(1<<(CEEventParserVALUE_INT_OCT-122))|(1<<(CEEventParserVALUE_INT_DEC-122))|(1<<(CEEventParserVALUE_INT_HEX-122)))) != 0) {
+				if !((int64((_la-122)) & ^0x3f) == 0 && ((int64(1)<<(_la-122))&15) != 0) {
 					p.GetErrorHandler().RecoverInline(p)
 				} else {
 					p.GetErrorHandler().ReportMatch(p)
@@ -6628,6 +6969,18 @@ type IEventArrayInt8Context interface {
 
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
+
+	// Getter signatures
+	EVENT_AI8() antlr.TerminalNode
+	EVENT_AI8_ARGS() antlr.TerminalNode
+	AllVALUE_INT_BIN() []antlr.TerminalNode
+	VALUE_INT_BIN(i int) antlr.TerminalNode
+	AllVALUE_INT_OCT() []antlr.TerminalNode
+	VALUE_INT_OCT(i int) antlr.TerminalNode
+	AllVALUE_INT_DEC() []antlr.TerminalNode
+	VALUE_INT_DEC(i int) antlr.TerminalNode
+	AllVALUE_INT_HEX() []antlr.TerminalNode
+	VALUE_INT_HEX(i int) antlr.TerminalNode
 
 	// IsEventArrayInt8Context differentiates from other interfaces.
 	IsEventArrayInt8Context()
@@ -6765,12 +7118,12 @@ func (p *CEEventParser) EventArrayInt8() (localctx IEventArrayInt8Context) {
 		p.GetErrorHandler().Sync(p)
 		_la = p.GetTokenStream().LA(1)
 
-		for ((_la-122)&-(0x1f+1)) == 0 && ((1<<uint((_la-122)))&((1<<(CEEventParserVALUE_INT_BIN-122))|(1<<(CEEventParserVALUE_INT_OCT-122))|(1<<(CEEventParserVALUE_INT_DEC-122))|(1<<(CEEventParserVALUE_INT_HEX-122)))) != 0 {
+		for (int64((_la-122)) & ^0x3f) == 0 && ((int64(1)<<(_la-122))&15) != 0 {
 			{
 				p.SetState(458)
 				_la = p.GetTokenStream().LA(1)
 
-				if !(((_la-122)&-(0x1f+1)) == 0 && ((1<<uint((_la-122)))&((1<<(CEEventParserVALUE_INT_BIN-122))|(1<<(CEEventParserVALUE_INT_OCT-122))|(1<<(CEEventParserVALUE_INT_DEC-122))|(1<<(CEEventParserVALUE_INT_HEX-122)))) != 0) {
+				if !((int64((_la-122)) & ^0x3f) == 0 && ((int64(1)<<(_la-122))&15) != 0) {
 					p.GetErrorHandler().RecoverInline(p)
 				} else {
 					p.GetErrorHandler().ReportMatch(p)
@@ -6796,6 +7149,12 @@ type IEventArrayUIDContext interface {
 
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
+
+	// Getter signatures
+	EVENT_AU() antlr.TerminalNode
+	EVENT_AU_ARGS() antlr.TerminalNode
+	AllVALUE_UID() []antlr.TerminalNode
+	VALUE_UID(i int) antlr.TerminalNode
 
 	// IsEventArrayUIDContext differentiates from other interfaces.
 	IsEventArrayUIDContext()
@@ -6934,6 +7293,18 @@ type IEventArrayUint16Context interface {
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
 
+	// Getter signatures
+	EVENT_AU16() antlr.TerminalNode
+	EVENT_AU16_ARGS() antlr.TerminalNode
+	AllVALUE_UINT_BIN() []antlr.TerminalNode
+	VALUE_UINT_BIN(i int) antlr.TerminalNode
+	AllVALUE_UINT_OCT() []antlr.TerminalNode
+	VALUE_UINT_OCT(i int) antlr.TerminalNode
+	AllVALUE_UINT_DEC() []antlr.TerminalNode
+	VALUE_UINT_DEC(i int) antlr.TerminalNode
+	AllVALUE_UINT_HEX() []antlr.TerminalNode
+	VALUE_UINT_HEX(i int) antlr.TerminalNode
+
 	// IsEventArrayUint16Context differentiates from other interfaces.
 	IsEventArrayUint16Context()
 }
@@ -7070,12 +7441,12 @@ func (p *CEEventParser) EventArrayUint16() (localctx IEventArrayUint16Context) {
 		p.GetErrorHandler().Sync(p)
 		_la = p.GetTokenStream().LA(1)
 
-		for ((_la-115)&-(0x1f+1)) == 0 && ((1<<uint((_la-115)))&((1<<(CEEventParserVALUE_UINT_BIN-115))|(1<<(CEEventParserVALUE_UINT_OCT-115))|(1<<(CEEventParserVALUE_UINT_DEC-115))|(1<<(CEEventParserVALUE_UINT_HEX-115)))) != 0 {
+		for (int64((_la-115)) & ^0x3f) == 0 && ((int64(1)<<(_la-115))&15) != 0 {
 			{
 				p.SetState(478)
 				_la = p.GetTokenStream().LA(1)
 
-				if !(((_la-115)&-(0x1f+1)) == 0 && ((1<<uint((_la-115)))&((1<<(CEEventParserVALUE_UINT_BIN-115))|(1<<(CEEventParserVALUE_UINT_OCT-115))|(1<<(CEEventParserVALUE_UINT_DEC-115))|(1<<(CEEventParserVALUE_UINT_HEX-115)))) != 0) {
+				if !((int64((_la-115)) & ^0x3f) == 0 && ((int64(1)<<(_la-115))&15) != 0) {
 					p.GetErrorHandler().RecoverInline(p)
 				} else {
 					p.GetErrorHandler().ReportMatch(p)
@@ -7101,6 +7472,12 @@ type IEventArrayUint16XContext interface {
 
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
+
+	// Getter signatures
+	EVENT_AU16X() antlr.TerminalNode
+	EVENT_AU16X_ARGS() antlr.TerminalNode
+	AllVALUE_UINTX() []antlr.TerminalNode
+	VALUE_UINTX(i int) antlr.TerminalNode
 
 	// IsEventArrayUint16XContext differentiates from other interfaces.
 	IsEventArrayUint16XContext()
@@ -7239,6 +7616,18 @@ type IEventArrayUint32Context interface {
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
 
+	// Getter signatures
+	EVENT_AU32() antlr.TerminalNode
+	EVENT_AU32_ARGS() antlr.TerminalNode
+	AllVALUE_UINT_BIN() []antlr.TerminalNode
+	VALUE_UINT_BIN(i int) antlr.TerminalNode
+	AllVALUE_UINT_OCT() []antlr.TerminalNode
+	VALUE_UINT_OCT(i int) antlr.TerminalNode
+	AllVALUE_UINT_DEC() []antlr.TerminalNode
+	VALUE_UINT_DEC(i int) antlr.TerminalNode
+	AllVALUE_UINT_HEX() []antlr.TerminalNode
+	VALUE_UINT_HEX(i int) antlr.TerminalNode
+
 	// IsEventArrayUint32Context differentiates from other interfaces.
 	IsEventArrayUint32Context()
 }
@@ -7375,12 +7764,12 @@ func (p *CEEventParser) EventArrayUint32() (localctx IEventArrayUint32Context) {
 		p.GetErrorHandler().Sync(p)
 		_la = p.GetTokenStream().LA(1)
 
-		for ((_la-115)&-(0x1f+1)) == 0 && ((1<<uint((_la-115)))&((1<<(CEEventParserVALUE_UINT_BIN-115))|(1<<(CEEventParserVALUE_UINT_OCT-115))|(1<<(CEEventParserVALUE_UINT_DEC-115))|(1<<(CEEventParserVALUE_UINT_HEX-115)))) != 0 {
+		for (int64((_la-115)) & ^0x3f) == 0 && ((int64(1)<<(_la-115))&15) != 0 {
 			{
 				p.SetState(498)
 				_la = p.GetTokenStream().LA(1)
 
-				if !(((_la-115)&-(0x1f+1)) == 0 && ((1<<uint((_la-115)))&((1<<(CEEventParserVALUE_UINT_BIN-115))|(1<<(CEEventParserVALUE_UINT_OCT-115))|(1<<(CEEventParserVALUE_UINT_DEC-115))|(1<<(CEEventParserVALUE_UINT_HEX-115)))) != 0) {
+				if !((int64((_la-115)) & ^0x3f) == 0 && ((int64(1)<<(_la-115))&15) != 0) {
 					p.GetErrorHandler().RecoverInline(p)
 				} else {
 					p.GetErrorHandler().ReportMatch(p)
@@ -7406,6 +7795,12 @@ type IEventArrayUint32XContext interface {
 
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
+
+	// Getter signatures
+	EVENT_AU32X() antlr.TerminalNode
+	EVENT_AU32X_ARGS() antlr.TerminalNode
+	AllVALUE_UINTX() []antlr.TerminalNode
+	VALUE_UINTX(i int) antlr.TerminalNode
 
 	// IsEventArrayUint32XContext differentiates from other interfaces.
 	IsEventArrayUint32XContext()
@@ -7544,6 +7939,18 @@ type IEventArrayUint64Context interface {
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
 
+	// Getter signatures
+	EVENT_AU64() antlr.TerminalNode
+	EVENT_AU64_ARGS() antlr.TerminalNode
+	AllVALUE_UINT_BIN() []antlr.TerminalNode
+	VALUE_UINT_BIN(i int) antlr.TerminalNode
+	AllVALUE_UINT_OCT() []antlr.TerminalNode
+	VALUE_UINT_OCT(i int) antlr.TerminalNode
+	AllVALUE_UINT_DEC() []antlr.TerminalNode
+	VALUE_UINT_DEC(i int) antlr.TerminalNode
+	AllVALUE_UINT_HEX() []antlr.TerminalNode
+	VALUE_UINT_HEX(i int) antlr.TerminalNode
+
 	// IsEventArrayUint64Context differentiates from other interfaces.
 	IsEventArrayUint64Context()
 }
@@ -7680,12 +8087,12 @@ func (p *CEEventParser) EventArrayUint64() (localctx IEventArrayUint64Context) {
 		p.GetErrorHandler().Sync(p)
 		_la = p.GetTokenStream().LA(1)
 
-		for ((_la-115)&-(0x1f+1)) == 0 && ((1<<uint((_la-115)))&((1<<(CEEventParserVALUE_UINT_BIN-115))|(1<<(CEEventParserVALUE_UINT_OCT-115))|(1<<(CEEventParserVALUE_UINT_DEC-115))|(1<<(CEEventParserVALUE_UINT_HEX-115)))) != 0 {
+		for (int64((_la-115)) & ^0x3f) == 0 && ((int64(1)<<(_la-115))&15) != 0 {
 			{
 				p.SetState(518)
 				_la = p.GetTokenStream().LA(1)
 
-				if !(((_la-115)&-(0x1f+1)) == 0 && ((1<<uint((_la-115)))&((1<<(CEEventParserVALUE_UINT_BIN-115))|(1<<(CEEventParserVALUE_UINT_OCT-115))|(1<<(CEEventParserVALUE_UINT_DEC-115))|(1<<(CEEventParserVALUE_UINT_HEX-115)))) != 0) {
+				if !((int64((_la-115)) & ^0x3f) == 0 && ((int64(1)<<(_la-115))&15) != 0) {
 					p.GetErrorHandler().RecoverInline(p)
 				} else {
 					p.GetErrorHandler().ReportMatch(p)
@@ -7711,6 +8118,12 @@ type IEventArrayUint64XContext interface {
 
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
+
+	// Getter signatures
+	EVENT_AU64X() antlr.TerminalNode
+	EVENT_AU64X_ARGS() antlr.TerminalNode
+	AllVALUE_UINTX() []antlr.TerminalNode
+	VALUE_UINTX(i int) antlr.TerminalNode
 
 	// IsEventArrayUint64XContext differentiates from other interfaces.
 	IsEventArrayUint64XContext()
@@ -7849,6 +8262,18 @@ type IEventArrayUint8Context interface {
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
 
+	// Getter signatures
+	EVENT_AU8() antlr.TerminalNode
+	EVENT_AU8_ARGS() antlr.TerminalNode
+	AllVALUE_UINT_BIN() []antlr.TerminalNode
+	VALUE_UINT_BIN(i int) antlr.TerminalNode
+	AllVALUE_UINT_OCT() []antlr.TerminalNode
+	VALUE_UINT_OCT(i int) antlr.TerminalNode
+	AllVALUE_UINT_DEC() []antlr.TerminalNode
+	VALUE_UINT_DEC(i int) antlr.TerminalNode
+	AllVALUE_UINT_HEX() []antlr.TerminalNode
+	VALUE_UINT_HEX(i int) antlr.TerminalNode
+
 	// IsEventArrayUint8Context differentiates from other interfaces.
 	IsEventArrayUint8Context()
 }
@@ -7985,12 +8410,12 @@ func (p *CEEventParser) EventArrayUint8() (localctx IEventArrayUint8Context) {
 		p.GetErrorHandler().Sync(p)
 		_la = p.GetTokenStream().LA(1)
 
-		for ((_la-115)&-(0x1f+1)) == 0 && ((1<<uint((_la-115)))&((1<<(CEEventParserVALUE_UINT_BIN-115))|(1<<(CEEventParserVALUE_UINT_OCT-115))|(1<<(CEEventParserVALUE_UINT_DEC-115))|(1<<(CEEventParserVALUE_UINT_HEX-115)))) != 0 {
+		for (int64((_la-115)) & ^0x3f) == 0 && ((int64(1)<<(_la-115))&15) != 0 {
 			{
 				p.SetState(538)
 				_la = p.GetTokenStream().LA(1)
 
-				if !(((_la-115)&-(0x1f+1)) == 0 && ((1<<uint((_la-115)))&((1<<(CEEventParserVALUE_UINT_BIN-115))|(1<<(CEEventParserVALUE_UINT_OCT-115))|(1<<(CEEventParserVALUE_UINT_DEC-115))|(1<<(CEEventParserVALUE_UINT_HEX-115)))) != 0) {
+				if !((int64((_la-115)) & ^0x3f) == 0 && ((int64(1)<<(_la-115))&15) != 0) {
 					p.GetErrorHandler().RecoverInline(p)
 				} else {
 					p.GetErrorHandler().ReportMatch(p)
@@ -8016,6 +8441,12 @@ type IEventArrayUint8XContext interface {
 
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
+
+	// Getter signatures
+	EVENT_AU8X() antlr.TerminalNode
+	EVENT_AU8X_ARGS() antlr.TerminalNode
+	AllVALUE_UINTX() []antlr.TerminalNode
+	VALUE_UINTX(i int) antlr.TerminalNode
 
 	// IsEventArrayUint8XContext differentiates from other interfaces.
 	IsEventArrayUint8XContext()
@@ -8154,6 +8585,9 @@ type IEventBeginArrayBitsContext interface {
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
 
+	// Getter signatures
+	EVENT_BAB() antlr.TerminalNode
+
 	// IsEventBeginArrayBitsContext differentiates from other interfaces.
 	IsEventBeginArrayBitsContext()
 }
@@ -8247,6 +8681,9 @@ type IEventBeginArrayFloat16Context interface {
 
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
+
+	// Getter signatures
+	EVENT_BAF16() antlr.TerminalNode
 
 	// IsEventBeginArrayFloat16Context differentiates from other interfaces.
 	IsEventBeginArrayFloat16Context()
@@ -8342,6 +8779,9 @@ type IEventBeginArrayFloat32Context interface {
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
 
+	// Getter signatures
+	EVENT_BAF32() antlr.TerminalNode
+
 	// IsEventBeginArrayFloat32Context differentiates from other interfaces.
 	IsEventBeginArrayFloat32Context()
 }
@@ -8435,6 +8875,9 @@ type IEventBeginArrayFloat64Context interface {
 
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
+
+	// Getter signatures
+	EVENT_BAF64() antlr.TerminalNode
 
 	// IsEventBeginArrayFloat64Context differentiates from other interfaces.
 	IsEventBeginArrayFloat64Context()
@@ -8530,6 +8973,9 @@ type IEventBeginArrayInt16Context interface {
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
 
+	// Getter signatures
+	EVENT_BAI16() antlr.TerminalNode
+
 	// IsEventBeginArrayInt16Context differentiates from other interfaces.
 	IsEventBeginArrayInt16Context()
 }
@@ -8623,6 +9069,9 @@ type IEventBeginArrayInt32Context interface {
 
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
+
+	// Getter signatures
+	EVENT_BAI32() antlr.TerminalNode
 
 	// IsEventBeginArrayInt32Context differentiates from other interfaces.
 	IsEventBeginArrayInt32Context()
@@ -8718,6 +9167,9 @@ type IEventBeginArrayInt64Context interface {
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
 
+	// Getter signatures
+	EVENT_BAI64() antlr.TerminalNode
+
 	// IsEventBeginArrayInt64Context differentiates from other interfaces.
 	IsEventBeginArrayInt64Context()
 }
@@ -8811,6 +9263,9 @@ type IEventBeginArrayInt8Context interface {
 
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
+
+	// Getter signatures
+	EVENT_BAI8() antlr.TerminalNode
 
 	// IsEventBeginArrayInt8Context differentiates from other interfaces.
 	IsEventBeginArrayInt8Context()
@@ -8906,6 +9361,9 @@ type IEventBeginArrayUIDContext interface {
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
 
+	// Getter signatures
+	EVENT_BAU() antlr.TerminalNode
+
 	// IsEventBeginArrayUIDContext differentiates from other interfaces.
 	IsEventBeginArrayUIDContext()
 }
@@ -8999,6 +9457,9 @@ type IEventBeginArrayUint16Context interface {
 
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
+
+	// Getter signatures
+	EVENT_BAU16() antlr.TerminalNode
 
 	// IsEventBeginArrayUint16Context differentiates from other interfaces.
 	IsEventBeginArrayUint16Context()
@@ -9094,6 +9555,9 @@ type IEventBeginArrayUint32Context interface {
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
 
+	// Getter signatures
+	EVENT_BAU32() antlr.TerminalNode
+
 	// IsEventBeginArrayUint32Context differentiates from other interfaces.
 	IsEventBeginArrayUint32Context()
 }
@@ -9187,6 +9651,9 @@ type IEventBeginArrayUint64Context interface {
 
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
+
+	// Getter signatures
+	EVENT_BAU64() antlr.TerminalNode
 
 	// IsEventBeginArrayUint64Context differentiates from other interfaces.
 	IsEventBeginArrayUint64Context()
@@ -9282,6 +9749,9 @@ type IEventBeginArrayUint8Context interface {
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
 
+	// Getter signatures
+	EVENT_BAU8() antlr.TerminalNode
+
 	// IsEventBeginArrayUint8Context differentiates from other interfaces.
 	IsEventBeginArrayUint8Context()
 }
@@ -9375,6 +9845,10 @@ type IEventBeginCustomBinaryContext interface {
 
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
+
+	// Getter signatures
+	EVENT_BCB() antlr.TerminalNode
+	VALUE_UINT_DEC() antlr.TerminalNode
 
 	// IsEventBeginCustomBinaryContext differentiates from other interfaces.
 	IsEventBeginCustomBinaryContext()
@@ -9478,6 +9952,10 @@ type IEventBeginCustomTextContext interface {
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
 
+	// Getter signatures
+	EVENT_BCT() antlr.TerminalNode
+	VALUE_UINT_DEC() antlr.TerminalNode
+
 	// IsEventBeginCustomTextContext differentiates from other interfaces.
 	IsEventBeginCustomTextContext()
 }
@@ -9579,6 +10057,10 @@ type IEventBeginMediaContext interface {
 
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
+
+	// Getter signatures
+	EVENT_BMEDIA() antlr.TerminalNode
+	STRING() antlr.TerminalNode
 
 	// IsEventBeginMediaContext differentiates from other interfaces.
 	IsEventBeginMediaContext()
@@ -9682,6 +10164,9 @@ type IEventBeginRemoteReferenceContext interface {
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
 
+	// Getter signatures
+	EVENT_BREFR() antlr.TerminalNode
+
 	// IsEventBeginRemoteReferenceContext differentiates from other interfaces.
 	IsEventBeginRemoteReferenceContext()
 }
@@ -9775,6 +10260,9 @@ type IEventBeginResourceIdContext interface {
 
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
+
+	// Getter signatures
+	EVENT_BRID() antlr.TerminalNode
 
 	// IsEventBeginResourceIdContext differentiates from other interfaces.
 	IsEventBeginResourceIdContext()
@@ -9870,6 +10358,9 @@ type IEventBeginStringContext interface {
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
 
+	// Getter signatures
+	EVENT_BS() antlr.TerminalNode
+
 	// IsEventBeginStringContext differentiates from other interfaces.
 	IsEventBeginStringContext()
 }
@@ -9963,6 +10454,11 @@ type IEventBooleanContext interface {
 
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
+
+	// Getter signatures
+	EVENT_B() antlr.TerminalNode
+	TRUE() antlr.TerminalNode
+	FALSE() antlr.TerminalNode
 
 	// IsEventBooleanContext differentiates from other interfaces.
 	IsEventBooleanContext()
@@ -10077,6 +10573,11 @@ type IEventCommentMultilineContext interface {
 
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
+
+	// Getter signatures
+	EVENT_CM() antlr.TerminalNode
+	EVENT_CM_ARGS() antlr.TerminalNode
+	STRING() antlr.TerminalNode
 
 	// IsEventCommentMultilineContext differentiates from other interfaces.
 	IsEventCommentMultilineContext()
@@ -10208,6 +10709,11 @@ type IEventCommentSingleLineContext interface {
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
 
+	// Getter signatures
+	EVENT_CS() antlr.TerminalNode
+	EVENT_CS_ARGS() antlr.TerminalNode
+	STRING() antlr.TerminalNode
+
 	// IsEventCommentSingleLineContext differentiates from other interfaces.
 	IsEventCommentSingleLineContext()
 }
@@ -10338,6 +10844,12 @@ type IEventCustomBinaryContext interface {
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
 
+	// Getter signatures
+	EVENT_CB() antlr.TerminalNode
+	CUSTOM_BINARY_TYPE() antlr.TerminalNode
+	AllBYTE() []antlr.TerminalNode
+	BYTE(i int) antlr.TerminalNode
+
 	// IsEventCustomBinaryContext differentiates from other interfaces.
 	IsEventCustomBinaryContext()
 }
@@ -10463,6 +10975,11 @@ type IEventCustomTextContext interface {
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
 
+	// Getter signatures
+	EVENT_CT() antlr.TerminalNode
+	CUSTOM_TEXT_TYPE() antlr.TerminalNode
+	STRING() antlr.TerminalNode
+
 	// IsEventCustomTextContext differentiates from other interfaces.
 	IsEventCustomTextContext()
 }
@@ -10581,6 +11098,9 @@ type IEventEdgeContext interface {
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
 
+	// Getter signatures
+	EVENT_EDGE() antlr.TerminalNode
+
 	// IsEventEdgeContext differentiates from other interfaces.
 	IsEventEdgeContext()
 }
@@ -10674,6 +11194,9 @@ type IEventEndContainerContext interface {
 
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
+
+	// Getter signatures
+	EVENT_E() antlr.TerminalNode
 
 	// IsEventEndContainerContext differentiates from other interfaces.
 	IsEventEndContainerContext()
@@ -10769,6 +11292,9 @@ type IEventListContext interface {
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
 
+	// Getter signatures
+	EVENT_L() antlr.TerminalNode
+
 	// IsEventListContext differentiates from other interfaces.
 	IsEventListContext()
 }
@@ -10863,6 +11389,9 @@ type IEventMapContext interface {
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
 
+	// Getter signatures
+	EVENT_M() antlr.TerminalNode
+
 	// IsEventMapContext differentiates from other interfaces.
 	IsEventMapContext()
 }
@@ -10956,6 +11485,10 @@ type IEventMarkerContext interface {
 
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
+
+	// Getter signatures
+	EVENT_MARK() antlr.TerminalNode
+	STRING() antlr.TerminalNode
 
 	// IsEventMarkerContext differentiates from other interfaces.
 	IsEventMarkerContext()
@@ -11058,6 +11591,12 @@ type IEventMediaContext interface {
 
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
+
+	// Getter signatures
+	EVENT_MEDIA() antlr.TerminalNode
+	MEDIA_TYPE() antlr.TerminalNode
+	AllBYTE() []antlr.TerminalNode
+	BYTE(i int) antlr.TerminalNode
 
 	// IsEventMediaContext differentiates from other interfaces.
 	IsEventMediaContext()
@@ -11184,6 +11723,9 @@ type IEventNodeContext interface {
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
 
+	// Getter signatures
+	EVENT_NODE() antlr.TerminalNode
+
 	// IsEventNodeContext differentiates from other interfaces.
 	IsEventNodeContext()
 }
@@ -11278,6 +11820,9 @@ type IEventNullContext interface {
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
 
+	// Getter signatures
+	EVENT_NULL() antlr.TerminalNode
+
 	// IsEventNullContext differentiates from other interfaces.
 	IsEventNullContext()
 }
@@ -11371,6 +11916,18 @@ type IEventNumberContext interface {
 
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
+
+	// Getter signatures
+	EVENT_N() antlr.TerminalNode
+	INT_BIN() antlr.TerminalNode
+	INT_OCT() antlr.TerminalNode
+	INT_DEC() antlr.TerminalNode
+	INT_HEX() antlr.TerminalNode
+	FLOAT_DEC() antlr.TerminalNode
+	FLOAT_HEX() antlr.TerminalNode
+	FLOAT_INF() antlr.TerminalNode
+	FLOAT_NAN() antlr.TerminalNode
+	FLOAT_SNAN() antlr.TerminalNode
 
 	// IsEventNumberContext differentiates from other interfaces.
 	IsEventNumberContext()
@@ -11496,7 +12053,7 @@ func (p *CEEventParser) EventNumber() (localctx IEventNumberContext) {
 		p.SetState(651)
 		_la = p.GetTokenStream().LA(1)
 
-		if !(((_la-105)&-(0x1f+1)) == 0 && ((1<<uint((_la-105)))&((1<<(CEEventParserFLOAT_NAN-105))|(1<<(CEEventParserFLOAT_SNAN-105))|(1<<(CEEventParserFLOAT_INF-105))|(1<<(CEEventParserFLOAT_DEC-105))|(1<<(CEEventParserFLOAT_HEX-105))|(1<<(CEEventParserINT_BIN-105))|(1<<(CEEventParserINT_OCT-105))|(1<<(CEEventParserINT_DEC-105))|(1<<(CEEventParserINT_HEX-105)))) != 0) {
+		if !((int64((_la-105)) & ^0x3f) == 0 && ((int64(1)<<(_la-105))&511) != 0) {
 			p.GetErrorHandler().RecoverInline(p)
 		} else {
 			p.GetErrorHandler().ReportMatch(p)
@@ -11513,6 +12070,9 @@ type IEventPadContext interface {
 
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
+
+	// Getter signatures
+	EVENT_PAD() antlr.TerminalNode
 
 	// IsEventPadContext differentiates from other interfaces.
 	IsEventPadContext()
@@ -11607,6 +12167,10 @@ type IEventLocalReferenceContext interface {
 
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
+
+	// Getter signatures
+	EVENT_REFL() antlr.TerminalNode
+	STRING() antlr.TerminalNode
 
 	// IsEventLocalReferenceContext differentiates from other interfaces.
 	IsEventLocalReferenceContext()
@@ -11709,6 +12273,11 @@ type IEventRemoteReferenceContext interface {
 
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
+
+	// Getter signatures
+	EVENT_REFR() antlr.TerminalNode
+	EVENT_REFR_ARGS() antlr.TerminalNode
+	STRING() antlr.TerminalNode
 
 	// IsEventRemoteReferenceContext differentiates from other interfaces.
 	IsEventRemoteReferenceContext()
@@ -11840,6 +12409,11 @@ type IEventResourceIdContext interface {
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
 
+	// Getter signatures
+	EVENT_RID() antlr.TerminalNode
+	EVENT_RID_ARGS() antlr.TerminalNode
+	STRING() antlr.TerminalNode
+
 	// IsEventResourceIdContext differentiates from other interfaces.
 	IsEventResourceIdContext()
 }
@@ -11969,6 +12543,11 @@ type IEventStringContext interface {
 
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
+
+	// Getter signatures
+	EVENT_S() antlr.TerminalNode
+	EVENT_S_ARGS() antlr.TerminalNode
+	STRING() antlr.TerminalNode
 
 	// IsEventStringContext differentiates from other interfaces.
 	IsEventStringContext()
@@ -12100,6 +12679,10 @@ type IEventStructInstanceContext interface {
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
 
+	// Getter signatures
+	EVENT_SI() antlr.TerminalNode
+	STRING() antlr.TerminalNode
+
 	// IsEventStructInstanceContext differentiates from other interfaces.
 	IsEventStructInstanceContext()
 }
@@ -12201,6 +12784,10 @@ type IEventStructTemplateContext interface {
 
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
+
+	// Getter signatures
+	EVENT_ST() antlr.TerminalNode
+	STRING() antlr.TerminalNode
 
 	// IsEventStructTemplateContext differentiates from other interfaces.
 	IsEventStructTemplateContext()
@@ -12304,6 +12891,12 @@ type IEventTimeContext interface {
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
 
+	// Getter signatures
+	EVENT_T() antlr.TerminalNode
+	DATE() antlr.TerminalNode
+	TIME() antlr.TerminalNode
+	DATETIME() antlr.TerminalNode
+
 	// IsEventTimeContext differentiates from other interfaces.
 	IsEventTimeContext()
 }
@@ -12404,7 +12997,7 @@ func (p *CEEventParser) EventTime() (localctx IEventTimeContext) {
 		p.SetState(686)
 		_la = p.GetTokenStream().LA(1)
 
-		if !(((_la-141)&-(0x1f+1)) == 0 && ((1<<uint((_la-141)))&((1<<(CEEventParserTIME-141))|(1<<(CEEventParserDATE-141))|(1<<(CEEventParserDATETIME-141)))) != 0) {
+		if !((int64((_la-141)) & ^0x3f) == 0 && ((int64(1)<<(_la-141))&7) != 0) {
 			p.GetErrorHandler().RecoverInline(p)
 		} else {
 			p.GetErrorHandler().ReportMatch(p)
@@ -12421,6 +13014,10 @@ type IEventUIDContext interface {
 
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
+
+	// Getter signatures
+	EVENT_UID() antlr.TerminalNode
+	UID() antlr.TerminalNode
 
 	// IsEventUIDContext differentiates from other interfaces.
 	IsEventUIDContext()
@@ -12523,6 +13120,10 @@ type IEventVersionContext interface {
 
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
+
+	// Getter signatures
+	EVENT_V() antlr.TerminalNode
+	VALUE_UINT_DEC() antlr.TerminalNode
 
 	// IsEventVersionContext differentiates from other interfaces.
 	IsEventVersionContext()

@@ -10,21 +10,6 @@ c0
         // ====================================================================
 
         {
-            "name" = "Comments in arrays"
-            "issue link" = @"https://github.com/kstenerud/concise-encoding/issues/36"
-            "mustSucceed" = [
-                {
-                    "from_cte" = "\.%%%%
-|u8x /* foo */ 1 2 3|
-%%%%"
-                    "events" = ["bau8" "cm= foo " "acl=3" "adu8=1 2 3"]
-                }
-            ]
-        }
-
-        // ====================================================================
-
-        {
             "name" = "Whitespace before an edge closure"
             "issue link" = @"https://github.com/kstenerud/enctool/issues/27"
             "mustSucceed" = [

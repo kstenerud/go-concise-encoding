@@ -22,6 +22,7 @@ package iterator
 
 import (
 	"reflect"
+	"sort"
 
 	"github.com/kstenerud/go-concise-encoding/ce/events"
 	"github.com/kstenerud/go-concise-encoding/configuration"
@@ -35,6 +36,7 @@ type Context struct {
 	// Per-session data
 	GetIteratorForType GetIteratorForType
 	Configuration      *configuration.IteratorConfiguration
+	RecordTypeOrder    []recordTypeEntry
 
 	// Per-root-iterator data
 	EventReceiver        events.DataEventReceiver
@@ -45,10 +47,30 @@ func (_this *Context) NotifyNil() {
 	_this.EventReceiver.OnNull()
 }
 
+type recordTypeEntry struct {
+	Name     string
+	Type     reflect.Type
+	Iterator IteratorFunction
+}
+
 func sessionContext(getIteratorFunc GetIteratorForType, config *configuration.IteratorConfiguration) Context {
+	orderedEntries := make([]recordTypeEntry, 0, len(config.RecordTypes))
+	for rtype, name := range config.RecordTypes {
+		orderedEntries = append(orderedEntries, recordTypeEntry{
+			Name:     name,
+			Type:     rtype,
+			Iterator: nil, // Will be set in Session.Init
+		})
+	}
+	sort.SliceStable(orderedEntries, func(i, j int) bool {
+		// TODO: case where names are the same
+		return orderedEntries[i].Name < orderedEntries[j].Name
+	})
+
 	return Context{
 		GetIteratorForType: getIteratorFunc,
 		Configuration:      config,
+		RecordTypeOrder:    orderedEntries,
 	}
 }
 
@@ -58,8 +80,9 @@ func iteratorContext(sessionContext *Context,
 
 	return Context{
 		GetIteratorForType:   sessionContext.GetIteratorForType,
+		Configuration:        sessionContext.Configuration,
+		RecordTypeOrder:      sessionContext.RecordTypeOrder,
 		EventReceiver:        eventReceiver,
 		TryAddLocalReference: tryAddLocalReference,
-		Configuration:        sessionContext.Configuration,
 	}
 }

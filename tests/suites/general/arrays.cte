@@ -341,10 +341,8 @@ c0
                 {"cte"="|f16 -|"}           // Incomplete value
                 {"cte"="|f16 -nan|"}        // NaN does not have a negative form
                 {"cte"="|f16 -snan|"}       // NaN does not have a negative form
-                {"cte"="|f16 0x1.8p+128|"}  // Exponent too big
-                {"cte"="|f16 0x1.8p-127|"}  // Exponent too small
-                {"cte"="|f16 0x1.ffff|"}    // Coefficient too big
-                {"cte"="|f16 -0x1.ffff|"}   // Coefficient too big
+                {"cte"="|f16 0x1p+128|"}    // Exponent too big
+                {"cte"="|f16 0x1p-150|"}    // Exponent too small
             ]
         }
 
@@ -355,19 +353,19 @@ c0
             // 24 sig bits, 8 exp bits
             "mustSucceed" = [
                 {
-                    "cte"="|f32x 1.fep+10 -1.3p-40 1.111112p+127 1.111112p-126|"
-                    "events"=["af32=0x1.fep+10 -0x1.3p-40 0x1.111112p+127 0x1.111112p-126"]
+                    "cte"="|f32x 1.f19p+10 -1.3p-40 1.111112p+127 1.111112p-126|"
+                    "events"=["af32=0x1.f19p+10 -0x1.3p-40 0x1.111112p+127 0x1.111112p-126"]
                 }
                 {"from_cte"="|f32|"                                "events"=["af32"]}
                 {"cte"="|f32x|"                                    "events"=["af32"]}
                 {"from_cte"="|f32 1.4512e+20 9.41e-15 944523.55|"  "events"=["af32=1.4512e+20 9.41e-15 944523.55"]}
                 {
-                    "from_cte"="|f32 0x1.fep+10 -0x1.3p-40 0x1.111112p+127 0x1.111112p-126|"
-                    "events"=["af32=0x1.fep+10 -0x1.3p-40 0x1.111112p+127 0x1.111112p-126"]
+                    "from_cte"="|f32 0x1.f19p+10 -0x1.3p-40 0x1.111112p+127 0x1.111112p-126|"
+                    "events"=["af32=0x1.f19p+10 -0x1.3p-40 0x1.111112p+127 0x1.111112p-126"]
                 }
                 {
-                    "cte"="|f32x 1.fep+10 -1.3p-40 1.111112p+127 1.111112p-126|"
-                    "events"=["af32=0x1.fep+10 -0x1.3p-40 0x1.111112p+127 0x1.111112p-126"]
+                    "cte"="|f32x 1.f19p+10 -1.3p-40 1.111112p+127 1.111112p-126|"
+                    "events"=["af32=0x1.f19p+10 -0x1.3p-40 0x1.111112p+127 0x1.111112p-126"]
                 }
                 {"from_cte"="|f32 nan snan inf -inf|"              "events"=["af32=nan snan inf -inf"]}
                 {"from_cte"="|f32 NAN SNAN INF -INF|"              "events"=["af32=nan snan inf -inf"]}
@@ -378,10 +376,8 @@ c0
                 {"cte"="|f32 -|"}                              // Incomplete value
                 {"cte"="|f32 -nan|"}                           // NaN does not have a negative form
                 {"cte"="|f32 -snan|"}                          // NaN does not have a negative form
-                {"cte"="|f32 0x1.fep+128|"}                    // Exponent too big
-                {"cte"="|f32 0x1.fep-127|"}                    // Exponent too small
-                {"cte"="|f32 0x1.fffffffffffffffffffffffff|"}  // Coefficient too big
-                {"cte"="|f32 -0x1.fffffffffffffffffffffffff|"} // Coefficient too big
+                {"cte"="|f16 0x1p+128|"}                       // Exponent too big
+                {"cte"="|f16 0x1p-151|"}                       // Exponent too small
             ]
         }
 
@@ -392,19 +388,19 @@ c0
             // 53 sig bits, 11 exp bits
             "mustSucceed" = [
                 {
-                    "cte"="|f64x 1.fep+10 -1.3p-40 1.111112p+1023 1.111112p-1022|"
-                    "events"=["af64=0x1.fep+10 -0x1.3p-40 0x1.111112p+1023 0x1.111112p-1022"]
+                    "cte"="|f64x 1.f19p+10 -1.3p-40 1.111112p+1023 1.111112p-1022|"
+                    "events"=["af64=0x1.f19p+10 -0x1.3p-40 0x1.111112p+1023 0x1.111112p-1022"]
                 }
                 {"from_cte"="|f64|"                                "events"=["af64"]}
                 {"cte"="|f64x|"                                    "events"=["af64"]}
                 {"from_cte"="|f64 1.4512e+20 9.41e-15 944523.55|"  "events"=["af64=1.4512e+20 9.41e-15 944523.55"]}
                 {
-                    "from_cte"="|f64 0x1.fep+10 -0x1.3p-40 0x1.111112p+1023 0x1.111112p-1022|"
-                    "events"=["af64=0x1.fep+10 -0x1.3p-40 0x1.111112p+1023 0x1.111112p-1022"]
+                    "from_cte"="|f64 0x1.f19p+10 -0x1.3p-40 0x1.111112p+1023 0x1.111112p-1022|"
+                    "events"=["af64=0x1.f19p+10 -0x1.3p-40 0x1.111112p+1023 0x1.111112p-1022"]
                 }
                 {
-                    "cte"="|f64x 1.fep+10 -1.3p-40 1.111112p+1023 1.111112p-1022|"
-                    "events"=["af64=0x1.fep+10 -0x1.3p-40 0x1.111112p+1023 0x1.111112p-1022"]
+                    "cte"="|f64x 1.f19p+10 -1.3p-40 1.111112p+1023 1.111112p-1022|"
+                    "events"=["af64=0x1.f19p+10 -0x1.3p-40 0x1.111112p+1023 0x1.111112p-1022"]
                 }
                 {"from_cte"="|f64 nan snan inf -inf|"              "events"=["af64=nan snan inf -inf"]}
                 {"from_cte"="|f64 NAN SNAN INF -INF|"              "events"=["af64=nan snan inf -inf"]}
@@ -415,10 +411,8 @@ c0
                 {"cte"="|f64 -|"}                              // Incomplete value
                 {"cte"="|f64 -nan|"}                           // NaN does not have a negative form
                 {"cte"="|f64 -snan|"}                          // NaN does not have a negative form
-                {"cte"="|f64 0x1.fep+1024|"}                   // Exponent too big
-                {"cte"="|f64 0x1.fep-1023|"}                   // Exponent too small
-                {"cte"="|f64 0x1.fffffffffffffffffffffffff|"}  // Coefficient too big
-                {"cte"="|f64 -0x1.fffffffffffffffffffffffff|"} // Coefficient too big
+                {"cte"="|f64 0x1p+1024|"}                      // Exponent too big
+                {"cte"="|f64 0x1p-1075|"}                      // Exponent too small
             ]
         }
 
@@ -749,7 +743,6 @@ c0
                 {"from_cte"="\.~ "test\\test"~"           "events"=["s=\.~ test\test~"]} // Escaped backslash
                 {"from_cte"="\.~ "test\/test"~"           "events"=["s=\.~ test/test~"]} // Escaped slash
                 {"from_cte"="\.~ "test\*test"~"           "events"=["s=\.~ test*test~"]} // Escaped star
-                {"from_cte"="\.~ "test\|test"~"           "events"=["s=\.~ test|test~"]} // Escaped pipe
                 {"from_cte"="\.~ "test\_test"~"           "events"=["s=test\{a0}test"]}  // Escaped non-breaking space
                 {"from_cte"="\.~ "test\-test"~"           "events"=["s=test\{ad}test"]}  // Escaped soft hyphen
                 {"from_cte"="\.~ "test\{a}test"~"         "events"=["s=test\ntest"]}     // Escaped 1-digit codepoint
@@ -815,7 +808,6 @@ test"~"  "events"=["s=testtest"]}     // Continuation
                 {"from_cte"="\.~ @"test\\test"~"           "events"=["rid=\.~ test\test~"]} // Escaped backslash
                 {"from_cte"="\.~ @"test\/test"~"           "events"=["rid=\.~ test/test~"]} // Escaped slash
                 {"from_cte"="\.~ @"test\*test"~"           "events"=["rid=\.~ test*test~"]} // Escaped star
-                {"from_cte"="\.~ @"test\|test"~"           "events"=["rid=\.~ test|test~"]} // Escaped pipe
                 {"from_cte"="\.~ @"test\_test"~"           "events"=["rid=test\{a0}test"]}  // Escaped non-breaking space
                 {"from_cte"="\.~ @"test\-test"~"           "events"=["rid=test\{ad}test"]}  // Escaped soft hyphen
                 {"from_cte"="\.~ @"test\{a}test"~"         "events"=["rid=test\ntest"]}     // Escaped 1-digit codepoint
@@ -866,7 +858,6 @@ test"~"  "events"=["rid=testtest"]}   // Continuation
                 {"from_cte"="\.~ |c0 "test\\test"|~"            "events"=["ct=0 \.~ test\test~"]} // Escaped backslash
                 {"from_cte"="\.~ |c0 "test\/test"|~"            "events"=["ct=0 \.~ test/test~"]} // Escaped slash
                 {"from_cte"="\.~ |c0 "test\*test"|~"            "events"=["ct=0 \.~ test*test~"]} // Escaped star
-                {"from_cte"="\.~ |c0 "test\|test"|~"            "events"=["ct=0 \.~ test|test~"]} // Escaped pipe
                 {"from_cte"="\.~ |c0 "test\_test"|~"            "events"=["ct=0 test\{a0}test"]}  // Escaped non-breaking space
                 {"from_cte"="\.~ |c0 "test\-test"|~"            "events"=["ct=0 test\{ad}test"]}  // Escaped soft hyphen
                 {"from_cte"="\.~ |c0 "test\{a}test"|~"          "events"=["ct=0 test\ntest"]}     // Escaped 1-digit codepoint
@@ -965,12 +956,12 @@ blah blahXXX"~"
             "name" = "Media"
             "mustSucceed" = [
                 {
-                    "cte" = "|application/x-sh 23 21 2f 62 69 6e 2f 73 68 0a 0a 65 63 68 6f 20 68 65 6c 6c 6f 20 77 6f 72 6c 64 0a|"
+                    "cte" = "|.application/x-sh 23 21 2f 62 69 6e 2f 73 68 0a 0a 65 63 68 6f 20 68 65 6c 6c 6f 20 77 6f 72 6c 64 0a|"
                     "events" = ["media=application/x-sh 23 21 2f 62 69 6e 2f 73 68 0a 0a 65 63 68 6f 20 68 65 6c 6c 6f 20 77 6f 72 6c 64 0a"]
                 }
                 {
                     "from_cte" = "\.^^
-|application/x-sh "\.@@
+|.application/x-sh "\.@@
 #!/bin/sh
 
 echo hello world
@@ -984,7 +975,7 @@ echo hello world
 
 echo hello world
 ^"]
-                    "to_cte" = "|application/x-sh 23 21 2f 62 69 6e 2f 73 68 0a 0a 65 63 68 6f 20 68 65 6c 6c 6f 20 77 6f 72 6c 64 0a|"
+                    "to_cte" = "|.application/x-sh 23 21 2f 62 69 6e 2f 73 68 0a 0a 65 63 68 6f 20 68 65 6c 6c 6f 20 77 6f 72 6c 64 0a|"
                 }
             ]
         }

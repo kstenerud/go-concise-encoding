@@ -31,7 +31,7 @@ import (
 )
 
 func TestCEUnmarshalCTE(t *testing.T) {
-	document := "c1 [1 2 3]"
+	document := "c0 [1 2 3]"
 	expected := []interface{}{1, 2, 3}
 	actual, err := UnmarshalFromCEDocument([]byte(document), nil, nil)
 	if err != nil {

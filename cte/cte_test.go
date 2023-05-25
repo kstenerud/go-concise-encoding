@@ -23,9 +23,22 @@ package cte
 import (
 	"testing"
 
+	"github.com/kstenerud/go-concise-encoding/ce/events"
+	"github.com/kstenerud/go-concise-encoding/configuration"
+	"github.com/kstenerud/go-concise-encoding/nullevent"
+	"github.com/kstenerud/go-concise-encoding/rules"
+	"github.com/kstenerud/go-concise-encoding/test"
 	"github.com/kstenerud/go-describe"
 	"github.com/kstenerud/go-equivalence"
 )
+
+// TODO: Generates incorrect line/column when reporting an error
+// func TestBrokenLineColReporting(t *testing.T) {
+// 	v := 0.0
+// 	v = -v
+// 	assertUnmarshal(t, v, `c0
+// 0b1@`)
+// }
 
 func TestCTEDuplicateEmptySliceInSlice(t *testing.T) {
 	sl := []interface{}{}
@@ -56,7 +69,9 @@ func assertMarshal(t *testing.T, value interface{}, expectedDocument string) (su
 }
 
 func assertUnmarshal(t *testing.T, expectedValue interface{}, document string) (successful bool) {
-	actualValue, err := NewUnmarshaler(nil).UnmarshalFromDocument([]byte(document), expectedValue)
+	config := configuration.DefaultCEUnmarshalerConfiguration()
+	config.DebugPanics = true
+	actualValue, err := NewUnmarshaler(&config).UnmarshalFromDocument([]byte(document), expectedValue)
 	if err != nil {
 		t.Errorf("Error [%v] while unmarshaling document [%v]", err, document)
 		return
@@ -64,6 +79,23 @@ func assertUnmarshal(t *testing.T, expectedValue interface{}, document string) (
 
 	if !equivalence.IsEquivalent(actualValue, expectedValue) {
 		t.Errorf("Expected document [%v] to unmarshal to [%v] but got [%v]", document, describe.D(expectedValue), describe.D(actualValue))
+		return
+	}
+	successful = true
+	return
+}
+
+func assertDecode(t *testing.T, document string) (successful bool) {
+	config := configuration.DefaultCEDecoderConfiguration()
+	config.DebugPanics = true
+	var receiver events.DataEventReceiver
+	receiver = nullevent.NewNullEventReceiver()
+	receiver = test.NewEventPrinter(receiver)
+	receiver = rules.NewRules(receiver, nil)
+	err := NewDecoder(&config).DecodeDocument([]byte(document), receiver)
+
+	if err != nil {
+		t.Errorf("Error [%v] while decoding document [%v]", err, document)
 		return
 	}
 	successful = true

@@ -379,7 +379,7 @@ null
                 {
                     "cte" = "\.%%%%
 [
-    |application/x-sh 23 21 2f 62 69 6e 2f 73 68 0a 0a 65 63 68 6f 20 68 65 6c 6c 6f 20 77 6f 72 6c 64 0a|
+    |.application/x-sh 23 21 2f 62 69 6e 2f 73 68 0a 0a 65 63 68 6f 20 68 65 6c 6c 6f 20 77 6f 72 6c 64 0a|
 ]
 %%%%"
                     "events" = [
@@ -1028,11 +1028,7 @@ null
     @"mailto:someone@somewhere.com"
     "a" = "We're inside a string, so /* this is not a comment; it's part of the string! */"
     "data" = // A comment before some binary data
-    |u8 1 2 3
-    // A comment inside the binary array
-     4 5 6 7
-    /* Another comment inside */
-     8 9 10|
+    |u8 1 2 3|
     // Comment before the end of the top-level object (the map), but not after!
 }
 %%%%"
@@ -1052,8 +1048,7 @@ null
                             "s=a" "s=We're inside a string, so /* this is not a comment; it's part of the string! */"
                             "s=data"
                             "cs= A comment before some binary data"
-                            "bau8" "acm=3" "adu8x=01 02 03" "cs= A comment inside the binary array"
-                            "acm=4" "adu8x=04 05 06 07" "cm= Another comment inside " "acl=3" "adu8x=08 09 0a"
+                            "au8=0x01 0x02 0x03"
                             "cs= Comment before the end of the top-level object (the map), but not after!"
                         "e"
                     ]

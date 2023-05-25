@@ -29,6 +29,7 @@ import (
 	compact_float "github.com/kstenerud/go-compact-float"
 	compact_time "github.com/kstenerud/go-compact-time"
 	"github.com/kstenerud/go-concise-encoding/ce/events"
+	"github.com/kstenerud/go-concise-encoding/internal/arrays"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
 	"github.com/kstenerud/go-concise-encoding/types"
 )
@@ -94,6 +95,26 @@ func (_this *interfaceBuilder) BuildFromArray(ctx *Context, arrayType events.Arr
 	switch arrayType {
 	case events.ArrayTypeUint8:
 		dst.Set(reflect.ValueOf(common.CloneBytes(value)))
+	case events.ArrayTypeUint16:
+		dst.Set(reflect.ValueOf(arrays.BytesToUint16Slice(value)))
+	case events.ArrayTypeUint32:
+		dst.Set(reflect.ValueOf(arrays.BytesToUint32Slice(value)))
+	case events.ArrayTypeUint64:
+		dst.Set(reflect.ValueOf(arrays.BytesToUint64Slice(value)))
+	case events.ArrayTypeInt8:
+		dst.Set(reflect.ValueOf(arrays.BytesToInt8Slice(value)))
+	case events.ArrayTypeInt16:
+		dst.Set(reflect.ValueOf(arrays.BytesToInt16Slice(value)))
+	case events.ArrayTypeInt32:
+		dst.Set(reflect.ValueOf(arrays.BytesToInt32Slice(value)))
+	case events.ArrayTypeInt64:
+		dst.Set(reflect.ValueOf(arrays.BytesToInt64Slice(value)))
+	case events.ArrayTypeFloat16:
+		dst.Set(reflect.ValueOf(arrays.BytesToFloat16Slice(value)))
+	case events.ArrayTypeFloat32:
+		dst.Set(reflect.ValueOf(arrays.BytesToFloat32Slice(value)))
+	case events.ArrayTypeFloat64:
+		dst.Set(reflect.ValueOf(arrays.BytesToFloat64Slice(value)))
 	case events.ArrayTypeString:
 		dst.Set(reflect.ValueOf(string(value)))
 	case events.ArrayTypeResourceID:
@@ -109,6 +130,9 @@ func (_this *interfaceBuilder) BuildFromStringlikeArray(ctx *Context, arrayType 
 	case events.ArrayTypeString:
 		dst.Set(reflect.ValueOf(value))
 	case events.ArrayTypeResourceID:
+		setPRIDFromString(value, dst)
+	case events.ArrayTypeReferenceRemote:
+		// TODO: What to do about remote ref??
 		setPRIDFromString(value, dst)
 	default:
 		panic(fmt.Errorf("BUG: Array type %v is not stringlike", arrayType))

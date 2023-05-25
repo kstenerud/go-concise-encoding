@@ -81,6 +81,12 @@ func (_this *Session) Init(parent *Session, config *configuration.IteratorConfig
 	}
 
 	_this.context = sessionContext(_this.GetIteratorForType, _this.config)
+
+	for i, entry := range _this.context.RecordTypeOrder {
+		typeIter, recordIter := newRecordIterators(&_this.context, entry.Type, entry.Name)
+		_this.context.RecordTypeOrder[i].Iterator = typeIter
+		_this.RegisterIteratorForType(entry.Type, recordIter)
+	}
 }
 
 // Creates a new iterator that sends data events to eventReceiver.

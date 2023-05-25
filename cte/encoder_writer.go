@@ -250,7 +250,7 @@ func (_this *Writer) WriteSignalingNan() {
 }
 
 func (_this *Writer) WriteVersion(value uint64) {
-	_this.WritePositiveInt(value)
+	_this.WritePositiveInt(value, 10)
 }
 
 func (_this *Writer) WriteNan(signaling bool) {
@@ -269,23 +269,23 @@ func (_this *Writer) WriteBool(value bool) {
 	}
 }
 
-func (_this *Writer) WriteInt(value int64) {
+func (_this *Writer) WriteInt(value int64, base int) {
 	if value >= 0 {
-		_this.WritePositiveInt(uint64(value))
+		_this.WritePositiveInt(uint64(value), base)
 	} else {
-		_this.WriteNegativeInt(uint64(-value))
+		_this.WriteNegativeInt(uint64(-value), base)
 	}
 }
 
-func (_this *Writer) WritePositiveInt(value uint64) {
+func (_this *Writer) WritePositiveInt(value uint64, base int) {
 	_this.ExpandBuffer(uintStringMaxByteCount)
-	used := strconv.AppendUint(_this.Buffer[:0], value, 10)
+	used := strconv.AppendUint(_this.Buffer[:0], value, base)
 	_this.FlushBufferNotLF(len(used))
 }
 
-func (_this *Writer) WriteNegativeInt(value uint64) {
+func (_this *Writer) WriteNegativeInt(value uint64, base int) {
 	_this.WriteByteNotLF('-')
-	_this.WritePositiveInt(value)
+	_this.WritePositiveInt(value, base)
 }
 
 func (_this *Writer) WriteBigInt(value *big.Int) {
@@ -390,13 +390,17 @@ func (_this *Writer) WriteFloatHexNoPrefix(value float64) {
 		return
 	}
 
+	if asInt := int64(value); float64(asInt) == value {
+		_this.WriteInt(asInt, 16)
+		return
+	}
 	used := strconv.AppendFloat(_this.Buffer[:0], value, 'x', -1, 64)
 	end := len(used)
 	if bytes.HasSuffix(used, []byte("p+00")) {
 		end -= 4
 	}
 	start := 2
-	if value < 0 {
+	if _this.Buffer[0] == '-' {
 		used[start] = '-'
 	}
 	_this.FlushBufferPortionNotLF(start, end)
@@ -726,11 +730,11 @@ func (_this *Writer) WriteStructTemplateEnd() {
 func (_this *Writer) WriteStructInstanceBegin(id []byte) {
 	_this.WriteByteNotLF('@')
 	_this.WriteBytesNotLF(id)
-	_this.WriteByteNotLF('(')
+	_this.WriteByteNotLF('{')
 }
 
 func (_this *Writer) WriteStructInstanceEnd() {
-	_this.WriteByteNotLF(')')
+	_this.WriteByteNotLF('}')
 }
 
 func (_this *Writer) WriteArrayBegin() {
