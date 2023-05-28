@@ -116,8 +116,22 @@ func generateArrayFloat32Tests() []*test_runner.UnitTest {
 	unitTests = append(unitTests, newMustSucceedUnitTest("NaN Element Values",
 		newMustSucceedTest(DirectionsAll.except(DirectionToCBE), &config, BAF32(), ACL(uint64(len(contents))), ADF32(contents))))
 
+	// Whitespace at end of array
+	mustSucceed = nil
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|f32 |", AF32([]float32{})))
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|f32 1 |", AF32([]float32{1})))
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|f32x |", AF32([]float32{})))
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|f32x 1 |", AF32([]float32{1})))
+	unitTests = append(unitTests, newMustSucceedUnitTest("Whitespace at end of array", mustSucceed...))
+
 	// Fail mode tests
 	var mustFail []*test_runner.MustFailTest
+
+	// Space before array type
+	mustFail = nil
+	mustFail = append(mustFail, newCTEMustFailTest("| f32|"))
+	mustFail = append(mustFail, newCTEMustFailTest("| f32x|"))
+	unitTests = append(unitTests, newMustFailUnitTest("Space before array type", mustFail...))
 
 	// Truncated Array
 	mustFail = nil

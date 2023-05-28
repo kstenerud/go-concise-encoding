@@ -423,6 +423,48 @@ c0
             ]
         }
         {
+            "name" = "Whitespace at end of array"
+            "must_succeed" = [
+                {
+                    "from_cte" = "|f32 |"
+                    "events" = [
+                        "af32"
+                    ]
+                }
+                {
+                    "from_cte" = "|f32 1 |"
+                    "events" = [
+                        "af32=1"
+                    ]
+                }
+                {
+                    "from_cte" = "|f32x |"
+                    "events" = [
+                        "af32"
+                    ]
+                }
+                {
+                    "from_cte" = "|f32x 1 |"
+                    "events" = [
+                        "af32=1"
+                    ]
+                }
+            ]
+        }
+        {
+            "name" = "Space before array type"
+            "must_fail" = [
+                {
+                    "cte" = "c0 | f32|"
+                    "raw_document" = true
+                }
+                {
+                    "cte" = "c0 | f32x|"
+                    "raw_document" = true
+                }
+            ]
+        }
+        {
             "name" = "Truncated Array"
             "must_fail" = [
                 {
