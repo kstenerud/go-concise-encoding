@@ -1,9 +1,11 @@
-CTE Grammar for ANTLR 4
-=======================
+ANTLR4 Grammar for Concise Text Encoding
+========================================
 
 This Antlr4 grammar is used to generate the CTE parser for this library.
 
-See [Parser.go](../../cte/parser.go) for how this grammar has been integrated.
+[`codegen`](..) builds the parser code from this grammar.
+
+[Parser.go](../../cte/parser.go) integrates this grammar into the library.
 
 ### TODO
 
