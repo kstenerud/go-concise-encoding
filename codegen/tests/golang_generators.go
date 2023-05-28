@@ -233,6 +233,8 @@ var intArrayTestTemplate = `func generateArrayInt32Tests() []*test_runner.UnitTe
 		contents = append(contents, int32(i))
 	}
 	mustSucceed = append(mustSucceed, newMustSucceedTest(DirectionsAll,  &config, BAI32(), ACL(uint64(len(contents))), ADI32(contents)))
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|i32 8 -17 0b1011 0B1010 -0b1100 -0B1101 0o31 0O33 -0o10 -0O5 0x10 0X15 -0x22 -0X33|",
+		AI32([]int32{8, -17, 0b1011, 0B1010, -0b1100, -0B1101, 0o31, 0O33, -0o10, -0O5, 0x10, 0X15, -0x22, -0X33})))
 	unitTests = append(unitTests, newMustSucceedUnitTest("Various Array Elements", mustSucceed...))
 
 	// Base 2, 8, 16
@@ -243,14 +245,14 @@ var intArrayTestTemplate = `func generateArrayInt32Tests() []*test_runner.UnitTe
 		contents = append(contents, int32(i))
 	}
 	config.DefaultNumericFormats.Array.Int32 = configuration.CTEEncodingFormatBinary
-	t := newMustSucceedTest(DirectionsAll,  &config, AI32(contents))
-	mustSucceed = append(mustSucceed, t)
+	mustSucceed = append(mustSucceed, newMustSucceedTest(DirectionsAll,  &config, AI32(contents)))
+	mustSucceed = append(mustSucceed, newMustSucceedTest(DirectionsAll,  &config, AI32(contents[:0])))
 	config.DefaultNumericFormats.Array.Int32 = configuration.CTEEncodingFormatOctal
-	t = newMustSucceedTest(DirectionsAll,  &config, AI32(contents))
-	mustSucceed = append(mustSucceed, t)
+	mustSucceed = append(mustSucceed, newMustSucceedTest(DirectionsAll,  &config, AI32(contents)))
+	mustSucceed = append(mustSucceed, newMustSucceedTest(DirectionsAll,  &config, AI32(contents[:0])))
 	config.DefaultNumericFormats.Array.Int32 = configuration.CTEEncodingFormatHexadecimal
-	t = newMustSucceedTest(DirectionsAll,  &config, AI32(contents))
-	mustSucceed = append(mustSucceed, t)
+	mustSucceed = append(mustSucceed, newMustSucceedTest(DirectionsAll,  &config, AI32(contents)))
+	mustSucceed = append(mustSucceed, newMustSucceedTest(DirectionsAll,  &config, AI32(contents[:0])))
 	config = configuration.DefaultCTEEncoderConfiguration()
 	unitTests = append(unitTests, newMustSucceedUnitTest("Base 2, 8, 16", mustSucceed...))
 
@@ -279,8 +281,28 @@ var intArrayTestTemplate = `func generateArrayInt32Tests() []*test_runner.UnitTe
 	unitTests = append(unitTests, newMustSucceedUnitTest("Edge Case Element Values",
 		newMustSucceedTest(DirectionsAll,  &config, BAI32(), ACL(uint64(len(contents))), ADI32(contents))))
 
+	// Whitespace at end of array
+	mustSucceed = nil
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|i32 |", AI32([]int32{})))
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|i32 1 |", AI32([]int32{1})))
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|i32b |", AI32([]int32{})))
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|i32b 1 |", AI32([]int32{1})))
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|i32o |", AI32([]int32{})))
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|i32o 1 |", AI32([]int32{1})))
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|i32x |", AI32([]int32{})))
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|i32x 1 |", AI32([]int32{1})))
+	unitTests = append(unitTests, newMustSucceedUnitTest("Whitespace at end of array", mustSucceed...))
+
 	// Fail mode tests
 	var mustFail []*test_runner.MustFailTest
+
+	// Space before array type
+	mustFail = nil
+	mustFail = append(mustFail, newCTEMustFailTest("| i32|"))
+	mustFail = append(mustFail, newCTEMustFailTest("| i32b|"))
+	mustFail = append(mustFail, newCTEMustFailTest("| i32o|"))
+	mustFail = append(mustFail, newCTEMustFailTest("| i32x|"))
+	unitTests = append(unitTests, newMustFailUnitTest("Space before array type", mustFail...))
 
 	// Truncated Array
 	mustFail = nil
@@ -391,6 +413,8 @@ var uintArrayTestTemplate = `func generateArrayUint32Tests() []*test_runner.Unit
 		contents = append(contents, uint32(i))
 	}
 	mustSucceed = append(mustSucceed, newMustSucceedTest(DirectionsAll,  &config, BAU32(), ACL(uint64(len(contents))), ADU32(contents)))
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|u32 8 0b1011 0B1010 0o31 0O33 0x10 0X15|",
+		AU32([]uint32{8, 0b1011, 0B1010, 0o31, 0O33, 0x10, 0X15})))
 	unitTests = append(unitTests, newMustSucceedUnitTest("Various Array Elements", mustSucceed...))
 
 	// Base 2, 8, 16
@@ -437,8 +461,28 @@ var uintArrayTestTemplate = `func generateArrayUint32Tests() []*test_runner.Unit
 	unitTests = append(unitTests, newMustSucceedUnitTest("Edge Case Element Values",
 		newMustSucceedTest(DirectionsAll,  &config, BAU32(), ACL(uint64(len(contents))), ADU32(contents))))
 
+	// Whitespace at end of array
+	mustSucceed = nil
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|u32 |", AU32([]uint32{})))
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|u32 1 |", AU32([]uint32{1})))
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|u32b |", AU32([]uint32{})))
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|u32b 1 |", AU32([]uint32{1})))
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|u32o |", AU32([]uint32{})))
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|u32o 1 |", AU32([]uint32{1})))
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|u32x |", AU32([]uint32{})))
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|u32x 1 |", AU32([]uint32{1})))
+	unitTests = append(unitTests, newMustSucceedUnitTest("Whitespace at end of array", mustSucceed...))
+	
 	// Fail mode tests
 	var mustFail []*test_runner.MustFailTest
+
+	// Space before array type
+	mustFail = nil
+	mustFail = append(mustFail, newCTEMustFailTest("| u32|"))
+	mustFail = append(mustFail, newCTEMustFailTest("| u32b|"))
+	mustFail = append(mustFail, newCTEMustFailTest("| u32o|"))
+	mustFail = append(mustFail, newCTEMustFailTest("| u32x|"))
+	unitTests = append(unitTests, newMustFailUnitTest("Space before array type", mustFail...))
 
 	// Truncated Array
 	mustFail = nil

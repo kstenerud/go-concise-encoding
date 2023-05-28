@@ -144,6 +144,15 @@ func newMustSucceedTest(directions Directions,
 	}
 }
 
+func newCTEMustSucceedTest(fromCTE string, toEvents ...test.Event) *test_runner.MustSucceedTest {
+	return &test_runner.MustSucceedTest{
+		BaseTest: test_runner.BaseTest{
+			Events: stringifyEvents(toEvents...),
+		},
+		FromCTE: fromCTE,
+	}
+}
+
 func newMustFailTest(testType testType, events ...test.Event) *test_runner.MustFailTest {
 	if containsRecords(events) {
 		oldEvents := events
@@ -163,7 +172,11 @@ func newMustFailTest(testType testType, events ...test.Event) *test_runner.MustF
 	}
 }
 
-func newCustomMustFailTest(cteContents string) *test_runner.MustFailTest {
+func newCTEMustFailTest(cteContents string) *test_runner.MustFailTest {
+	return newRawCTEMustFailTest(fmt.Sprintf("c0 %v", cteContents))
+}
+
+func newRawCTEMustFailTest(cteContents string) *test_runner.MustFailTest {
 	return &test_runner.MustFailTest{
 		BaseTest: test_runner.BaseTest{
 			CTE:         cteContents,

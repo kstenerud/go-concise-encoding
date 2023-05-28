@@ -343,6 +343,12 @@ c0
                         "adi8=-128 -124 -120 -116 -112 -108 -104 -100 -96 -92 -88 -84 -80 -76 -72 -68 -64 -60 -56 -52 -48 -44 -40 -36 -32 -28 -24 -20 -16 -12 -8 -4 0 4 8 12 16 20 24 28 32 36 40 44 48 52 56 60 64 68 72 76 80 84 88 92"
                     ]
                 }
+                {
+                    "from_cte" = "|i8 8 -17 0b1011 0B1010 -0b1100 -0B1101 0o31 0O33 -0o10 -0O5 0x10 0X15 -0x22 -0X33|"
+                    "events" = [
+                        "ai8=8 -17 11 10 -12 -13 25 27 -8 -5 16 21 -34 -51"
+                    ]
+                }
             ]
         }
         {
@@ -356,6 +362,13 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 7f 10|
+                    "from_cte" = "|i8b|"
+                    "events" = [
+                        "ai8"
+                    ]
+                }
+                {
                     "cbe" = |u8x 7f 17 80 a4 c8 ec 10 34 58|
                     "from_cte" = "|i8o -200 -134 -70 -24 20 64 130|"
                     "events" = [
@@ -363,10 +376,24 @@ c0
                     ]
                 }
                 {
+                    "cbe" = |u8x 7f 10|
+                    "from_cte" = "|i8o|"
+                    "events" = [
+                        "ai8"
+                    ]
+                }
+                {
                     "cbe" = |u8x 7f 17 80 a4 c8 ec 10 34 58|
                     "from_cte" = "|i8x -80 -5c -38 -14 10 34 58|"
                     "events" = [
                         "ai8=-128 -92 -56 -20 16 52 88"
+                    ]
+                }
+                {
+                    "cbe" = |u8x 7f 10|
+                    "from_cte" = "|i8x|"
+                    "events" = [
+                        "ai8"
                     ]
                 }
             ]
@@ -419,6 +446,80 @@ c0
                         "acl=45"
                         "adi8=0 1 127 -128 -127 -1 0 1 -1 0 1 -1 0 1 -1 0 1 -1 0 1 -1 -1 -127 -128 127 1 0 -1 1 0 -1 1 0 -1 1 0 -1 1 0 -1 1 0 0 1 -1"
                     ]
+                }
+            ]
+        }
+        {
+            "name" = "Whitespace at end of array"
+            "must_succeed" = [
+                {
+                    "from_cte" = "|i8 |"
+                    "events" = [
+                        "ai8"
+                    ]
+                }
+                {
+                    "from_cte" = "|i8 1 |"
+                    "events" = [
+                        "ai8=1"
+                    ]
+                }
+                {
+                    "from_cte" = "|i8b |"
+                    "events" = [
+                        "ai8"
+                    ]
+                }
+                {
+                    "from_cte" = "|i8b 1 |"
+                    "events" = [
+                        "ai8=1"
+                    ]
+                }
+                {
+                    "from_cte" = "|i8o |"
+                    "events" = [
+                        "ai8"
+                    ]
+                }
+                {
+                    "from_cte" = "|i8o 1 |"
+                    "events" = [
+                        "ai8=1"
+                    ]
+                }
+                {
+                    "from_cte" = "|i8x |"
+                    "events" = [
+                        "ai8"
+                    ]
+                }
+                {
+                    "from_cte" = "|i8x 1 |"
+                    "events" = [
+                        "ai8=1"
+                    ]
+                }
+            ]
+        }
+        {
+            "name" = "Space before array type"
+            "must_fail" = [
+                {
+                    "cte" = "c0 | i8|"
+                    "raw_document" = true
+                }
+                {
+                    "cte" = "c0 | i8b|"
+                    "raw_document" = true
+                }
+                {
+                    "cte" = "c0 | i8o|"
+                    "raw_document" = true
+                }
+                {
+                    "cte" = "c0 | i8x|"
+                    "raw_document" = true
                 }
             ]
         }

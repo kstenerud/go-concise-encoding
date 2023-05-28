@@ -343,6 +343,12 @@ c0
                         "adu8=0x00 0x08 0x10 0x18 0x20 0x28 0x30 0x38 0x40 0x48 0x50 0x58 0x60 0x68 0x70 0x78 0x80 0x88 0x90 0x98 0xa0 0xa8 0xb0 0xb8 0xc0 0xc8 0xd0 0xd8"
                     ]
                 }
+                {
+                    "from_cte" = "|u8 8 0b1011 0B1010 0o31 0O33 0x10 0X15|"
+                    "events" = [
+                        "au8=0x08 0x0b 0x0a 0x19 0x1b 0x10 0x15"
+                    ]
+                }
             ]
         }
         {
@@ -419,6 +425,80 @@ c0
                         "acl=45"
                         "adu8=0x00 0x01 0x7f 0x80 0x81 0xff 0x00 0x01 0xff 0x00 0x01 0xff 0x00 0x01 0xff 0x00 0x01 0xff 0x00 0x01 0xff 0xff 0x81 0x80 0x7f 0x01 0x00 0xff 0x01 0x00 0xff 0x01 0x00 0xff 0x01 0x00 0xff 0x01 0x00 0xff 0x01 0x00 0x00 0x01 0xff"
                     ]
+                }
+            ]
+        }
+        {
+            "name" = "Whitespace at end of array"
+            "must_succeed" = [
+                {
+                    "from_cte" = "|u8 |"
+                    "events" = [
+                        "au8"
+                    ]
+                }
+                {
+                    "from_cte" = "|u8 1 |"
+                    "events" = [
+                        "au8=0x01"
+                    ]
+                }
+                {
+                    "from_cte" = "|u8b |"
+                    "events" = [
+                        "au8"
+                    ]
+                }
+                {
+                    "from_cte" = "|u8b 1 |"
+                    "events" = [
+                        "au8=0x01"
+                    ]
+                }
+                {
+                    "from_cte" = "|u8o |"
+                    "events" = [
+                        "au8"
+                    ]
+                }
+                {
+                    "from_cte" = "|u8o 1 |"
+                    "events" = [
+                        "au8=0x01"
+                    ]
+                }
+                {
+                    "from_cte" = "|u8x |"
+                    "events" = [
+                        "au8"
+                    ]
+                }
+                {
+                    "from_cte" = "|u8x 1 |"
+                    "events" = [
+                        "au8=0x01"
+                    ]
+                }
+            ]
+        }
+        {
+            "name" = "Space before array type"
+            "must_fail" = [
+                {
+                    "cte" = "c0 | u8|"
+                    "raw_document" = true
+                }
+                {
+                    "cte" = "c0 | u8b|"
+                    "raw_document" = true
+                }
+                {
+                    "cte" = "c0 | u8o|"
+                    "raw_document" = true
+                }
+                {
+                    "cte" = "c0 | u8x|"
+                    "raw_document" = true
                 }
             ]
         }

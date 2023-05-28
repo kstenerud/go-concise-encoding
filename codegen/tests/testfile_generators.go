@@ -194,7 +194,7 @@ func generateCteHeaderTests() []*test_runner.UnitTest {
 		if i == 'c' || i == 'C' {
 			continue
 		}
-		wrongSentinelFailureTests = append(wrongSentinelFailureTests, newCustomMustFailTest(fmt.Sprintf("%c%v 0", rune(i), version.ConciseEncodingVersion)))
+		wrongSentinelFailureTests = append(wrongSentinelFailureTests, newRawCTEMustFailTest(fmt.Sprintf("%c%v 0", rune(i), version.ConciseEncodingVersion)))
 	}
 	wrongSentinelTest := newUnitTest("Wrong sentinel", nil, wrongSentinelFailureTests)
 
@@ -203,7 +203,7 @@ func generateCteHeaderTests() []*test_runner.UnitTest {
 		if i >= '0' && i <= '9' {
 			continue
 		}
-		wrongVersionCharFailureTests = append(wrongVersionCharFailureTests, newCustomMustFailTest(fmt.Sprintf("c%c 0", rune(i))))
+		wrongVersionCharFailureTests = append(wrongVersionCharFailureTests, newRawCTEMustFailTest(fmt.Sprintf("c%c 0", rune(i))))
 	}
 	wrongVersionCharTest := newUnitTest("Wrong version character", nil, wrongVersionCharFailureTests)
 
@@ -213,7 +213,7 @@ func generateCteHeaderTests() []*test_runner.UnitTest {
 		if i == version.ConciseEncodingVersion || i == 1 {
 			continue
 		}
-		wrongVersionFailureTests = append(wrongVersionFailureTests, newCustomMustFailTest(fmt.Sprintf("c%v 0", i)))
+		wrongVersionFailureTests = append(wrongVersionFailureTests, newRawCTEMustFailTest(fmt.Sprintf("c%v 0", i)))
 	}
 	wrongVersionTest := newUnitTest("Wrong version", nil, wrongVersionFailureTests)
 
