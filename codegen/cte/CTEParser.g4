@@ -107,17 +107,17 @@ codepointSequence: CODEPOINT_INIT codepointContents;
 codepointContents: CODEPOINT;
 escapeChar:        ESCAPE_CHAR;
 
-customText:   ARRAY_BEGIN ARRAY_TYPE_CUSTOM customType CUSTOM_TEXT  (stringContents | customEscape)* CT_STRING_END;
+customText:   ARRAY_TYPE_CUSTOM customType CUSTOM_TEXT  (stringContents | customEscape)* CT_STRING_END;
 customEscape: CT_STRING_ESCAPE (verbatimSequence | codepointSequence | escapeChar | CONTINUATION);
-customBinary: (ARRAY_BEGIN ARRAY_TYPE_CUSTOM customType CUSTOM_BINARY arrayElemByteX (BYTES_WS arrayElemByteX)* BYTES_END)
-            | (ARRAY_BEGIN ARRAY_TYPE_CUSTOM customType CUSTOM_END)
+customBinary: (ARRAY_TYPE_CUSTOM customType CUSTOM_BINARY arrayElemByteX (BYTES_WS arrayElemByteX)* BYTES_END)
+            | (ARRAY_TYPE_CUSTOM customType CUSTOM_END)
             ;
 customType:   CUSTOM_TYPE;
 
-mediaText:   ARRAY_BEGIN ARRAY_TYPE_MEDIA mediaType MEDIA_TEXT  (stringContents | mediaEscape)* MEDIA_STRING_END;
+mediaText:   ARRAY_TYPE_MEDIA mediaType MEDIA_TEXT  (stringContents | mediaEscape)* MEDIA_STRING_END;
 mediaEscape: MEDIA_STRING_ESCAPE (verbatimSequence | codepointSequence | escapeChar | CONTINUATION);
-mediaBinary: (ARRAY_BEGIN ARRAY_TYPE_MEDIA mediaType MEDIA_BINARY arrayElemByteX (BYTES_WS arrayElemByteX)* BYTES_END)
-           | (ARRAY_BEGIN ARRAY_TYPE_MEDIA mediaType MEDIA_END)
+mediaBinary: (ARRAY_TYPE_MEDIA mediaType MEDIA_BINARY arrayElemByteX (BYTES_WS arrayElemByteX)* BYTES_END)
+           | (ARRAY_TYPE_MEDIA mediaType MEDIA_END)
            ;
 mediaType:   MEDIA_TYPE;
 
@@ -157,156 +157,132 @@ arrayElemUid:    ARRAY_UID_ELEM;
 arrayElemBits:   ARRAY_BIT_BITS;
 arrayElemByteX:  BYTES_ELEM;
 
-arrayI8:  ARRAY_BEGIN
-          (
-            ( (ARRAY_TYPE_I8   ARRAY_I_WSL?   (arrayElemInt  (ARRAY_I_WSL   arrayElemInt )* ARRAY_I_WSL?)?   ARRAY_I_END)
-            | (ARRAY_TYPE_I8B  ARRAY_I_B_WSL? (arrayElemIntB (ARRAY_I_B_WSL arrayElemIntB)* ARRAY_I_B_WSL?)? ARRAY_I_B_END)
-            | (ARRAY_TYPE_I8O  ARRAY_I_O_WSL? (arrayElemIntO (ARRAY_I_O_WSL arrayElemIntO)* ARRAY_I_O_WSL?)? ARRAY_I_O_END)
-            | (ARRAY_TYPE_I8X  ARRAY_I_X_WSL? (arrayElemIntX (ARRAY_I_X_WSL arrayElemIntX)* ARRAY_I_X_WSL?)? ARRAY_I_X_END)
-            )
-            | ARRAY_TYPE_I8_EMPTY
-          );
-arrayI16: ARRAY_BEGIN
-          (
-            ( (ARRAY_TYPE_I16   ARRAY_I_WSL?   (arrayElemInt  (ARRAY_I_WSL   arrayElemInt )* ARRAY_I_WSL?)?   ARRAY_I_END)
-            | (ARRAY_TYPE_I16B  ARRAY_I_B_WSL? (arrayElemIntB (ARRAY_I_B_WSL arrayElemIntB)* ARRAY_I_B_WSL?)? ARRAY_I_B_END)
-            | (ARRAY_TYPE_I16O  ARRAY_I_O_WSL? (arrayElemIntO (ARRAY_I_O_WSL arrayElemIntO)* ARRAY_I_O_WSL?)? ARRAY_I_O_END)
-            | (ARRAY_TYPE_I16X  ARRAY_I_X_WSL? (arrayElemIntX (ARRAY_I_X_WSL arrayElemIntX)* ARRAY_I_X_WSL?)? ARRAY_I_X_END)
-            )
-            | ARRAY_TYPE_I16_EMPTY
-          );
-arrayI32: ARRAY_BEGIN
-          (
-            ( (ARRAY_TYPE_I32   ARRAY_I_WSL?   (arrayElemInt  (ARRAY_I_WSL   arrayElemInt )* ARRAY_I_WSL?)?   ARRAY_I_END)
-            | (ARRAY_TYPE_I32B  ARRAY_I_B_WSL? (arrayElemIntB (ARRAY_I_B_WSL arrayElemIntB)* ARRAY_I_B_WSL?)? ARRAY_I_B_END)
-            | (ARRAY_TYPE_I32O  ARRAY_I_O_WSL? (arrayElemIntO (ARRAY_I_O_WSL arrayElemIntO)* ARRAY_I_O_WSL?)? ARRAY_I_O_END)
-            | (ARRAY_TYPE_I32X  ARRAY_I_X_WSL? (arrayElemIntX (ARRAY_I_X_WSL arrayElemIntX)* ARRAY_I_X_WSL?)? ARRAY_I_X_END)
-            )
-            | ARRAY_TYPE_I32_EMPTY
-          );
-arrayI64: ARRAY_BEGIN
-          (
-            ( (ARRAY_TYPE_I64   ARRAY_I_WSL?   (arrayElemInt  (ARRAY_I_WSL   arrayElemInt )* ARRAY_I_WSL?)?   ARRAY_I_END)
-            | (ARRAY_TYPE_I64B  ARRAY_I_B_WSL? (arrayElemIntB (ARRAY_I_B_WSL arrayElemIntB)* ARRAY_I_B_WSL?)? ARRAY_I_B_END)
-            | (ARRAY_TYPE_I64O  ARRAY_I_O_WSL? (arrayElemIntO (ARRAY_I_O_WSL arrayElemIntO)* ARRAY_I_O_WSL?)? ARRAY_I_O_END)
-            | (ARRAY_TYPE_I64X  ARRAY_I_X_WSL? (arrayElemIntX (ARRAY_I_X_WSL arrayElemIntX)* ARRAY_I_X_WSL?)? ARRAY_I_X_END)
-            )
-            | ARRAY_TYPE_I64_EMPTY
-          );
+arrayI8:  ( (ARRAY_TYPE_I8   ARRAY_I_WSL?   (arrayElemInt  (ARRAY_I_WSL   arrayElemInt )* ARRAY_I_WSL?)?   ARRAY_I_END)
+          | (ARRAY_TYPE_I8B  ARRAY_I_B_WSL? (arrayElemIntB (ARRAY_I_B_WSL arrayElemIntB)* ARRAY_I_B_WSL?)? ARRAY_I_B_END)
+          | (ARRAY_TYPE_I8O  ARRAY_I_O_WSL? (arrayElemIntO (ARRAY_I_O_WSL arrayElemIntO)* ARRAY_I_O_WSL?)? ARRAY_I_O_END)
+          | (ARRAY_TYPE_I8X  ARRAY_I_X_WSL? (arrayElemIntX (ARRAY_I_X_WSL arrayElemIntX)* ARRAY_I_X_WSL?)? ARRAY_I_X_END)
+          )
+          | ARRAY_TYPE_I8_EMPTY
+          ;
+arrayI16: ( (ARRAY_TYPE_I16   ARRAY_I_WSL?   (arrayElemInt  (ARRAY_I_WSL   arrayElemInt )* ARRAY_I_WSL?)?   ARRAY_I_END)
+          | (ARRAY_TYPE_I16B  ARRAY_I_B_WSL? (arrayElemIntB (ARRAY_I_B_WSL arrayElemIntB)* ARRAY_I_B_WSL?)? ARRAY_I_B_END)
+          | (ARRAY_TYPE_I16O  ARRAY_I_O_WSL? (arrayElemIntO (ARRAY_I_O_WSL arrayElemIntO)* ARRAY_I_O_WSL?)? ARRAY_I_O_END)
+          | (ARRAY_TYPE_I16X  ARRAY_I_X_WSL? (arrayElemIntX (ARRAY_I_X_WSL arrayElemIntX)* ARRAY_I_X_WSL?)? ARRAY_I_X_END)
+          )
+          | ARRAY_TYPE_I16_EMPTY
+          ;
+arrayI32: ( (ARRAY_TYPE_I32   ARRAY_I_WSL?   (arrayElemInt  (ARRAY_I_WSL   arrayElemInt )* ARRAY_I_WSL?)?   ARRAY_I_END)
+          | (ARRAY_TYPE_I32B  ARRAY_I_B_WSL? (arrayElemIntB (ARRAY_I_B_WSL arrayElemIntB)* ARRAY_I_B_WSL?)? ARRAY_I_B_END)
+          | (ARRAY_TYPE_I32O  ARRAY_I_O_WSL? (arrayElemIntO (ARRAY_I_O_WSL arrayElemIntO)* ARRAY_I_O_WSL?)? ARRAY_I_O_END)
+          | (ARRAY_TYPE_I32X  ARRAY_I_X_WSL? (arrayElemIntX (ARRAY_I_X_WSL arrayElemIntX)* ARRAY_I_X_WSL?)? ARRAY_I_X_END)
+          )
+          | ARRAY_TYPE_I32_EMPTY
+          ;
+arrayI64: ( (ARRAY_TYPE_I64   ARRAY_I_WSL?   (arrayElemInt  (ARRAY_I_WSL   arrayElemInt )* ARRAY_I_WSL?)?   ARRAY_I_END)
+          | (ARRAY_TYPE_I64B  ARRAY_I_B_WSL? (arrayElemIntB (ARRAY_I_B_WSL arrayElemIntB)* ARRAY_I_B_WSL?)? ARRAY_I_B_END)
+          | (ARRAY_TYPE_I64O  ARRAY_I_O_WSL? (arrayElemIntO (ARRAY_I_O_WSL arrayElemIntO)* ARRAY_I_O_WSL?)? ARRAY_I_O_END)
+          | (ARRAY_TYPE_I64X  ARRAY_I_X_WSL? (arrayElemIntX (ARRAY_I_X_WSL arrayElemIntX)* ARRAY_I_X_WSL?)? ARRAY_I_X_END)
+          )
+          | ARRAY_TYPE_I64_EMPTY
+          ;
 
-arrayU8:  ARRAY_BEGIN
-          (
-            ( (ARRAY_TYPE_U8   ARRAY_U_WSL?   (arrayElemUint  (ARRAY_U_WSL   arrayElemUint )* ARRAY_U_WSL?  )? ARRAY_U_END)
-            | (ARRAY_TYPE_U8B  ARRAY_U_B_WSL? (arrayElemUintB (ARRAY_U_B_WSL arrayElemUintB)* ARRAY_U_B_WSL?)? ARRAY_U_B_END)
-            | (ARRAY_TYPE_U8O  ARRAY_U_O_WSL? (arrayElemUintO (ARRAY_U_O_WSL arrayElemUintO)* ARRAY_U_O_WSL?)? ARRAY_U_O_END)
-            | (ARRAY_TYPE_U8X  ARRAY_U_X_WSL? (arrayElemUintX (ARRAY_U_X_WSL arrayElemUintX)* ARRAY_U_X_WSL?)? ARRAY_U_X_END)
-            )
-            | ARRAY_TYPE_U8_EMPTY
-          );
-arrayU16: ARRAY_BEGIN
-          (
-            ( (ARRAY_TYPE_U16  ARRAY_U_WSL?   (arrayElemUint  (ARRAY_U_WSL   arrayElemUint )* ARRAY_U_WSL?  )? ARRAY_U_END)
-            | (ARRAY_TYPE_U16B ARRAY_U_B_WSL? (arrayElemUintB (ARRAY_U_B_WSL arrayElemUintB)* ARRAY_U_B_WSL?)? ARRAY_U_B_END)
-            | (ARRAY_TYPE_U16O ARRAY_U_O_WSL? (arrayElemUintO (ARRAY_U_O_WSL arrayElemUintO)* ARRAY_U_O_WSL?)? ARRAY_U_O_END)
-            | (ARRAY_TYPE_U16X ARRAY_U_X_WSL? (arrayElemUintX (ARRAY_U_X_WSL arrayElemUintX)* ARRAY_U_X_WSL?)? ARRAY_U_X_END)
-            )
-            | ARRAY_TYPE_U16_EMPTY
-          );
-arrayU32: ARRAY_BEGIN
-          (
-            ( (ARRAY_TYPE_U32  ARRAY_U_WSL?   (arrayElemUint  (ARRAY_U_WSL   arrayElemUint )* ARRAY_U_WSL?  )? ARRAY_U_END)
-            | (ARRAY_TYPE_U32B ARRAY_U_B_WSL? (arrayElemUintB (ARRAY_U_B_WSL arrayElemUintB)* ARRAY_U_B_WSL?)? ARRAY_U_B_END)
-            | (ARRAY_TYPE_U32O ARRAY_U_O_WSL? (arrayElemUintO (ARRAY_U_O_WSL arrayElemUintO)* ARRAY_U_O_WSL?)? ARRAY_U_O_END)
-            | (ARRAY_TYPE_U32X ARRAY_U_X_WSL? (arrayElemUintX (ARRAY_U_X_WSL arrayElemUintX)* ARRAY_U_X_WSL?)? ARRAY_U_X_END)
-            )
-            | ARRAY_TYPE_U32_EMPTY
-          );
-arrayU64: ARRAY_BEGIN
-          (
-            ( (ARRAY_TYPE_U64  ARRAY_U_WSL?   (arrayElemUint  (ARRAY_U_WSL   arrayElemUint )* ARRAY_U_WSL?  )? ARRAY_U_END)
-            | (ARRAY_TYPE_U64B ARRAY_U_B_WSL? (arrayElemUintB (ARRAY_U_B_WSL arrayElemUintB)* ARRAY_U_B_WSL?)? ARRAY_U_B_END)
-            | (ARRAY_TYPE_U64O ARRAY_U_O_WSL? (arrayElemUintO (ARRAY_U_O_WSL arrayElemUintO)* ARRAY_U_O_WSL?)? ARRAY_U_O_END)
-            | (ARRAY_TYPE_U64X ARRAY_U_X_WSL? (arrayElemUintX (ARRAY_U_X_WSL arrayElemUintX)* ARRAY_U_X_WSL?)? ARRAY_U_X_END)
-            )
-            | ARRAY_TYPE_U64_EMPTY
-          );
+arrayU8:  ( (ARRAY_TYPE_U8   ARRAY_U_WSL?   (arrayElemUint  (ARRAY_U_WSL   arrayElemUint )* ARRAY_U_WSL?  )? ARRAY_U_END)
+          | (ARRAY_TYPE_U8B  ARRAY_U_B_WSL? (arrayElemUintB (ARRAY_U_B_WSL arrayElemUintB)* ARRAY_U_B_WSL?)? ARRAY_U_B_END)
+          | (ARRAY_TYPE_U8O  ARRAY_U_O_WSL? (arrayElemUintO (ARRAY_U_O_WSL arrayElemUintO)* ARRAY_U_O_WSL?)? ARRAY_U_O_END)
+          | (ARRAY_TYPE_U8X  ARRAY_U_X_WSL? (arrayElemUintX (ARRAY_U_X_WSL arrayElemUintX)* ARRAY_U_X_WSL?)? ARRAY_U_X_END)
+          )
+          | ARRAY_TYPE_U8_EMPTY
+          ;
+arrayU16: ( (ARRAY_TYPE_U16  ARRAY_U_WSL?   (arrayElemUint  (ARRAY_U_WSL   arrayElemUint )* ARRAY_U_WSL?  )? ARRAY_U_END)
+          | (ARRAY_TYPE_U16B ARRAY_U_B_WSL? (arrayElemUintB (ARRAY_U_B_WSL arrayElemUintB)* ARRAY_U_B_WSL?)? ARRAY_U_B_END)
+          | (ARRAY_TYPE_U16O ARRAY_U_O_WSL? (arrayElemUintO (ARRAY_U_O_WSL arrayElemUintO)* ARRAY_U_O_WSL?)? ARRAY_U_O_END)
+          | (ARRAY_TYPE_U16X ARRAY_U_X_WSL? (arrayElemUintX (ARRAY_U_X_WSL arrayElemUintX)* ARRAY_U_X_WSL?)? ARRAY_U_X_END)
+          )
+          | ARRAY_TYPE_U16_EMPTY
+          ;
+arrayU32: ( (ARRAY_TYPE_U32  ARRAY_U_WSL?   (arrayElemUint  (ARRAY_U_WSL   arrayElemUint )* ARRAY_U_WSL?  )? ARRAY_U_END)
+          | (ARRAY_TYPE_U32B ARRAY_U_B_WSL? (arrayElemUintB (ARRAY_U_B_WSL arrayElemUintB)* ARRAY_U_B_WSL?)? ARRAY_U_B_END)
+          | (ARRAY_TYPE_U32O ARRAY_U_O_WSL? (arrayElemUintO (ARRAY_U_O_WSL arrayElemUintO)* ARRAY_U_O_WSL?)? ARRAY_U_O_END)
+          | (ARRAY_TYPE_U32X ARRAY_U_X_WSL? (arrayElemUintX (ARRAY_U_X_WSL arrayElemUintX)* ARRAY_U_X_WSL?)? ARRAY_U_X_END)
+          )
+          | ARRAY_TYPE_U32_EMPTY
+          ;
+arrayU64: ( (ARRAY_TYPE_U64  ARRAY_U_WSL?   (arrayElemUint  (ARRAY_U_WSL   arrayElemUint )* ARRAY_U_WSL?  )? ARRAY_U_END)
+          | (ARRAY_TYPE_U64B ARRAY_U_B_WSL? (arrayElemUintB (ARRAY_U_B_WSL arrayElemUintB)* ARRAY_U_B_WSL?)? ARRAY_U_B_END)
+          | (ARRAY_TYPE_U64O ARRAY_U_O_WSL? (arrayElemUintO (ARRAY_U_O_WSL arrayElemUintO)* ARRAY_U_O_WSL?)? ARRAY_U_O_END)
+          | (ARRAY_TYPE_U64X ARRAY_U_X_WSL? (arrayElemUintX (ARRAY_U_X_WSL arrayElemUintX)* ARRAY_U_X_WSL?)? ARRAY_U_X_END)
+          )
+          | ARRAY_TYPE_U64_EMPTY
+          ;
 
-arrayF16: ARRAY_BEGIN
-          (
-            ( (
-                ARRAY_TYPE_F16  ARRAY_F_WSL?
-                (
-                  (arrayElemFloat  | arrayElemNan | arrayElemSnan | arrayElemInf | arrayElemNinf)
-                  (ARRAY_F_WSL (arrayElemFloat  | arrayElemNan | arrayElemSnan | arrayElemInf | arrayElemNinf))*
-                  ARRAY_F_WSL?
-                )?
-                ARRAY_F_END
-              )
-            | (
-                ARRAY_TYPE_F16X  ARRAY_F_X_WSL?
-                (
-                  (arrayElemFloatX  | arrayElemNan | arrayElemSnan | arrayElemInf | arrayElemNinf)
-                  (ARRAY_F_X_WSL (arrayElemFloatX  | arrayElemNan | arrayElemSnan | arrayElemInf | arrayElemNinf))*
-                  ARRAY_F_X_WSL?
-                )?
-                ARRAY_F_X_END
-              )
+arrayF16: ( (
+              ARRAY_TYPE_F16  ARRAY_F_WSL?
+              (
+                (arrayElemFloat  | arrayElemNan | arrayElemSnan | arrayElemInf | arrayElemNinf)
+                (ARRAY_F_WSL (arrayElemFloat  | arrayElemNan | arrayElemSnan | arrayElemInf | arrayElemNinf))*
+                ARRAY_F_WSL?
+              )?
+              ARRAY_F_END
             )
-            | ARRAY_TYPE_F16_EMPTY
-          );
-arrayF32: ARRAY_BEGIN
-          (
-            ( (
-                ARRAY_TYPE_F32  ARRAY_F_WSL?
-                (
-                  (arrayElemFloat  | arrayElemNan | arrayElemSnan | arrayElemInf | arrayElemNinf)
-                  (ARRAY_F_WSL (arrayElemFloat  | arrayElemNan | arrayElemSnan | arrayElemInf | arrayElemNinf))*
-                  ARRAY_F_WSL?
-                )?
-                ARRAY_F_END
-              )
-            | (
-                ARRAY_TYPE_F32X  ARRAY_F_X_WSL?
-                (
-                  (arrayElemFloatX  | arrayElemNan | arrayElemSnan | arrayElemInf | arrayElemNinf)
-                  (ARRAY_F_X_WSL (arrayElemFloatX  | arrayElemNan | arrayElemSnan | arrayElemInf | arrayElemNinf))*
-                  ARRAY_F_X_WSL?
-                )?
-                ARRAY_F_X_END
-              )
+          | (
+              ARRAY_TYPE_F16X  ARRAY_F_X_WSL?
+              (
+                (arrayElemFloatX  | arrayElemNan | arrayElemSnan | arrayElemInf | arrayElemNinf)
+                (ARRAY_F_X_WSL (arrayElemFloatX  | arrayElemNan | arrayElemSnan | arrayElemInf | arrayElemNinf))*
+                ARRAY_F_X_WSL?
+              )?
+              ARRAY_F_X_END
             )
-            | ARRAY_TYPE_F32_EMPTY
-          );
-arrayF64: ARRAY_BEGIN
-          (
-            ( (
-                ARRAY_TYPE_F64  ARRAY_F_WSL?
-                (
-                  (arrayElemFloat  | arrayElemNan | arrayElemSnan | arrayElemInf | arrayElemNinf)
-                  (ARRAY_F_WSL (arrayElemFloat  | arrayElemNan | arrayElemSnan | arrayElemInf | arrayElemNinf))*
-                  ARRAY_F_WSL?
-                )?
-                ARRAY_F_END
-              )
-            | (
-                ARRAY_TYPE_F64X  ARRAY_F_X_WSL?
-                (
-                  (arrayElemFloatX  | arrayElemNan | arrayElemSnan | arrayElemInf | arrayElemNinf)
-                  (ARRAY_F_X_WSL (arrayElemFloatX  | arrayElemNan | arrayElemSnan | arrayElemInf | arrayElemNinf))*
-                  ARRAY_F_X_WSL?
-                )?
-                ARRAY_F_X_END
-              )
+          )
+          | ARRAY_TYPE_F16_EMPTY
+          ;
+arrayF32: ( (
+              ARRAY_TYPE_F32  ARRAY_F_WSL?
+              (
+                (arrayElemFloat  | arrayElemNan | arrayElemSnan | arrayElemInf | arrayElemNinf)
+                (ARRAY_F_WSL (arrayElemFloat  | arrayElemNan | arrayElemSnan | arrayElemInf | arrayElemNinf))*
+                ARRAY_F_WSL?
+              )?
+              ARRAY_F_END
             )
-            | ARRAY_TYPE_F64_EMPTY
-          );
+          | (
+              ARRAY_TYPE_F32X  ARRAY_F_X_WSL?
+              (
+                (arrayElemFloatX  | arrayElemNan | arrayElemSnan | arrayElemInf | arrayElemNinf)
+                (ARRAY_F_X_WSL (arrayElemFloatX  | arrayElemNan | arrayElemSnan | arrayElemInf | arrayElemNinf))*
+                ARRAY_F_X_WSL?
+              )?
+              ARRAY_F_X_END
+            )
+          )
+          | ARRAY_TYPE_F32_EMPTY
+          ;
+arrayF64: ( (
+              ARRAY_TYPE_F64  ARRAY_F_WSL?
+              (
+                (arrayElemFloat  | arrayElemNan | arrayElemSnan | arrayElemInf | arrayElemNinf)
+                (ARRAY_F_WSL (arrayElemFloat  | arrayElemNan | arrayElemSnan | arrayElemInf | arrayElemNinf))*
+                ARRAY_F_WSL?
+              )?
+              ARRAY_F_END
+            )
+          | (
+              ARRAY_TYPE_F64X  ARRAY_F_X_WSL?
+              (
+                (arrayElemFloatX  | arrayElemNan | arrayElemSnan | arrayElemInf | arrayElemNinf)
+                (ARRAY_F_X_WSL (arrayElemFloatX  | arrayElemNan | arrayElemSnan | arrayElemInf | arrayElemNinf))*
+                ARRAY_F_X_WSL?
+              )?
+              ARRAY_F_X_END
+            )
+          )
+          | ARRAY_TYPE_F64_EMPTY
+          ;
 
-arrayUid: ARRAY_BEGIN
-          ( ARRAY_TYPE_UID ARRAY_UID_WSL? (arrayElemUid (ARRAY_UID_WSL arrayElemUid)* ARRAY_UID_WSL?)? ARRAY_UID_END
+arrayUid: ARRAY_TYPE_UID ARRAY_UID_WSL? (arrayElemUid (ARRAY_UID_WSL arrayElemUid)* ARRAY_UID_WSL?)? ARRAY_UID_END
           | ARRAY_TYPE_UID_EMPTY
-          );
+          ;
 
-arrayBit: ARRAY_BEGIN
-          ( ARRAY_TYPE_BIT (ARRAY_BIT_WSL | arrayElemBits)* ARRAY_BIT_END
+arrayBit: ARRAY_TYPE_BIT (ARRAY_BIT_WSL | arrayElemBits)* ARRAY_BIT_END
           | ARRAY_TYPE_BIT_EMPTY
-          );
+          ;
