@@ -1,9 +1,10 @@
 CTE Grammar for ANTLR 4
 =======================
 
-This grammar is now used to generate the CTE parser for this library.
+This Antlr4 grammar is used to generate the CTE parser for this library.
 
-TODO:
+See [Parser.go](../../cte/parser.go) for how this grammar has been integrated.
 
-- Define the proper character ranges (see the bottom of [CTELexer.g4](CTELexer.g4)).
-- Instructions for incorporating this grammar into other languages.
+### TODO
+
+- Define the proper character ranges for stringlike (see the bottom of [CTELexer.g4](CTELexer.g4)).

@@ -40,6 +40,8 @@ import (
 	"github.com/kstenerud/go-concise-encoding/internal/common"
 )
 
+// See Antlr grammar at https://github.com/kstenerud/go-concise-encoding/tree/master/codegen/cte
+
 func ParseDocument(document string, eventReceiver events.DataEventReceiver) error {
 	errorListener := new(reportingErrorListener)
 

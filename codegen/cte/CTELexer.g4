@@ -565,6 +565,7 @@ fragment CHAR_AREA_LOC:       [a-zA-Z0-9_-] | '.' | '/' | '+';
 fragment CHAR_MEDIA_TYPE_FIRST: [a-zA-Z];
 fragment CHAR_MEDIA_TYPE:       [a-zA-Z0-9!#$%&'*+.^_`|~/] | '{' | '}' | '-';
 
+// TODO
 // fragment CHAR_QUOTED_STRING: ~[\u0000-\u0008\u000b\u000c\u000e-\u001f"\\]; // TODO
 fragment CHAR_QUOTED_STRING: [\p{Cf}\p{L}\p{M}\p{N}\p{P}\p{S}\p{Z}\u0009\u000a\u000d];
 // char_string = char_cte ! ('"' | '\\' | delimiter_lookalikes);
