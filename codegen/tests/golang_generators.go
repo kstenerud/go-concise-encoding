@@ -69,13 +69,13 @@ func readFunctionTemplate(basePath string, functionName string) string {
 }
 
 func generateArrayTestGenerator(basePath string, writer io.Writer) {
-	intArrayTestTemplate := readFunctionTemplate(basePath, "generateArrayInt32Tests")
-	writer.Write([]byte(strings.ReplaceAll(intArrayTestTemplate, "32", "8")))
-	writer.Write([]byte(strings.ReplaceAll(intArrayTestTemplate, "32", "16")))
-	writer.Write([]byte(strings.ReplaceAll(intArrayTestTemplate, "32", "64")))
+	template := readFunctionTemplate(basePath, "generateArrayInt32Tests")
+	writer.Write([]byte(strings.ReplaceAll(template, "32", "8")))
+	writer.Write([]byte(strings.ReplaceAll(template, "32", "16")))
+	writer.Write([]byte(strings.ReplaceAll(template, "32", "64")))
 
-	uintArrayTestTemplate := readFunctionTemplate(basePath, "generateArrayUint32Tests")
-	writer.Write([]byte(strings.ReplaceAll(uintArrayTestTemplate, "32", "8")))
-	writer.Write([]byte(strings.ReplaceAll(uintArrayTestTemplate, "32", "16")))
-	writer.Write([]byte(strings.ReplaceAll(uintArrayTestTemplate, "32", "64")))
+	template = readFunctionTemplate(basePath, "generateArrayUint32Tests")
+	writer.Write([]byte(strings.ReplaceAll(template, "32", "8")))
+	writer.Write([]byte(strings.ReplaceAll(template, "32", "16")))
+	writer.Write([]byte(strings.ReplaceAll(template, "32", "64")))
 }
