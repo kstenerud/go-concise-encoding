@@ -191,7 +191,6 @@ multiline*/
                 }
             ]
             "decodeEncode" = [
-/* TODO: Allow "abc"// x
                 {
                     "cte" = "\.^
 [
@@ -199,7 +198,6 @@ multiline*/
 ]^"
                     "events" = ["l" "s=abc" "cs= x" "e"]
                 }
-*/
                 {
                     "cte" = "\.^
 [
@@ -302,7 +300,6 @@ multiline*/
                 }
             ]
             "decodeEncode" = [
-/* TODO: Allow "abc"// x
                 {
                     "cte" = "\.^
 {
@@ -311,8 +308,6 @@ multiline*/
 }^"
                     "events" = ["m" "s=abc" "cs= x" "n=1" "e"]
                 }
-*/
-/* TODO: Allow comment between key and value
                 {
                     "cte" = "\.^
 {
@@ -321,7 +316,6 @@ multiline*/
 }^"
                     "events" = ["m" "s=abc" "cs= x" "n=1" "e"]
                 }
-*/
                 {
                     "cte" = "\.^
 {
@@ -330,7 +324,6 @@ multiline*/
 }^"
                     "events" = ["m" "s=abc" "cs= x" "n=1" "e"]
                 }
-/* TODO: Allow comment between key and value
                 {
                     "cte" = "\.^
 {
@@ -339,7 +332,6 @@ multiline*/
 }^"
                     "events" = ["m" "s=abc" "cm= x " "n=1" "e"]
                 }
-*/
                 {
                     "cte" = "\.^
 {
@@ -348,7 +340,6 @@ multiline*/
 }^"
                     "events" = ["m" "s=abc" "cm= x " "n=1" "e"]
                 }
-/* TODO: Allow "abc"/* x */
                 {
                     "cte" = "\.^
 {
@@ -357,7 +348,6 @@ multiline*/
 }^"
                     "events" = ["m" "s=abc" "cm= x " "n=1" "e"]
                 }
-*/
                 {
                     "cte" = "\.^
 {
