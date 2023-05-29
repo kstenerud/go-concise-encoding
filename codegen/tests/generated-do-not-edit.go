@@ -1091,3 +1091,287 @@ func generateArrayUint64Tests() []*test_runner.UnitTest {
 
 	return unitTests
 }
+func generateArrayFloat16Tests() []*test_runner.UnitTest {
+	// Trick golang into producing negative zero
+	float32ZeroValues[1] = -float32ZeroValues[0]
+
+	var unitTests []*test_runner.UnitTest
+	var mustSucceed []*test_runner.MustSucceedTest
+	var contents []float32
+	config := configuration.DefaultCTEEncoderConfiguration()
+
+	// Empty array
+	unitTests = append(unitTests, newMustSucceedUnitTest("Empty Array",
+		newMustSucceedTest(DirectionsAll, &config, AF16(nil)),
+		newMustSucceedTest(DirectionsAll, &config, BAF16(), ACL(0)),
+	))
+
+	// Short array
+	contents = contents[:0]
+	mustSucceed = nil
+	for i := 1; i <= 15; i++ {
+		contents = append(contents, floatCap16(float32(i-8)))
+		mustSucceed = append(mustSucceed, newMustSucceedTest(DirectionsAll, &config, AF16(contents)))
+	}
+	unitTests = append(unitTests, newMustSucceedUnitTest("Short Array", mustSucceed...))
+
+	// Chunked array
+	contents = contents[:0]
+	mustSucceed = nil
+	mustSucceed = append(mustSucceed, newMustSucceedTest(DirectionsAll, &config, BAF16(), ACL(0)))
+	for i := 1; i <= 20; i++ {
+		contents = append(contents, floatCap16(float32(1)/float32(i-10)))
+		mustSucceed = append(mustSucceed, newMustSucceedTest(DirectionsAll, &config, BAF16(), ACL(uint64(i)), ADF16(contents)))
+	}
+	unitTests = append(unitTests, newMustSucceedUnitTest("Chunked Array", mustSucceed...))
+
+	// Various element values
+	contents = contents[:0]
+	mustSucceed = nil
+	multiple := math.MaxInt16 / 31
+	for i := math.MinInt16; i < math.MaxInt16-31; i += multiple {
+		contents = append(contents, floatCap16(float32(i)))
+	}
+	mustSucceed = append(mustSucceed, newMustSucceedTest(DirectionsAll, &config, BAF16(), ACL(uint64(len(contents))), ADF16(contents)))
+	unitTests = append(unitTests, newMustSucceedUnitTest("Various Array Elements", mustSucceed...))
+
+	// Base 16
+	mustSucceed = nil
+	contents = contents[:0]
+	multiple = math.MaxUint16 / 7
+	for i := math.MinInt16; i < math.MaxInt16-7; i += multiple {
+		contents = append(contents, floatCap16(float32(i)))
+	}
+	config.DefaultNumericFormats.Array.Float16 = configuration.CTEEncodingFormatHexadecimal
+	t := newMustSucceedTest(DirectionsAll, &config, AF16(contents))
+	mustSucceed = append(mustSucceed, t)
+	config = configuration.DefaultCTEEncoderConfiguration()
+	unitTests = append(unitTests, newMustSucceedUnitTest("Base 16", mustSucceed...))
+
+	// Chunking
+	mustSucceed = nil
+	events := []test.Event{BAF16()}
+	for i := 0; i < 7; i++ {
+		events = append(events, ACM(uint64(i)))
+		if i > 0 {
+			events = append(events, ADF16(contents[:i]))
+		}
+	}
+	events = append(events, ACL(0))
+	mustSucceed = append(mustSucceed, newMustSucceedTest(DirectionsAll, &config, events...))
+	mustSucceed = append(mustSucceed, newMustSucceedTest(DirectionsAll, &config, BAF16(), ACM(4), ADF16(contents[:4]), ACL(3), ADF16(contents[:3])))
+	unitTests = append(unitTests, newMustSucceedUnitTest("Chunking Variations", mustSucceed...))
+
+	// Edge-case element values
+	contents = contents[:0]
+	contents = append(contents, float32ZeroValues...)
+	unitTests = append(unitTests, newMustSucceedUnitTest("Edge Case Element Values",
+		newMustSucceedTest(DirectionsAll, &config, BAF16(), ACL(uint64(len(contents))), ADF16(contents))))
+
+	// Edge-case element values
+	contents = contents[:0]
+	contents = append(contents, float32NanValues...)
+	unitTests = append(unitTests, newMustSucceedUnitTest("NaN Element Values",
+		newMustSucceedTest(DirectionsAll.except(DirectionToCBE), &config, BAF16(), ACL(uint64(len(contents))), ADF16(contents))))
+
+	// Whitespace at end of array
+	mustSucceed = nil
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|f16 |", AF16([]float32{})))
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|f16 1 |", AF16([]float32{1})))
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|f16x |", AF16([]float32{})))
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|f16x 1 |", AF16([]float32{1})))
+	unitTests = append(unitTests, newMustSucceedUnitTest("Whitespace at end of array", mustSucceed...))
+
+	// Fail mode tests
+	var mustFail []*test_runner.MustFailTest
+
+	// Space before array type
+	mustFail = nil
+	mustFail = append(mustFail, newCTEMustFailTest("| f16|"))
+	mustFail = append(mustFail, newCTEMustFailTest("| f16x|"))
+	unitTests = append(unitTests, newMustFailUnitTest("Space before array type", mustFail...))
+
+	// Truncated Array
+	mustFail = nil
+	mustFail = append(mustFail, newMustFailTest(testTypeCbe, BAF16()))
+	mustFail = append(mustFail, newMustFailTest(testTypeCbe, BAF16(), ACL(1)))
+	for i := 2; i <= 10; i++ {
+		contents = contents[:i/2]
+		mustFail = append(mustFail, newMustFailTest(testTypeCbe, BAF16(), ACL(uint64(i)), ADF16(contents)))
+		mustFail = append(mustFail, &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CBE: truncate(generateCBE(AF16(contents)), 1)}})
+	}
+	mustFail = append(mustFail, &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: generateCTE(nil, BAF16())}})
+	mustFail = append(mustFail, &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: generateCTE(nil, BAF16(), ACL(uint64(2)), ADF16(contents[:1]))}})
+	unitTests = append(unitTests, newMustFailUnitTest("Truncated Array", mustFail...))
+
+	// Element value out of range
+	mustFail = nil
+	for _, v := range f16OutOfRange {
+		mustFail = append(mustFail, &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: v}})
+	}
+	unitTests = append(unitTests, newMustFailUnitTest("Element value out of range", mustFail...))
+
+	// Numeric digit out of range
+	mustFail = nil
+	for iB, base := range floatBases {
+		for iV, v := range baseOutOfRange {
+			if iV <= iB {
+				mustFail = append(mustFail, &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|f16%v %v|", base, v)}})
+			}
+		}
+	}
+	unitTests = append(unitTests, newMustFailUnitTest("Numeric digit out of range", mustFail...))
+
+	// Invalid special values
+	mustFail = nil
+	for _, base := range intBases {
+		for _, special := range nonFloatSpecials {
+			mustFail = append(mustFail, &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|f16%v %v|", base, special)}})
+		}
+	}
+	unitTests = append(unitTests, newMustFailUnitTest("Invalid special values", mustFail...))
+
+	return unitTests
+}
+func generateArrayFloat64Tests() []*test_runner.UnitTest {
+	// Trick golang into producing negative zero
+	float64ZeroValues[1] = -float64ZeroValues[0]
+
+	var unitTests []*test_runner.UnitTest
+	var mustSucceed []*test_runner.MustSucceedTest
+	var contents []float64
+	config := configuration.DefaultCTEEncoderConfiguration()
+
+	// Empty array
+	unitTests = append(unitTests, newMustSucceedUnitTest("Empty Array",
+		newMustSucceedTest(DirectionsAll, &config, AF64(nil)),
+		newMustSucceedTest(DirectionsAll, &config, BAF64(), ACL(0)),
+	))
+
+	// Short array
+	contents = contents[:0]
+	mustSucceed = nil
+	for i := 1; i <= 15; i++ {
+		contents = append(contents, floatCap64(float64(i-8)))
+		mustSucceed = append(mustSucceed, newMustSucceedTest(DirectionsAll, &config, AF64(contents)))
+	}
+	unitTests = append(unitTests, newMustSucceedUnitTest("Short Array", mustSucceed...))
+
+	// Chunked array
+	contents = contents[:0]
+	mustSucceed = nil
+	mustSucceed = append(mustSucceed, newMustSucceedTest(DirectionsAll, &config, BAF64(), ACL(0)))
+	for i := 1; i <= 20; i++ {
+		contents = append(contents, floatCap64(float64(1)/float64(i-10)))
+		mustSucceed = append(mustSucceed, newMustSucceedTest(DirectionsAll, &config, BAF64(), ACL(uint64(i)), ADF64(contents)))
+	}
+	unitTests = append(unitTests, newMustSucceedUnitTest("Chunked Array", mustSucceed...))
+
+	// Various element values
+	contents = contents[:0]
+	mustSucceed = nil
+	multiple := math.MaxInt64 / 31
+	for i := math.MinInt64; i < math.MaxInt64-31; i += multiple {
+		contents = append(contents, floatCap64(float64(i)))
+	}
+	mustSucceed = append(mustSucceed, newMustSucceedTest(DirectionsAll, &config, BAF64(), ACL(uint64(len(contents))), ADF64(contents)))
+	unitTests = append(unitTests, newMustSucceedUnitTest("Various Array Elements", mustSucceed...))
+
+	// Base 16
+	mustSucceed = nil
+	contents = contents[:0]
+	multiple = math.MaxUint64 / 7
+	for i := math.MinInt64; i < math.MaxInt64-7; i += multiple {
+		contents = append(contents, floatCap64(float64(i)))
+	}
+	config.DefaultNumericFormats.Array.Float64 = configuration.CTEEncodingFormatHexadecimal
+	t := newMustSucceedTest(DirectionsAll, &config, AF64(contents))
+	mustSucceed = append(mustSucceed, t)
+	config = configuration.DefaultCTEEncoderConfiguration()
+	unitTests = append(unitTests, newMustSucceedUnitTest("Base 16", mustSucceed...))
+
+	// Chunking
+	mustSucceed = nil
+	events := []test.Event{BAF64()}
+	for i := 0; i < 7; i++ {
+		events = append(events, ACM(uint64(i)))
+		if i > 0 {
+			events = append(events, ADF64(contents[:i]))
+		}
+	}
+	events = append(events, ACL(0))
+	mustSucceed = append(mustSucceed, newMustSucceedTest(DirectionsAll, &config, events...))
+	mustSucceed = append(mustSucceed, newMustSucceedTest(DirectionsAll, &config, BAF64(), ACM(4), ADF64(contents[:4]), ACL(3), ADF64(contents[:3])))
+	unitTests = append(unitTests, newMustSucceedUnitTest("Chunking Variations", mustSucceed...))
+
+	// Edge-case element values
+	contents = contents[:0]
+	contents = append(contents, float64ZeroValues...)
+	unitTests = append(unitTests, newMustSucceedUnitTest("Edge Case Element Values",
+		newMustSucceedTest(DirectionsAll, &config, BAF64(), ACL(uint64(len(contents))), ADF64(contents))))
+
+	// Edge-case element values
+	contents = contents[:0]
+	contents = append(contents, float64NanValues...)
+	unitTests = append(unitTests, newMustSucceedUnitTest("NaN Element Values",
+		newMustSucceedTest(DirectionsAll.except(DirectionToCBE), &config, BAF64(), ACL(uint64(len(contents))), ADF64(contents))))
+
+	// Whitespace at end of array
+	mustSucceed = nil
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|f64 |", AF64([]float64{})))
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|f64 1 |", AF64([]float64{1})))
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|f64x |", AF64([]float64{})))
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|f64x 1 |", AF64([]float64{1})))
+	unitTests = append(unitTests, newMustSucceedUnitTest("Whitespace at end of array", mustSucceed...))
+
+	// Fail mode tests
+	var mustFail []*test_runner.MustFailTest
+
+	// Space before array type
+	mustFail = nil
+	mustFail = append(mustFail, newCTEMustFailTest("| f64|"))
+	mustFail = append(mustFail, newCTEMustFailTest("| f64x|"))
+	unitTests = append(unitTests, newMustFailUnitTest("Space before array type", mustFail...))
+
+	// Truncated Array
+	mustFail = nil
+	mustFail = append(mustFail, newMustFailTest(testTypeCbe, BAF64()))
+	mustFail = append(mustFail, newMustFailTest(testTypeCbe, BAF64(), ACL(1)))
+	for i := 2; i <= 10; i++ {
+		contents = contents[:i/2]
+		mustFail = append(mustFail, newMustFailTest(testTypeCbe, BAF64(), ACL(uint64(i)), ADF64(contents)))
+		mustFail = append(mustFail, &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CBE: truncate(generateCBE(AF64(contents)), 1)}})
+	}
+	mustFail = append(mustFail, &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: generateCTE(nil, BAF64())}})
+	mustFail = append(mustFail, &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: generateCTE(nil, BAF64(), ACL(uint64(2)), ADF64(contents[:1]))}})
+	unitTests = append(unitTests, newMustFailUnitTest("Truncated Array", mustFail...))
+
+	// Element value out of range
+	mustFail = nil
+	for _, v := range f64OutOfRange {
+		mustFail = append(mustFail, &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: v}})
+	}
+	unitTests = append(unitTests, newMustFailUnitTest("Element value out of range", mustFail...))
+
+	// Numeric digit out of range
+	mustFail = nil
+	for iB, base := range floatBases {
+		for iV, v := range baseOutOfRange {
+			if iV <= iB {
+				mustFail = append(mustFail, &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|f64%v %v|", base, v)}})
+			}
+		}
+	}
+	unitTests = append(unitTests, newMustFailUnitTest("Numeric digit out of range", mustFail...))
+
+	// Invalid special values
+	mustFail = nil
+	for _, base := range intBases {
+		for _, special := range nonFloatSpecials {
+			mustFail = append(mustFail, &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|f64%v %v|", base, special)}})
+		}
+	}
+	unitTests = append(unitTests, newMustFailUnitTest("Invalid special values", mustFail...))
+
+	return unitTests
+}

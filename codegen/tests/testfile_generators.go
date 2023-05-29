@@ -64,8 +64,9 @@ func generateArrayTestFiles(testsDir string) {
 	common.GenerateTestFile(filepath.Join(testsDir, "array-uint16-generated.cte"), generateArrayUint16Tests()...)
 	common.GenerateTestFile(filepath.Join(testsDir, "array-uint32-generated.cte"), generateArrayUint32Tests()...)
 	common.GenerateTestFile(filepath.Join(testsDir, "array-uint64-generated.cte"), generateArrayUint64Tests()...)
-
+	common.GenerateTestFile(filepath.Join(testsDir, "array-float16-generated.cte"), generateArrayFloat16Tests()...)
 	common.GenerateTestFile(filepath.Join(testsDir, "array-float32-generated.cte"), generateArrayFloat32Tests()...)
+	common.GenerateTestFile(filepath.Join(testsDir, "array-float64-generated.cte"), generateArrayFloat64Tests()...)
 }
 
 func generateRulesInvalidArrayEventsTests(prefix test.Event) []*test_runner.UnitTest {

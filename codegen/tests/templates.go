@@ -404,7 +404,7 @@ func generateArrayFloat32Tests() []*test_runner.UnitTest {
 	contents = contents[:0]
 	mustSucceed = nil
 	for i := 1; i <= 15; i++ {
-		contents = append(contents, float32(i-8))
+		contents = append(contents, floatCap32(float32(i-8)))
 		mustSucceed = append(mustSucceed, newMustSucceedTest(DirectionsAll, &config, AF32(contents)))
 	}
 	unitTests = append(unitTests, newMustSucceedUnitTest("Short Array", mustSucceed...))
@@ -414,7 +414,7 @@ func generateArrayFloat32Tests() []*test_runner.UnitTest {
 	mustSucceed = nil
 	mustSucceed = append(mustSucceed, newMustSucceedTest(DirectionsAll, &config, BAF32(), ACL(0)))
 	for i := 1; i <= 20; i++ {
-		contents = append(contents, float32(1)/float32(i-10))
+		contents = append(contents, floatCap32(float32(1)/float32(i-10)))
 		mustSucceed = append(mustSucceed, newMustSucceedTest(DirectionsAll, &config, BAF32(), ACL(uint64(i)), ADF32(contents)))
 	}
 	unitTests = append(unitTests, newMustSucceedUnitTest("Chunked Array", mustSucceed...))
@@ -424,7 +424,7 @@ func generateArrayFloat32Tests() []*test_runner.UnitTest {
 	mustSucceed = nil
 	multiple := math.MaxInt32 / 31
 	for i := math.MinInt32; i < math.MaxInt32-31; i += multiple {
-		contents = append(contents, float32(i))
+		contents = append(contents, floatCap32(float32(i)))
 	}
 	mustSucceed = append(mustSucceed, newMustSucceedTest(DirectionsAll, &config, BAF32(), ACL(uint64(len(contents))), ADF32(contents)))
 	unitTests = append(unitTests, newMustSucceedUnitTest("Various Array Elements", mustSucceed...))
@@ -434,7 +434,7 @@ func generateArrayFloat32Tests() []*test_runner.UnitTest {
 	contents = contents[:0]
 	multiple = math.MaxUint32 / 7
 	for i := math.MinInt32; i < math.MaxInt32-7; i += multiple {
-		contents = append(contents, float32(i))
+		contents = append(contents, floatCap32(float32(i)))
 	}
 	config.DefaultNumericFormats.Array.Float32 = configuration.CTEEncodingFormatHexadecimal
 	t := newMustSucceedTest(DirectionsAll, &config, AF32(contents))
@@ -499,16 +499,11 @@ func generateArrayFloat32Tests() []*test_runner.UnitTest {
 	unitTests = append(unitTests, newMustFailUnitTest("Truncated Array", mustFail...))
 
 	// Element value out of range
-	unitTests = append(unitTests, newMustFailUnitTest(
-		"Element value out of range",
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: "|f32x 1.23456p128|"}},
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: "|f32 1.234567e40|"}},
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: "|f32 0x1.23456p128|"}},
-
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: "|f32x 1.23456p-151|"}},
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: "|f32 1.234567e-50|"}},
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: "|f32 -0x1.23456p-151|"}},
-	))
+	mustFail = nil
+	for _, v := range f32OutOfRange {
+		mustFail = append(mustFail, &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: v}})
+	}
+	unitTests = append(unitTests, newMustFailUnitTest("Element value out of range", mustFail...))
 
 	// Numeric digit out of range
 	mustFail = nil
@@ -531,6 +526,47 @@ func generateArrayFloat32Tests() []*test_runner.UnitTest {
 	unitTests = append(unitTests, newMustFailUnitTest("Invalid special values", mustFail...))
 
 	return unitTests
+}
+
+func floatCap16(v float32) float32 {
+	bits := math.Float32bits(v)
+	bits &= 0xffff0000
+	return math.Float32frombits(bits)
+}
+
+func floatCap32(v float32) float32 {
+	return v
+}
+
+func floatCap64(v float64) float64 {
+	return v
+}
+
+var f16OutOfRange = []string{
+	"|f16x 1.23456p128|",
+	"|f16 1.234567e40|",
+	"|f16 0x1.23456p128|",
+	"|f16x 1.23456p-151|",
+	"|f16 1.234567e-50|",
+	"|f16 -0x1.23456p-151|",
+}
+
+var f32OutOfRange = []string{
+	"|f32x 1.23456p128|",
+	"|f32 1.234567e40|",
+	"|f32 0x1.23456p128|",
+	"|f32x 1.23456p-151|",
+	"|f32 1.234567e-50|",
+	"|f32 -0x1.23456p-151|",
+}
+
+var f64OutOfRange = []string{
+	"|f64x 1.23456p128000|",
+	"|f64 1.234567e40000|",
+	"|f64 0x1.23456p128000|",
+	"|f64x 1.23456p-151000|",
+	"|f64 1.234567e-50000|",
+	"|f64 -0x1.23456p-151000|",
 }
 
 var uint8OutOfRange = big.NewInt(0).Add(big.NewInt(math.MaxUint8), big.NewInt(1))
@@ -643,7 +679,17 @@ var float32ZeroValues = []float32{
 	0,
 }
 
+var float64ZeroValues = []float64{
+	0,
+	0,
+}
+
 var float32NanValues = []float32{
 	float32SignalingNan,
 	float32QuietNan,
+}
+
+var float64NanValues = []float64{
+	float64SignalingNan,
+	float64QuietNan,
 }
