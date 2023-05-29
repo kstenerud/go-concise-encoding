@@ -662,16 +662,31 @@ c0
                     "cte" = "|u64x null|"
                 }
                 {
+                    "cte" = "|u64x -null|"
+                }
+                {
                     "cte" = "|u64x true|"
+                }
+                {
+                    "cte" = "|u64x -true|"
                 }
                 {
                     "cte" = "|u64x false|"
                 }
                 {
+                    "cte" = "|u64x -false|"
+                }
+                {
                     "cte" = "|u64x nan|"
                 }
                 {
+                    "cte" = "|u64x -nan|"
+                }
+                {
                     "cte" = "|u64x snan|"
+                }
+                {
+                    "cte" = "|u64x -snan|"
                 }
                 {
                     "cte" = "|u64x inf|"
@@ -683,16 +698,31 @@ c0
                     "cte" = "|u64 null|"
                 }
                 {
+                    "cte" = "|u64 -null|"
+                }
+                {
                     "cte" = "|u64 true|"
+                }
+                {
+                    "cte" = "|u64 -true|"
                 }
                 {
                     "cte" = "|u64 false|"
                 }
                 {
+                    "cte" = "|u64 -false|"
+                }
+                {
                     "cte" = "|u64 nan|"
                 }
                 {
+                    "cte" = "|u64 -nan|"
+                }
+                {
                     "cte" = "|u64 snan|"
+                }
+                {
+                    "cte" = "|u64 -snan|"
                 }
                 {
                     "cte" = "|u64 inf|"
@@ -704,16 +734,31 @@ c0
                     "cte" = "|u64o null|"
                 }
                 {
+                    "cte" = "|u64o -null|"
+                }
+                {
                     "cte" = "|u64o true|"
+                }
+                {
+                    "cte" = "|u64o -true|"
                 }
                 {
                     "cte" = "|u64o false|"
                 }
                 {
+                    "cte" = "|u64o -false|"
+                }
+                {
                     "cte" = "|u64o nan|"
                 }
                 {
+                    "cte" = "|u64o -nan|"
+                }
+                {
                     "cte" = "|u64o snan|"
+                }
+                {
+                    "cte" = "|u64o -snan|"
                 }
                 {
                     "cte" = "|u64o inf|"
@@ -725,16 +770,31 @@ c0
                     "cte" = "|u64b null|"
                 }
                 {
+                    "cte" = "|u64b -null|"
+                }
+                {
                     "cte" = "|u64b true|"
+                }
+                {
+                    "cte" = "|u64b -true|"
                 }
                 {
                     "cte" = "|u64b false|"
                 }
                 {
+                    "cte" = "|u64b -false|"
+                }
+                {
                     "cte" = "|u64b nan|"
                 }
                 {
+                    "cte" = "|u64b -nan|"
+                }
+                {
                     "cte" = "|u64b snan|"
+                }
+                {
+                    "cte" = "|u64b -snan|"
                 }
                 {
                     "cte" = "|u64b inf|"

@@ -579,37 +579,97 @@ c0
                     "cte" = "|f32x null|"
                 }
                 {
+                    "cte" = "|f32x -null|"
+                }
+                {
                     "cte" = "|f32x true|"
+                }
+                {
+                    "cte" = "|f32x -true|"
                 }
                 {
                     "cte" = "|f32x false|"
                 }
                 {
+                    "cte" = "|f32x -false|"
+                }
+                {
+                    "cte" = "|f32x -nan|"
+                }
+                {
+                    "cte" = "|f32x -snan|"
+                }
+                {
                     "cte" = "|f32 null|"
+                }
+                {
+                    "cte" = "|f32 -null|"
                 }
                 {
                     "cte" = "|f32 true|"
                 }
                 {
+                    "cte" = "|f32 -true|"
+                }
+                {
                     "cte" = "|f32 false|"
+                }
+                {
+                    "cte" = "|f32 -false|"
+                }
+                {
+                    "cte" = "|f32 -nan|"
+                }
+                {
+                    "cte" = "|f32 -snan|"
                 }
                 {
                     "cte" = "|f32o null|"
                 }
                 {
+                    "cte" = "|f32o -null|"
+                }
+                {
                     "cte" = "|f32o true|"
+                }
+                {
+                    "cte" = "|f32o -true|"
                 }
                 {
                     "cte" = "|f32o false|"
                 }
                 {
+                    "cte" = "|f32o -false|"
+                }
+                {
+                    "cte" = "|f32o -nan|"
+                }
+                {
+                    "cte" = "|f32o -snan|"
+                }
+                {
                     "cte" = "|f32b null|"
+                }
+                {
+                    "cte" = "|f32b -null|"
                 }
                 {
                     "cte" = "|f32b true|"
                 }
                 {
+                    "cte" = "|f32b -true|"
+                }
+                {
                     "cte" = "|f32b false|"
+                }
+                {
+                    "cte" = "|f32b -false|"
+                }
+                {
+                    "cte" = "|f32b -nan|"
+                }
+                {
+                    "cte" = "|f32b -snan|"
                 }
             ]
         }

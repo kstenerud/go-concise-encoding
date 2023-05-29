@@ -662,16 +662,31 @@ c0
                     "cte" = "|u16x null|"
                 }
                 {
+                    "cte" = "|u16x -null|"
+                }
+                {
                     "cte" = "|u16x true|"
+                }
+                {
+                    "cte" = "|u16x -true|"
                 }
                 {
                     "cte" = "|u16x false|"
                 }
                 {
+                    "cte" = "|u16x -false|"
+                }
+                {
                     "cte" = "|u16x nan|"
                 }
                 {
+                    "cte" = "|u16x -nan|"
+                }
+                {
                     "cte" = "|u16x snan|"
+                }
+                {
+                    "cte" = "|u16x -snan|"
                 }
                 {
                     "cte" = "|u16x inf|"
@@ -683,16 +698,31 @@ c0
                     "cte" = "|u16 null|"
                 }
                 {
+                    "cte" = "|u16 -null|"
+                }
+                {
                     "cte" = "|u16 true|"
+                }
+                {
+                    "cte" = "|u16 -true|"
                 }
                 {
                     "cte" = "|u16 false|"
                 }
                 {
+                    "cte" = "|u16 -false|"
+                }
+                {
                     "cte" = "|u16 nan|"
                 }
                 {
+                    "cte" = "|u16 -nan|"
+                }
+                {
                     "cte" = "|u16 snan|"
+                }
+                {
+                    "cte" = "|u16 -snan|"
                 }
                 {
                     "cte" = "|u16 inf|"
@@ -704,16 +734,31 @@ c0
                     "cte" = "|u16o null|"
                 }
                 {
+                    "cte" = "|u16o -null|"
+                }
+                {
                     "cte" = "|u16o true|"
+                }
+                {
+                    "cte" = "|u16o -true|"
                 }
                 {
                     "cte" = "|u16o false|"
                 }
                 {
+                    "cte" = "|u16o -false|"
+                }
+                {
                     "cte" = "|u16o nan|"
                 }
                 {
+                    "cte" = "|u16o -nan|"
+                }
+                {
                     "cte" = "|u16o snan|"
+                }
+                {
+                    "cte" = "|u16o -snan|"
                 }
                 {
                     "cte" = "|u16o inf|"
@@ -725,16 +770,31 @@ c0
                     "cte" = "|u16b null|"
                 }
                 {
+                    "cte" = "|u16b -null|"
+                }
+                {
                     "cte" = "|u16b true|"
+                }
+                {
+                    "cte" = "|u16b -true|"
                 }
                 {
                     "cte" = "|u16b false|"
                 }
                 {
+                    "cte" = "|u16b -false|"
+                }
+                {
                     "cte" = "|u16b nan|"
                 }
                 {
+                    "cte" = "|u16b -nan|"
+                }
+                {
                     "cte" = "|u16b snan|"
+                }
+                {
+                    "cte" = "|u16b -snan|"
                 }
                 {
                     "cte" = "|u16b inf|"

@@ -579,37 +579,97 @@ c0
                     "cte" = "|f16x null|"
                 }
                 {
+                    "cte" = "|f16x -null|"
+                }
+                {
                     "cte" = "|f16x true|"
+                }
+                {
+                    "cte" = "|f16x -true|"
                 }
                 {
                     "cte" = "|f16x false|"
                 }
                 {
+                    "cte" = "|f16x -false|"
+                }
+                {
+                    "cte" = "|f16x -nan|"
+                }
+                {
+                    "cte" = "|f16x -snan|"
+                }
+                {
                     "cte" = "|f16 null|"
+                }
+                {
+                    "cte" = "|f16 -null|"
                 }
                 {
                     "cte" = "|f16 true|"
                 }
                 {
+                    "cte" = "|f16 -true|"
+                }
+                {
                     "cte" = "|f16 false|"
+                }
+                {
+                    "cte" = "|f16 -false|"
+                }
+                {
+                    "cte" = "|f16 -nan|"
+                }
+                {
+                    "cte" = "|f16 -snan|"
                 }
                 {
                     "cte" = "|f16o null|"
                 }
                 {
+                    "cte" = "|f16o -null|"
+                }
+                {
                     "cte" = "|f16o true|"
+                }
+                {
+                    "cte" = "|f16o -true|"
                 }
                 {
                     "cte" = "|f16o false|"
                 }
                 {
+                    "cte" = "|f16o -false|"
+                }
+                {
+                    "cte" = "|f16o -nan|"
+                }
+                {
+                    "cte" = "|f16o -snan|"
+                }
+                {
                     "cte" = "|f16b null|"
+                }
+                {
+                    "cte" = "|f16b -null|"
                 }
                 {
                     "cte" = "|f16b true|"
                 }
                 {
+                    "cte" = "|f16b -true|"
+                }
+                {
                     "cte" = "|f16b false|"
+                }
+                {
+                    "cte" = "|f16b -false|"
+                }
+                {
+                    "cte" = "|f16b -nan|"
+                }
+                {
+                    "cte" = "|f16b -snan|"
                 }
             ]
         }

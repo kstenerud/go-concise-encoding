@@ -595,18 +595,28 @@ var baseOutOfRange = []string{
 
 var nonIntSpecials = []string{
 	"null",
+	"-null",
 	"true",
+	"-true",
 	"false",
+	"-false",
 	"nan",
+	"-nan",
 	"snan",
+	"-snan",
 	"inf",
 	"-inf",
 }
 
 var nonFloatSpecials = []string{
 	"null",
+	"-null",
 	"true",
+	"-true",
 	"false",
+	"-false",
+	"-nan",
+	"-snan",
 }
 
 var intEdgeValues = []int64{

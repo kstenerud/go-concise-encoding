@@ -662,16 +662,31 @@ c0
                     "cte" = "|u8x null|"
                 }
                 {
+                    "cte" = "|u8x -null|"
+                }
+                {
                     "cte" = "|u8x true|"
+                }
+                {
+                    "cte" = "|u8x -true|"
                 }
                 {
                     "cte" = "|u8x false|"
                 }
                 {
+                    "cte" = "|u8x -false|"
+                }
+                {
                     "cte" = "|u8x nan|"
                 }
                 {
+                    "cte" = "|u8x -nan|"
+                }
+                {
                     "cte" = "|u8x snan|"
+                }
+                {
+                    "cte" = "|u8x -snan|"
                 }
                 {
                     "cte" = "|u8x inf|"
@@ -683,16 +698,31 @@ c0
                     "cte" = "|u8 null|"
                 }
                 {
+                    "cte" = "|u8 -null|"
+                }
+                {
                     "cte" = "|u8 true|"
+                }
+                {
+                    "cte" = "|u8 -true|"
                 }
                 {
                     "cte" = "|u8 false|"
                 }
                 {
+                    "cte" = "|u8 -false|"
+                }
+                {
                     "cte" = "|u8 nan|"
                 }
                 {
+                    "cte" = "|u8 -nan|"
+                }
+                {
                     "cte" = "|u8 snan|"
+                }
+                {
+                    "cte" = "|u8 -snan|"
                 }
                 {
                     "cte" = "|u8 inf|"
@@ -704,16 +734,31 @@ c0
                     "cte" = "|u8o null|"
                 }
                 {
+                    "cte" = "|u8o -null|"
+                }
+                {
                     "cte" = "|u8o true|"
+                }
+                {
+                    "cte" = "|u8o -true|"
                 }
                 {
                     "cte" = "|u8o false|"
                 }
                 {
+                    "cte" = "|u8o -false|"
+                }
+                {
                     "cte" = "|u8o nan|"
                 }
                 {
+                    "cte" = "|u8o -nan|"
+                }
+                {
                     "cte" = "|u8o snan|"
+                }
+                {
+                    "cte" = "|u8o -snan|"
                 }
                 {
                     "cte" = "|u8o inf|"
@@ -725,16 +770,31 @@ c0
                     "cte" = "|u8b null|"
                 }
                 {
+                    "cte" = "|u8b -null|"
+                }
+                {
                     "cte" = "|u8b true|"
+                }
+                {
+                    "cte" = "|u8b -true|"
                 }
                 {
                     "cte" = "|u8b false|"
                 }
                 {
+                    "cte" = "|u8b -false|"
+                }
+                {
                     "cte" = "|u8b nan|"
                 }
                 {
+                    "cte" = "|u8b -nan|"
+                }
+                {
                     "cte" = "|u8b snan|"
+                }
+                {
+                    "cte" = "|u8b -snan|"
                 }
                 {
                     "cte" = "|u8b inf|"
