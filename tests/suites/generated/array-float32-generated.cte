@@ -399,7 +399,7 @@ c0
             "must_succeed" = [
                 {
                     "cbe" = |u8x 7f e9 04 00 00 00 00 00 00 00 80|
-                    "to_cte" = "|f32x 0 0|"
+                    "to_cte" = "|f32x 0 -0|"
                     "events" = [
                         "baf32"
                         "acl=2"

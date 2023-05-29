@@ -389,6 +389,12 @@ func (_this *Writer) WriteFloatHexNoPrefix(value float64) {
 		}
 		return
 	}
+	if value == 0 {
+		_this.ExpandBuffer(2)
+		used := strconv.AppendFloat(_this.Buffer[:0], value, 'g', -1, 64)
+		_this.FlushBufferNotLF(len(used))
+		return
+	}
 
 	if asInt := int64(value); float64(asInt) == value {
 		_this.WriteInt(asInt, 16)
