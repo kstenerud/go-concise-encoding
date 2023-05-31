@@ -38,6 +38,7 @@ type Event interface {
 	IsEquivalentTo(Event) bool
 	Comparable() string
 	Value() interface{}
+	Expand() Events
 }
 
 type Events []Event
@@ -57,6 +58,13 @@ func (_this Events) String() string {
 
 func (_this Events) AreEquivalentTo(that Events) bool {
 	return AreEventsEquivalent(_this, that)
+}
+func (_this Events) Expand() Events {
+	var expanded Events
+	for _, event := range _this {
+		expanded = append(expanded, event.Expand()...)
+	}
+	return expanded
 }
 
 type BaseEvent struct {
@@ -82,6 +90,7 @@ func (_this *BaseEvent) Value() interface{} {
 	}
 	return _this.values[len(_this.values)-1]
 }
+func (_this *BaseEvent) Expand() Events { return Events{_this} }
 
 func ConstructEvent(shortName string, invocation EventInvocation, values ...interface{}) BaseEvent {
 	return BaseEvent{

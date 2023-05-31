@@ -33,6 +33,57 @@ import (
 	"github.com/kstenerud/go-concise-encoding/ce/events"
 )
 
+func (_this *EventArrayBit) Expand() Events {
+	begin := BAB()
+	if len(_this.values) == 0 {
+		return Events{begin, ACL(0)}
+	}
+	elements := _this.values[0].([]bool)
+	if len(elements) == 0 {
+		return Events{begin, ACL(0)}
+	}
+	return Events{begin, ACL(uint64(len(elements))), ADB(elements)}
+}
+
+func (_this *EventCustomBinary) Expand() Events {
+	customType := _this.values[0].(uint64)
+	begin := BCB(customType)
+	if len(_this.values) < 2 {
+		return Events{begin, ACL(0)}
+	}
+	elements := _this.values[1].([]byte)
+	if len(elements) == 0 {
+		return Events{begin, ACL(0)}
+	}
+	return Events{begin, ACL(uint64(len(elements))), ADU8(elements)}
+}
+
+func (_this *EventCustomText) Expand() Events {
+	customType := _this.values[0].(uint64)
+	begin := BCT(customType)
+	if len(_this.values) < 2 {
+		return Events{begin, ACL(0)}
+	}
+	elements := _this.values[1].(string)
+	if len(elements) == 0 {
+		return Events{begin, ACL(0)}
+	}
+	return Events{begin, ACL(uint64(len(elements))), ADT(elements)}
+}
+
+func (_this *EventMedia) Expand() Events {
+	mediaType := _this.values[0].(string)
+	begin := BMEDIA(mediaType)
+	if len(_this.values) < 2 {
+		return Events{begin, ACL(0)}
+	}
+	elements := _this.values[1].([]byte)
+	if len(elements) == 0 {
+		return Events{begin, ACL(0)}
+	}
+	return Events{begin, ACL(uint64(len(elements))), ADU8(elements)}
+}
+
 func (_this *EventUID) String() string {
 	if len(_this.values) == 0 {
 		return _this.shortName

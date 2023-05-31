@@ -132,6 +132,25 @@ func generateArrayEvent(writer io.Writer, eventName string, elementType string, 
 	argName := "elements"
 	generateOneArgEvent(writer, "Array"+eventName, functionName, argName, "[]"+elementType,
 		fmt.Sprintf("receiver.OnArray(events.ArrayType%v, uint64(len(safeArg)), array%vToBytes(safeArg))", eventName, eventName))
+	generateArrayExpand(writer, eventName, elementType, functionName)
+}
+
+func generateArrayExpand(writer io.Writer, eventName string, elementType string, functionName string) {
+	functionSuffix := strings.ToUpper(functionName)[1:]
+
+	writer.Write([]byte(fmt.Sprintf(`func (_this *EventArray%v) Expand() Events {
+	begin := BA%v()
+	if len(_this.values) == 0 {
+		return Events{begin, ACL(0)}
+	}
+	elements := _this.values[0].([]%v)
+	if len(elements) == 0 {
+		return Events{begin, ACL(0)}
+	}
+	return Events{begin, ACL(uint64(len(elements))), AD%v(elements)}
+}
+
+`, eventName, functionSuffix, elementType, functionSuffix)))
 }
 
 func generateStringArrayEvent(writer io.Writer, arrayType string, functionName string) {
@@ -139,6 +158,25 @@ func generateStringArrayEvent(writer io.Writer, arrayType string, functionName s
 	argName := "str"
 	generateOneArgEvent(writer, eventName, functionName, argName, "string",
 		fmt.Sprintf("receiver.OnStringlikeArray(events.ArrayType%v, safeArg)", arrayType))
+	generateStringArrayExpand(writer, arrayType, functionName)
+}
+
+func generateStringArrayExpand(writer io.Writer, arrayType string, functionName string) {
+	functionSuffix := strings.ToUpper(functionName)
+
+	writer.Write([]byte(fmt.Sprintf(`func (_this *Event%v) Expand() Events {
+	begin := B%v()
+	if len(_this.values) == 0 {
+		return Events{begin, ACL(0)}
+	}
+	elements := _this.values[0].(string)
+	if len(elements) == 0 {
+		return Events{begin, ACL(0)}
+	}
+	return Events{begin, ACL(uint64(len(elements))), ADT(elements)}
+}
+
+`, arrayType, functionSuffix)))
 }
 
 func generateArrayBeginEvent(writer io.Writer, eventName string, arrayType string, functionName string) {

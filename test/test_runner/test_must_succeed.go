@@ -102,6 +102,10 @@ func (_this *MustSucceedTest) PostDecodeInit(ceVersion int, context string, inde
 		return _this.errorf("must specify destination(s) to compare against")
 	}
 
+	// TODO: Expand events
+	// _this.fromEvents.Expand()
+	// _this.toEvents.Expand()
+
 	return nil
 }
 

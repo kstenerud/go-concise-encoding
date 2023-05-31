@@ -317,6 +317,18 @@ func S(str string) Event {
 	}
 }
 
+func (_this *EventString) Expand() Events {
+	begin := BS()
+	if len(_this.values) == 0 {
+		return Events{begin, ACL(0)}
+	}
+	elements := _this.values[0].(string)
+	if len(elements) == 0 {
+		return Events{begin, ACL(0)}
+	}
+	return Events{begin, ACL(uint64(len(elements))), ADT(elements)}
+}
+
 type EventReferenceRemote struct{ BaseEvent }
 
 func REFR(str string) Event {
@@ -330,6 +342,18 @@ func REFR(str string) Event {
 	}
 }
 
+func (_this *EventReferenceRemote) Expand() Events {
+	begin := BREFR()
+	if len(_this.values) == 0 {
+		return Events{begin, ACL(0)}
+	}
+	elements := _this.values[0].(string)
+	if len(elements) == 0 {
+		return Events{begin, ACL(0)}
+	}
+	return Events{begin, ACL(uint64(len(elements))), ADT(elements)}
+}
+
 type EventResourceID struct{ BaseEvent }
 
 func RID(str string) Event {
@@ -341,6 +365,18 @@ func RID(str string) Event {
 			receiver.OnStringlikeArray(events.ArrayTypeResourceID, safeArg)
 		}, safeArg),
 	}
+}
+
+func (_this *EventResourceID) Expand() Events {
+	begin := BRID()
+	if len(_this.values) == 0 {
+		return Events{begin, ACL(0)}
+	}
+	elements := _this.values[0].(string)
+	if len(elements) == 0 {
+		return Events{begin, ACL(0)}
+	}
+	return Events{begin, ACL(uint64(len(elements))), ADT(elements)}
 }
 
 type EventArrayDataInt8 struct{ BaseEvent }
@@ -668,6 +704,18 @@ func AI8(elements []int8) Event {
 	}
 }
 
+func (_this *EventArrayInt8) Expand() Events {
+	begin := BAI8()
+	if len(_this.values) == 0 {
+		return Events{begin, ACL(0)}
+	}
+	elements := _this.values[0].([]int8)
+	if len(elements) == 0 {
+		return Events{begin, ACL(0)}
+	}
+	return Events{begin, ACL(uint64(len(elements))), ADI8(elements)}
+}
+
 type EventArrayInt16 struct{ BaseEvent }
 
 func AI16(elements []int16) Event {
@@ -690,6 +738,18 @@ func AI16(elements []int16) Event {
 			receiver.OnArray(events.ArrayTypeInt16, uint64(len(safeArg)), arrayInt16ToBytes(safeArg))
 		}, safeArg),
 	}
+}
+
+func (_this *EventArrayInt16) Expand() Events {
+	begin := BAI16()
+	if len(_this.values) == 0 {
+		return Events{begin, ACL(0)}
+	}
+	elements := _this.values[0].([]int16)
+	if len(elements) == 0 {
+		return Events{begin, ACL(0)}
+	}
+	return Events{begin, ACL(uint64(len(elements))), ADI16(elements)}
 }
 
 type EventArrayInt32 struct{ BaseEvent }
@@ -716,6 +776,18 @@ func AI32(elements []int32) Event {
 	}
 }
 
+func (_this *EventArrayInt32) Expand() Events {
+	begin := BAI32()
+	if len(_this.values) == 0 {
+		return Events{begin, ACL(0)}
+	}
+	elements := _this.values[0].([]int32)
+	if len(elements) == 0 {
+		return Events{begin, ACL(0)}
+	}
+	return Events{begin, ACL(uint64(len(elements))), ADI32(elements)}
+}
+
 type EventArrayInt64 struct{ BaseEvent }
 
 func AI64(elements []int64) Event {
@@ -738,6 +810,18 @@ func AI64(elements []int64) Event {
 			receiver.OnArray(events.ArrayTypeInt64, uint64(len(safeArg)), arrayInt64ToBytes(safeArg))
 		}, safeArg),
 	}
+}
+
+func (_this *EventArrayInt64) Expand() Events {
+	begin := BAI64()
+	if len(_this.values) == 0 {
+		return Events{begin, ACL(0)}
+	}
+	elements := _this.values[0].([]int64)
+	if len(elements) == 0 {
+		return Events{begin, ACL(0)}
+	}
+	return Events{begin, ACL(uint64(len(elements))), ADI64(elements)}
 }
 
 type EventArrayFloat16 struct{ BaseEvent }
@@ -764,6 +848,18 @@ func AF16(elements []float32) Event {
 	}
 }
 
+func (_this *EventArrayFloat16) Expand() Events {
+	begin := BAF16()
+	if len(_this.values) == 0 {
+		return Events{begin, ACL(0)}
+	}
+	elements := _this.values[0].([]float32)
+	if len(elements) == 0 {
+		return Events{begin, ACL(0)}
+	}
+	return Events{begin, ACL(uint64(len(elements))), ADF16(elements)}
+}
+
 type EventArrayFloat32 struct{ BaseEvent }
 
 func AF32(elements []float32) Event {
@@ -786,6 +882,18 @@ func AF32(elements []float32) Event {
 			receiver.OnArray(events.ArrayTypeFloat32, uint64(len(safeArg)), arrayFloat32ToBytes(safeArg))
 		}, safeArg),
 	}
+}
+
+func (_this *EventArrayFloat32) Expand() Events {
+	begin := BAF32()
+	if len(_this.values) == 0 {
+		return Events{begin, ACL(0)}
+	}
+	elements := _this.values[0].([]float32)
+	if len(elements) == 0 {
+		return Events{begin, ACL(0)}
+	}
+	return Events{begin, ACL(uint64(len(elements))), ADF32(elements)}
 }
 
 type EventArrayFloat64 struct{ BaseEvent }
@@ -812,6 +920,18 @@ func AF64(elements []float64) Event {
 	}
 }
 
+func (_this *EventArrayFloat64) Expand() Events {
+	begin := BAF64()
+	if len(_this.values) == 0 {
+		return Events{begin, ACL(0)}
+	}
+	elements := _this.values[0].([]float64)
+	if len(elements) == 0 {
+		return Events{begin, ACL(0)}
+	}
+	return Events{begin, ACL(uint64(len(elements))), ADF64(elements)}
+}
+
 type EventArrayUint8 struct{ BaseEvent }
 
 func AU8(elements []uint8) Event {
@@ -834,6 +954,18 @@ func AU8(elements []uint8) Event {
 			receiver.OnArray(events.ArrayTypeUint8, uint64(len(safeArg)), arrayUint8ToBytes(safeArg))
 		}, safeArg),
 	}
+}
+
+func (_this *EventArrayUint8) Expand() Events {
+	begin := BAU8()
+	if len(_this.values) == 0 {
+		return Events{begin, ACL(0)}
+	}
+	elements := _this.values[0].([]uint8)
+	if len(elements) == 0 {
+		return Events{begin, ACL(0)}
+	}
+	return Events{begin, ACL(uint64(len(elements))), ADU8(elements)}
 }
 
 type EventArrayUint16 struct{ BaseEvent }
@@ -860,6 +992,18 @@ func AU16(elements []uint16) Event {
 	}
 }
 
+func (_this *EventArrayUint16) Expand() Events {
+	begin := BAU16()
+	if len(_this.values) == 0 {
+		return Events{begin, ACL(0)}
+	}
+	elements := _this.values[0].([]uint16)
+	if len(elements) == 0 {
+		return Events{begin, ACL(0)}
+	}
+	return Events{begin, ACL(uint64(len(elements))), ADU16(elements)}
+}
+
 type EventArrayUint32 struct{ BaseEvent }
 
 func AU32(elements []uint32) Event {
@@ -882,6 +1026,18 @@ func AU32(elements []uint32) Event {
 			receiver.OnArray(events.ArrayTypeUint32, uint64(len(safeArg)), arrayUint32ToBytes(safeArg))
 		}, safeArg),
 	}
+}
+
+func (_this *EventArrayUint32) Expand() Events {
+	begin := BAU32()
+	if len(_this.values) == 0 {
+		return Events{begin, ACL(0)}
+	}
+	elements := _this.values[0].([]uint32)
+	if len(elements) == 0 {
+		return Events{begin, ACL(0)}
+	}
+	return Events{begin, ACL(uint64(len(elements))), ADU32(elements)}
 }
 
 type EventArrayUint64 struct{ BaseEvent }
@@ -908,6 +1064,18 @@ func AU64(elements []uint64) Event {
 	}
 }
 
+func (_this *EventArrayUint64) Expand() Events {
+	begin := BAU64()
+	if len(_this.values) == 0 {
+		return Events{begin, ACL(0)}
+	}
+	elements := _this.values[0].([]uint64)
+	if len(elements) == 0 {
+		return Events{begin, ACL(0)}
+	}
+	return Events{begin, ACL(uint64(len(elements))), ADU64(elements)}
+}
+
 type EventArrayUID struct{ BaseEvent }
 
 func AU(elements [][]byte) Event {
@@ -930,6 +1098,18 @@ func AU(elements [][]byte) Event {
 			receiver.OnArray(events.ArrayTypeUID, uint64(len(safeArg)), arrayUIDToBytes(safeArg))
 		}, safeArg),
 	}
+}
+
+func (_this *EventArrayUID) Expand() Events {
+	begin := BAU()
+	if len(_this.values) == 0 {
+		return Events{begin, ACL(0)}
+	}
+	elements := _this.values[0].([][]byte)
+	if len(elements) == 0 {
+		return Events{begin, ACL(0)}
+	}
+	return Events{begin, ACL(uint64(len(elements))), ADU(elements)}
 }
 
 type EventBeginArrayBit struct{ BaseEvent }
