@@ -116,9 +116,9 @@ c0
                         e3db8ab4-707f-11ec-b9a7-9fb752e6248a
                     "]
                  }
-                {"cbe"=|u8x 7f e0 00|              "events"=["bau" "acl=0"]}
+                {"from_cbe"=|u8x 7f e0 00|              "events"=["bau" "acl=0"]}
                 {
-                    "cbe"=|u8x
+                    "from_cbe"=|u8x
                         7f e0 04
                         2d b6 87 48 70 7f 11 ec 95 9e 6f 94 3c ba bf 82
                         2d b6 b6 a0 70 7f 11 ec ac a8 4f ce b7 fc a6 66
@@ -131,7 +131,7 @@ c0
                         2db6b6a0-707f-11ec-aca8-4fceb7fca666
                     "]}
                 {
-                    "cbe"=|u8x
+                    "from_cbe"=|u8x
                         7f e0 1e
                         8f 6f 35 54 70 7f 11 ec a6 a1 6f 76 de e4 06 ec
                         8f 6f 64 66 70 7f 11 ec a4 25 33 5b 61 d3 2d fc
@@ -296,9 +296,9 @@ c0
         {
             "name" = "String (Long)"
             "mustSucceed" = [
-                {"cbe"=|u8x 90 00|           "events"=["bs" "acl=0"]}
-                {"cbe"=|u8x 90 02 78|        "events"=["bs" "acl=1" "adt=x"]}
-                {"cbe"=|u8x 90 06 78 79 7a|  "events"=["bs" "acl=3" "adt=xyz"]}
+                {"from_cbe"=|u8x 90 00|           "events"=["bs" "acl=0"]}
+                {"from_cbe"=|u8x 90 02 78|        "events"=["bs" "acl=1" "adt=x"]}
+                {"from_cbe"=|u8x 90 06 78 79 7a|  "events"=["bs" "acl=3" "adt=xyz"]}
                 {
                     "cbe"=|u8x
                         90 d8 08 73 6b 79 20 e0 ae b5 e0 ae be e0

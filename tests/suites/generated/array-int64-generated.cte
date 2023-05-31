@@ -19,7 +19,7 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f e7 00|
+                    "cbe" = |u8x 7f 70|
                     "to_cte" = "|i64|"
                     "events" = [
                         "bai64"
@@ -142,7 +142,7 @@ c0
             "name" = "Chunked Array"
             "must_succeed" = [
                 {
-                    "cbe" = |u8x 7f e7 00|
+                    "cbe" = |u8x 7f 70|
                     "to_cte" = "|i64|"
                     "events" = [
                         "bai64"
@@ -150,7 +150,7 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f e7 02 f9 ff ff ff ff ff ff ff|
+                    "cbe" = |u8x 7f 71 f9 ff ff ff ff ff ff ff|
                     "to_cte" = "|i64 -7|"
                     "events" = [
                         "bai64"
@@ -159,7 +159,7 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f e7 04 f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff|
+                    "cbe" = |u8x 7f 72 f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff|
                     "to_cte" = "|i64 -7 -6|"
                     "events" = [
                         "bai64"
@@ -168,7 +168,7 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f e7 06 f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff|
+                    "cbe" = |u8x 7f 73 f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff|
                     "to_cte" = "|i64 -7 -6 -5|"
                     "events" = [
                         "bai64"
@@ -177,7 +177,7 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f e7 08 f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff|
+                    "cbe" = |u8x 7f 74 f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff|
                     "to_cte" = "|i64 -7 -6 -5 -4|"
                     "events" = [
                         "bai64"
@@ -186,7 +186,7 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f e7 0a f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff fd ff ff ff ff ff ff ff|
+                    "cbe" = |u8x 7f 75 f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff fd ff ff ff ff ff ff ff|
                     "to_cte" = "|i64 -7 -6 -5 -4 -3|"
                     "events" = [
                         "bai64"
@@ -195,7 +195,7 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f e7 0c f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff fd ff ff ff ff ff ff ff fe ff ff ff ff ff ff ff|
+                    "cbe" = |u8x 7f 76 f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff fd ff ff ff ff ff ff ff fe ff ff ff ff ff ff ff|
                     "to_cte" = "|i64 -7 -6 -5 -4 -3 -2|"
                     "events" = [
                         "bai64"
@@ -204,7 +204,7 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f e7 0e f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff fd ff ff ff ff ff ff ff fe ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff|
+                    "cbe" = |u8x 7f 77 f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff fd ff ff ff ff ff ff ff fe ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff|
                     "to_cte" = "|i64 -7 -6 -5 -4 -3 -2 -1|"
                     "events" = [
                         "bai64"
@@ -213,7 +213,7 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f e7 10 f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff fd ff ff ff ff ff ff ff fe ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 00 00 00 00 00 00 00 00|
+                    "cbe" = |u8x 7f 78 f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff fd ff ff ff ff ff ff ff fe ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 00 00 00 00 00 00 00 00|
                     "to_cte" = "|i64 -7 -6 -5 -4 -3 -2 -1 0|"
                     "events" = [
                         "bai64"
@@ -222,7 +222,7 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f e7 12 f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff fd ff ff ff ff ff ff ff fe ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00|
+                    "cbe" = |u8x 7f 79 f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff fd ff ff ff ff ff ff ff fe ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00|
                     "to_cte" = "|i64 -7 -6 -5 -4 -3 -2 -1 0 1|"
                     "events" = [
                         "bai64"
@@ -231,7 +231,7 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f e7 14 f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff fd ff ff ff ff ff ff ff fe ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00|
+                    "cbe" = |u8x 7f 7a f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff fd ff ff ff ff ff ff ff fe ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00|
                     "to_cte" = "|i64 -7 -6 -5 -4 -3 -2 -1 0 1 2|"
                     "events" = [
                         "bai64"
@@ -240,7 +240,7 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f e7 16 f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff fd ff ff ff ff ff ff ff fe ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00 03 00 00 00 00 00 00 00|
+                    "cbe" = |u8x 7f 7b f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff fd ff ff ff ff ff ff ff fe ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00 03 00 00 00 00 00 00 00|
                     "to_cte" = "|i64 -7 -6 -5 -4 -3 -2 -1 0 1 2 3|"
                     "events" = [
                         "bai64"
@@ -249,7 +249,7 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f e7 18 f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff fd ff ff ff ff ff ff ff fe ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00 03 00 00 00 00 00 00 00 04 00 00 00 00 00 00 00|
+                    "cbe" = |u8x 7f 7c f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff fd ff ff ff ff ff ff ff fe ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00 03 00 00 00 00 00 00 00 04 00 00 00 00 00 00 00|
                     "to_cte" = "|i64 -7 -6 -5 -4 -3 -2 -1 0 1 2 3 4|"
                     "events" = [
                         "bai64"
@@ -258,7 +258,7 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f e7 1a f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff fd ff ff ff ff ff ff ff fe ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00 03 00 00 00 00 00 00 00 04 00 00 00 00 00 00 00 05 00 00 00 00 00 00 00|
+                    "cbe" = |u8x 7f 7d f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff fd ff ff ff ff ff ff ff fe ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00 03 00 00 00 00 00 00 00 04 00 00 00 00 00 00 00 05 00 00 00 00 00 00 00|
                     "to_cte" = "|i64 -7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5|"
                     "events" = [
                         "bai64"
@@ -267,7 +267,7 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f e7 1c f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff fd ff ff ff ff ff ff ff fe ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00 03 00 00 00 00 00 00 00 04 00 00 00 00 00 00 00 05 00 00 00 00 00 00 00 06 00 00 00 00 00 00 00|
+                    "cbe" = |u8x 7f 7e f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff fd ff ff ff ff ff ff ff fe ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00 03 00 00 00 00 00 00 00 04 00 00 00 00 00 00 00 05 00 00 00 00 00 00 00 06 00 00 00 00 00 00 00|
                     "to_cte" = "|i64 -7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6|"
                     "events" = [
                         "bai64"
@@ -276,7 +276,7 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f e7 1e f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff fd ff ff ff ff ff ff ff fe ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00 03 00 00 00 00 00 00 00 04 00 00 00 00 00 00 00 05 00 00 00 00 00 00 00 06 00 00 00 00 00 00 00 07 00 00 00 00 00 00 00|
+                    "cbe" = |u8x 7f 7f f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff fd ff ff ff ff ff ff ff fe ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00 03 00 00 00 00 00 00 00 04 00 00 00 00 00 00 00 05 00 00 00 00 00 00 00 06 00 00 00 00 00 00 00 07 00 00 00 00 00 00 00|
                     "to_cte" = "|i64 -7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7|"
                     "events" = [
                         "bai64"
@@ -530,58 +530,58 @@ c0
                     "cbe" = |u8x 7f e7|
                 }
                 {
-                    "cbe" = |u8x 7f e7 02|
+                    "cbe" = |u8x 7f 71|
                 }
                 {
-                    "cbe" = |u8x 7f e7 04 00 00 00 00 00 00 00 00|
-                }
-                {
-                    "cbe" = |u8x 7f 71 00 00 00 00 00 00 00|
-                }
-                {
-                    "cbe" = |u8x 7f e7 06 00 00 00 00 00 00 00 00|
+                    "cbe" = |u8x 7f 72 00 00 00 00 00 00 00 00|
                 }
                 {
                     "cbe" = |u8x 7f 71 00 00 00 00 00 00 00|
                 }
                 {
-                    "cbe" = |u8x 7f e7 08 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00|
+                    "cbe" = |u8x 7f 73 00 00 00 00 00 00 00 00|
+                }
+                {
+                    "cbe" = |u8x 7f 71 00 00 00 00 00 00 00|
+                }
+                {
+                    "cbe" = |u8x 7f 74 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00|
                 }
                 {
                     "cbe" = |u8x 7f 72 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00|
                 }
                 {
-                    "cbe" = |u8x 7f e7 0a 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00|
+                    "cbe" = |u8x 7f 75 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00|
                 }
                 {
                     "cbe" = |u8x 7f 72 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00|
                 }
                 {
-                    "cbe" = |u8x 7f e7 0c 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 7f 00 00 00 00 00 00 00|
+                    "cbe" = |u8x 7f 76 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 7f 00 00 00 00 00 00 00|
                 }
                 {
                     "cbe" = |u8x 7f 73 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 7f 00 00 00 00 00 00|
                 }
                 {
-                    "cbe" = |u8x 7f e7 0e 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 7f 00 00 00 00 00 00 00|
+                    "cbe" = |u8x 7f 77 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 7f 00 00 00 00 00 00 00|
                 }
                 {
                     "cbe" = |u8x 7f 73 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 7f 00 00 00 00 00 00|
                 }
                 {
-                    "cbe" = |u8x 7f e7 10 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 7f 00 00 00 00 00 00 00 80 00 00 00 00 00 00 00|
+                    "cbe" = |u8x 7f 78 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 7f 00 00 00 00 00 00 00 80 00 00 00 00 00 00 00|
                 }
                 {
                     "cbe" = |u8x 7f 74 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 7f 00 00 00 00 00 00 00 80 00 00 00 00 00 00|
                 }
                 {
-                    "cbe" = |u8x 7f e7 12 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 7f 00 00 00 00 00 00 00 80 00 00 00 00 00 00 00|
+                    "cbe" = |u8x 7f 79 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 7f 00 00 00 00 00 00 00 80 00 00 00 00 00 00 00|
                 }
                 {
                     "cbe" = |u8x 7f 74 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 7f 00 00 00 00 00 00 00 80 00 00 00 00 00 00|
                 }
                 {
-                    "cbe" = |u8x 7f e7 14 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 7f 00 00 00 00 00 00 00 80 00 00 00 00 00 00 00 81 00 00 00 00 00 00 00|
+                    "cbe" = |u8x 7f 7a 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 7f 00 00 00 00 00 00 00 80 00 00 00 00 00 00 00 81 00 00 00 00 00 00 00|
                 }
                 {
                     "cbe" = |u8x 7f 75 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 7f 00 00 00 00 00 00 00 80 00 00 00 00 00 00 00 81 00 00 00 00 00 00|

@@ -102,9 +102,8 @@ func (_this *MustSucceedTest) PostDecodeInit(ceVersion int, context string, inde
 		return _this.errorf("must specify destination(s) to compare against")
 	}
 
-	// TODO: Expand events
-	// _this.fromEvents.Expand()
-	// _this.toEvents.Expand()
+	_this.fromEvents = _this.fromEvents.Expand()
+	_this.toEvents = _this.toEvents.Expand()
 
 	return nil
 }
@@ -138,6 +137,7 @@ func (_this *MustSucceedTest) Run() error {
 			if err != nil {
 				return _this.wrapError(err, "converting events [%v] to events", _this.fromEvents)
 			}
+			result = result.Expand()
 			if !_this.toEvents.AreEquivalentTo(result) {
 				return _this.errorf("expected events [%v] to produce events [%v] but got [%v]",
 					_this.fromEvents, _this.toEvents, result)
@@ -186,6 +186,7 @@ func (_this *MustSucceedTest) Run() error {
 			if err != nil {
 				return _this.wrapError(err, "converting CBE [%v] to events", asHex(_this.FromCBE))
 			}
+			result = result.Expand()
 			if !_this.toEvents.AreEquivalentTo(result) {
 				return _this.errorf("expected CBE [%v] to produce events [%v] but got [%v]",
 					asHex(_this.FromCBE), _this.toEvents, result)
@@ -234,6 +235,7 @@ func (_this *MustSucceedTest) Run() error {
 			if err != nil {
 				return _this.wrapError(err, "converting CTE [%v] to events", _this.FromCTE)
 			}
+			result = result.Expand()
 			if !_this.toEvents.AreEquivalentTo(result) {
 				return _this.errorf("expected CTE [%v] to produce events [%v] but got [%v]",
 					_this.FromCTE, _this.toEvents, result)

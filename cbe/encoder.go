@@ -42,8 +42,10 @@ import (
 // directly (with the exception of constructors and initializers, which are not
 // designed to panic).
 type Encoder struct {
-	writer Writer
-	config *configuration.CBEEncoderConfiguration
+	writer              Writer
+	config              *configuration.CBEEncoderConfiguration
+	arrayType           events.ArrayType
+	trySmallArrayHeader bool
 }
 
 // Create a new CBE encoder.
@@ -362,35 +364,38 @@ var arrayInfo = [events.NumArrayTypes]arrayTypeInfo{
 	},
 }
 
-func (_this *Encoder) OnArray(arrayType events.ArrayType, elementCount uint64, value []byte) {
-	if elementCount <= maxSmallArrayLength {
-		info := arrayInfo[arrayType]
-		if info.hasSmallArraySupport {
-			if info.isPlane7f {
-				_this.writer.WriteType(cbeTypePlane7f)
-			}
-			_this.writer.WriteSingleByte(byte(info.shortArrayType) | byte(elementCount))
-			_this.writer.WriteBytes(value)
-			return
-		}
+func (_this *Encoder) writeSmallArrayHeader(arrayType events.ArrayType, elementCount uint64) bool {
+	if elementCount > maxSmallArrayLength {
+		return false
 	}
 
-	_this.writer.WriteArrayHeader(arrayType)
-	_this.writer.WriteArrayChunkHeader(elementCount, 0)
+	info := arrayInfo[arrayType]
+	if !info.hasSmallArraySupport {
+		return false
+	}
+
+	if info.isPlane7f {
+		_this.writer.WriteType(cbeTypePlane7f)
+	}
+	_this.writer.WriteSingleByte(byte(info.shortArrayType) | byte(elementCount))
+	return true
+}
+
+func (_this *Encoder) OnArray(arrayType events.ArrayType, elementCount uint64, value []byte) {
+	if !_this.writeSmallArrayHeader(arrayType, elementCount) {
+		_this.writer.WriteArrayHeader(arrayType)
+		_this.writer.WriteArrayChunkHeader(elementCount, 0)
+	}
 	_this.writer.WriteBytes(value)
 }
 
 func (_this *Encoder) OnStringlikeArray(arrayType events.ArrayType, value string) {
 	elementCount := uint64(len(value))
-
-	if arrayType == events.ArrayTypeString && elementCount <= maxSmallStringLength {
-		_this.writer.WriteType(cbeTypeString0 + cbeTypeField(elementCount))
-		_this.writer.WriteString(value)
-	} else {
+	if !_this.writeSmallArrayHeader(arrayType, elementCount) {
 		_this.writer.WriteArrayHeader(arrayType)
 		_this.writer.WriteArrayChunkHeader(elementCount, 0)
-		_this.writer.WriteString(value)
 	}
+	_this.writer.WriteString(value)
 }
 
 func (_this *Encoder) OnMedia(mediaType string, value []byte) {
@@ -411,10 +416,13 @@ func (_this *Encoder) OnCustomText(customType uint64, value string) {
 }
 
 func (_this *Encoder) OnArrayBegin(arrayType events.ArrayType) {
-	_this.writer.WriteArrayHeader(arrayType)
+	_this.arrayType = arrayType
+	_this.trySmallArrayHeader = true
 }
 
 func (_this *Encoder) OnMediaBegin(mediaType string) {
+	_this.arrayType = events.ArrayTypeMedia
+	_this.trySmallArrayHeader = false
 	_this.writer.WriteType(cbeTypePlane7f)
 	_this.writer.WriteType(cbeTypeMedia)
 	_this.writer.WriteULEB(uint64(len(mediaType)))
@@ -422,11 +430,24 @@ func (_this *Encoder) OnMediaBegin(mediaType string) {
 }
 
 func (_this *Encoder) OnCustomBegin(arrayType events.ArrayType, customType uint64) {
+	_this.arrayType = events.ArrayTypeCustomBinary
+	_this.trySmallArrayHeader = false
 	_this.writer.WriteType(cbeTypeCustomType)
 	_this.writer.WriteULEB(uint64(customType))
 }
 
 func (_this *Encoder) OnArrayChunk(elementCount uint64, moreChunksFollow bool) {
+	trySmallArrayHeader := _this.trySmallArrayHeader
+	_this.trySmallArrayHeader = false
+
+	if trySmallArrayHeader {
+		if !moreChunksFollow && _this.writeSmallArrayHeader(_this.arrayType, elementCount) {
+			return
+		}
+		_this.writer.WriteArrayHeader(_this.arrayType)
+
+	}
+
 	continuationBit := uint64(0)
 	if moreChunksFollow {
 		continuationBit = 1
@@ -486,7 +507,10 @@ func (_this *Encoder) OnRemoteReference() {
 }
 
 func (_this *Encoder) OnEndDocument() {
-	// Nothing to do
+	// Only used for generating truncated array data in the unit tests
+	if _this.trySmallArrayHeader {
+		_this.writer.WriteArrayHeader(_this.arrayType)
+	}
 }
 
 // ============================================================================

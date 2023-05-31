@@ -76,6 +76,8 @@ func ADB(elements []bool) Event {
 	}
 }
 
+func (_this *EventArrayDataBit) Expand() Events { return Events{_this} }
+
 type EventVersion struct{ BaseEvent }
 
 func V(version uint64) Event {
@@ -88,6 +90,8 @@ func V(version uint64) Event {
 		}, safeArg),
 	}
 }
+
+func (_this *EventVersion) Expand() Events { return Events{_this} }
 
 type EventBoolean struct{ BaseEvent }
 
@@ -102,6 +106,8 @@ func B(value bool) Event {
 	}
 }
 
+func (_this *EventBoolean) Expand() Events { return Events{_this} }
+
 type EventTime struct{ BaseEvent }
 
 func T(value compact_time.Time) Event {
@@ -114,6 +120,8 @@ func T(value compact_time.Time) Event {
 		}, safeArg),
 	}
 }
+
+func (_this *EventTime) Expand() Events { return Events{_this} }
 
 type EventUID struct{ BaseEvent }
 
@@ -139,6 +147,8 @@ func UID(value []byte) Event {
 	}
 }
 
+func (_this *EventUID) Expand() Events { return Events{_this} }
+
 type EventArrayChunkMore struct{ BaseEvent }
 
 func ACM(length uint64) Event {
@@ -151,6 +161,8 @@ func ACM(length uint64) Event {
 		}, safeArg),
 	}
 }
+
+func (_this *EventArrayChunkMore) Expand() Events { return Events{_this} }
 
 type EventArrayChunkLast struct{ BaseEvent }
 
@@ -165,6 +177,8 @@ func ACL(length uint64) Event {
 	}
 }
 
+func (_this *EventArrayChunkLast) Expand() Events { return Events{_this} }
+
 type EventCommentMultiline struct{ BaseEvent }
 
 func CM(comment string) Event {
@@ -178,6 +192,8 @@ func CM(comment string) Event {
 	}
 }
 
+func (_this *EventCommentMultiline) Expand() Events { return Events{_this} }
+
 type EventCommentSingleLine struct{ BaseEvent }
 
 func CS(comment string) Event {
@@ -190,6 +206,8 @@ func CS(comment string) Event {
 		}, safeArg),
 	}
 }
+
+func (_this *EventCommentSingleLine) Expand() Events { return Events{_this} }
 
 type EventCustomBinary struct{ BaseEvent }
 
@@ -265,6 +283,8 @@ func MARK(id string) Event {
 	}
 }
 
+func (_this *EventMarker) Expand() Events { return Events{_this} }
+
 type EventReferenceLocal struct{ BaseEvent }
 
 func REFL(id string) Event {
@@ -277,6 +297,8 @@ func REFL(id string) Event {
 		}, safeArg),
 	}
 }
+
+func (_this *EventReferenceLocal) Expand() Events { return Events{_this} }
 
 type EventRecord struct{ BaseEvent }
 
@@ -291,6 +313,8 @@ func REC(id string) Event {
 	}
 }
 
+func (_this *EventRecord) Expand() Events { return Events{_this} }
+
 type EventRecordType struct{ BaseEvent }
 
 func RT(id string) Event {
@@ -303,6 +327,8 @@ func RT(id string) Event {
 		}, safeArg),
 	}
 }
+
+func (_this *EventRecordType) Expand() Events { return Events{_this} }
 
 type EventString struct{ BaseEvent }
 
@@ -403,6 +429,8 @@ func ADI8(elements []int8) Event {
 	}
 }
 
+func (_this *EventArrayDataInt8) Expand() Events { return Events{_this} }
+
 type EventArrayDataInt16 struct{ BaseEvent }
 
 func ADI16(elements []int16) Event {
@@ -426,6 +454,8 @@ func ADI16(elements []int16) Event {
 		}, safeArg),
 	}
 }
+
+func (_this *EventArrayDataInt16) Expand() Events { return Events{_this} }
 
 type EventArrayDataInt32 struct{ BaseEvent }
 
@@ -451,6 +481,8 @@ func ADI32(elements []int32) Event {
 	}
 }
 
+func (_this *EventArrayDataInt32) Expand() Events { return Events{_this} }
+
 type EventArrayDataInt64 struct{ BaseEvent }
 
 func ADI64(elements []int64) Event {
@@ -474,6 +506,8 @@ func ADI64(elements []int64) Event {
 		}, safeArg),
 	}
 }
+
+func (_this *EventArrayDataInt64) Expand() Events { return Events{_this} }
 
 type EventArrayDataFloat16 struct{ BaseEvent }
 
@@ -499,6 +533,8 @@ func ADF16(elements []float32) Event {
 	}
 }
 
+func (_this *EventArrayDataFloat16) Expand() Events { return Events{_this} }
+
 type EventArrayDataFloat32 struct{ BaseEvent }
 
 func ADF32(elements []float32) Event {
@@ -522,6 +558,8 @@ func ADF32(elements []float32) Event {
 		}, safeArg),
 	}
 }
+
+func (_this *EventArrayDataFloat32) Expand() Events { return Events{_this} }
 
 type EventArrayDataFloat64 struct{ BaseEvent }
 
@@ -547,6 +585,8 @@ func ADF64(elements []float64) Event {
 	}
 }
 
+func (_this *EventArrayDataFloat64) Expand() Events { return Events{_this} }
+
 type EventArrayDataUint8 struct{ BaseEvent }
 
 func ADU8(elements []uint8) Event {
@@ -570,6 +610,8 @@ func ADU8(elements []uint8) Event {
 		}, safeArg),
 	}
 }
+
+func (_this *EventArrayDataUint8) Expand() Events { return Events{_this} }
 
 type EventArrayDataUint16 struct{ BaseEvent }
 
@@ -595,6 +637,8 @@ func ADU16(elements []uint16) Event {
 	}
 }
 
+func (_this *EventArrayDataUint16) Expand() Events { return Events{_this} }
+
 type EventArrayDataUint32 struct{ BaseEvent }
 
 func ADU32(elements []uint32) Event {
@@ -618,6 +662,8 @@ func ADU32(elements []uint32) Event {
 		}, safeArg),
 	}
 }
+
+func (_this *EventArrayDataUint32) Expand() Events { return Events{_this} }
 
 type EventArrayDataUint64 struct{ BaseEvent }
 
@@ -643,6 +689,8 @@ func ADU64(elements []uint64) Event {
 	}
 }
 
+func (_this *EventArrayDataUint64) Expand() Events { return Events{_this} }
+
 type EventArrayDataUID struct{ BaseEvent }
 
 func ADU(elements [][]byte) Event {
@@ -667,6 +715,8 @@ func ADU(elements [][]byte) Event {
 	}
 }
 
+func (_this *EventArrayDataUID) Expand() Events { return Events{_this} }
+
 type EventArrayDataText struct{ BaseEvent }
 
 func ADT(elements string) Event {
@@ -679,6 +729,8 @@ func ADT(elements string) Event {
 		}, safeArg),
 	}
 }
+
+func (_this *EventArrayDataText) Expand() Events { return Events{_this} }
 
 type EventArrayInt8 struct{ BaseEvent }
 
@@ -1122,6 +1174,8 @@ func BAB() Event {
 	}
 }
 
+func (_this *EventBeginArrayBit) Expand() Events { return Events{_this} }
+
 type EventBeginArrayFloat16 struct{ BaseEvent }
 
 func BAF16() Event {
@@ -1131,6 +1185,8 @@ func BAF16() Event {
 		}),
 	}
 }
+
+func (_this *EventBeginArrayFloat16) Expand() Events { return Events{_this} }
 
 type EventBeginArrayFloat32 struct{ BaseEvent }
 
@@ -1142,6 +1198,8 @@ func BAF32() Event {
 	}
 }
 
+func (_this *EventBeginArrayFloat32) Expand() Events { return Events{_this} }
+
 type EventBeginArrayFloat64 struct{ BaseEvent }
 
 func BAF64() Event {
@@ -1151,6 +1209,8 @@ func BAF64() Event {
 		}),
 	}
 }
+
+func (_this *EventBeginArrayFloat64) Expand() Events { return Events{_this} }
 
 type EventBeginArrayInt8 struct{ BaseEvent }
 
@@ -1162,6 +1222,8 @@ func BAI8() Event {
 	}
 }
 
+func (_this *EventBeginArrayInt8) Expand() Events { return Events{_this} }
+
 type EventBeginArrayInt16 struct{ BaseEvent }
 
 func BAI16() Event {
@@ -1171,6 +1233,8 @@ func BAI16() Event {
 		}),
 	}
 }
+
+func (_this *EventBeginArrayInt16) Expand() Events { return Events{_this} }
 
 type EventBeginArrayInt32 struct{ BaseEvent }
 
@@ -1182,6 +1246,8 @@ func BAI32() Event {
 	}
 }
 
+func (_this *EventBeginArrayInt32) Expand() Events { return Events{_this} }
+
 type EventBeginArrayInt64 struct{ BaseEvent }
 
 func BAI64() Event {
@@ -1191,6 +1257,8 @@ func BAI64() Event {
 		}),
 	}
 }
+
+func (_this *EventBeginArrayInt64) Expand() Events { return Events{_this} }
 
 type EventBeginArrayUID struct{ BaseEvent }
 
@@ -1202,6 +1270,8 @@ func BAU() Event {
 	}
 }
 
+func (_this *EventBeginArrayUID) Expand() Events { return Events{_this} }
+
 type EventBeginArrayUint8 struct{ BaseEvent }
 
 func BAU8() Event {
@@ -1211,6 +1281,8 @@ func BAU8() Event {
 		}),
 	}
 }
+
+func (_this *EventBeginArrayUint8) Expand() Events { return Events{_this} }
 
 type EventBeginArrayUint16 struct{ BaseEvent }
 
@@ -1222,6 +1294,8 @@ func BAU16() Event {
 	}
 }
 
+func (_this *EventBeginArrayUint16) Expand() Events { return Events{_this} }
+
 type EventBeginArrayUint32 struct{ BaseEvent }
 
 func BAU32() Event {
@@ -1231,6 +1305,8 @@ func BAU32() Event {
 		}),
 	}
 }
+
+func (_this *EventBeginArrayUint32) Expand() Events { return Events{_this} }
 
 type EventBeginArrayUint64 struct{ BaseEvent }
 
@@ -1242,6 +1318,8 @@ func BAU64() Event {
 	}
 }
 
+func (_this *EventBeginArrayUint64) Expand() Events { return Events{_this} }
+
 type EventBeginReferenceRemote struct{ BaseEvent }
 
 func BREFR() Event {
@@ -1251,6 +1329,8 @@ func BREFR() Event {
 		}),
 	}
 }
+
+func (_this *EventBeginReferenceRemote) Expand() Events { return Events{_this} }
 
 type EventBeginResourceID struct{ BaseEvent }
 
@@ -1262,6 +1342,8 @@ func BRID() Event {
 	}
 }
 
+func (_this *EventBeginResourceID) Expand() Events { return Events{_this} }
+
 type EventBeginString struct{ BaseEvent }
 
 func BS() Event {
@@ -1271,6 +1353,8 @@ func BS() Event {
 		}),
 	}
 }
+
+func (_this *EventBeginString) Expand() Events { return Events{_this} }
 
 type EventBeginCustomBinary struct{ BaseEvent }
 
@@ -1285,6 +1369,8 @@ func BCB(customType uint64) Event {
 	}
 }
 
+func (_this *EventBeginCustomBinary) Expand() Events { return Events{_this} }
+
 type EventBeginCustomText struct{ BaseEvent }
 
 func BCT(customType uint64) Event {
@@ -1297,6 +1383,8 @@ func BCT(customType uint64) Event {
 		}, safeArg),
 	}
 }
+
+func (_this *EventBeginCustomText) Expand() Events { return Events{_this} }
 
 type EventBeginMedia struct{ BaseEvent }
 
@@ -1311,6 +1399,8 @@ func BMEDIA(mediaType string) Event {
 	}
 }
 
+func (_this *EventBeginMedia) Expand() Events { return Events{_this} }
+
 type EventEdge struct{ BaseEvent }
 
 func EDGE() Event {
@@ -1320,6 +1410,8 @@ func EDGE() Event {
 		}),
 	}
 }
+
+func (_this *EventEdge) Expand() Events { return Events{_this} }
 
 type EventEndContainer struct{ BaseEvent }
 
@@ -1331,6 +1423,8 @@ func E() Event {
 	}
 }
 
+func (_this *EventEndContainer) Expand() Events { return Events{_this} }
+
 type EventList struct{ BaseEvent }
 
 func L() Event {
@@ -1340,6 +1434,8 @@ func L() Event {
 		}),
 	}
 }
+
+func (_this *EventList) Expand() Events { return Events{_this} }
 
 type EventMap struct{ BaseEvent }
 
@@ -1351,6 +1447,8 @@ func M() Event {
 	}
 }
 
+func (_this *EventMap) Expand() Events { return Events{_this} }
+
 type EventNode struct{ BaseEvent }
 
 func NODE() Event {
@@ -1360,6 +1458,8 @@ func NODE() Event {
 		}),
 	}
 }
+
+func (_this *EventNode) Expand() Events { return Events{_this} }
 
 type EventNull struct{ BaseEvent }
 
@@ -1371,6 +1471,8 @@ func NULL() Event {
 	}
 }
 
+func (_this *EventNull) Expand() Events { return Events{_this} }
+
 type EventPadding struct{ BaseEvent }
 
 func PAD() Event {
@@ -1380,6 +1482,8 @@ func PAD() Event {
 		}),
 	}
 }
+
+func (_this *EventPadding) Expand() Events { return Events{_this} }
 
 type EventBeginDocument struct{ BaseEvent }
 
@@ -1391,6 +1495,8 @@ func BD() Event {
 	}
 }
 
+func (_this *EventBeginDocument) Expand() Events { return Events{_this} }
+
 type EventEndDocument struct{ BaseEvent }
 
 func ED() Event {
@@ -1400,4 +1506,6 @@ func ED() Event {
 		}),
 	}
 }
+
+func (_this *EventEndDocument) Expand() Events { return Events{_this} }
 

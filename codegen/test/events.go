@@ -38,22 +38,22 @@ var eventsImports = []*common.Import{
 
 func generateEvents(projectDir string) {
 	common.GenerateGoFile(filepath.Join(projectDir, codePath), eventsImports, func(writer io.Writer) {
-		generateOneArgEvent(writer, "ArrayBit", "ab", "elements", "[]bool", "receiver.OnArray(events.ArrayTypeBit, uint64(len(safeArg)), arrayBitsToBytes(safeArg))")
-		generateOneArgEvent(writer, "ArrayDataBit", "adb", "elements", "[]bool", "receiver.OnArrayData(arrayBitsToBytes(safeArg))")
+		generateOneArgEvent(writer, "ArrayBit", "ab", "elements", "[]bool", "receiver.OnArray(events.ArrayTypeBit, uint64(len(safeArg)), arrayBitsToBytes(safeArg))", false)
+		generateOneArgEvent(writer, "ArrayDataBit", "adb", "elements", "[]bool", "receiver.OnArrayData(arrayBitsToBytes(safeArg))", true)
 
-		generateOneArgEvent(writer, "Version", "v", "version", "uint64", "receiver.OnVersion(safeArg)")
-		generateOneArgEvent(writer, "Boolean", "b", "value", "bool", "receiver.OnBoolean(safeArg)")
-		generateOneArgEvent(writer, "Time", "t", "value", "compact_time.Time", "receiver.OnTime(safeArg)")
-		generateOneArgEvent(writer, "UID", "uid", "value", "[]byte", "receiver.OnUID(safeArg)")
+		generateOneArgEvent(writer, "Version", "v", "version", "uint64", "receiver.OnVersion(safeArg)", true)
+		generateOneArgEvent(writer, "Boolean", "b", "value", "bool", "receiver.OnBoolean(safeArg)", true)
+		generateOneArgEvent(writer, "Time", "t", "value", "compact_time.Time", "receiver.OnTime(safeArg)", true)
+		generateOneArgEvent(writer, "UID", "uid", "value", "[]byte", "receiver.OnUID(safeArg)", true)
 
-		generateOneArgEvent(writer, "ArrayChunkMore", "acm", "length", "uint64", "receiver.OnArrayChunk(safeArg, true)")
-		generateOneArgEvent(writer, "ArrayChunkLast", "acl", "length", "uint64", "receiver.OnArrayChunk(safeArg, false)")
-		generateOneArgEvent(writer, "CommentMultiline", "cm", "comment", "string", "receiver.OnComment(true, []byte(safeArg))")
-		generateOneArgEvent(writer, "CommentSingleLine", "cs", "comment", "string", "receiver.OnComment(false, []byte(safeArg))")
+		generateOneArgEvent(writer, "ArrayChunkMore", "acm", "length", "uint64", "receiver.OnArrayChunk(safeArg, true)", true)
+		generateOneArgEvent(writer, "ArrayChunkLast", "acl", "length", "uint64", "receiver.OnArrayChunk(safeArg, false)", true)
+		generateOneArgEvent(writer, "CommentMultiline", "cm", "comment", "string", "receiver.OnComment(true, []byte(safeArg))", true)
+		generateOneArgEvent(writer, "CommentSingleLine", "cs", "comment", "string", "receiver.OnComment(false, []byte(safeArg))", true)
 
-		generateTwoArgEvent(writer, "CustomBinary", "cb", "customType", "uint64", "data", "[]byte", "receiver.OnCustomBinary(customType, safeArg)")
-		generateTwoArgEvent(writer, "CustomText", "ct", "customType", "uint64", "data", "string", "receiver.OnCustomText(customType, safeArg)")
-		generateTwoArgEvent(writer, "Media", "media", "mediaType", "string", "data", "[]byte", "receiver.OnMedia(mediaType, safeArg)")
+		generateTwoArgEvent(writer, "CustomBinary", "cb", "customType", "uint64", "data", "[]byte", "receiver.OnCustomBinary(customType, safeArg)", false)
+		generateTwoArgEvent(writer, "CustomText", "ct", "customType", "uint64", "data", "string", "receiver.OnCustomText(customType, safeArg)", false)
+		generateTwoArgEvent(writer, "Media", "media", "mediaType", "string", "data", "[]byte", "receiver.OnMedia(mediaType, safeArg)", false)
 
 		generateIDEvent(writer, "Marker", "mark")
 		generateIDEvent(writer, "ReferenceLocal", "refl")
@@ -106,9 +106,9 @@ func generateEvents(projectDir string) {
 		generateArrayBeginEvent(writer, "ResourceID", "ResourceID", "brid")
 		generateArrayBeginEvent(writer, "String", "String", "bs")
 
-		generateOneArgEvent(writer, "BeginCustomBinary", "bcb", "customType", "uint64", "receiver.OnCustomBegin(events.ArrayTypeCustomBinary, customType)")
-		generateOneArgEvent(writer, "BeginCustomText", "bct", "customType", "uint64", "receiver.OnCustomBegin(events.ArrayTypeCustomText, customType)")
-		generateOneArgEvent(writer, "BeginMedia", "bmedia", "mediaType", "string", "receiver.OnMediaBegin(mediaType)")
+		generateOneArgEvent(writer, "BeginCustomBinary", "bcb", "customType", "uint64", "receiver.OnCustomBegin(events.ArrayTypeCustomBinary, customType)", true)
+		generateOneArgEvent(writer, "BeginCustomText", "bct", "customType", "uint64", "receiver.OnCustomBegin(events.ArrayTypeCustomText, customType)", true)
+		generateOneArgEvent(writer, "BeginMedia", "bmedia", "mediaType", "string", "receiver.OnMediaBegin(mediaType)", true)
 
 		generateBasicEvent(writer, "Edge", "edge")
 		generateBasicEvent(writer, "EndContainer", "e")
@@ -125,13 +125,13 @@ func generateEvents(projectDir string) {
 func generateArrayDataEvent(writer io.Writer, eventName string, elementType string, functionName string) {
 	argName := "elements"
 	generateOneArgEvent(writer, "ArrayData"+eventName, functionName, argName, elementType,
-		fmt.Sprintf("receiver.OnArrayData(array%vToBytes(safeArg))", eventName))
+		fmt.Sprintf("receiver.OnArrayData(array%vToBytes(safeArg))", eventName), true)
 }
 
 func generateArrayEvent(writer io.Writer, eventName string, elementType string, functionName string) {
 	argName := "elements"
 	generateOneArgEvent(writer, "Array"+eventName, functionName, argName, "[]"+elementType,
-		fmt.Sprintf("receiver.OnArray(events.ArrayType%v, uint64(len(safeArg)), array%vToBytes(safeArg))", eventName, eventName))
+		fmt.Sprintf("receiver.OnArray(events.ArrayType%v, uint64(len(safeArg)), array%vToBytes(safeArg))", eventName, eventName), false)
 	generateArrayExpand(writer, eventName, elementType, functionName)
 }
 
@@ -157,7 +157,7 @@ func generateStringArrayEvent(writer io.Writer, arrayType string, functionName s
 	eventName := arrayType
 	argName := "str"
 	generateOneArgEvent(writer, eventName, functionName, argName, "string",
-		fmt.Sprintf("receiver.OnStringlikeArray(events.ArrayType%v, safeArg)", arrayType))
+		fmt.Sprintf("receiver.OnStringlikeArray(events.ArrayType%v, safeArg)", arrayType), false)
 	generateStringArrayExpand(writer, arrayType, functionName)
 }
 
@@ -180,20 +180,24 @@ func generateStringArrayExpand(writer io.Writer, arrayType string, functionName 
 }
 
 func generateArrayBeginEvent(writer io.Writer, eventName string, arrayType string, functionName string) {
-	generateZeroArgEvent(writer, "Begin"+eventName, functionName, fmt.Sprintf("receiver.OnArrayBegin(events.ArrayType%v)", arrayType))
+	generateZeroArgEvent(writer, "Begin"+eventName, functionName, fmt.Sprintf("receiver.OnArrayBegin(events.ArrayType%v)", arrayType), true)
 }
 
 func generateIDEvent(writer io.Writer, eventName string, functionName string) {
 	argName := "id"
 	generateOneArgEvent(writer, eventName, functionName, argName, "string",
-		fmt.Sprintf("receiver.On%v([]byte(safeArg))", eventName))
+		fmt.Sprintf("receiver.On%v([]byte(safeArg))", eventName), true)
 }
 
 func generateBasicEvent(writer io.Writer, eventName string, functionName string) {
-	generateZeroArgEvent(writer, eventName, functionName, fmt.Sprintf("receiver.On%v()", eventName))
+	generateZeroArgEvent(writer, eventName, functionName, fmt.Sprintf("receiver.On%v()", eventName), true)
 }
 
-func generateZeroArgEvent(writer io.Writer, eventName string, functionName string, invocation string) {
+func generateZeroArgEvent(writer io.Writer,
+	eventName string,
+	functionName string,
+	invocation string,
+	generateExpand bool) {
 	functionUpper := strings.ToUpper(functionName)
 	functionLower := strings.ToLower(functionName)
 
@@ -207,9 +211,19 @@ func generateZeroArgEvent(writer io.Writer, eventName string, functionName strin
 }
 
 `, functionUpper, eventName, functionLower, invocation)))
+
+	if generateExpand {
+		generateDefaultExpand(writer, eventName)
+	}
 }
 
-func generateOneArgEvent(writer io.Writer, eventName string, functionName string, argName string, argType string, invocation string) {
+func generateOneArgEvent(writer io.Writer,
+	eventName string,
+	functionName string,
+	argName string,
+	argType string,
+	invocation string,
+	generateExpand bool) {
 	functionUpper := strings.ToUpper(functionName)
 	functionLower := strings.ToLower(functionName)
 
@@ -247,9 +261,21 @@ func generateOneArgEvent(writer io.Writer, eventName string, functionName string
 }
 
 `, eventName, functionLower, invocation)))
+
+	if generateExpand {
+		generateDefaultExpand(writer, eventName)
+	}
 }
 
-func generateTwoArgEvent(writer io.Writer, eventName string, functionName string, arg1Name string, arg1Type string, arg2Name string, arg2Type string, invocation string) {
+func generateTwoArgEvent(writer io.Writer,
+	eventName string,
+	functionName string,
+	arg1Name string,
+	arg1Type string,
+	arg2Name string,
+	arg2Type string,
+	invocation string,
+	generateExpand bool) {
 	functionUpper := strings.ToUpper(functionName)
 	functionLower := strings.ToLower(functionName)
 
@@ -287,8 +313,16 @@ func generateTwoArgEvent(writer io.Writer, eventName string, functionName string
 }
 
 `, eventName, functionLower, invocation, arg1Name)))
+
+	if generateExpand {
+		generateDefaultExpand(writer, eventName)
+	}
 }
 
 func isArrayType(argType string) bool {
 	return strings.HasPrefix(argType, "[]")
+}
+
+func generateDefaultExpand(writer io.Writer, eventName string) {
+	writer.Write([]byte(fmt.Sprintf("func (_this *Event%v) Expand() Events { return Events{_this} }\n\n", eventName)))
 }

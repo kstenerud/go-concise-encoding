@@ -19,7 +19,7 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f e8 00|
+                    "cbe" = |u8x 7f 80|
                     "to_cte" = "|f16x|"
                     "events" = [
                         "baf16"
@@ -142,7 +142,7 @@ c0
             "name" = "Chunked Array"
             "must_succeed" = [
                 {
-                    "cbe" = |u8x 7f e8 00|
+                    "cbe" = |u8x 7f 80|
                     "to_cte" = "|f16x|"
                     "events" = [
                         "baf16"
@@ -150,7 +150,7 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f e8 02 e3 bd|
+                    "cbe" = |u8x 7f 81 e3 bd|
                     "to_cte" = "|f16x -1.c6p-04|"
                     "events" = [
                         "baf16"
@@ -159,7 +159,7 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f e8 04 e3 bd 00 be|
+                    "cbe" = |u8x 7f 82 e3 bd 00 be|
                     "to_cte" = "|f16x -1.c6p-04 -1p-03|"
                     "events" = [
                         "baf16"
@@ -168,7 +168,7 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f e8 06 e3 bd 00 be 12 be|
+                    "cbe" = |u8x 7f 83 e3 bd 00 be 12 be|
                     "to_cte" = "|f16x -1.c6p-04 -1p-03 -1.24p-03|"
                     "events" = [
                         "baf16"
@@ -177,7 +177,7 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f e8 08 e3 bd 00 be 12 be 2a be|
+                    "cbe" = |u8x 7f 84 e3 bd 00 be 12 be 2a be|
                     "to_cte" = "|f16x -1.c6p-04 -1p-03 -1.24p-03 -1.54p-03|"
                     "events" = [
                         "baf16"
@@ -186,7 +186,7 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f e8 0a e3 bd 00 be 12 be 2a be 4c be|
+                    "cbe" = |u8x 7f 85 e3 bd 00 be 12 be 2a be 4c be|
                     "to_cte" = "|f16x -1.c6p-04 -1p-03 -1.24p-03 -1.54p-03 -1.98p-03|"
                     "events" = [
                         "baf16"
@@ -195,7 +195,7 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f e8 0c e3 bd 00 be 12 be 2a be 4c be 80 be|
+                    "cbe" = |u8x 7f 86 e3 bd 00 be 12 be 2a be 4c be 80 be|
                     "to_cte" = "|f16x -1.c6p-04 -1p-03 -1.24p-03 -1.54p-03 -1.98p-03 -1p-02|"
                     "events" = [
                         "baf16"
@@ -204,7 +204,7 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f e8 0e e3 bd 00 be 12 be 2a be 4c be 80 be aa be|
+                    "cbe" = |u8x 7f 87 e3 bd 00 be 12 be 2a be 4c be 80 be aa be|
                     "to_cte" = "|f16x -1.c6p-04 -1p-03 -1.24p-03 -1.54p-03 -1.98p-03 -1p-02 -1.54p-02|"
                     "events" = [
                         "baf16"
@@ -213,7 +213,7 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f e8 10 e3 bd 00 be 12 be 2a be 4c be 80 be aa be 00 bf|
+                    "cbe" = |u8x 7f 88 e3 bd 00 be 12 be 2a be 4c be 80 be aa be 00 bf|
                     "to_cte" = "|f16x -1.c6p-04 -1p-03 -1.24p-03 -1.54p-03 -1.98p-03 -1p-02 -1.54p-02 -1p-01|"
                     "events" = [
                         "baf16"
@@ -222,7 +222,7 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f e8 12 e3 bd 00 be 12 be 2a be 4c be 80 be aa be 00 bf 80 bf|
+                    "cbe" = |u8x 7f 89 e3 bd 00 be 12 be 2a be 4c be 80 be aa be 00 bf 80 bf|
                     "to_cte" = "|f16x -1.c6p-04 -1p-03 -1.24p-03 -1.54p-03 -1.98p-03 -1p-02 -1.54p-02 -1p-01 -1|"
                     "events" = [
                         "baf16"
@@ -231,7 +231,7 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f e8 14 e3 bd 00 be 12 be 2a be 4c be 80 be aa be 00 bf 80 bf 80 7f|
+                    "cbe" = |u8x 7f 8a e3 bd 00 be 12 be 2a be 4c be 80 be aa be 00 bf 80 bf 80 7f|
                     "to_cte" = "|f16x -1.c6p-04 -1p-03 -1.24p-03 -1.54p-03 -1.98p-03 -1p-02 -1.54p-02 -1p-01 -1 inf|"
                     "events" = [
                         "baf16"
@@ -240,7 +240,7 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f e8 16 e3 bd 00 be 12 be 2a be 4c be 80 be aa be 00 bf 80 bf 80 7f 80 3f|
+                    "cbe" = |u8x 7f 8b e3 bd 00 be 12 be 2a be 4c be 80 be aa be 00 bf 80 bf 80 7f 80 3f|
                     "to_cte" = "|f16x -1.c6p-04 -1p-03 -1.24p-03 -1.54p-03 -1.98p-03 -1p-02 -1.54p-02 -1p-01 -1 inf 1|"
                     "events" = [
                         "baf16"
@@ -249,7 +249,7 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f e8 18 e3 bd 00 be 12 be 2a be 4c be 80 be aa be 00 bf 80 bf 80 7f 80 3f 00 3f|
+                    "cbe" = |u8x 7f 8c e3 bd 00 be 12 be 2a be 4c be 80 be aa be 00 bf 80 bf 80 7f 80 3f 00 3f|
                     "to_cte" = "|f16x -1.c6p-04 -1p-03 -1.24p-03 -1.54p-03 -1.98p-03 -1p-02 -1.54p-02 -1p-01 -1 inf 1 1p-01|"
                     "events" = [
                         "baf16"
@@ -258,7 +258,7 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f e8 1a e3 bd 00 be 12 be 2a be 4c be 80 be aa be 00 bf 80 bf 80 7f 80 3f 00 3f aa 3e|
+                    "cbe" = |u8x 7f 8d e3 bd 00 be 12 be 2a be 4c be 80 be aa be 00 bf 80 bf 80 7f 80 3f 00 3f aa 3e|
                     "to_cte" = "|f16x -1.c6p-04 -1p-03 -1.24p-03 -1.54p-03 -1.98p-03 -1p-02 -1.54p-02 -1p-01 -1 inf 1 1p-01 1.54p-02|"
                     "events" = [
                         "baf16"
@@ -267,7 +267,7 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f e8 1c e3 bd 00 be 12 be 2a be 4c be 80 be aa be 00 bf 80 bf 80 7f 80 3f 00 3f aa 3e 80 3e|
+                    "cbe" = |u8x 7f 8e e3 bd 00 be 12 be 2a be 4c be 80 be aa be 00 bf 80 bf 80 7f 80 3f 00 3f aa 3e 80 3e|
                     "to_cte" = "|f16x -1.c6p-04 -1p-03 -1.24p-03 -1.54p-03 -1.98p-03 -1p-02 -1.54p-02 -1p-01 -1 inf 1 1p-01 1.54p-02 1p-02|"
                     "events" = [
                         "baf16"
@@ -276,7 +276,7 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f e8 1e e3 bd 00 be 12 be 2a be 4c be 80 be aa be 00 bf 80 bf 80 7f 80 3f 00 3f aa 3e 80 3e 4c 3e|
+                    "cbe" = |u8x 7f 8f e3 bd 00 be 12 be 2a be 4c be 80 be aa be 00 bf 80 bf 80 7f 80 3f 00 3f aa 3e 80 3e 4c 3e|
                     "to_cte" = "|f16x -1.c6p-04 -1p-03 -1.24p-03 -1.54p-03 -1.98p-03 -1p-02 -1.54p-02 -1p-01 -1 inf 1 1p-01 1.54p-02 1p-02 1.98p-03|"
                     "events" = [
                         "baf16"
@@ -398,7 +398,7 @@ c0
             "name" = "Edge Case Element Values"
             "must_succeed" = [
                 {
-                    "cbe" = |u8x 7f e8 04 00 00 00 80|
+                    "cbe" = |u8x 7f 82 00 00 00 80|
                     "to_cte" = "|f16x 0 -0|"
                     "events" = [
                         "baf16"
@@ -412,7 +412,7 @@ c0
             "name" = "NaN Element Values"
             "must_succeed" = [
                 {
-                    "from_cbe" = |u8x 7f e8 04 a0 7f e0 7f|
+                    "from_cbe" = |u8x 7f 82 a0 7f e0 7f|
                     "to_cte" = "|f16x snan nan|"
                     "events" = [
                         "baf16"
@@ -471,58 +471,58 @@ c0
                     "cbe" = |u8x 7f e8|
                 }
                 {
-                    "cbe" = |u8x 7f e8 02|
+                    "cbe" = |u8x 7f 81|
                 }
                 {
-                    "cbe" = |u8x 7f e8 04 a0 7f|
-                }
-                {
-                    "cbe" = |u8x 7f 81 a0|
-                }
-                {
-                    "cbe" = |u8x 7f e8 06 a0 7f|
+                    "cbe" = |u8x 7f 82 a0 7f|
                 }
                 {
                     "cbe" = |u8x 7f 81 a0|
                 }
                 {
-                    "cbe" = |u8x 7f e8 08 a0 7f e0 7f|
+                    "cbe" = |u8x 7f 83 a0 7f|
+                }
+                {
+                    "cbe" = |u8x 7f 81 a0|
+                }
+                {
+                    "cbe" = |u8x 7f 84 a0 7f e0 7f|
                 }
                 {
                     "cbe" = |u8x 7f 82 a0 7f e0|
                 }
                 {
-                    "cbe" = |u8x 7f e8 0a a0 7f e0 7f|
+                    "cbe" = |u8x 7f 85 a0 7f e0 7f|
                 }
                 {
                     "cbe" = |u8x 7f 82 a0 7f e0|
                 }
                 {
-                    "cbe" = |u8x 7f e8 0c a0 7f e0 7f 5b c6|
+                    "cbe" = |u8x 7f 86 a0 7f e0 7f 5b c6|
                 }
                 {
                     "cbe" = |u8x 7f 83 a0 7f e0 7f 5b|
                 }
                 {
-                    "cbe" = |u8x 7f e8 0e a0 7f e0 7f 5b c6|
+                    "cbe" = |u8x 7f 87 a0 7f e0 7f 5b c6|
                 }
                 {
                     "cbe" = |u8x 7f 83 a0 7f e0 7f 5b|
                 }
                 {
-                    "cbe" = |u8x 7f e8 10 a0 7f e0 7f 5b c6 92 c5|
+                    "cbe" = |u8x 7f 88 a0 7f e0 7f 5b c6 92 c5|
                 }
                 {
                     "cbe" = |u8x 7f 84 a0 7f e0 7f 5b c6 92|
                 }
                 {
-                    "cbe" = |u8x 7f e8 12 a0 7f e0 7f 5b c6 92 c5|
+                    "cbe" = |u8x 7f 89 a0 7f e0 7f 5b c6 92 c5|
                 }
                 {
                     "cbe" = |u8x 7f 84 a0 7f e0 7f 5b c6 92|
                 }
                 {
-                    "cbe" = |u8x 7f e8 14 a0 7f e0 7f 5b c6 92 c5 92 45|
+                    "cbe" = |u8x 7f 8a a0 7f e0 7f 5b c6 92 c5 92 45|
                 }
                 {
                     "cbe" = |u8x 7f 85 a0 7f e0 7f 5b c6 92 c5 92|

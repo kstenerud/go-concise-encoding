@@ -90,7 +90,6 @@ func (_this *BaseEvent) Value() interface{} {
 	}
 	return _this.values[len(_this.values)-1]
 }
-func (_this *BaseEvent) Expand() Events { return Events{_this} }
 
 func ConstructEvent(shortName string, invocation EventInvocation, values ...interface{}) BaseEvent {
 	return BaseEvent{

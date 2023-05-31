@@ -19,7 +19,7 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f e1 00|
+                    "cbe" = |u8x 7f 10|
                     "to_cte" = "|i8|"
                     "events" = [
                         "bai8"
@@ -142,7 +142,7 @@ c0
             "name" = "Chunked Array"
             "must_succeed" = [
                 {
-                    "cbe" = |u8x 7f e1 00|
+                    "cbe" = |u8x 7f 10|
                     "to_cte" = "|i8|"
                     "events" = [
                         "bai8"
@@ -150,7 +150,7 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f e1 02 f9|
+                    "cbe" = |u8x 7f 11 f9|
                     "to_cte" = "|i8 -7|"
                     "events" = [
                         "bai8"
@@ -159,7 +159,7 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f e1 04 f9 fa|
+                    "cbe" = |u8x 7f 12 f9 fa|
                     "to_cte" = "|i8 -7 -6|"
                     "events" = [
                         "bai8"
@@ -168,7 +168,7 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f e1 06 f9 fa fb|
+                    "cbe" = |u8x 7f 13 f9 fa fb|
                     "to_cte" = "|i8 -7 -6 -5|"
                     "events" = [
                         "bai8"
@@ -177,7 +177,7 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f e1 08 f9 fa fb fc|
+                    "cbe" = |u8x 7f 14 f9 fa fb fc|
                     "to_cte" = "|i8 -7 -6 -5 -4|"
                     "events" = [
                         "bai8"
@@ -186,7 +186,7 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f e1 0a f9 fa fb fc fd|
+                    "cbe" = |u8x 7f 15 f9 fa fb fc fd|
                     "to_cte" = "|i8 -7 -6 -5 -4 -3|"
                     "events" = [
                         "bai8"
@@ -195,7 +195,7 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f e1 0c f9 fa fb fc fd fe|
+                    "cbe" = |u8x 7f 16 f9 fa fb fc fd fe|
                     "to_cte" = "|i8 -7 -6 -5 -4 -3 -2|"
                     "events" = [
                         "bai8"
@@ -204,7 +204,7 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f e1 0e f9 fa fb fc fd fe ff|
+                    "cbe" = |u8x 7f 17 f9 fa fb fc fd fe ff|
                     "to_cte" = "|i8 -7 -6 -5 -4 -3 -2 -1|"
                     "events" = [
                         "bai8"
@@ -213,7 +213,7 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f e1 10 f9 fa fb fc fd fe ff 00|
+                    "cbe" = |u8x 7f 18 f9 fa fb fc fd fe ff 00|
                     "to_cte" = "|i8 -7 -6 -5 -4 -3 -2 -1 0|"
                     "events" = [
                         "bai8"
@@ -222,7 +222,7 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f e1 12 f9 fa fb fc fd fe ff 00 01|
+                    "cbe" = |u8x 7f 19 f9 fa fb fc fd fe ff 00 01|
                     "to_cte" = "|i8 -7 -6 -5 -4 -3 -2 -1 0 1|"
                     "events" = [
                         "bai8"
@@ -231,7 +231,7 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f e1 14 f9 fa fb fc fd fe ff 00 01 02|
+                    "cbe" = |u8x 7f 1a f9 fa fb fc fd fe ff 00 01 02|
                     "to_cte" = "|i8 -7 -6 -5 -4 -3 -2 -1 0 1 2|"
                     "events" = [
                         "bai8"
@@ -240,7 +240,7 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f e1 16 f9 fa fb fc fd fe ff 00 01 02 03|
+                    "cbe" = |u8x 7f 1b f9 fa fb fc fd fe ff 00 01 02 03|
                     "to_cte" = "|i8 -7 -6 -5 -4 -3 -2 -1 0 1 2 3|"
                     "events" = [
                         "bai8"
@@ -249,7 +249,7 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f e1 18 f9 fa fb fc fd fe ff 00 01 02 03 04|
+                    "cbe" = |u8x 7f 1c f9 fa fb fc fd fe ff 00 01 02 03 04|
                     "to_cte" = "|i8 -7 -6 -5 -4 -3 -2 -1 0 1 2 3 4|"
                     "events" = [
                         "bai8"
@@ -258,7 +258,7 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f e1 1a f9 fa fb fc fd fe ff 00 01 02 03 04 05|
+                    "cbe" = |u8x 7f 1d f9 fa fb fc fd fe ff 00 01 02 03 04 05|
                     "to_cte" = "|i8 -7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5|"
                     "events" = [
                         "bai8"
@@ -267,7 +267,7 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f e1 1c f9 fa fb fc fd fe ff 00 01 02 03 04 05 06|
+                    "cbe" = |u8x 7f 1e f9 fa fb fc fd fe ff 00 01 02 03 04 05 06|
                     "to_cte" = "|i8 -7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6|"
                     "events" = [
                         "bai8"
@@ -276,7 +276,7 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f e1 1e f9 fa fb fc fd fe ff 00 01 02 03 04 05 06 07|
+                    "cbe" = |u8x 7f 1f f9 fa fb fc fd fe ff 00 01 02 03 04 05 06 07|
                     "to_cte" = "|i8 -7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7|"
                     "events" = [
                         "bai8"
@@ -530,58 +530,58 @@ c0
                     "cbe" = |u8x 7f e1|
                 }
                 {
-                    "cbe" = |u8x 7f e1 02|
-                }
-                {
-                    "cbe" = |u8x 7f e1 04 00|
-                }
-                {
                     "cbe" = |u8x 7f 11|
-                }
-                {
-                    "cbe" = |u8x 7f e1 06 00|
-                }
-                {
-                    "cbe" = |u8x 7f 11|
-                }
-                {
-                    "cbe" = |u8x 7f e1 08 00 01|
                 }
                 {
                     "cbe" = |u8x 7f 12 00|
                 }
                 {
-                    "cbe" = |u8x 7f e1 0a 00 01|
+                    "cbe" = |u8x 7f 11|
+                }
+                {
+                    "cbe" = |u8x 7f 13 00|
+                }
+                {
+                    "cbe" = |u8x 7f 11|
+                }
+                {
+                    "cbe" = |u8x 7f 14 00 01|
                 }
                 {
                     "cbe" = |u8x 7f 12 00|
                 }
                 {
-                    "cbe" = |u8x 7f e1 0c 00 01 7f|
+                    "cbe" = |u8x 7f 15 00 01|
+                }
+                {
+                    "cbe" = |u8x 7f 12 00|
+                }
+                {
+                    "cbe" = |u8x 7f 16 00 01 7f|
                 }
                 {
                     "cbe" = |u8x 7f 13 00 01|
                 }
                 {
-                    "cbe" = |u8x 7f e1 0e 00 01 7f|
+                    "cbe" = |u8x 7f 17 00 01 7f|
                 }
                 {
                     "cbe" = |u8x 7f 13 00 01|
                 }
                 {
-                    "cbe" = |u8x 7f e1 10 00 01 7f 80|
+                    "cbe" = |u8x 7f 18 00 01 7f 80|
                 }
                 {
                     "cbe" = |u8x 7f 14 00 01 7f|
                 }
                 {
-                    "cbe" = |u8x 7f e1 12 00 01 7f 80|
+                    "cbe" = |u8x 7f 19 00 01 7f 80|
                 }
                 {
                     "cbe" = |u8x 7f 14 00 01 7f|
                 }
                 {
-                    "cbe" = |u8x 7f e1 14 00 01 7f 80 81|
+                    "cbe" = |u8x 7f 1a 00 01 7f 80 81|
                 }
                 {
                     "cbe" = |u8x 7f 15 00 01 7f 80|

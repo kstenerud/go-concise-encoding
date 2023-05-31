@@ -208,7 +208,7 @@ test"~"  "events"=["rid=testtest"]}   // Continuation
             "mustSucceed" = [
                 {"cte"="|c0 \"cplx(2.94+3i)\"|"  "events"=["ct=0 cplx(2.94+3i)"]}
                 {"cte"="\.~ |c0 "something(123)"|~"             "events"=["ct=0 something(123)"]}
-                {"cte"="\.~ |c0 ""|~"                           "events"=["ct=0"]}                // Empty String
+                {"from_cte"="\.~ |c0 ""|~"                      "events"=["ct=0"]}                // Empty String
                 {"cte"="\.~ |c0 "test/*test"|~"                 "events"=["ct=0 test/*test"]}     // Comment initiator inside a string
                 {"cte"="\.~ |c0 "test*/test"|~"                 "events"=["ct=0 test*/test"]}     // Comment terminator inside a string
                 {"from_cte"="\.~ |c0 "test\ttest"|~"            "events"=["ct=0 test\[9]test"]}   // Escaped tab

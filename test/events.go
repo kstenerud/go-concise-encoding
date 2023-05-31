@@ -312,5 +312,7 @@ func (_this *EventNumeric) String() string {
 	return _this.BaseEvent.String()
 }
 
+func (_this *EventNumeric) Expand() Events { return Events{_this} }
+
 func NAN() Event  { return N(compact_float.QuietNaN()) }
 func SNAN() Event { return N(compact_float.SignalingNaN()) }
