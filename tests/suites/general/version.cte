@@ -10,7 +10,7 @@ c0
             "name" = "This is a test"
             "mustSucceed" = [
                 { // TODO: Remove when v1 released
-                    "rawDocument" = true
+                    "raw_document" = true
                     "cbe" = |u8x 81 00 01|
                     "cte" = "c0
 1"
