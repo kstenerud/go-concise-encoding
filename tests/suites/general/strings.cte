@@ -480,6 +480,286 @@ test~"]
         // ====================================================================
 
         {
+            "name" = "Resource ID: Escapes"
+            "mustSucceed" = [
+                {
+                    // Escaped tab
+                    "from_cte"="\.~ @"test\ttest"~"
+                    "cbe"=|u8x 91 12 74 65 73 74 09 74 65 73 74|
+                    "events"=["rid=test\[9]test"]
+                }
+                {
+                    // Escaped CR
+                    "from_cte"="\.~ @"test\rtest"~"
+                    "cbe"=|u8x 91 12 74 65 73 74 0d 74 65 73 74|
+                    "events"=["rid=test\[d]test"]
+                }
+                {
+                    // Escaped quote
+                    "from_cte"="\.~ @"test\"test"~"
+                    "cbe"=|u8x 91 12 74 65 73 74 22 74 65 73 74|
+                    "events"=["rid=\.~ test"test~"]
+                }
+                {
+                    // Escaped backslash
+                    "from_cte"="\.~ @"test\\test"~"
+                    "cbe"=|u8x 91 12 74 65 73 74 5c 74 65 73 74|
+                    "events"=["rid=\.~ test\test~"]
+                }
+                {
+                    // Escaped slash
+                    "from_cte"="\.~ @"test\/test"~"
+                    "cbe"=|u8x 91 12 74 65 73 74 2f 74 65 73 74|
+                    "events"=["rid=\.~ test/test~"]
+                }
+                {
+                    // Escaped star
+                    "from_cte"="\.~ @"test\*test"~"
+                    "cbe"=|u8x 91 12 74 65 73 74 2a 74 65 73 74|
+                    "events"=["rid=\.~ test*test~"]
+                }
+                {
+                    // Escaped non-breaking space
+                    "from_cte"="\.~ @"test\_test"~"
+                    "cbe"=|u8x 91 14 74 65 73 74 c2 a0 74 65 73 74|
+                    "events"=["rid=test\[a0]test"]
+                }
+                {
+                    // Escaped soft hyphen
+                    "from_cte"="\.~ @"test\-test"~"
+                    "cbe"=|u8x 91 14 74 65 73 74 c2 ad 74 65 73 74|
+                    "events"=["rid=test\[ad]test"]
+                }
+                {
+                    // Escaped 1-digit codepoint
+                    "from_cte"="\.~ @"test\[a]test"~"
+                    "cbe"=|u8x 91 12 74 65 73 74 0a 74 65 73 74|
+                    "events"=["rid=test\ntest"]
+                }
+                {
+                    // Escaped 2-digit codepoint
+                    "from_cte"="\.~ @"test\[f7]test"~"
+                    "cbe"=|u8x 91 14 74 65 73 74 c3 b7 74 65 73 74|
+                    "events"=["rid=test÷test"]
+                }
+                {
+                    // Escaped 3-digit codepoint
+                    "from_cte"="\.~ @"test\[17d]test"~"
+                    "cbe"=|u8x 91 14 74 65 73 74 c5 bd 74 65 73 74|
+                    "events"=["rid=testŽtest"]
+                }
+                {
+                    // Escaped 4-digit codepoint
+                    "from_cte"="\.~ @"test\[2021]test"~"
+                    "cbe"=|u8x 91 16 74 65 73 74 e2 80 a1 74 65 73 74|
+                    "events"=["rid=test‡test"]
+                }
+                {
+                    // Escaped 5-digit codepoint
+                    "from_cte"="\.~ @"test\[1f43a]test"~"
+                    "cbe"=|u8x 91 18 74 65 73 74 f0 9f 90 ba 74 65 73 74|
+                    "events"=["rid=test🐺test"]    
+                }
+                {
+                    // Escaped 6-digit codepoint
+                    "from_cte"="\.~ @"test\[000020]test"~"
+                    "cbe"=|u8x 91 12 74 65 73 74 20 74 65 73 74|
+                    "events"=["rid=test test"]
+                }
+                {
+                    // Escaped 7-digit codepoint
+                    "from_cte"="\.~ @"test\[0000020]test"~"
+                    "cbe"=|u8x 91 12 74 65 73 74 20 74 65 73 74|
+                    "events"=["rid=test test"]
+                }
+                {
+                    // Escaped 8-digit codepoint
+                    "from_cte"="\.~ @"test\[00000020]test"~"
+                    "cbe"=|u8x 91 12 74 65 73 74 20 74 65 73 74|
+                    "events"=["rid=test test"]
+                }
+                {
+                    // Escaped 9-digit codepoint
+                    "from_cte"="\.~ @"test\[000000020]test"~"
+                    "cbe"=|u8x 91 12 74 65 73 74 20 74 65 73 74|
+                    "events"=["rid=test test"]
+                }
+                {
+                    // Escaped newline
+                    "from_cte"="\.~ @"test\ntest"~"
+                    "cbe"=|u8x 91 12 74 65 73 74 0a 74 65 73 74|
+                    "events"=["rid=\.~ test
+test~"]
+                }
+                {
+                    // Continuation
+                    "from_cte"="\.~ @"test\
+                                test"~"
+                    "cbe"=|u8x 91 10 74 65 73 74 74 65 73 74|
+                    "events"=["rid=testtest"]
+                }
+            ]
+            "mustFail" = [
+                {"cte"="\.~ @"test\1gtest"~"}     // Invalid codepoint digit
+                {"cte"="\.~ @"test\xtest"~"}      // Invalid escape character
+                {"cte"="\.~ @"test\"~"}           // Unterminated escape
+                {"cte"="\.~ @"test\["~"}          // Unterminated escape
+                {"cte"="\.~ @"test\[}"~"}         // Empty escape
+                {"cte"="\.~ @"test\[1"~"}         // Unterminated codepoint
+                {"cte"="\.~ @"test\[21"~"}        // Unterminated codepoint
+                {"cte"="\.~ @"test\[301"~"}       // Unterminated codepoint
+                {"cte"="\.~ @"test\[4001"~"}      // Unterminated codepoint
+                {"cte"="\.~ @"test\[50001"~"}     // Unterminated codepoint
+                {"cte"="\.~ @"test\[600001"~"}    // Unterminated codepoint
+                {"cte"="\.~ @"test\[7000001"~"}   // Unterminated codepoint
+                {"cte"="\.~ @"test\[80000001"~"}  // Unterminated codepoint
+                {"cte"="\.~ @"test\[900000001"~"} // Unterminated codepoint
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "Remote Reference: Escapes"
+            "mustSucceed" = [
+                {
+                    // Escaped tab
+                    "from_cte"="\.~ $"test\ttest"~"
+                    "cbe"=|u8x 7f f2 12 74 65 73 74 09 74 65 73 74|
+                    "events"=["refr=test\[9]test"]
+                }
+                {
+                    // Escaped CR
+                    "from_cte"="\.~ $"test\rtest"~"
+                    "cbe"=|u8x 7f f2 12 74 65 73 74 0d 74 65 73 74|
+                    "events"=["refr=test\[d]test"]
+                }
+                {
+                    // Escaped quote
+                    "from_cte"="\.~ $"test\"test"~"
+                    "cbe"=|u8x 7f f2 12 74 65 73 74 22 74 65 73 74|
+                    "events"=["refr=\.~ test"test~"]
+                }
+                {
+                    // Escaped backslash
+                    "from_cte"="\.~ $"test\\test"~"
+                    "cbe"=|u8x 7f f2 12 74 65 73 74 5c 74 65 73 74|
+                    "events"=["refr=\.~ test\test~"]
+                }
+                {
+                    // Escaped slash
+                    "from_cte"="\.~ $"test\/test"~"
+                    "cbe"=|u8x 7f f2 12 74 65 73 74 2f 74 65 73 74|
+                    "events"=["refr=\.~ test/test~"]
+                }
+                {
+                    // Escaped star
+                    "from_cte"="\.~ $"test\*test"~"
+                    "cbe"=|u8x 7f f2 12 74 65 73 74 2a 74 65 73 74|
+                    "events"=["refr=\.~ test*test~"]
+                }
+                {
+                    // Escaped non-breaking space
+                    "from_cte"="\.~ $"test\_test"~"
+                    "cbe"=|u8x 7f f2 14 74 65 73 74 c2 a0 74 65 73 74|
+                    "events"=["refr=test\[a0]test"]
+                }
+                {
+                    // Escaped soft hyphen
+                    "from_cte"="\.~ $"test\-test"~"
+                    "cbe"=|u8x 7f f2 14 74 65 73 74 c2 ad 74 65 73 74|
+                    "events"=["refr=test\[ad]test"]
+                }
+                {
+                    // Escaped 1-digit codepoint
+                    "from_cte"="\.~ $"test\[a]test"~"
+                    "cbe"=|u8x 7f f2 12 74 65 73 74 0a 74 65 73 74|
+                    "events"=["refr=test\ntest"]
+                }
+                {
+                    // Escaped 2-digit codepoint
+                    "from_cte"="\.~ $"test\[f7]test"~"
+                    "cbe"=|u8x 7f f2 14 74 65 73 74 c3 b7 74 65 73 74|
+                    "events"=["refr=test÷test"]
+                }
+                {
+                    // Escaped 3-digit codepoint
+                    "from_cte"="\.~ $"test\[17d]test"~"
+                    "cbe"=|u8x 7f f2 14 74 65 73 74 c5 bd 74 65 73 74|
+                    "events"=["refr=testŽtest"]
+                }
+                {
+                    // Escaped 4-digit codepoint
+                    "from_cte"="\.~ $"test\[2021]test"~"
+                    "cbe"=|u8x 7f f2 16 74 65 73 74 e2 80 a1 74 65 73 74|
+                    "events"=["refr=test‡test"]
+                }
+                {
+                    // Escaped 5-digit codepoint
+                    "from_cte"="\.~ $"test\[1f43a]test"~"
+                    "cbe"=|u8x 7f f2 18 74 65 73 74 f0 9f 90 ba 74 65 73 74|
+                    "events"=["refr=test🐺test"]    
+                }
+                {
+                    // Escaped 6-digit codepoint
+                    "from_cte"="\.~ $"test\[000020]test"~"
+                    "cbe"=|u8x 7f f2 12 74 65 73 74 20 74 65 73 74|
+                    "events"=["refr=test test"]
+                }
+                {
+                    // Escaped 7-digit codepoint
+                    "from_cte"="\.~ $"test\[0000020]test"~"
+                    "cbe"=|u8x 7f f2 12 74 65 73 74 20 74 65 73 74|
+                    "events"=["refr=test test"]
+                }
+                {
+                    // Escaped 8-digit codepoint
+                    "from_cte"="\.~ $"test\[00000020]test"~"
+                    "cbe"=|u8x 7f f2 12 74 65 73 74 20 74 65 73 74|
+                    "events"=["refr=test test"]
+                }
+                {
+                    // Escaped 9-digit codepoint
+                    "from_cte"="\.~ $"test\[000000020]test"~"
+                    "cbe"=|u8x 7f f2 12 74 65 73 74 20 74 65 73 74|
+                    "events"=["refr=test test"]
+                }
+                {
+                    // Escaped newline
+                    "from_cte"="\.~ $"test\ntest"~"
+                    "cbe"=|u8x 7f f2 12 74 65 73 74 0a 74 65 73 74|
+                    "events"=["refr=\.~ test
+test~"]
+                }
+                {
+                    // Continuation
+                    "from_cte"="\.~ $"test\
+                                test"~"
+                    "cbe"=|u8x 7f f2 10 74 65 73 74 74 65 73 74|
+                    "events"=["refr=testtest"]
+                }
+            ]
+            "mustFail" = [
+                {"cte"="\.~ $"test\1gtest"~"}     // Invalid codepoint digit
+                {"cte"="\.~ $"test\xtest"~"}      // Invalid escape character
+                {"cte"="\.~ $"test\"~"}           // Unterminated escape
+                {"cte"="\.~ $"test\["~"}          // Unterminated escape
+                {"cte"="\.~ $"test\[}"~"}         // Empty escape
+                {"cte"="\.~ $"test\[1"~"}         // Unterminated codepoint
+                {"cte"="\.~ $"test\[21"~"}        // Unterminated codepoint
+                {"cte"="\.~ $"test\[301"~"}       // Unterminated codepoint
+                {"cte"="\.~ $"test\[4001"~"}      // Unterminated codepoint
+                {"cte"="\.~ $"test\[50001"~"}     // Unterminated codepoint
+                {"cte"="\.~ $"test\[600001"~"}    // Unterminated codepoint
+                {"cte"="\.~ $"test\[7000001"~"}   // Unterminated codepoint
+                {"cte"="\.~ $"test\[80000001"~"}  // Unterminated codepoint
+                {"cte"="\.~ $"test\[900000001"~"} // Unterminated codepoint
+            ]
+        }
+
+        // ====================================================================
+
+        {
             "name" = "Verbatim sequence"
             "mustSucceed" = [
                 {
@@ -540,47 +820,71 @@ blah blahXXX"~"
             // Resource IDs have the same capabilities and restrictions as strings.
             "name" = "Resource ID"
             "mustSucceed" = [
-                {"cte"="@\"https://concise-encoding.org\"" "events"=["rid=https://concise-encoding.org"]}
-                {"cte"="\.~ @"http://x.com/a/b#1"~"        "events"=["rid=http://x.com/a/b#1"]}
-                {"cte"="\.~ @""~"                          "events"=["rid"]}                // Empty string
-                {"cte"="\.~ @"test/*test"~"                "events"=["rid=test/*test"]}     // Comment initiator inside a string
-                {"cte"="\.~ @"test*/test"~"                "events"=["rid=test*/test"]}     // Comment terminator inside a string
-                {"from_cte"="\.~ @"test\ttest"~"           "events"=["rid=test\[9]test"]}   // Escaped tab
-                {"from_cte"="\.~ @"test\rtest"~"           "events"=["rid=test\[d]test"]}   // Escaped CR
-                {"from_cte"="\.~ @"test\"test"~"           "events"=["rid=\.~ test"test~"]} // Escaped quote
-                {"from_cte"="\.~ @"test\\test"~"           "events"=["rid=\.~ test\test~"]} // Escaped backslash
-                {"from_cte"="\.~ @"test\/test"~"           "events"=["rid=\.~ test/test~"]} // Escaped slash
-                {"from_cte"="\.~ @"test\*test"~"           "events"=["rid=\.~ test*test~"]} // Escaped star
-                {"from_cte"="\.~ @"test\_test"~"           "events"=["rid=test\[a0]test"]}  // Escaped non-breaking space
-                {"from_cte"="\.~ @"test\-test"~"           "events"=["rid=test\[ad]test"]}  // Escaped soft hyphen
-                {"from_cte"="\.~ @"test\[a]test"~"         "events"=["rid=test\ntest"]}     // Escaped 1-digit codepoint
-                {"from_cte"="\.~ @"test\[f7]test"~"        "events"=["rid=test÷test"]}      // Escaped 2-digit codepoint
-                {"from_cte"="\.~ @"test\[17d]test"~"       "events"=["rid=testŽtest"]}      // Escaped 3-digit codepoint
-                {"from_cte"="\.~ @"test\[2021]test"~"      "events"=["rid=test‡test"]}      // Escaped 4-digit codepoint
-                {"from_cte"="\.~ @"test\[1f43a]test"~"     "events"=["rid=test🐺test"]}     // Escaped 5-digit codepoint
-                {"from_cte"="\.~ @"test\[000020]test"~"    "events"=["rid=test test"]}      // Escaped 6-digit codepoint
-                {"from_cte"="\.~ @"test\[000000020]test"~" "events"=["rid=test test"]}      // Escaped 9-digit codepoint
-                {"from_cte"="\.~ @"test\ntest"~"           "events"=["rid=\.~ test
-test~"]}  // Escaped newline
-                {"from_cte"="\.~ @"test\
-test"~"  "events"=["rid=testtest"]}   // Continuation
+                {
+                    "cte"="@\"\""
+                    "cbe"=|u8x 91 00|
+                    "events"=["brid" "acl=0"]
+                }
+                {
+                    "cte"="@\"https://concise-encoding.org\""
+                    "cbe"=|u8x 91 38 68 74 74 70 73 3a 2f 2f 63 6f 6e 63 69 73 65 2d 65 6e 63 6f 64 69 6e 67 2e 6f 72 67|
+                    "events"=["rid=https://concise-encoding.org"]
+                }
+                {
+                    "cte"="\.~ @"http://x.com/a/b#1"~"
+                    "cbe"=|u8x 91 24 68 74 74 70 3a 2f 2f 78 2e 63 6f 6d 2f 61 2f 62 23 31|
+                    "events"=["rid=http://x.com/a/b#1"]
+                }
+                {
+                    "to_cte"="@\"https://concise-encoding.org/\""
+                    "cbe"=|u8x 91 03 68 38 74 74 70 73 3a 2f 2f 63 6f 6e 63 69 73 65 2d 65 6e 63 6f 64 69 6e 67 2e 6f 72 67 2f|
+                    "events"=["brid" "acm=1" "adt=h" "acl=28" "adt=ttps://concise-encoding.org/"]
+                }
             ]
             "mustFail" = [
-                {"cte"="\.~ @"test\1gtest"~"}    // Invalid codepoint digit
-                {"cte"="\.~ @"test\xtest"~"}     // Invalid escape character
-                {"cte"="\.~ @"test=test~"}       // Unterminated quotes
-                {"cte"="\.~ @test test~"}        // Missing quotes
-                {"cte"="\.~ @"test\"~"}          // Unterminated escape
-                {"cte"="\.~ @"test\["~"}         // Unterminated escape
-                {"cte"="\.~ @"test\[}"~"}        // Empty escape
-                {"cte"="\.~ @"test\[1"~"}        // Unterminated codepoint
-                {"cte"="\.~ @"test\[01"~"}       // Unterminated codepoint
-                {"cte"="\.~ @"test\[001"~"}      // Unterminated codepoint
-                {"cte"="\.~ @"test\[0001"~"}     // Unterminated codepoint
-                {"cte"="\.~ @"test\[00001"~"}    // Unterminated codepoint
-                {"cte"="\.~ @"test\[000001"~"}   // Unterminated codepoint
-                {"cte"="\.~ @"test\[0000001"~"}  // Unterminated codepoint
-                {"cte"="\.~ @"test\[00000001"~"} // Unterminated codepoint
+                {"cte"="\.~ @"test=test~"} // Unterminated quotes
+                {"cte"="\.~ @test test~"}  // Missing quotes
+                {"cbe"=|u8x 91 01|}        // Incomplete
+                {"cbe"=|u8x 91 02|}        // Incomplete
+                {"cbe"=|u8x 91 04 40|}     // Incomplete
+                {"cbe"=|u8x 91 05 40 02|}  // Incomplete
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            // Remote references have the same capabilities and restrictions as strings.
+            "name" = "Remote Reference"
+            "mustSucceed" = [
+                {
+                    "cte"="$\"\""
+                    "cbe"=|u8x 7f f2 00|
+                    "events"=["brefr" "acl=0"]
+                }
+                {
+                    "cte"="$\"https://concise-encoding.org\""
+                    "cbe"=|u8x 7f f2 38 68 74 74 70 73 3a 2f 2f 63 6f 6e 63 69 73 65 2d 65 6e 63 6f 64 69 6e 67 2e 6f 72 67|
+                    "events"=["refr=https://concise-encoding.org"]
+                }
+                {
+                    "cte"="\.~ $"http://x.com/a/b#1"~"
+                    "cbe"=|u8x 7f f2 24 68 74 74 70 3a 2f 2f 78 2e 63 6f 6d 2f 61 2f 62 23 31|
+                    "events"=["refr=http://x.com/a/b#1"]
+                }
+                {
+                    "to_cte"="$\"https://concise-encoding.org/\""
+                    "cbe"=|u8x 7f f2 03 68 38 74 74 70 73 3a 2f 2f 63 6f 6e 63 69 73 65 2d 65 6e 63 6f 64 69 6e 67 2e 6f 72 67 2f|
+                    "events"=["brefr" "acm=1" "adt=h" "acl=28" "adt=ttps://concise-encoding.org/"]
+                }
+            ]
+            "mustFail" = [
+                {"cte"="\.~ $"test=test~"}    // Unterminated quotes
+                {"cte"="\.~ $test test~"}     // Missing quotes
+                {"cbe"=|u8x 7f f2 01|}        // Incomplete
+                {"cbe"=|u8x 7f f2 02|}        // Incomplete
+                {"cbe"=|u8x 7f f2 04 40|}     // Incomplete
+                {"cbe"=|u8x 7f f2 05 40 02|}  // Incomplete
             ]
         }
 
