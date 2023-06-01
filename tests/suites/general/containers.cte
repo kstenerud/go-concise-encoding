@@ -12,12 +12,41 @@ c0
         {
             "name" = "List"
             "mustSucceed" = [
-                {"cbe"=|u8x 9a 9b|           "events"=["l" "e"]}
-                {"cbe"=|u8x 9a 01 02 03 9b|  "events"=["l" "n=1" "n=2" "n=3" "e"]}
-                {"cbe"=|u8x 9a 01 9a 9a 02 9a 03 9a 9b 9b 9b 9b 9b|
-                 "events"=["l" "n=1" "l" "l" "n=2" "l" "n=3" "l" "e" "e" "e" "e" "e"]}
+                {
+                    "cte"="[]"
+                    "cbe"=|u8x 9a 9b|
+                    "events"=["l" "e"]
+                }
+                {
+                    "cte"="\.#
+[
+    1
+    2
+    3
+]#"
+                    "cbe"=|u8x 9a 01 02 03 9b|
+                    "events"=["l" "n=1" "n=2" "n=3" "e"]
+                }
+                {
+                    "cte"="\.#
+[
+    1
+    [
+        [
+            2
+            [
+                3
+                []
+            ]
+        ]
+    ]
+]#"
+                    "cbe"=|u8x 9a 01 9a 9a 02 9a 03 9a 9b 9b 9b 9b 9b|
+                    "events"=["l" "n=1" "l" "l" "n=2" "l" "n=3" "l" "e" "e" "e" "e" "e"]
+                }
             ]
             "mustFail" = [
+                {"cte"="["}                   // Unterminated
                 {"cbe"=|u8x 9a|}              // Unterminated
                 {"cbe"=|u8x 9a 01 02|}        // Unterminated
                 {"cbe"=|u8x 9a 9a 9b|}        // Unterminated
@@ -30,48 +59,31 @@ c0
         {
             "name" = "Map"
             "mustSucceed" = [
-                {"cbe"=|u8x 99 9b|        "events"=["m" "e"]}
-                {"cbe"=|u8x 99 01 02 9b|  "events"=["m" "n=1" "n=2" "e"]}
+                {
+                    "cte"="{}"
+                    "cbe"=|u8x 99 9b|
+                    "events"=["m" "e"]
+                }
+                {
+                    "cte"="\.#
+{
+    1 = 2
+}#"
+                    "cbe"=|u8x 99 01 02 9b|
+                    "events"=["m" "n=1" "n=2" "e"]
+                }
             ]
             "mustFail" = [
+                {"cte"="{"}                           // Unterminated
+                {"cte"="{1"}                          // Unterminated
+                {"cte"="{1="}                         // Unterminated
+                {"cte"="{1=2"}                        // Unterminated
+                {"cte"="{1=2}}"}                      // Terminated too many times
                 {"cbe"=|u8x 99|}                      // Unterminated
                 {"cbe"=|u8x 99 01|}                   // Unterminated
                 {"cbe"=|u8x 99 01 02|}                // Unterminated
                 {"cbe"=|u8x 99 9b 9b|}                // Terminated too many times
                 {"cbe"=|u8x 99 01 9b|}                // Missing value
-                {"cbe"=|u8x 99 9a 9b 01 9b|}          // Invalid key type
-                {"cbe"=|u8x 99 99 9b 01 9b|}          // Invalid key type
-                {"cbe"=|u8x 99 98 01 61 9b 9b 01 9b|} // Invalid key type
-                {"cbe"=|u8x 99 97 01 9b 01 9b|}       // Invalid key type
-                {"cbe"=|u8x 99 96 01 02 03 01 9b|}    // Invalid key type
-                {"cbe"=|u8x 99 92 00 01 9b|}          // Invalid key type
-                {"cbe"=|u8x 99 93 00 01 9b|}          // Invalid key type
-                {"cbe"=|u8x 99 7f f1 00 01 9b|}          // Invalid key type
-                {"cbe"=|u8x 99 96 00 01 9b|}          // Invalid key type
-                {"cbe"=|u8x 99 94 00 01 9b|}          // Invalid key type
-                {"cbe"=|u8x 99 94 10 01 9b|}          // Invalid key type
-                {"cbe"=|u8x 99 94 20 01 9b|}          // Invalid key type
-                {"cbe"=|u8x 99 94 30 01 9b|}          // Invalid key type
-                {"cbe"=|u8x 99 94 40 01 9b|}          // Invalid key type
-                {"cbe"=|u8x 99 94 50 01 9b|}          // Invalid key type
-                {"cbe"=|u8x 99 94 60 01 9b|}          // Invalid key type
-                {"cbe"=|u8x 99 94 70 01 9b|}          // Invalid key type
-                {"cbe"=|u8x 99 94 80 01 9b|}          // Invalid key type
-                {"cbe"=|u8x 99 94 90 01 9b|}          // Invalid key type
-                {"cbe"=|u8x 99 94 a0 01 9b|}          // Invalid key type
-                {"cbe"=|u8x 99 94 e0 02 61 9b|}       // Invalid key type
-                {"cbe"=|u8x 99 94 e1 02 61 00 9b|}    // Invalid key type
-                {"cbe"=|u8x 99 94 f5 00 9b|}          // Invalid key type
-                {"cbe"=|u8x 99 94 f6 00 9b|}          // Invalid key type
-                {"cbe"=|u8x 99 94 f7 00 9b|}          // Invalid key type
-                {"cbe"=|u8x 99 94 f8 00 9b|}          // Invalid key type
-                {"cbe"=|u8x 99 94 f9 00 9b|}          // Invalid key type
-                {"cbe"=|u8x 99 94 fa 00 9b|}          // Invalid key type
-                {"cbe"=|u8x 99 94 fb 00 9b|}          // Invalid key type
-                {"cbe"=|u8x 99 94 fc 00 9b|}          // Invalid key type
-                {"cbe"=|u8x 99 94 fd 00 9b|}          // Invalid key type
-                {"cbe"=|u8x 99 94 fe 00 9b|}          // Invalid key type
-                {"cbe"=|u8x 99 94 ff 00 9b|}          // Invalid key type
             ]
         }
 
@@ -149,6 +161,62 @@ c0
             "name" = "Mixed Containers"
             "mustSucceed" = [
                 {
+                    "cte"="\.#
+[
+    [
+        []
+        {
+            "a" = 1
+        }
+        (1
+        )
+        @(
+            1
+            2
+            3
+        )
+    ]
+    {
+        0 = []
+        1 = {}
+        3 = ("a"
+        )
+        4 = @(
+            1
+            2
+            3
+        )
+    }
+    ([]
+        {
+            "a" = 1
+        }
+        (1
+        )
+        @(
+            1
+            2
+            3
+        )
+    )
+    @(
+        []
+        {
+            "a" = 1
+        }
+        1
+    )
+    @(
+        (1
+        )
+        @(
+            1
+            2
+            3
+        )
+        0
+    )
+]#"
                     "cbe"=|u8x
                         9a
                             9a
