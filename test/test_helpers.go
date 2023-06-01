@@ -289,7 +289,7 @@ var (
 	EvAU32    = AU32([]uint32{1})
 	EvAU64    = AU64([]uint64{1})
 	EvAU8     = AU8([]uint8{1})
-	EvAUU     = AU([][]byte{{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}})
+	EvAU      = AU([][]byte{{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}})
 	EvB       = B(true)
 	EvBAB     = BAB()
 	EvBAF16   = BAF16()
@@ -303,7 +303,7 @@ var (
 	EvBAU32   = BAU32()
 	EvBAU64   = BAU64()
 	EvBAU8    = BAU8()
-	EvBAUU    = BAU()
+	EvBAU     = BAU()
 	EvBBF     = N(NewBigFloat("0x0.1"))
 	EvBBFNull = N(nil)
 	EvBDF     = N(NewBDF("0.1"))
@@ -316,9 +316,9 @@ var (
 	EvBCT     = BCT(1)
 	EvCS      = CS("a")
 	EvCM      = CM("a")
-	EvCT      = T(NewDate(2020, 1, 1))
+	EvTC      = T(NewDate(2020, 1, 1))
 	EvCB      = CB(1, []byte{1})
-	EvCUT     = CT(1, "a")
+	EvCT      = CT(1, "a")
 	EvDF      = N(NewDFloat("0.1"))
 	EvDFNAN   = N(compact_float.SignalingNaN())
 	EvE       = E()
@@ -329,8 +329,10 @@ var (
 	EvL       = L()
 	EvM       = M()
 	EvMARK    = MARK("a")
+	EvMEDIA   = MEDIA("a/b", []byte{0})
 	EvBMEDIA  = BMEDIA("a/b")
 	EvNAN     = N(compact_float.QuietNaN())
+	EvSNAN    = N(compact_float.SignalingNaN())
 	EvNI      = N(-1)
 	EvNODE    = NODE()
 	EvNULL    = NULL()
@@ -351,13 +353,13 @@ var (
 var allEvents = Events{
 	EvV, EvPAD, EvCS, EvCM, EvNULL, EvB, EvPI, EvNI, EvI,
 	EvBI, EvBINull, EvBF, EvFNAN, EvBBF, EvBBFNull, EvDF, EvDFNAN, EvBDF, EvBDFNull,
-	EvBDFNAN, EvNAN, EvUID, EvT, EvCT, EvL, EvM, EvREC,
+	EvBDFNAN, EvNAN, EvSNAN, EvUID, EvT, EvTC, EvL, EvM, EvREC,
 	EvNODE, EvEDGE, EvE,
 	EvMARK, EvREFL, EvREFR, EvAC, EvAD, EvS, EvSB, EvRID, EvBRID,
-	EvCB, EvBCB, EvCUT, EvBCT, EvAB, EvBAB, EvAU8, EvBAU8, EvAU16,
+	EvCB, EvBCB, EvCT, EvBCT, EvAB, EvBAB, EvAU8, EvBAU8, EvAU16,
 	EvBAU16, EvAU32, EvBAU32, EvAU64, EvBAU64, EvAI8, EvBAI8, EvAI16, EvBAI16,
 	EvAI32, EvBAI32, EvAI64, EvBAI64, EvAF16, EvBAF16, EvAF32, EvBAF32, EvAF64,
-	EvBAF64, EvAUU, EvBAUU, EvBMEDIA,
+	EvBAF64, EvAU, EvBAU, EvBMEDIA, EvMEDIA,
 }
 
 func ComplementaryEvents(events Events) Events {
@@ -377,7 +379,7 @@ func ComplementaryEvents(events Events) Events {
 var (
 	ArrayBeginTypes = Events{
 		EvSB, EvBRID, EvBCB, EvBCT, EvBAB, EvBAU8, EvBAU16, EvBAU32, EvBAU64,
-		EvBAI8, EvBAI16, EvBAI32, EvBAI64, EvBAF16, EvBAF32, EvBAF64, EvBAUU, EvBMEDIA,
+		EvBAI8, EvBAI16, EvBAI32, EvBAI64, EvBAF16, EvBAF32, EvBAF64, EvBAU, EvBMEDIA,
 	}
 
 	StringArrayBeginTypes = Events{
@@ -386,7 +388,7 @@ var (
 
 	NonStringArrayBeginTypes = Events{
 		EvBCB, EvBAB, EvBAU8, EvBAU16, EvBAU32, EvBAU64,
-		EvBAI8, EvBAI16, EvBAI32, EvBAI64, EvBAF16, EvBAF32, EvBAF64, EvBAUU, EvBMEDIA,
+		EvBAI8, EvBAI16, EvBAI32, EvBAI64, EvBAF16, EvBAF32, EvBAF64, EvBAU, EvBMEDIA,
 	}
 
 	ValidTLOValues   = ComplementaryEvents(InvalidTLOValues)
@@ -394,7 +396,7 @@ var (
 
 	ValidMapKeys = Events{
 		EvPAD, EvCS, EvCM, EvB, EvPI, EvNI, EvI, EvBI, EvBF, EvBBF, EvDF,
-		EvBDF, EvUID, EvT, EvCT, EvMARK, EvS, EvSB, EvRID, EvBRID,
+		EvBDF, EvUID, EvT, EvTC, EvMARK, EvS, EvSB, EvRID, EvBRID,
 		EvREFL, EvE,
 	}
 	InvalidMapKeys = ComplementaryEvents(ValidMapKeys)
