@@ -12,7 +12,11 @@ c0
         {
             "name" = "String"
             "mustSucceed" = [
-                {"cte"="\"this is a string\""  "events"=["s=this is a string"]}
+                {
+                    "cte"="\"this is a string\""
+                    "cbe"=|u8x 90 20 74 68 69 73 20 69 73 20 61 20 73 74 72 69 6e 67|
+                    "events"=["s=this is a string"]
+                }
                 {
                     "cte"="\"\
                         sky வானம் ሰማይ سماء երկինք səma неба আকাশ небето 天空 \
@@ -20,6 +24,43 @@ c0
                         asûman асман ທ້ອງຟ້າ небото ആകാശം आकाश тэнгэр ကောင်းကင် \
                         आकाश ଆକାଶ اسمان آسمان céu ਅਸਮਾਨ небо අහස வானம் күк ఆకాశం \
                         ท้องฟ้า gökyüzü آسمان ئاسمان bầu trời הימל ọrun\""
+                    "cbe"=|u8x 90 d8 08
+                               73 6b 79 20 e0 ae b5 e0 ae be e0 ae a9 e0 ae ae
+                               e0 af 8d 20 e1 88 b0 e1 88 9b e1 8b ad 20 d8 b3
+                               d9 85 d8 a7 d8 a1 20 d5 a5 d6 80 d5 af d5 ab d5
+                               b6 d6 84 20 73 c9 99 6d 61 20 d0 bd d0 b5 d0 b1
+                               d0 b0 20 e0 a6 86 e0 a6 95 e0 a6 be e0 a6 b6 20
+                               d0 bd d0 b5 d0 b1 d0 b5 d1 82 d0 be 20 e5 a4 a9
+                               e7 a9 ba 20 e1 83 aa e1 83 90 20 ce bf cf 85 cf
+                               81 ce b1 ce bd cf 8c cf 82 20 e0 aa 86 e0 aa 95
+                               e0 aa be e0 aa b6 20 73 79 c3 a8 6c 20 d7 a9 d7
+                               81 d6 b8 d7 9e d6 b7 d7 99 d6 b4 d7 9d 20 e0 a4
+                               86 e0 a4 95 e0 a4 be e0 a4 b6 20 c3 a9 67 20 e7
+                               a9 ba 20 e0 b2 86 e0 b2 95 e0 b2 be e0 b2 b6 20
+                               d0 b0 d1 81 d0 bf d0 b0 d0 bd 20 e1 9e 98 e1 9f
+                               81 e1 9e 83 20 ed 95 98 eb 8a 98 20 61 73 c3 bb
+                               6d 61 6e 20 d0 b0 d1 81 d0 bc d0 b0 d0 bd 20 e0
+                               ba 97 e0 bb 89 e0 ba ad e0 ba 87 e0 ba 9f e0 bb
+                               89 e0 ba b2 20 d0 bd d0 b5 d0 b1 d0 be d1 82 d0
+                               be 20 e0 b4 86 e0 b4 95 e0 b4 be e0 b4 b6 e0 b4
+                               82 20 e0 a4 86 e0 a4 95 e0 a4 be e0 a4 b6 20 d1
+                               82 d1 8d d0 bd d0 b3 d1 8d d1 80 20 e1 80 80 e1
+                               80 b1 e1 80 ac e1 80 84 e1 80 ba e1 80 b8 e1 80
+                               80 e1 80 84 e1 80 ba 20 e0 a4 86 e0 a4 95 e0 a4
+                               be e0 a4 b6 20 e0 ac 86 e0 ac 95 e0 ac be e0 ac
+                               b6 20 d8 a7 d8 b3 d9 85 d8 a7 d9 86 20 d8 a2 d8
+                               b3 d9 85 d8 a7 d9 86 20 63 c3 a9 75 20 e0 a8 85
+                               e0 a8 b8 e0 a8 ae e0 a8 be e0 a8 a8 20 d0 bd d0
+                               b5 d0 b1 d0 be 20 e0 b6 85 e0 b7 84 e0 b7 83 20
+                               e0 ae b5 e0 ae be e0 ae a9 e0 ae ae e0 af 8d 20
+                               d0 ba d2 af d0 ba 20 e0 b0 86 e0 b0 95 e0 b0 be
+                               e0 b0 b6 e0 b0 82 20 e0 b8 97 e0 b9 89 e0 b8 ad
+                               e0 b8 87 e0 b8 9f e0 b9 89 e0 b8 b2 20 67 c3 b6
+                               6b 79 c3 bc 7a c3 bc 20 d8 a2 d8 b3 d9 85 d8 a7
+                               d9 86 20 d8 a6 d8 a7 d8 b3 d9 85 d8 a7 d9 86 20
+                               62 e1 ba a7 75 20 74 72 e1 bb 9d 69 20 d7 94 d7
+                               99 d7 9e d7 9c 20 e1 bb 8d 72 75 6e
+                          |
                     "events"=["s=\
                         sky வானம் ሰማይ سماء երկինք səma неба আকাশ небето 天空 \
                         ცა ουρανός આકાશ syèl שָׁמַיִם आकाश ég 空 ಆಕಾಶ аспан មេឃ 하늘 \
@@ -27,37 +68,400 @@ c0
                         आकाश ଆକାଶ اسمان آسمان céu ਅਸਮਾਨ небо අහස வானம் күк ఆకాశం \
                         ท้องฟ้า gökyüzü آسمان ئاسمان bầu trời הימל ọrun"]
                 }
-                {"cte"="\"test test\""                    "events"=["s=test test"]}
-                {"cte"="\"\""                             "events"=["s="]}               // Empty string
-                {"cte"="\"test/*test\""                   "events"=["s=test/*test"]}     // Comment initiator inside a string
-                {"cte"="\"test*/test\""                   "events"=["s=test*/test"]}     // Comment terminator inside a string
-                {"from_cte"="\.~ "test\ttest"~"           "events"=["s=test\[9]test"]}   // Escaped tab
-                {"from_cte"="\.~ "test\rtest"~"           "events"=["s=test\[d]test"]}   // Escaped CR
-                {"from_cte"="\.~ "test\"test"~"           "events"=["s=\.~ test"test~"]} // Escaped quote
-                {"from_cte"="\.~ "test\\test"~"           "events"=["s=\.~ test\test~"]} // Escaped backslash
-                {"from_cte"="\.~ "test\/test"~"           "events"=["s=\.~ test/test~"]} // Escaped slash
-                {"from_cte"="\.~ "test\*test"~"           "events"=["s=\.~ test*test~"]} // Escaped star
-                {"from_cte"="\.~ "test\_test"~"           "events"=["s=test\[a0]test"]}  // Escaped non-breaking space
-                {"from_cte"="\.~ "test\-test"~"           "events"=["s=test\[ad]test"]}  // Escaped soft hyphen
-                {"from_cte"="\.~ "test\[a]test"~"         "events"=["s=test\ntest"]}     // Escaped 1-digit codepoint
-                {"from_cte"="\.~ "test\[f7]test"~"        "events"=["s=test÷test"]}      // Escaped 2-digit codepoint
-                {"from_cte"="\.~ "test\[17d]test"~"       "events"=["s=testŽtest"]}      // Escaped 3-digit codepoint
-                {"from_cte"="\.~ "test\[2021]test"~"      "events"=["s=test‡test"]}      // Escaped 4-digit codepoint
-                {"from_cte"="\.~ "test\[1f43a]test"~"     "events"=["s=test🐺test"]}     // Escaped 5-digit codepoint
-                {"from_cte"="\.~ "test\[000020]test"~"    "events"=["s=test test"]}      // Escaped 6-digit codepoint
-                {"from_cte"="\.~ "test\[0000020]test"~"   "events"=["s=test test"]}      // Escaped 7-digit codepoint
-                {"from_cte"="\.~ "test\[00000020]test"~"  "events"=["s=test test"]}      // Escaped 8-digit codepoint
-                {"from_cte"="\.~ "test\[000000020]test"~" "events"=["s=test test"]}      // Escaped 9-digit codepoint
-                {"from_cte"="\.~ "test\ntest"~"           "events"=["s=\.~ test
-test~"]}  // Escaped newline
-                {"from_cte"="\.~ "test\
-test"~"  "events"=["s=testtest"]}     // Continuation
+                {
+                    "cbe"=|u8x 90 da 03
+                        50 61 72 74 69 63 6c 65 20 6d 61 6e 2c 20 70 61
+                        72 74 69 63 6c 65 20 6d 61 6e 0a 44 6f 69 6e 67
+                        20 74 68 65 20 74 68 69 6e 67 73 20 61 20 70 61
+                        72 74 69 63 6c 65 20 63 61 6e 0a 57 68 61 74 27
+                        73 20 68 65 20 6c 69 6b 65 3f 20 49 74 27 73 20
+                        6e 6f 74 20 69 6d 70 6f 72 74 61 6e 74 0a 50 61
+                        72 74 69 63 6c 65 20 6d 61 6e 0a 49 73 20 68 65
+                        20 61 20 64 6f 74 2c 20 6f 72 20 69 73 20 68 65
+                        20 61 20 73 70 65 63 6b 3f 0a 57 68 65 6e 20 68
+                        65 27 73 20 75 6e 64 65 72 77 61 74 65 72 20 64
+                        6f 65 73 20 68 65 20 67 65 74 20 77 65 74 3f 0a
+                        4f 72 20 64 6f 65 73 20 74 68 65 20 77 61 74 65
+                        72 20 67 65 74 20 68 69 6d 20 69 6e 73 74 65 61
+                        64 3f 0a 4e 6f 62 6f 64 79 20 6b 6e 6f 77 73 2c
+                        20 50 61 72 74 69 63 6c 65 20 6d 61 6e|
+                "cte"="\.#
+"Particle man, particle man
+Doing the things a particle can
+What's he like? It's not important
+Particle man
+Is he a dot, or is he a speck?
+When he's underwater does he get wet?
+Or does the water get him instead?
+Nobody knows, Particle man"#"
+                "events"=[
+                    "bs"
+                    "acl=237"
+                    "adt=\.#
+Particle man, particle man
+Doing the things a particle can
+What's he like? It's not important
+Particle man
+Is he a dot, or is he a speck?
+When he's underwater does he get wet?
+Or does the water get him instead?
+Nobody knows, Particle man#"]
+                }
+                {
+                    "cbe"=|u8x 90 01 00|
+                    "to_cte"=""
+                    "events"=["bs" "acm=0" "acl=0"]
+                }
+                {
+                    "cbe" = |u8x
+                        90
+                        37 50 61 72 74 69 63 6c 65 20 6d 61 6e 2c 20 70 61 72 74 69 63 6c 65 20 6d 61 6e 0a
+                        40 44 6f 69 6e 67 20 74 68 65 20 74 68 69 6e 67 73 20 61 20 70 61 72 74 69 63 6c 65 20 63 61 6e 0a
+                    |
+                    "to_cte" = "\"Particle man, particle man\nDoing the things a particle can\n\""
+                    "events" = [
+                        "bs"
+                        "acm=27" "adt=Particle man, particle man\n"
+                        "acl=32" "adt=Doing the things a particle can\n"
+                    ]
+                }
+                {
+                    "cte"="\"test test\""
+                    "cbe"=|u8x 89 74 65 73 74 20 74 65 73 74|
+                    "events"=["s=test test"]
+                }
+                {
+                    // Empty string
+                    "cte"="\"\""
+                    "cbe"=|u8x 80|
+                    "events"=["s="]
+                }
+                {
+                    "cte"="\"a\""
+                    "cbe"=|u8x 81 61|
+                    "events"=["s=a"]
+                }
+                {
+                    "cte"="\"aa\""
+                    "cbe"=|u8x 82 61 61|
+                    "events"=["s=aa"]
+                }
+                {
+                    "cte"="\"aaa\""
+                    "cbe"=|u8x 83 61 61 61|
+                    "events"=["s=aaa"]
+                }
+                {
+                    "cte"="\"aaaa\""
+                    "cbe"=|u8x 84 61 61 61 61|
+                    "events"=["s=aaaa"]
+                }
+                {
+                    "cte"="\"aaaaa\""
+                    "cbe"=|u8x 85 61 61 61 61 61|
+                    "events"=["s=aaaaa"]
+                }
+                {
+                    "cte"="\"aaaaaa\""
+                    "cbe"=|u8x 86 61 61 61 61 61 61|
+                    "events"=["s=aaaaaa"]
+                }
+                {
+                    "cte"="\"aaaaaaa\""
+                    "cbe"=|u8x 87 61 61 61 61 61 61 61|
+                    "events"=["s=aaaaaaa"]
+                }
+                {
+                    "cte"="\"aaaaaaaa\""
+                    "cbe"=|u8x 88 61 61 61 61 61 61 61 61|
+                    "events"=["s=aaaaaaaa"]
+                }
+                {
+                    "cte"="\"aaaaaaaaa\""
+                    "cbe"=|u8x 89 61 61 61 61 61 61 61 61 61|
+                    "events"=["s=aaaaaaaaa"]
+                }
+                {
+                    "cte"="\"aaaaaaaaaa\""
+                    "cbe"=|u8x 8a 61 61 61 61 61 61 61 61 61 61|
+                    "events"=["s=aaaaaaaaaa"]
+                }
+                {
+                    "cte"="\"aaaaaaaaaaa\""
+                    "cbe"=|u8x 8b 61 61 61 61 61 61 61 61 61 61 61|
+                    "events"=["s=aaaaaaaaaaa"]
+                }
+                {
+                    "cte"="\"aaaaaaaaaaaa\""
+                    "cbe"=|u8x 8c 61 61 61 61 61 61 61 61 61 61 61 61|
+                    "events"=["s=aaaaaaaaaaaa"]
+                }
+                {
+                    "cte"="\"aaaaaaaaaaaaa\""
+                    "cbe"=|u8x 8d 61 61 61 61 61 61 61 61 61 61 61 61 61|
+                    "events"=["s=aaaaaaaaaaaaa"]
+                }
+                {
+                    "cte"="\"aaaaaaaaaaaaaa\""
+                    "cbe"=|u8x 8e 61 61 61 61 61 61 61 61 61 61 61 61 61 61|
+                    "events"=["s=aaaaaaaaaaaaaa"]
+                }
+                {
+                    "cte"="\"aaaaaaaaaaaaaaa\""
+                    "cbe"=|u8x 8f 61 61 61 61 61 61 61 61 61 61 61 61 61 61 61|
+                    "events"=["s=aaaaaaaaaaaaaaa"]
+                }
+                {
+                    // Comment initiator inside a string
+                    "cte"="\"test/*test\""
+                    "cbe"=|u8x 8a 74 65 73 74 2f 2a 74 65 73 74|
+                    "events"=["s=test/*test"]
+                }
+                {
+                    // Comment terminator inside a string
+                    "cte"="\"test*/test\""
+                    "cbe"=|u8x 8a 74 65 73 74 2a 2f 74 65 73 74|
+                    "events"=["s=test*/test"]
+                }
+            ]
+            "mustFail" = [
+                {"cte"="\.~ "test=test~"}                                  // Unterminated quotes
+                {"cte"="\.~ test test~"}                                   // Missing quotes
+                {"cbe"=|u8x 81|}                                           // Incomplete
+                {"cbe"=|u8x 82 61|}                                        // Incomplete
+                {"cbe"=|u8x 83 61 61|}                                     // Incomplete
+                {"cbe"=|u8x 84 61 61 61|}                                  // Incomplete
+                {"cbe"=|u8x 85 61 61 61 61|}                               // Incomplete
+                {"cbe"=|u8x 86 61 61 61 61 61|}                            // Incomplete
+                {"cbe"=|u8x 87 61 61 61 61 61 61|}                         // Incomplete
+                {"cbe"=|u8x 88 61 61 61 61 61 61 61|}                      // Incomplete
+                {"cbe"=|u8x 89 61 61 61 61 61 61 61 61|}                   // Incomplete
+                {"cbe"=|u8x 8a 61 61 61 61 61 61 61 61 61|}                // Incomplete
+                {"cbe"=|u8x 8b 61 61 61 61 61 61 61 61 61 61|}             // Incomplete
+                {"cbe"=|u8x 8c 61 61 61 61 61 61 61 61 61 61 61|}          // Incomplete
+                {"cbe"=|u8x 8d 61 61 61 61 61 61 61 61 61 61 61 61|}       // Incomplete
+                {"cbe"=|u8x 8e 61 61 61 61 61 61 61 61 61 61 61 61 61|}    // Incomplete
+                {"cbe"=|u8x 8f 61 61 61 61 61 61 61 61 61 61 61 61 61 61|} // Incomplete
+                {"cbe"=|u8x 90 01|}                                        // Incomplete
+                {"cbe"=|u8x 90 02|}                                        // Incomplete
+                {"cbe"=|u8x 90 04 40|}                                     // Incomplete
+                {"cbe"=|u8x 90 05 40 02|}                                  // Incomplete
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "String: Artificial long form"
+            "mustSucceed" = [
+                {
+                    "cte"="\"\""
+                    "from_cbe"=|u8x 90 00|
+                    "events"=["s="]
+                }
+                {
+                    "cte"="\"a\""
+                    "from_cbe"=|u8x 90 02 61|
+                    "events"=["s=a"]
+                }
+                {
+                    "cte"="\"aa\""
+                    "from_cbe"=|u8x 90 04 61 61|
+                    "events"=["s=aa"]
+                }
+                {
+                    "cte"="\"aaa\""
+                    "from_cbe"=|u8x 90 06 61 61 61|
+                    "events"=["s=aaa"]
+                }
+                {
+                    "cte"="\"aaaa\""
+                    "from_cbe"=|u8x 90 08 61 61 61 61|
+                    "events"=["s=aaaa"]
+                }
+                {
+                    "cte"="\"aaaaa\""
+                    "from_cbe"=|u8x 90 0a 61 61 61 61 61|
+                    "events"=["s=aaaaa"]
+                }
+                {
+                    "cte"="\"aaaaaa\""
+                    "from_cbe"=|u8x 90 0c 61 61 61 61 61 61|
+                    "events"=["s=aaaaaa"]
+                }
+                {
+                    "cte"="\"aaaaaaa\""
+                    "from_cbe"=|u8x 90 0e 61 61 61 61 61 61 61|
+                    "events"=["s=aaaaaaa"]
+                }
+                {
+                    "cte"="\"aaaaaaaa\""
+                    "from_cbe"=|u8x 90 10 61 61 61 61 61 61 61 61|
+                    "events"=["s=aaaaaaaa"]
+                }
+                {
+                    "cte"="\"aaaaaaaaa\""
+                    "from_cbe"=|u8x 90 12 61 61 61 61 61 61 61 61 61|
+                    "events"=["s=aaaaaaaaa"]
+                }
+                {
+                    "cte"="\"aaaaaaaaaa\""
+                    "from_cbe"=|u8x 90 14 61 61 61 61 61 61 61 61 61 61|
+                    "events"=["s=aaaaaaaaaa"]
+                }
+                {
+                    "cte"="\"aaaaaaaaaaa\""
+                    "from_cbe"=|u8x 90 16 61 61 61 61 61 61 61 61 61 61 61|
+                    "events"=["s=aaaaaaaaaaa"]
+                }
+                {
+                    "cte"="\"aaaaaaaaaaaa\""
+                    "from_cbe"=|u8x 90 18 61 61 61 61 61 61 61 61 61 61 61 61|
+                    "events"=["s=aaaaaaaaaaaa"]
+                }
+                {
+                    "cte"="\"aaaaaaaaaaaaa\""
+                    "from_cbe"=|u8x 90 1a 61 61 61 61 61 61 61 61 61 61 61 61 61|
+                    "events"=["s=aaaaaaaaaaaaa"]
+                }
+                {
+                    "cte"="\"aaaaaaaaaaaaaa\""
+                    "from_cbe"=|u8x 90 1c 61 61 61 61 61 61 61 61 61 61 61 61 61 61|
+                    "events"=["s=aaaaaaaaaaaaaa"]
+                }
+                {
+                    "cte"="\"aaaaaaaaaaaaaaa\""
+                    "from_cbe"=|u8x 90 1e 61 61 61 61 61 61 61 61 61 61 61 61 61 61 61|
+                    "events"=["s=aaaaaaaaaaaaaaa"]
+                }
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "String: Escapes"
+            "mustSucceed" = [
+                {
+                    // Escaped tab
+                    "from_cte"="\.~ "test\ttest"~"
+                    "cbe"=|u8x 89 74 65 73 74 09 74 65 73 74|
+                    "events"=["s=test\[9]test"]
+                }
+                {
+                    // Escaped CR
+                    "from_cte"="\.~ "test\rtest"~"
+                    "cbe"=|u8x 89 74 65 73 74 0d 74 65 73 74|
+                    "events"=["s=test\[d]test"]
+                }
+                {
+                    // Escaped quote
+                    "from_cte"="\.~ "test\"test"~"
+                    "cbe"=|u8x 89 74 65 73 74 22 74 65 73 74|
+                    "events"=["s=\.~ test"test~"]
+                }
+                {
+                    // Escaped backslash
+                    "from_cte"="\.~ "test\\test"~"
+                    "cbe"=|u8x 89 74 65 73 74 5c 74 65 73 74|
+                    "events"=["s=\.~ test\test~"]
+                }
+                {
+                    // Escaped slash
+                    "from_cte"="\.~ "test\/test"~"
+                    "cbe"=|u8x 89 74 65 73 74 2f 74 65 73 74|
+                    "events"=["s=\.~ test/test~"]
+                }
+                {
+                    // Escaped star
+                    "from_cte"="\.~ "test\*test"~"
+                    "cbe"=|u8x 89 74 65 73 74 2a 74 65 73 74|
+                    "events"=["s=\.~ test*test~"]
+                }
+                {
+                    // Escaped non-breaking space
+                    "from_cte"="\.~ "test\_test"~"
+                    "cbe"=|u8x 8a 74 65 73 74 c2 a0 74 65 73 74|
+                    "events"=["s=test\[a0]test"]
+                }
+                {
+                    // Escaped soft hyphen
+                    "from_cte"="\.~ "test\-test"~"
+                    "cbe"=|u8x 8a 74 65 73 74 c2 ad 74 65 73 74|
+                    "events"=["s=test\[ad]test"]
+                }
+                {
+                    // Escaped 1-digit codepoint
+                    "from_cte"="\.~ "test\[a]test"~"
+                    "cbe"=|u8x 89 74 65 73 74 0a 74 65 73 74|
+                    "events"=["s=test\ntest"]
+                }
+                {
+                    // Escaped 2-digit codepoint
+                    "from_cte"="\.~ "test\[f7]test"~"
+                    "cbe"=|u8x 8a 74 65 73 74 c3 b7 74 65 73 74|
+                    "events"=["s=test÷test"]
+                }
+                {
+                    // Escaped 3-digit codepoint
+                    "from_cte"="\.~ "test\[17d]test"~"
+                    "cbe"=|u8x 8a 74 65 73 74 c5 bd 74 65 73 74|
+                    "events"=["s=testŽtest"]
+                }
+                {
+                    // Escaped 4-digit codepoint
+                    "from_cte"="\.~ "test\[2021]test"~"
+                    "cbe"=|u8x 8b 74 65 73 74 e2 80 a1 74 65 73 74|
+                    "events"=["s=test‡test"]
+                }
+                {
+                    // Escaped 5-digit codepoint
+                    "from_cte"="\.~ "test\[1f43a]test"~"
+                    "cbe"=|u8x 8c 74 65 73 74 f0 9f 90 ba 74 65 73 74|
+                    "events"=["s=test🐺test"]    
+                }
+                {
+                    // Escaped 6-digit codepoint
+                    "from_cte"="\.~ "test\[000020]test"~"
+                    "cbe"=|u8x 89 74 65 73 74 20 74 65 73 74|
+                    "events"=["s=test test"]
+                }
+                {
+                    // Escaped 7-digit codepoint
+                    "from_cte"="\.~ "test\[0000020]test"~"
+                    "cbe"=|u8x 89 74 65 73 74 20 74 65 73 74|
+                    "events"=["s=test test"]
+                }
+                {
+                    // Escaped 8-digit codepoint
+                    "from_cte"="\.~ "test\[00000020]test"~"
+                    "cbe"=|u8x 89 74 65 73 74 20 74 65 73 74|
+                    "events"=["s=test test"]
+                }
+                {
+                    // Escaped 9-digit codepoint
+                    "from_cte"="\.~ "test\[000000020]test"~"
+                    "cbe"=|u8x 89 74 65 73 74 20 74 65 73 74|
+                    "events"=["s=test test"]
+                }
+                {
+                    // Escaped newline
+                    "from_cte"="\.~ "test\ntest"~"
+                    "cbe"=|u8x 89 74 65 73 74 0a 74 65 73 74|
+                    "events"=["s=\.~ test
+test~"]
+                }
+                {
+                    // Continuation
+                    "from_cte"="\.~ "test\
+                                test"~"
+                    "cbe"=|u8x 88 74 65 73 74 74 65 73 74|
+                    "events"=["s=testtest"]
+                }
             ]
             "mustFail" = [
                 {"cte"="\.~ "test\1gtest"~"}     // Invalid codepoint digit
                 {"cte"="\.~ "test\xtest"~"}      // Invalid escape character
-                {"cte"="\.~ "test=test~"}        // Unterminated quotes
-                {"cte"="\.~ test test~"}         // Missing quotes
                 {"cte"="\.~ "test\"~"}           // Unterminated escape
                 {"cte"="\.~ "test\["~"}          // Unterminated escape
                 {"cte"="\.~ "test\[}"~"}         // Empty escape
@@ -76,7 +480,52 @@ test"~"  "events"=["s=testtest"]}     // Continuation
         // ====================================================================
 
         {
-            "name" = "String with NUL character"
+            "name" = "Verbatim sequence"
+            "mustSucceed" = [
+                {
+                    "from_cte" = "\.~ "\.## ##"~"
+                    "events"   = ["s"]
+                }
+                {
+                    "from_cte" = "\.~ "\.##
+##"~"
+                    "events"   = ["s="]
+                }
+                {
+                    "from_cte" = "\.~ "\.## a##"~"
+                    "events"   = ["s=a"]
+                }
+                {
+                    "from_cte" = "\.~ "\.@@
+a@@"~"
+                    "events"   = ["s=a"]
+                }
+                {
+                    "from_cte" = "\"\\.^^^\r\na^^^\""
+                    "events"   = ["s=a"]
+                }
+                {
+                    "from_cte" = "\.~ "\.XXX blah blah
+blah blahXXX"~"
+                    "events"   = ["s=blah blah\nblah blah"]
+                }
+                {
+                    "from_cte" = "\.~ "\.A \n\r\t\_\-A"~"
+                    "events"   = ["s=\\n\\r\\t\\_\\-"]
+                }
+            ]
+            "mustFail" = [
+                {"cte"="\.~ "\."~"}        // No sentinel definition
+                {"cte"="\.~ "\.X"~"}       // Unterminated sentinel
+                {"cte"="\.~ "\.XblahX"~"}  // Missing WS between sentinel and contents
+                {"cte"="\.~ "\.X blah"~"}  // Missing end sentinel
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "String with NUL character" // TODO
             "mustSucceed" = [
                 {
                     "cte" = "\.^ "test\[0]string"^"
@@ -185,54 +634,13 @@ test~"]}  // Escaped newline
         // ====================================================================
 
         {
-            "name" = "Verbatim sequence"
-            "mustSucceed" = [
-                {
-                    "from_cte" = "\.~ "\.## ##"~"
-                    "events"   = ["s"]
-                }
-                {
-                    "from_cte" = "\.~ "\.##
-##"~"
-                    "events"   = ["s="]
-                }
-                {
-                    "from_cte" = "\.~ "\.## a##"~"
-                    "events"   = ["s=a"]
-                }
-                {
-                    "from_cte" = "\.~ "\.@@
-a@@"~"
-                    "events"   = ["s=a"]
-                }
-                {
-                    "from_cte" = "\"\\.^^^\r\na^^^\""
-                    "events"   = ["s=a"]
-                }
-                {
-                    "from_cte" = "\.~ "\.XXX blah blah
-blah blahXXX"~"
-                    "events"   = ["s=blah blah\nblah blah"]
-                }
-                {
-                    "from_cte" = "\.~ "\.A \n\r\t\_\-A"~"
-                    "events"   = ["s=\\n\\r\\t\\_\\-"]
-                }
-            ]
-            "mustFail" = [
-                {"cte"="\.~ "\."~"}        // No sentinel definition
-                {"cte"="\.~ "\.X"~"}       // Unterminated sentinel
-                {"cte"="\.~ "\.XblahX"~"}  // Missing WS between sentinel and contents
-                {"cte"="\.~ "\.X blah"~"}  // Missing end sentinel
-            ]
-        }
-
-        // ====================================================================
-
-        {
             "name" = "Media (text)"
             "mustSucceed" = [
                 {
+                    "to_cbe" = |u8x 7f f3
+                                    10 61 70 70 6c 69 63 61 74 69 6f 6e 2f 78 2d 73 68
+                                    38 23 21 2f 62 69 6e 2f 73 68 0a 0a 65 63 68 6f 20 68 65 6c 6c 6f 20 77 6f 72 6c 64 0a
+                               |
                     "from_cte" = "\.^^
 |.application/x-sh "\.@@
 #!/bin/sh
