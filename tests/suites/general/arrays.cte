@@ -12,13 +12,200 @@ c0
             "name" = "UID array"
             "mustSucceed" = [
                 {
+                    "cte"="|u|"
+                    "cbe"=|u8x 7f 00|
+                    "events"=["au"]
+                }
+                {
                     "cte"="|u ffffffff-ffff-ffff-ffff-ffffffffffff 2654adde-9016-4cca-bb44-860f39b49595|"
+                    "cbe"=|u8x 7f 02
+                               ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+                               26 54 ad de 90 16 4c ca bb 44 86 0f 39 b4 95 95
+                          |
                     "events"=["au=ffffffff-ffff-ffff-ffff-ffffffffffff 2654AddE-9016-4cCa-bB44-860f39B49595"]
                 }
-                {"cte"="|u|"                                "events"=["au"]}
                 {
-                    "from_cte"="|u 00000000-0000-0000-0000-000000000000 ffffffff-ffff-ffff-ffff-ffffffffffff 2654AddE-9016-4cCa-bB44-860f39B49595|"  
+                    "cte"="|u ffffffff-ffff-ffff-ffff-ffffffffffff 2654adde-9016-4cca-bb44-860f39b49595|"
+                    // Short length but chunked form
+                    "from_cbe"=|u8x 7f e0 04
+                               ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+                               26 54 ad de 90 16 4c ca bb 44 86 0f 39 b4 95 95
+                          |
+                    "events"=["au=ffffffff-ffff-ffff-ffff-ffffffffffff 2654AddE-9016-4cCa-bB44-860f39B49595"]
+                }
+                {
+                    // Uppercase chars
+                    "from_cte"="|u 00000000-0000-0000-0000-000000000000 ffffffff-ffff-ffff-ffff-ffffffffffff 2654AddE-9016-4cCa-bB44-860f39B49595|"
+                    "cbe"=|u8x 7f 03
+                               00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+                               ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+                               26 54 ad de 90 16 4c ca bb 44 86 0f 39 b4 95 95
+                          |
                     "events"=["au=00000000-0000-0000-0000-000000000000 ffffffff-ffff-ffff-ffff-ffffffffffff 2654adde-9016-4cca-bb44-860f39b49595"]
+                }
+                {
+                    "cte"="|u 8f6f3554-707f-11ec-a6a1-6f76dee406ec 8f6f6466-707f-11ec-a425-335b61d32dfc 8f6f9198-707f-11ec-a1d5-9b6bce592067 8f6fc032-707f-11ec-9aab-13947004ca3a 8f6ff0fc-707f-11ec-9da2-5b5d31a03ba4 8f701d3e-707f-11ec-a13e-b7aaa92e5adb 8f70482c-707f-11ec-a05a-8bf071944e58 8f7073ce-707f-11ec-b1ba-67eddde89cc7 8f70a722-707f-11ec-9e1e-db4c4ba4166d 8f70dbe8-707f-11ec-b847-5b92031104ff 8f711bbc-707f-11ec-9e07-ffd7def4c924 8f714dd0-707f-11ec-a3a6-334fbbbeb811 8f717b02-707f-11ec-8587-ff7c8f6240f2 8f71a866-707f-11ec-b1f9-9b1f8586fae4 8f71d732-707f-11ec-b679-9f0d9e42a6f0|"
+                    "cbe"=|u8x
+                        7f 0f
+                        8f 6f 35 54 70 7f 11 ec a6 a1 6f 76 de e4 06 ec
+                        8f 6f 64 66 70 7f 11 ec a4 25 33 5b 61 d3 2d fc
+                        8f 6f 91 98 70 7f 11 ec a1 d5 9b 6b ce 59 20 67
+                        8f 6f c0 32 70 7f 11 ec 9a ab 13 94 70 04 ca 3a
+                        8f 6f f0 fc 70 7f 11 ec 9d a2 5b 5d 31 a0 3b a4
+                        8f 70 1d 3e 70 7f 11 ec a1 3e b7 aa a9 2e 5a db
+                        8f 70 48 2c 70 7f 11 ec a0 5a 8b f0 71 94 4e 58
+                        8f 70 73 ce 70 7f 11 ec b1 ba 67 ed dd e8 9c c7
+                        8f 70 a7 22 70 7f 11 ec 9e 1e db 4c 4b a4 16 6d
+                        8f 70 db e8 70 7f 11 ec b8 47 5b 92 03 11 04 ff
+                        8f 71 1b bc 70 7f 11 ec 9e 07 ff d7 de f4 c9 24
+                        8f 71 4d d0 70 7f 11 ec a3 a6 33 4f bb be b8 11
+                        8f 71 7b 02 70 7f 11 ec 85 87 ff 7c 8f 62 40 f2
+                        8f 71 a8 66 70 7f 11 ec b1 f9 9b 1f 85 86 fa e4
+                        8f 71 d7 32 70 7f 11 ec b6 79 9f 0d 9e 42 a6 f0
+                    |
+                    "events"=["au=
+                        8f6f3554-707f-11ec-a6a1-6f76dee406ec
+                        8f6f6466-707f-11ec-a425-335b61d32dfc
+                        8f6f9198-707f-11ec-a1d5-9b6bce592067
+                        8f6fc032-707f-11ec-9aab-13947004ca3a
+                        8f6ff0fc-707f-11ec-9da2-5b5d31a03ba4
+                        8f701d3e-707f-11ec-a13e-b7aaa92e5adb
+                        8f70482c-707f-11ec-a05a-8bf071944e58
+                        8f7073ce-707f-11ec-b1ba-67eddde89cc7
+                        8f70a722-707f-11ec-9e1e-db4c4ba4166d
+                        8f70dbe8-707f-11ec-b847-5b92031104ff
+                        8f711bbc-707f-11ec-9e07-ffd7def4c924
+                        8f714dd0-707f-11ec-a3a6-334fbbbeb811
+                        8f717b02-707f-11ec-8587-ff7c8f6240f2
+                        8f71a866-707f-11ec-b1f9-9b1f8586fae4
+                        8f71d732-707f-11ec-b679-9f0d9e42a6f0
+                    "]
+                }
+                {
+                    "cte"="|u 8f6f3554-707f-11ec-a6a1-6f76dee406ec 8f6f6466-707f-11ec-a425-335b61d32dfc 8f6f9198-707f-11ec-a1d5-9b6bce592067 8f6fc032-707f-11ec-9aab-13947004ca3a 8f6ff0fc-707f-11ec-9da2-5b5d31a03ba4 8f701d3e-707f-11ec-a13e-b7aaa92e5adb 8f70482c-707f-11ec-a05a-8bf071944e58 8f7073ce-707f-11ec-b1ba-67eddde89cc7 8f70a722-707f-11ec-9e1e-db4c4ba4166d 8f70dbe8-707f-11ec-b847-5b92031104ff 8f711bbc-707f-11ec-9e07-ffd7def4c924 8f714dd0-707f-11ec-a3a6-334fbbbeb811 8f717b02-707f-11ec-8587-ff7c8f6240f2 8f71a866-707f-11ec-b1f9-9b1f8586fae4 8f71d732-707f-11ec-b679-9f0d9e42a6f0|"
+                    // Short length but chunked form
+                    "from_cbe"=|u8x
+                        7f e0 1e
+                        8f 6f 35 54 70 7f 11 ec a6 a1 6f 76 de e4 06 ec
+                        8f 6f 64 66 70 7f 11 ec a4 25 33 5b 61 d3 2d fc
+                        8f 6f 91 98 70 7f 11 ec a1 d5 9b 6b ce 59 20 67
+                        8f 6f c0 32 70 7f 11 ec 9a ab 13 94 70 04 ca 3a
+                        8f 6f f0 fc 70 7f 11 ec 9d a2 5b 5d 31 a0 3b a4
+                        8f 70 1d 3e 70 7f 11 ec a1 3e b7 aa a9 2e 5a db
+                        8f 70 48 2c 70 7f 11 ec a0 5a 8b f0 71 94 4e 58
+                        8f 70 73 ce 70 7f 11 ec b1 ba 67 ed dd e8 9c c7
+                        8f 70 a7 22 70 7f 11 ec 9e 1e db 4c 4b a4 16 6d
+                        8f 70 db e8 70 7f 11 ec b8 47 5b 92 03 11 04 ff
+                        8f 71 1b bc 70 7f 11 ec 9e 07 ff d7 de f4 c9 24
+                        8f 71 4d d0 70 7f 11 ec a3 a6 33 4f bb be b8 11
+                        8f 71 7b 02 70 7f 11 ec 85 87 ff 7c 8f 62 40 f2
+                        8f 71 a8 66 70 7f 11 ec b1 f9 9b 1f 85 86 fa e4
+                        8f 71 d7 32 70 7f 11 ec b6 79 9f 0d 9e 42 a6 f0
+                    |
+                    "events"=["au=
+                        8f6f3554-707f-11ec-a6a1-6f76dee406ec
+                        8f6f6466-707f-11ec-a425-335b61d32dfc
+                        8f6f9198-707f-11ec-a1d5-9b6bce592067
+                        8f6fc032-707f-11ec-9aab-13947004ca3a
+                        8f6ff0fc-707f-11ec-9da2-5b5d31a03ba4
+                        8f701d3e-707f-11ec-a13e-b7aaa92e5adb
+                        8f70482c-707f-11ec-a05a-8bf071944e58
+                        8f7073ce-707f-11ec-b1ba-67eddde89cc7
+                        8f70a722-707f-11ec-9e1e-db4c4ba4166d
+                        8f70dbe8-707f-11ec-b847-5b92031104ff
+                        8f711bbc-707f-11ec-9e07-ffd7def4c924
+                        8f714dd0-707f-11ec-a3a6-334fbbbeb811
+                        8f717b02-707f-11ec-8587-ff7c8f6240f2
+                        8f71a866-707f-11ec-b1f9-9b1f8586fae4
+                        8f71d732-707f-11ec-b679-9f0d9e42a6f0
+                    "]
+                }
+                {
+                    "cte"="|u 8f6f3554-707f-11ec-a6a1-6f76dee406ec 8f6f6466-707f-11ec-a425-335b61d32dfc 8f6f9198-707f-11ec-a1d5-9b6bce592067 8f6fc032-707f-11ec-9aab-13947004ca3a 8f6ff0fc-707f-11ec-9da2-5b5d31a03ba4 8f701d3e-707f-11ec-a13e-b7aaa92e5adb 8f70482c-707f-11ec-a05a-8bf071944e58 8f7073ce-707f-11ec-b1ba-67eddde89cc7 8f70a722-707f-11ec-9e1e-db4c4ba4166d 8f70dbe8-707f-11ec-b847-5b92031104ff 8f711bbc-707f-11ec-9e07-ffd7def4c924 8f714dd0-707f-11ec-a3a6-334fbbbeb811 8f717b02-707f-11ec-8587-ff7c8f6240f2 8f71a866-707f-11ec-b1f9-9b1f8586fae4 8f71d732-707f-11ec-b679-9f0d9e42a6f0 e3db8ab4-707f-11ec-b9a7-9fb752e6248a|"
+                    "cbe"=|u8x
+                        7f e0 20
+                        8f 6f 35 54 70 7f 11 ec a6 a1 6f 76 de e4 06 ec
+                        8f 6f 64 66 70 7f 11 ec a4 25 33 5b 61 d3 2d fc
+                        8f 6f 91 98 70 7f 11 ec a1 d5 9b 6b ce 59 20 67
+                        8f 6f c0 32 70 7f 11 ec 9a ab 13 94 70 04 ca 3a
+                        8f 6f f0 fc 70 7f 11 ec 9d a2 5b 5d 31 a0 3b a4
+                        8f 70 1d 3e 70 7f 11 ec a1 3e b7 aa a9 2e 5a db
+                        8f 70 48 2c 70 7f 11 ec a0 5a 8b f0 71 94 4e 58
+                        8f 70 73 ce 70 7f 11 ec b1 ba 67 ed dd e8 9c c7
+                        8f 70 a7 22 70 7f 11 ec 9e 1e db 4c 4b a4 16 6d
+                        8f 70 db e8 70 7f 11 ec b8 47 5b 92 03 11 04 ff
+                        8f 71 1b bc 70 7f 11 ec 9e 07 ff d7 de f4 c9 24
+                        8f 71 4d d0 70 7f 11 ec a3 a6 33 4f bb be b8 11
+                        8f 71 7b 02 70 7f 11 ec 85 87 ff 7c 8f 62 40 f2
+                        8f 71 a8 66 70 7f 11 ec b1 f9 9b 1f 85 86 fa e4
+                        8f 71 d7 32 70 7f 11 ec b6 79 9f 0d 9e 42 a6 f0
+                        e3 db 8a b4 70 7f 11 ec b9 a7 9f b7 52 e6 24 8a
+                    |
+                    "events"=[
+                        "bau"
+                        "acl=16"
+                        "adu=
+                        8f6f3554-707f-11ec-a6a1-6f76dee406ec
+                        8f6f6466-707f-11ec-a425-335b61d32dfc
+                        8f6f9198-707f-11ec-a1d5-9b6bce592067
+                        8f6fc032-707f-11ec-9aab-13947004ca3a
+                        8f6ff0fc-707f-11ec-9da2-5b5d31a03ba4
+                        8f701d3e-707f-11ec-a13e-b7aaa92e5adb
+                        8f70482c-707f-11ec-a05a-8bf071944e58
+                        8f7073ce-707f-11ec-b1ba-67eddde89cc7
+                        8f70a722-707f-11ec-9e1e-db4c4ba4166d
+                        8f70dbe8-707f-11ec-b847-5b92031104ff
+                        8f711bbc-707f-11ec-9e07-ffd7def4c924
+                        8f714dd0-707f-11ec-a3a6-334fbbbeb811
+                        8f717b02-707f-11ec-8587-ff7c8f6240f2
+                        8f71a866-707f-11ec-b1f9-9b1f8586fae4
+                        8f71d732-707f-11ec-b679-9f0d9e42a6f0
+                        e3db8ab4-707f-11ec-b9a7-9fb752e6248a
+                    "]
+                 }
+                {
+                    "to_cte"="|u 8f6f3554-707f-11ec-a6a1-6f76dee406ec 8f6f6466-707f-11ec-a425-335b61d32dfc 8f6f9198-707f-11ec-a1d5-9b6bce592067 8f6fc032-707f-11ec-9aab-13947004ca3a 8f6ff0fc-707f-11ec-9da2-5b5d31a03ba4 8f701d3e-707f-11ec-a13e-b7aaa92e5adb 8f70482c-707f-11ec-a05a-8bf071944e58 8f7073ce-707f-11ec-b1ba-67eddde89cc7 8f70a722-707f-11ec-9e1e-db4c4ba4166d 8f70dbe8-707f-11ec-b847-5b92031104ff 8f711bbc-707f-11ec-9e07-ffd7def4c924 8f714dd0-707f-11ec-a3a6-334fbbbeb811 8f717b02-707f-11ec-8587-ff7c8f6240f2 8f71a866-707f-11ec-b1f9-9b1f8586fae4 8f71d732-707f-11ec-b679-9f0d9e42a6f0 e3db8ab4-707f-11ec-b9a7-9fb752e6248a|"
+                    "cbe"=|u8x
+                        7f e0
+                        03
+                        8f 6f 35 54 70 7f 11 ec a6 a1 6f 76 de e4 06 ec
+                        1e
+                        8f 6f 64 66 70 7f 11 ec a4 25 33 5b 61 d3 2d fc
+                        8f 6f 91 98 70 7f 11 ec a1 d5 9b 6b ce 59 20 67
+                        8f 6f c0 32 70 7f 11 ec 9a ab 13 94 70 04 ca 3a
+                        8f 6f f0 fc 70 7f 11 ec 9d a2 5b 5d 31 a0 3b a4
+                        8f 70 1d 3e 70 7f 11 ec a1 3e b7 aa a9 2e 5a db
+                        8f 70 48 2c 70 7f 11 ec a0 5a 8b f0 71 94 4e 58
+                        8f 70 73 ce 70 7f 11 ec b1 ba 67 ed dd e8 9c c7
+                        8f 70 a7 22 70 7f 11 ec 9e 1e db 4c 4b a4 16 6d
+                        8f 70 db e8 70 7f 11 ec b8 47 5b 92 03 11 04 ff
+                        8f 71 1b bc 70 7f 11 ec 9e 07 ff d7 de f4 c9 24
+                        8f 71 4d d0 70 7f 11 ec a3 a6 33 4f bb be b8 11
+                        8f 71 7b 02 70 7f 11 ec 85 87 ff 7c 8f 62 40 f2
+                        8f 71 a8 66 70 7f 11 ec b1 f9 9b 1f 85 86 fa e4
+                        8f 71 d7 32 70 7f 11 ec b6 79 9f 0d 9e 42 a6 f0
+                        e3 db 8a b4 70 7f 11 ec b9 a7 9f b7 52 e6 24 8a
+                    |
+                    "events"=[
+                        "bau"
+                        "acm=1" "adu=8f6f3554-707f-11ec-a6a1-6f76dee406ec"
+                        "acl=15" "adu=
+                        8f6f6466-707f-11ec-a425-335b61d32dfc
+                        8f6f9198-707f-11ec-a1d5-9b6bce592067
+                        8f6fc032-707f-11ec-9aab-13947004ca3a
+                        8f6ff0fc-707f-11ec-9da2-5b5d31a03ba4
+                        8f701d3e-707f-11ec-a13e-b7aaa92e5adb
+                        8f70482c-707f-11ec-a05a-8bf071944e58
+                        8f7073ce-707f-11ec-b1ba-67eddde89cc7
+                        8f70a722-707f-11ec-9e1e-db4c4ba4166d
+                        8f70dbe8-707f-11ec-b847-5b92031104ff
+                        8f711bbc-707f-11ec-9e07-ffd7def4c924
+                        8f714dd0-707f-11ec-a3a6-334fbbbeb811
+                        8f717b02-707f-11ec-8587-ff7c8f6240f2
+                        8f71a866-707f-11ec-b1f9-9b1f8586fae4
+                        8f71d732-707f-11ec-b679-9f0d9e42a6f0
+                        e3db8ab4-707f-11ec-b9a7-9fb752e6248a
+                    "]
                 }
             ]
             "mustFail" = [
@@ -26,6 +213,11 @@ c0
                 {"cte"="|u ffffffff-ffff-ffff-ffff-fffffffffff|"}   // Incomplete
                 {"cte"="|u ffffffffffffffffffffffffffffffff|"}      // Malformed
                 {"cte"="|u fffffff-fffff-ffff-ffff-fffffffffff|"}   // Malformed
+                {"cbe"=|u8x 7f|}                                    // Incomplete
+                {"cbe"=|u8x 7f 01|}                                 // Incomplete
+                {"cbe"=|u8x 7f 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|} // Incomplete
+                {"cbe"=|u8x 7f e0|}     // Incomplete
+                {"cbe"=|u8x 7f e0 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00|}  // Incomplete
             ]
         }
 
@@ -34,17 +226,63 @@ c0
         {
             "name" = "Bit array"
             "mustSucceed" = [
-                {"events"=["ab=110101000111000111"]  "cte"="|b 110101000111000111|"}
-                {"cte"="|b|"                     "events"=["ab"]}
-                {"cte"="|b 0|"                   "events"=["ab=0"]}
-                {"cte"="|b 1|"                   "events"=["ab=1"]}
-                {"from_cte"="|b 1 0 1 1 0 1|"    "events"=["ab=101101"]}
-                {"from_cte"="|b 101101 |"        "events"=["ab=101101"]}
-                {"cte"="|b 10110111|"            "events"=["ab=10110111"]}
-                {"from_cte"="|b 1  0 110 1 11|"  "events"=["ab=10110111"]}
+                {
+                    "cte"="|b 110101000111000111|"
+                    "cbe"=|u8x 94 24 2b 8e 03|
+                    "events"=["ab=110101000111000111"]
+                }
+                {
+                    "cte"="|b|"
+                    "cbe"=|u8x 94 00|
+                    "events"=["ab"]
+                }
+                {
+                    "cte"="|b 0|"
+                    "cbe"=|u8x 94 02 00|
+                    "events"=["ab=0"]
+                }
+                {
+                    "cte"="|b 1|"
+                    "cbe"=|u8x 94 02 01|
+                    "events"=["ab=1"]
+                }
+                {
+                    "from_cte"="|b 1 0 1 1 0 1|"
+                    "cbe"=|u8x 94 0c 2d|
+                    "events"=["ab=101101"]
+                }
+                {
+                    "from_cte"="|b 101101 |"
+                    "cbe"=|u8x 94 0c 2d|
+                    "events"=["ab=101101"]
+                }
+                {
+                    "cte"="|b 10110111|"
+                    "cbe"=|u8x 94 10 ed|
+                    "events"=["ab=10110111"]
+                }
+                {
+                    "from_cte"="|b 1  0 110 1 11|"
+                    "cbe"=|u8x 94 10 ed|
+                    "events"=["ab=10110111"]
+                }
                 {
                     "cte"="|b 1011011110010100110101010101011001110101010110011010100101010010010010110101001100000010100011|"
+                    "cbe"=|u8x 94 bc 01 ed 29 ab 6a ae 9a 95 4a d2 ca 40 31|
                     "events"=["ab=1011011110010100110101010101011001110101010110011010100101010010010010110101001100000010100011"]
+                }
+                {
+                    "to_cte"="|b 1011|"
+                    "cbe"=|u8x
+                        94
+                        07 05
+                        02 01
+                    |
+                    "events"=[
+                        "bab"
+                        "acm=3" "adb=101"
+                        "acl=1" "adb=1"
+                    ]
                 }
             ]
             "mustFail" = [
@@ -52,6 +290,9 @@ c0
                 {"cte"="|b -1|"}       // Non-binary digit
                 {"cte"="|b nan|"}      // Non-binary digit
                 {"cte"="|b 0x1|"}      // Non-binary digit
+                {"cbe"=|u8x 94|}        // Incomplete
+                {"cbe"=|u8x 94 02|}     // Incomplete
+                {"cbe"=|u8x 94 20 00|}  // Incomplete
             ]
         }
 
@@ -60,190 +301,30 @@ c0
         {
             "name" = "Chunked bit array"
             "mustSucceed" = [
-                {"events"=["bab" "acl=0"]                "to_cte"="|b|"}
-                {"events"=["bab" "acl=1" "adb=1"]        "to_cte"="|b 1|"}
-                {"events"=["bab" "acl=2" "adb=10"]       "to_cte"="|b 10|"}
-                {"events"=["bab" "acl=7" "adb=1000101"]  "to_cte"="|b 1000101|"}
-                {"events"=["bab" "acl=8" "adb=10001011"] "to_cte"="|b 10001011|"}
+                {
+                    "events"=["bab" "acl=0"]
+                    "to_cte"="|b|"
+                }
+                {
+                    "events"=["bab" "acl=1" "adb=1"]
+                    "to_cte"="|b 1|"
+                }
+                {
+                    "events"=["bab" "acl=2" "adb=10"]
+                    "to_cte"="|b 10|"
+                }
+                {
+                    "events"=["bab" "acl=7" "adb=1000101"]
+                    "to_cte"="|b 1000101|"
+                }
+                {
+                    "events"=["bab" "acl=8" "adb=10001011"]
+                    "to_cte"="|b 10001011|"
+                }
                 {
                     "events"=["bab" "acm=8" "adb=10001011" "acl=1" "adb=1"]
                     "to_cte"="|b 100010111|"
                 }
-            ]
-        }
-
-        // ====================================================================
-
-        {
-            "name" = "String"
-            "mustSucceed" = [
-                {"cte"="\"this is a string\""  "events"=["s=this is a string"]}
-                {
-                    "cte"="\"\
-                        sky வானம் ሰማይ سماء երկինք səma неба আকাশ небето 天空 \
-                        ცა ουρανός આકાશ syèl שָׁמַיִם आकाश ég 空 ಆಕಾಶ аспан មេឃ 하늘 \
-                        asûman асман ທ້ອງຟ້າ небото ആകാശം आकाश тэнгэр ကောင်းကင် \
-                        आकाश ଆକାଶ اسمان آسمان céu ਅਸਮਾਨ небо අහස வானம் күк ఆకాశం \
-                        ท้องฟ้า gökyüzü آسمان ئاسمان bầu trời הימל ọrun\""
-                    "events"=["s=\
-                        sky வானம் ሰማይ سماء երկինք səma неба আকাশ небето 天空 \
-                        ცა ουρανός આકાશ syèl שָׁמַיִם आकाश ég 空 ಆಕಾಶ аспан មេឃ 하늘 \
-                        asûman асман ທ້ອງຟ້າ небото ആകാശം आकाश тэнгэр ကောင်းကင် \
-                        आकाश ଆକାଶ اسمان آسمان céu ਅਸਮਾਨ небо අහස வானம் күк ఆకాశం \
-                        ท้องฟ้า gökyüzü آسمان ئاسمان bầu trời הימל ọrun"]
-                }
-                {"cte"="\"test test\""                    "events"=["s=test test"]}
-                {"cte"="\"\""                             "events"=["s="]}               // Empty string
-                {"cte"="\"test/*test\""                   "events"=["s=test/*test"]}     // Comment initiator inside a string
-                {"cte"="\"test*/test\""                   "events"=["s=test*/test"]}     // Comment terminator inside a string
-                {"from_cte"="\.~ "test\ttest"~"           "events"=["s=test\[9]test"]}   // Escaped tab
-                {"from_cte"="\.~ "test\rtest"~"           "events"=["s=test\[d]test"]}   // Escaped CR
-                {"from_cte"="\.~ "test\"test"~"           "events"=["s=\.~ test"test~"]} // Escaped quote
-                {"from_cte"="\.~ "test\\test"~"           "events"=["s=\.~ test\test~"]} // Escaped backslash
-                {"from_cte"="\.~ "test\/test"~"           "events"=["s=\.~ test/test~"]} // Escaped slash
-                {"from_cte"="\.~ "test\*test"~"           "events"=["s=\.~ test*test~"]} // Escaped star
-                {"from_cte"="\.~ "test\_test"~"           "events"=["s=test\[a0]test"]}  // Escaped non-breaking space
-                {"from_cte"="\.~ "test\-test"~"           "events"=["s=test\[ad]test"]}  // Escaped soft hyphen
-                {"from_cte"="\.~ "test\[a]test"~"         "events"=["s=test\ntest"]}     // Escaped 1-digit codepoint
-                {"from_cte"="\.~ "test\[f7]test"~"        "events"=["s=test÷test"]}      // Escaped 2-digit codepoint
-                {"from_cte"="\.~ "test\[17d]test"~"       "events"=["s=testŽtest"]}      // Escaped 3-digit codepoint
-                {"from_cte"="\.~ "test\[2021]test"~"      "events"=["s=test‡test"]}      // Escaped 4-digit codepoint
-                {"from_cte"="\.~ "test\[1f43a]test"~"     "events"=["s=test🐺test"]}     // Escaped 5-digit codepoint
-                {"from_cte"="\.~ "test\[000020]test"~"    "events"=["s=test test"]}      // Escaped 6-digit codepoint
-                {"from_cte"="\.~ "test\[0000020]test"~"   "events"=["s=test test"]}      // Escaped 7-digit codepoint
-                {"from_cte"="\.~ "test\[00000020]test"~"  "events"=["s=test test"]}      // Escaped 8-digit codepoint
-                {"from_cte"="\.~ "test\[000000020]test"~" "events"=["s=test test"]}      // Escaped 9-digit codepoint
-                {"from_cte"="\.~ "test\ntest"~"           "events"=["s=\.~ test
-test~"]}  // Escaped newline
-                {"from_cte"="\.~ "test\
-test"~"  "events"=["s=testtest"]}     // Continuation
-            ]
-            "mustFail" = [
-                {"cte"="\.~ "test\1gtest"~"}     // Invalid codepoint digit
-                {"cte"="\.~ "test\xtest"~"}      // Invalid escape character
-                {"cte"="\.~ "test=test~"}        // Unterminated quotes
-                {"cte"="\.~ test test~"}         // Missing quotes
-                {"cte"="\.~ "test\"~"}           // Unterminated escape
-                {"cte"="\.~ "test\["~"}          // Unterminated escape
-                {"cte"="\.~ "test\[}"~"}         // Empty escape
-                {"cte"="\.~ "test\[1"~"}         // Unterminated codepoint
-                {"cte"="\.~ "test\[21"~"}        // Unterminated codepoint
-                {"cte"="\.~ "test\[301"~"}       // Unterminated codepoint
-                {"cte"="\.~ "test\[4001"~"}      // Unterminated codepoint
-                {"cte"="\.~ "test\[50001"~"}     // Unterminated codepoint
-                {"cte"="\.~ "test\[600001"~"}    // Unterminated codepoint
-                {"cte"="\.~ "test\[7000001"~"}   // Unterminated codepoint
-                {"cte"="\.~ "test\[80000001"~"}  // Unterminated codepoint
-                {"cte"="\.~ "test\[900000001"~"} // Unterminated codepoint
-            ]
-        }
-
-        // ====================================================================
-
-        {
-            "name" = "String with NUL character"
-            "mustSucceed" = [
-                {
-                    "cte" = "\.^ "test\[0]string"^"
-                    "events" = ["s=test\[0]string"]
-                }
-            ]
-        }
-
-        // ====================================================================
-
-        {
-            // Resource IDs have the same capabilities and restrictions as strings.
-            "name" = "Resource ID"
-            "mustSucceed" = [
-                {"cte"="@\"https://concise-encoding.org\"" "events"=["rid=https://concise-encoding.org"]}
-                {"cte"="\.~ @"http://x.com/a/b#1"~"        "events"=["rid=http://x.com/a/b#1"]}
-                {"cte"="\.~ @""~"                          "events"=["rid"]}                // Empty string
-                {"cte"="\.~ @"test/*test"~"                "events"=["rid=test/*test"]}     // Comment initiator inside a string
-                {"cte"="\.~ @"test*/test"~"                "events"=["rid=test*/test"]}     // Comment terminator inside a string
-                {"from_cte"="\.~ @"test\ttest"~"           "events"=["rid=test\[9]test"]}   // Escaped tab
-                {"from_cte"="\.~ @"test\rtest"~"           "events"=["rid=test\[d]test"]}   // Escaped CR
-                {"from_cte"="\.~ @"test\"test"~"           "events"=["rid=\.~ test"test~"]} // Escaped quote
-                {"from_cte"="\.~ @"test\\test"~"           "events"=["rid=\.~ test\test~"]} // Escaped backslash
-                {"from_cte"="\.~ @"test\/test"~"           "events"=["rid=\.~ test/test~"]} // Escaped slash
-                {"from_cte"="\.~ @"test\*test"~"           "events"=["rid=\.~ test*test~"]} // Escaped star
-                {"from_cte"="\.~ @"test\_test"~"           "events"=["rid=test\[a0]test"]}  // Escaped non-breaking space
-                {"from_cte"="\.~ @"test\-test"~"           "events"=["rid=test\[ad]test"]}  // Escaped soft hyphen
-                {"from_cte"="\.~ @"test\[a]test"~"         "events"=["rid=test\ntest"]}     // Escaped 1-digit codepoint
-                {"from_cte"="\.~ @"test\[f7]test"~"        "events"=["rid=test÷test"]}      // Escaped 2-digit codepoint
-                {"from_cte"="\.~ @"test\[17d]test"~"       "events"=["rid=testŽtest"]}      // Escaped 3-digit codepoint
-                {"from_cte"="\.~ @"test\[2021]test"~"      "events"=["rid=test‡test"]}      // Escaped 4-digit codepoint
-                {"from_cte"="\.~ @"test\[1f43a]test"~"     "events"=["rid=test🐺test"]}     // Escaped 5-digit codepoint
-                {"from_cte"="\.~ @"test\[000020]test"~"    "events"=["rid=test test"]}      // Escaped 6-digit codepoint
-                {"from_cte"="\.~ @"test\[000000020]test"~" "events"=["rid=test test"]}      // Escaped 9-digit codepoint
-                {"from_cte"="\.~ @"test\ntest"~"           "events"=["rid=\.~ test
-test~"]}  // Escaped newline
-                {"from_cte"="\.~ @"test\
-test"~"  "events"=["rid=testtest"]}   // Continuation
-            ]
-            "mustFail" = [
-                {"cte"="\.~ @"test\1gtest"~"}    // Invalid codepoint digit
-                {"cte"="\.~ @"test\xtest"~"}     // Invalid escape character
-                {"cte"="\.~ @"test=test~"}       // Unterminated quotes
-                {"cte"="\.~ @test test~"}        // Missing quotes
-                {"cte"="\.~ @"test\"~"}          // Unterminated escape
-                {"cte"="\.~ @"test\["~"}         // Unterminated escape
-                {"cte"="\.~ @"test\[}"~"}        // Empty escape
-                {"cte"="\.~ @"test\[1"~"}        // Unterminated codepoint
-                {"cte"="\.~ @"test\[01"~"}       // Unterminated codepoint
-                {"cte"="\.~ @"test\[001"~"}      // Unterminated codepoint
-                {"cte"="\.~ @"test\[0001"~"}     // Unterminated codepoint
-                {"cte"="\.~ @"test\[00001"~"}    // Unterminated codepoint
-                {"cte"="\.~ @"test\[000001"~"}   // Unterminated codepoint
-                {"cte"="\.~ @"test\[0000001"~"}  // Unterminated codepoint
-                {"cte"="\.~ @"test\[00000001"~"} // Unterminated codepoint
-            ]
-        }
-
-        // ====================================================================
-
-        {
-            // Custom text has the same capabilities and restrictions as strings.
-            "name" = "Custom Text"
-            "mustSucceed" = [
-                {"cte"="|c0 \"cplx(2.94+3i)\"|"  "events"=["ct=0 cplx(2.94+3i)"]}
-                {"cte"="\.~ |c0 "something(123)"|~"             "events"=["ct=0 something(123)"]}
-                {"from_cte"="\.~ |c0 ""|~"                      "events"=["ct=0"]}                // Empty String
-                {"cte"="\.~ |c0 "test/*test"|~"                 "events"=["ct=0 test/*test"]}     // Comment initiator inside a string
-                {"cte"="\.~ |c0 "test*/test"|~"                 "events"=["ct=0 test*/test"]}     // Comment terminator inside a string
-                {"from_cte"="\.~ |c0 "test\ttest"|~"            "events"=["ct=0 test\[9]test"]}   // Escaped tab
-                {"from_cte"="\.~ |c0 "test\rtest"|~"            "events"=["ct=0 test\[d]test"]}   // Escaped CR
-                {"from_cte"="\.~ |c0 "test\"test"|~"            "events"=["ct=0 \.~ test"test~"]} // Escaped quote
-                {"from_cte"="\.~ |c0 "test\\test"|~"            "events"=["ct=0 \.~ test\test~"]} // Escaped backslash
-                {"from_cte"="\.~ |c0 "test\/test"|~"            "events"=["ct=0 \.~ test/test~"]} // Escaped slash
-                {"from_cte"="\.~ |c0 "test\*test"|~"            "events"=["ct=0 \.~ test*test~"]} // Escaped star
-                {"from_cte"="\.~ |c0 "test\_test"|~"            "events"=["ct=0 test\[a0]test"]}  // Escaped non-breaking space
-                {"from_cte"="\.~ |c0 "test\-test"|~"            "events"=["ct=0 test\[ad]test"]}  // Escaped soft hyphen
-                {"from_cte"="\.~ |c0 "test\[a]test"|~"          "events"=["ct=0 test\ntest"]}     // Escaped 1-digit codepoint
-                {"from_cte"="\.~ |c0 "test\[f7]test"|~"         "events"=["ct=0 test÷test"]}      // Escaped 2-digit codepoint
-                {"from_cte"="\.~ |c0 "test\[17d]test"|~"        "events"=["ct=0 testŽtest"]}      // Escaped 3-digit codepoint
-                {"from_cte"="\.~ |c0 "test\[2021]test"|~"       "events"=["ct=0 test‡test"]}      // Escaped 4-digit codepoint
-                {"from_cte"="\.~ |c0 "test\[1f43a]test"|~"      "events"=["ct=0 test🐺test"]}     // Escaped 5-digit codepoint
-                {"from_cte"="\.~ |c0 "test\[000000020]test"|~"  "events"=["ct=0 test test"]}      // Escaped 9-digit codepoint
-                {"from_cte"="\.~ |c0 "test\ntest"|~"            "events"=["ct=0 \.~ test
-test~"]}  // Escaped newline
-                {"from_cte"="\.~ |c0 "test\
-                                          test"|~"               "events"=["ct=0 testtest"]}  // Continuation
-            ]
-            "mustFail" = [
-                {"cte"="\.~ |c0 "test\1gtest"|~"}   // Invalid codepoint digit
-                {"cte"="\.~ |c0 "test\xtest"|~"}    // Invalid escape character
-                {"cte"="\.~ |c0 "test=test"~"}      // Unterminated
-                {"cte"="\.~ test test~"}            // Missing bars
-                {"cte"="\.~ |c0 "test\"|~"}         // Unterminated escape
-                {"cte"="\.~ |c0 "test\1"|~"}        // Unterminated codepoint
-                {"cte"="\.~ |c0 "test\01"|~"}       // Unterminated codepoint
-                {"cte"="\.~ |c0 "test\001"|~"}      // Unterminated codepoint
-                {"cte"="\.~ |c0 "test\0001"|~"}     // Unterminated codepoint
-                {"cte"="\.~ |c0 "test\00001"|~"}    // Unterminated codepoint
-                {"cte"="\.~ |c0 "test\000001"|~"}   // Unterminated codepoint
-                {"cte"="\.~ |c0 "test\0000001"|~"}  // Unterminated codepoint
-                {"cte"="\.~ |c0 "test\00000001"|~"} // Unterminated codepoint
             ]
         }
 
@@ -267,66 +348,11 @@ test~"]}  // Escaped newline
         // ====================================================================
 
         {
-            "name" = "Verbatim sequence"
-            "mustSucceed" = [
-                {
-                    "from_cte" = "\.~ "\.## ##"~"
-                    "events"   = ["s"]
-                }
-                {
-                    "from_cte" = "\.~ "\.##
-##"~"
-                    "events"   = ["s="]
-                }
-                {
-                    "from_cte" = "\.~ "\.## a##"~"
-                    "events"   = ["s=a"]
-                }
-                {
-                    "from_cte" = "\.~ "\.@@
-a@@"~"
-                    "events"   = ["s=a"]
-                }
-                {
-                    "from_cte" = "\"\\.^^^\r\na^^^\""
-                    "events"   = ["s=a"]
-                }
-                {
-                    "from_cte" = "\.~ "\.XXX blah blah
-blah blahXXX"~"
-                    "events"   = ["s=blah blah\nblah blah"]
-                }
-                {
-                    "from_cte" = "\.~ "\.A \n\r\t\_\-A"~"
-                    "events"   = ["s=\\n\\r\\t\\_\\-"]
-                }
-            ]
-            "mustFail" = [
-                {"cte"="\.~ "\."~"}        // No sentinel definition
-                {"cte"="\.~ "\.X"~"}       // Unterminated sentinel
-                {"cte"="\.~ "\.XblahX"~"}  // Missing WS between sentinel and contents
-                {"cte"="\.~ "\.X blah"~"}  // Missing end sentinel
-            ]
-        }
-
-        // ====================================================================
-
-        {
             "name" = "Media"
             "mustSucceed" = [
                 {
                     "cte" = "|.application/x-sh 23 21 2f 62 69 6e 2f 73 68 0a 0a 65 63 68 6f 20 68 65 6c 6c 6f 20 77 6f 72 6c 64 0a|"
                     "events" = ["media=application/x-sh 23 21 2f 62 69 6e 2f 73 68 0a 0a 65 63 68 6f 20 68 65 6c 6c 6f 20 77 6f 72 6c 64 0a"]
-                }
-                {
-                    "from_cte" = "\.^^
-|.application/x-sh "\.@@
-#!/bin/sh
-
-echo hello world
-@@"|
-^^"
-                    "to_events" = ["media=application/x-sh 23 21 2f 62 69 6e 2f 73 68 0a 0a 65 63 68 6f 20 68 65 6c 6c 6f 20 77 6f 72 6c 64 0a"]
                 }
                 {
                     "from_events" = ["bmedia=application/x-sh" "acl=28" "adt=\.^

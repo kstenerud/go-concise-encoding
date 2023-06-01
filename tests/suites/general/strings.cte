@@ -1,0 +1,251 @@
+c0
+{
+    "type" = {
+        "identifier" = "ce-test"
+        "version" = 1
+    }
+    "ceversion" = 0
+    "tests" = [
+
+        // ====================================================================
+
+        {
+            "name" = "String"
+            "mustSucceed" = [
+                {"cte"="\"this is a string\""  "events"=["s=this is a string"]}
+                {
+                    "cte"="\"\
+                        sky வானம் ሰማይ سماء երկինք səma неба আকাশ небето 天空 \
+                        ცა ουρανός આકાશ syèl שָׁמַיִם आकाश ég 空 ಆಕಾಶ аспан មេឃ 하늘 \
+                        asûman асман ທ້ອງຟ້າ небото ആകാശം आकाश тэнгэр ကောင်းကင် \
+                        आकाश ଆକାଶ اسمان آسمان céu ਅਸਮਾਨ небо අහස வானம் күк ఆకాశం \
+                        ท้องฟ้า gökyüzü آسمان ئاسمان bầu trời הימל ọrun\""
+                    "events"=["s=\
+                        sky வானம் ሰማይ سماء երկինք səma неба আকাশ небето 天空 \
+                        ცა ουρανός આકાશ syèl שָׁמַיִם आकाश ég 空 ಆಕಾಶ аспан មេឃ 하늘 \
+                        asûman асман ທ້ອງຟ້າ небото ആകാശം आकाश тэнгэр ကောင်းကင် \
+                        आकाश ଆକାଶ اسمان آسمان céu ਅਸਮਾਨ небо අහස வானம் күк ఆకాశం \
+                        ท้องฟ้า gökyüzü آسمان ئاسمان bầu trời הימל ọrun"]
+                }
+                {"cte"="\"test test\""                    "events"=["s=test test"]}
+                {"cte"="\"\""                             "events"=["s="]}               // Empty string
+                {"cte"="\"test/*test\""                   "events"=["s=test/*test"]}     // Comment initiator inside a string
+                {"cte"="\"test*/test\""                   "events"=["s=test*/test"]}     // Comment terminator inside a string
+                {"from_cte"="\.~ "test\ttest"~"           "events"=["s=test\[9]test"]}   // Escaped tab
+                {"from_cte"="\.~ "test\rtest"~"           "events"=["s=test\[d]test"]}   // Escaped CR
+                {"from_cte"="\.~ "test\"test"~"           "events"=["s=\.~ test"test~"]} // Escaped quote
+                {"from_cte"="\.~ "test\\test"~"           "events"=["s=\.~ test\test~"]} // Escaped backslash
+                {"from_cte"="\.~ "test\/test"~"           "events"=["s=\.~ test/test~"]} // Escaped slash
+                {"from_cte"="\.~ "test\*test"~"           "events"=["s=\.~ test*test~"]} // Escaped star
+                {"from_cte"="\.~ "test\_test"~"           "events"=["s=test\[a0]test"]}  // Escaped non-breaking space
+                {"from_cte"="\.~ "test\-test"~"           "events"=["s=test\[ad]test"]}  // Escaped soft hyphen
+                {"from_cte"="\.~ "test\[a]test"~"         "events"=["s=test\ntest"]}     // Escaped 1-digit codepoint
+                {"from_cte"="\.~ "test\[f7]test"~"        "events"=["s=test÷test"]}      // Escaped 2-digit codepoint
+                {"from_cte"="\.~ "test\[17d]test"~"       "events"=["s=testŽtest"]}      // Escaped 3-digit codepoint
+                {"from_cte"="\.~ "test\[2021]test"~"      "events"=["s=test‡test"]}      // Escaped 4-digit codepoint
+                {"from_cte"="\.~ "test\[1f43a]test"~"     "events"=["s=test🐺test"]}     // Escaped 5-digit codepoint
+                {"from_cte"="\.~ "test\[000020]test"~"    "events"=["s=test test"]}      // Escaped 6-digit codepoint
+                {"from_cte"="\.~ "test\[0000020]test"~"   "events"=["s=test test"]}      // Escaped 7-digit codepoint
+                {"from_cte"="\.~ "test\[00000020]test"~"  "events"=["s=test test"]}      // Escaped 8-digit codepoint
+                {"from_cte"="\.~ "test\[000000020]test"~" "events"=["s=test test"]}      // Escaped 9-digit codepoint
+                {"from_cte"="\.~ "test\ntest"~"           "events"=["s=\.~ test
+test~"]}  // Escaped newline
+                {"from_cte"="\.~ "test\
+test"~"  "events"=["s=testtest"]}     // Continuation
+            ]
+            "mustFail" = [
+                {"cte"="\.~ "test\1gtest"~"}     // Invalid codepoint digit
+                {"cte"="\.~ "test\xtest"~"}      // Invalid escape character
+                {"cte"="\.~ "test=test~"}        // Unterminated quotes
+                {"cte"="\.~ test test~"}         // Missing quotes
+                {"cte"="\.~ "test\"~"}           // Unterminated escape
+                {"cte"="\.~ "test\["~"}          // Unterminated escape
+                {"cte"="\.~ "test\[}"~"}         // Empty escape
+                {"cte"="\.~ "test\[1"~"}         // Unterminated codepoint
+                {"cte"="\.~ "test\[21"~"}        // Unterminated codepoint
+                {"cte"="\.~ "test\[301"~"}       // Unterminated codepoint
+                {"cte"="\.~ "test\[4001"~"}      // Unterminated codepoint
+                {"cte"="\.~ "test\[50001"~"}     // Unterminated codepoint
+                {"cte"="\.~ "test\[600001"~"}    // Unterminated codepoint
+                {"cte"="\.~ "test\[7000001"~"}   // Unterminated codepoint
+                {"cte"="\.~ "test\[80000001"~"}  // Unterminated codepoint
+                {"cte"="\.~ "test\[900000001"~"} // Unterminated codepoint
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "String with NUL character"
+            "mustSucceed" = [
+                {
+                    "cte" = "\.^ "test\[0]string"^"
+                    "events" = ["s=test\[0]string"]
+                }
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            // Resource IDs have the same capabilities and restrictions as strings.
+            "name" = "Resource ID"
+            "mustSucceed" = [
+                {"cte"="@\"https://concise-encoding.org\"" "events"=["rid=https://concise-encoding.org"]}
+                {"cte"="\.~ @"http://x.com/a/b#1"~"        "events"=["rid=http://x.com/a/b#1"]}
+                {"cte"="\.~ @""~"                          "events"=["rid"]}                // Empty string
+                {"cte"="\.~ @"test/*test"~"                "events"=["rid=test/*test"]}     // Comment initiator inside a string
+                {"cte"="\.~ @"test*/test"~"                "events"=["rid=test*/test"]}     // Comment terminator inside a string
+                {"from_cte"="\.~ @"test\ttest"~"           "events"=["rid=test\[9]test"]}   // Escaped tab
+                {"from_cte"="\.~ @"test\rtest"~"           "events"=["rid=test\[d]test"]}   // Escaped CR
+                {"from_cte"="\.~ @"test\"test"~"           "events"=["rid=\.~ test"test~"]} // Escaped quote
+                {"from_cte"="\.~ @"test\\test"~"           "events"=["rid=\.~ test\test~"]} // Escaped backslash
+                {"from_cte"="\.~ @"test\/test"~"           "events"=["rid=\.~ test/test~"]} // Escaped slash
+                {"from_cte"="\.~ @"test\*test"~"           "events"=["rid=\.~ test*test~"]} // Escaped star
+                {"from_cte"="\.~ @"test\_test"~"           "events"=["rid=test\[a0]test"]}  // Escaped non-breaking space
+                {"from_cte"="\.~ @"test\-test"~"           "events"=["rid=test\[ad]test"]}  // Escaped soft hyphen
+                {"from_cte"="\.~ @"test\[a]test"~"         "events"=["rid=test\ntest"]}     // Escaped 1-digit codepoint
+                {"from_cte"="\.~ @"test\[f7]test"~"        "events"=["rid=test÷test"]}      // Escaped 2-digit codepoint
+                {"from_cte"="\.~ @"test\[17d]test"~"       "events"=["rid=testŽtest"]}      // Escaped 3-digit codepoint
+                {"from_cte"="\.~ @"test\[2021]test"~"      "events"=["rid=test‡test"]}      // Escaped 4-digit codepoint
+                {"from_cte"="\.~ @"test\[1f43a]test"~"     "events"=["rid=test🐺test"]}     // Escaped 5-digit codepoint
+                {"from_cte"="\.~ @"test\[000020]test"~"    "events"=["rid=test test"]}      // Escaped 6-digit codepoint
+                {"from_cte"="\.~ @"test\[000000020]test"~" "events"=["rid=test test"]}      // Escaped 9-digit codepoint
+                {"from_cte"="\.~ @"test\ntest"~"           "events"=["rid=\.~ test
+test~"]}  // Escaped newline
+                {"from_cte"="\.~ @"test\
+test"~"  "events"=["rid=testtest"]}   // Continuation
+            ]
+            "mustFail" = [
+                {"cte"="\.~ @"test\1gtest"~"}    // Invalid codepoint digit
+                {"cte"="\.~ @"test\xtest"~"}     // Invalid escape character
+                {"cte"="\.~ @"test=test~"}       // Unterminated quotes
+                {"cte"="\.~ @test test~"}        // Missing quotes
+                {"cte"="\.~ @"test\"~"}          // Unterminated escape
+                {"cte"="\.~ @"test\["~"}         // Unterminated escape
+                {"cte"="\.~ @"test\[}"~"}        // Empty escape
+                {"cte"="\.~ @"test\[1"~"}        // Unterminated codepoint
+                {"cte"="\.~ @"test\[01"~"}       // Unterminated codepoint
+                {"cte"="\.~ @"test\[001"~"}      // Unterminated codepoint
+                {"cte"="\.~ @"test\[0001"~"}     // Unterminated codepoint
+                {"cte"="\.~ @"test\[00001"~"}    // Unterminated codepoint
+                {"cte"="\.~ @"test\[000001"~"}   // Unterminated codepoint
+                {"cte"="\.~ @"test\[0000001"~"}  // Unterminated codepoint
+                {"cte"="\.~ @"test\[00000001"~"} // Unterminated codepoint
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            // Custom text has the same capabilities and restrictions as strings.
+            "name" = "Custom Text"
+            "mustSucceed" = [
+                {"cte"="|c0 \"cplx(2.94+3i)\"|"  "events"=["ct=0 cplx(2.94+3i)"]}
+                {"cte"="\.~ |c0 "something(123)"|~"             "events"=["ct=0 something(123)"]}
+                {"from_cte"="\.~ |c0 ""|~"                      "events"=["ct=0"]}                // Empty String
+                {"cte"="\.~ |c0 "test/*test"|~"                 "events"=["ct=0 test/*test"]}     // Comment initiator inside a string
+                {"cte"="\.~ |c0 "test*/test"|~"                 "events"=["ct=0 test*/test"]}     // Comment terminator inside a string
+                {"from_cte"="\.~ |c0 "test\ttest"|~"            "events"=["ct=0 test\[9]test"]}   // Escaped tab
+                {"from_cte"="\.~ |c0 "test\rtest"|~"            "events"=["ct=0 test\[d]test"]}   // Escaped CR
+                {"from_cte"="\.~ |c0 "test\"test"|~"            "events"=["ct=0 \.~ test"test~"]} // Escaped quote
+                {"from_cte"="\.~ |c0 "test\\test"|~"            "events"=["ct=0 \.~ test\test~"]} // Escaped backslash
+                {"from_cte"="\.~ |c0 "test\/test"|~"            "events"=["ct=0 \.~ test/test~"]} // Escaped slash
+                {"from_cte"="\.~ |c0 "test\*test"|~"            "events"=["ct=0 \.~ test*test~"]} // Escaped star
+                {"from_cte"="\.~ |c0 "test\_test"|~"            "events"=["ct=0 test\[a0]test"]}  // Escaped non-breaking space
+                {"from_cte"="\.~ |c0 "test\-test"|~"            "events"=["ct=0 test\[ad]test"]}  // Escaped soft hyphen
+                {"from_cte"="\.~ |c0 "test\[a]test"|~"          "events"=["ct=0 test\ntest"]}     // Escaped 1-digit codepoint
+                {"from_cte"="\.~ |c0 "test\[f7]test"|~"         "events"=["ct=0 test÷test"]}      // Escaped 2-digit codepoint
+                {"from_cte"="\.~ |c0 "test\[17d]test"|~"        "events"=["ct=0 testŽtest"]}      // Escaped 3-digit codepoint
+                {"from_cte"="\.~ |c0 "test\[2021]test"|~"       "events"=["ct=0 test‡test"]}      // Escaped 4-digit codepoint
+                {"from_cte"="\.~ |c0 "test\[1f43a]test"|~"      "events"=["ct=0 test🐺test"]}     // Escaped 5-digit codepoint
+                {"from_cte"="\.~ |c0 "test\[000000020]test"|~"  "events"=["ct=0 test test"]}      // Escaped 9-digit codepoint
+                {"from_cte"="\.~ |c0 "test\ntest"|~"            "events"=["ct=0 \.~ test
+test~"]}  // Escaped newline
+                {"from_cte"="\.~ |c0 "test\
+                                          test"|~"               "events"=["ct=0 testtest"]}  // Continuation
+            ]
+            "mustFail" = [
+                {"cte"="\.~ |c0 "test\1gtest"|~"}   // Invalid codepoint digit
+                {"cte"="\.~ |c0 "test\xtest"|~"}    // Invalid escape character
+                {"cte"="\.~ |c0 "test=test"~"}      // Unterminated
+                {"cte"="\.~ test test~"}            // Missing bars
+                {"cte"="\.~ |c0 "test\"|~"}         // Unterminated escape
+                {"cte"="\.~ |c0 "test\1"|~"}        // Unterminated codepoint
+                {"cte"="\.~ |c0 "test\01"|~"}       // Unterminated codepoint
+                {"cte"="\.~ |c0 "test\001"|~"}      // Unterminated codepoint
+                {"cte"="\.~ |c0 "test\0001"|~"}     // Unterminated codepoint
+                {"cte"="\.~ |c0 "test\00001"|~"}    // Unterminated codepoint
+                {"cte"="\.~ |c0 "test\000001"|~"}   // Unterminated codepoint
+                {"cte"="\.~ |c0 "test\0000001"|~"}  // Unterminated codepoint
+                {"cte"="\.~ |c0 "test\00000001"|~"} // Unterminated codepoint
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "Verbatim sequence"
+            "mustSucceed" = [
+                {
+                    "from_cte" = "\.~ "\.## ##"~"
+                    "events"   = ["s"]
+                }
+                {
+                    "from_cte" = "\.~ "\.##
+##"~"
+                    "events"   = ["s="]
+                }
+                {
+                    "from_cte" = "\.~ "\.## a##"~"
+                    "events"   = ["s=a"]
+                }
+                {
+                    "from_cte" = "\.~ "\.@@
+a@@"~"
+                    "events"   = ["s=a"]
+                }
+                {
+                    "from_cte" = "\"\\.^^^\r\na^^^\""
+                    "events"   = ["s=a"]
+                }
+                {
+                    "from_cte" = "\.~ "\.XXX blah blah
+blah blahXXX"~"
+                    "events"   = ["s=blah blah\nblah blah"]
+                }
+                {
+                    "from_cte" = "\.~ "\.A \n\r\t\_\-A"~"
+                    "events"   = ["s=\\n\\r\\t\\_\\-"]
+                }
+            ]
+            "mustFail" = [
+                {"cte"="\.~ "\."~"}        // No sentinel definition
+                {"cte"="\.~ "\.X"~"}       // Unterminated sentinel
+                {"cte"="\.~ "\.XblahX"~"}  // Missing WS between sentinel and contents
+                {"cte"="\.~ "\.X blah"~"}  // Missing end sentinel
+            ]
+        }
+
+        // ====================================================================
+
+        {
+            "name" = "Media (text)"
+            "mustSucceed" = [
+                {
+                    "from_cte" = "\.^^
+|.application/x-sh "\.@@
+#!/bin/sh
+
+echo hello world
+@@"|
+^^"
+                    "to_events" = ["media=application/x-sh 23 21 2f 62 69 6e 2f 73 68 0a 0a 65 63 68 6f 20 68 65 6c 6c 6f 20 77 6f 72 6c 64 0a"]
+                }
+            ]
+        }
+
+        // ====================================================================
+
+    ]
+}
