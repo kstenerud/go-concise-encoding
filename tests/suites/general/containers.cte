@@ -47,6 +47,10 @@ c0
             ]
             "mustFail" = [
                 {"cte"="["}                   // Unterminated
+                {"cte"="[}"}                  // Wrong terminator
+                {"cte"="[)"}                  // Wrong terminator
+                {"cte"="[>"}                  // Wrong terminator
+                {"cte"="[|"}                  // Wrong terminator
                 {"cbe"=|u8x 9a|}              // Unterminated
                 {"cbe"=|u8x 9a 01 02|}        // Unterminated
                 {"cbe"=|u8x 9a 9a 9b|}        // Unterminated
@@ -79,6 +83,10 @@ c0
                 {"cte"="{1="}                         // Unterminated
                 {"cte"="{1=2"}                        // Unterminated
                 {"cte"="{1=2}}"}                      // Terminated too many times
+                {"cte"="{]"}                          // Wrong terminator
+                {"cte"="{)"}                          // Wrong terminator
+                {"cte"="{>"}                          // Wrong terminator
+                {"cte"="{|"}                          // Wrong terminator
                 {"cbe"=|u8x 99|}                      // Unterminated
                 {"cbe"=|u8x 99 01|}                   // Unterminated
                 {"cbe"=|u8x 99 01 02|}                // Unterminated
@@ -92,19 +100,53 @@ c0
         {
             "name" = "Record"
             "mustSucceed" = [
-                {"cbe"=|u8x 7f f1 01 61 9b 96 01 61 9b| "events"=["rt=a" "e" "rec=a" "e"]}
-                {"cbe"=|u8x 7f f1 01 61 01 9b 96 01 61 01 9b| "events"=["rt=a" "n=1" "e" "rec=a" "n=1" "e"]}
+                {
+                    "cte"="@a<>
+@a{}"
+                    "cbe"=|u8x 7f f1 01 61 9b 96 01 61 9b|
+                    "events"=["rt=a" "e" "rec=a" "e"]
+                }
+                {
+                    "cte"="@a<
+    1
+>
+@a{
+    1
+}"
+                    "cbe"=|u8x 7f f1 01 61 01 9b 96 01 61 01 9b|
+                    "events"=["rt=a" "n=1" "e" "rec=a" "n=1" "e"]
+                }
             ]
             "mustFail" = [
-                // Incomplete
-                {"cbe"=|u8x 96|}
-                {"cbe"=|u8x 96 01|}
-                {"cbe"=|u8x 7f f1|}
-                {"cbe"=|u8x 7f f1 01|}
-                {"cbe"=|u8x 7f f1 01 61|}
-                {"cbe"=|u8x 7f f1 01 61 7b 96 01 61|}
-                {"cbe"=|u8x 96 01 61 7b|} // Unknown ID
+                {"cte"="@"}                     // Unterminated
+                {"cte"="@a"}                    // Unterminated
+                {"cte"="@a<"}                   // Unterminated
+                {"cte"="@a<1"}                  // Unterminated
+                {"cte"="@a<]"}                  // Wrong terminator
+                {"cte"="@a<}"}                  // Wrong terminator
+                {"cte"="@a<>"}                  // Wrong terminator
+                {"cte"="@a<|"}                  // Wrong terminator
+                {"cte"="@a<> @a{"}              // Unterminated
+                {"cte"="@a<1> @a{1"}            // Unterminated
+                {"cte"="@a<> @a{]"}             // Wrong terminator
+                {"cte"="@a<> @a{)"}             // Wrong terminator
+                {"cte"="@a<> @a{>"}             // Wrong terminator
+                {"cte"="@a<> @a{|"}             // Wrong terminator
+                {"cte"="@a{}"}                  // Unknown ID
+                {"cte"="@a<> @a<> @a{}"}        // Duplicate ID
+                {"cte"="@a<1> @a{1 2}"}         // Mismatched argcount
+                {"cte"="@a<1 2> @a{1}"}         // Mismatched argcount
+                // {"cte"="@a<1 1> @a{1 2}"}       // Duplicate key TODO
+                {"cbe"=|u8x 96|}                // Incomplete
+                {"cbe"=|u8x 96 01|}             // Incomplete
+                {"cbe"=|u8x 7f f1|}             // Incomplete
+                {"cbe"=|u8x 7f f1 01|}          // Incomplete
+                {"cbe"=|u8x 7f f1 01 61|}       // Incomplete
+                {"cbe"=|u8x 7f f1 01 61 7b 96 01 61|} // Incomplete
+                {"cbe"=|u8x 96 01 61 7b|}       // Unknown ID
                 {"cbe"=|u8x 7f f1 01 61 7b 7f f1 01 61 7b 01|} // Duplicate ID
+                {"cbe"=|u8x 7f f1 01 61 01 9b 96 01 61 01 02 9b|} // Mismatched argcount
+                {"cbe"=|u8x 7f f1 01 61 01 02 9b 96 01 61 01 9b|} // Mismatched argcount
                 { // ID too long
                     "cbe"=|u8x 7f f1 80
                         61 61 61 61 61 61 61 61 61 61 61 61 61 61 61 61
@@ -126,10 +168,41 @@ c0
         {
             "name" = "Edge"
             "mustSucceed" = [
-                {"cbe"=|u8x 97 00 00 00 9b|              "events"=["edge" "n=0" "n=0" "n=0" "e"]}
-                {"cbe"=|u8x 97 91 02 61 7d 91 02 62 9b|  "events"=["edge" "brid" "acl=1" "adt=a" "null" "brid" "acl=1" "adt=b" "e"]}
+                {
+                    "cte"="@(
+    0
+    0
+    0
+)"
+                    "cbe"=|u8x 97 00 00 00 9b|
+                    "events"=["edge" "n=0" "n=0" "n=0" "e"]
+                }
+                {
+                    "cte"="\.#
+@(
+    @"a"
+    null
+    @"b"
+)
+#"
+                    "cbe"=|u8x 97 91 02 61 7d 91 02 62 9b|
+                    "events"=["edge" "brid" "acl=1" "adt=a" "null" "brid" "acl=1" "adt=b" "e"]
+                }
             ]
             "mustFail" = [
+                {"cte"="@("}                  // Unterminated
+                {"cte"="@(1"}                 // Unterminated
+                {"cte"="@(1 2"}               // Unterminated
+                {"cte"="@(1 2 3"}             // Unterminated
+                {"cte"="@()"}                 // Wrong argcount
+                {"cte"="@(1)"}                // Wrong argcount
+                {"cte"="@(1 2)"}              // Wrong argcount
+                {"cte"="@(}"}                 // Wrong terminator
+                {"cte"="@(]"}                 // Wrong terminator
+                {"cte"="@(>"}                 // Wrong terminator
+                {"cte"="@(|"}                 // Wrong terminator
+                {"cte"="@(null 2 3)"}         // Invalid source
+                {"cte"="@(1 2 null)"}         // Invalid destination
                 {"cbe"=|u8x 97|}              // Unterminated
                 {"cbe"=|u8x 97 00|}           // Unterminated
                 {"cbe"=|u8x 97 00 00|}        // Unterminated
@@ -144,10 +217,30 @@ c0
         {
             "name" = "Node"
             "mustSucceed" = [
-                {"cbe"=|u8x 98 00 9b|              "events"=["node" "n=0" "e"]}
-                {"cbe"=|u8x 98 00 98 81 61 9b 9b|  "events"=["node" "n=0" "node" "s=a" "e" "e"]}
+                {
+                    "cte"="(0
+)"
+                    "cbe"=|u8x 98 00 9b|
+                    "events"=["node" "n=0" "e"]
+                }
+                {
+                    "cte"="\.#
+(0
+    ("a"
+    )
+)#"
+                    "cbe"=|u8x 98 00 98 81 61 9b 9b|
+                    "events"=["node" "n=0" "node" "s=a" "e" "e"]
+                }
             ]
             "mustFail" = [
+                {"cte"="("}                // Unterminated
+                {"cte"="(1"}               // Unterminated
+                {"cte"="(}"}               // Wrong terminator
+                {"cte"="(]"}               // Wrong terminator
+                {"cte"="(>"}               // Wrong terminator
+                {"cte"="(|"}               // Wrong terminator
+                {"cte"="()"}               // Missing value
                 {"cbe"=|u8x 98|}           // Unterminated
                 {"cbe"=|u8x 98 01|}        // Unterminated
                 {"cbe"=|u8x 98 01 9b 9b|}  // Terminated too many times
