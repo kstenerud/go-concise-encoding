@@ -254,6 +254,7 @@ const (
 	testTypeCbe testType = 1 << iota
 	testTypeCte
 	testTypeEvents
+	testTypeAll = testTypeCbe | testTypeCte | testTypeEvents
 )
 
 func stringifyEvents(events ...test.Event) (stringified []string) {
@@ -270,6 +271,27 @@ var allEvents = test.Events{
 	EvBCB, EvBCT, EvBMEDIA, EvBRID, EvBS, EvCB, EvCM, EvCS, EvCT, EvE,
 	EvEDGE, EvINF, EvL, EvM, EvMARK, EvMEDIA, EvN, EvNAN, EvNINF, EvNODE, EvNULL,
 	EvPAD, EvREFL, EvREFR, EvRID, EvS, EvREC, EvSNAN, EvRT, EvT, EvUID, EvV,
+}
+
+var partialObjectEvents = test.Events{EvACL, EvACM, EvV}
+
+func isPartialObjectEvent(event test.Event) bool {
+	for _, ev := range partialObjectEvents {
+		if ev.IsEquivalentTo(event) {
+			return true
+		}
+	}
+	return false
+}
+
+func removePartialObjectEvents(events test.Events) (result test.Events) {
+	result = make(test.Events, 0, len(events))
+	for _, event := range events {
+		if !isPartialObjectEvent(event) {
+			result = append(result, event)
+		}
+	}
+	return
 }
 
 var (

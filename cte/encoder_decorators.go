@@ -51,7 +51,7 @@ func (_this TopLevelDecorator) BeforeComment(ctx *EncoderContext) {}
 func (_this TopLevelDecorator) AfterComment(ctx *EncoderContext) {
 	ctx.WriteNewlineAndOriginAndIndent()
 }
-func (_this TopLevelDecorator) EndContainer(ctx *EncoderContext) { errorBadEvent(_this, "End") }
+func (_this TopLevelDecorator) EndContainer(ctx *EncoderContext) {}
 
 // ===========================================================================
 
@@ -121,7 +121,7 @@ func (_this MapValueDecorator) BeforeComment(ctx *EncoderContext) {}
 func (_this MapValueDecorator) AfterComment(ctx *EncoderContext) {
 	ctx.WriteNewlineAndOriginAndIndent()
 }
-func (_this MapValueDecorator) EndContainer(ctx *EncoderContext) { errorBadEvent(_this, "End") }
+func (_this MapValueDecorator) EndContainer(ctx *EncoderContext) {}
 
 // ===========================================================================
 

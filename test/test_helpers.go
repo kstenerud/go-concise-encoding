@@ -494,7 +494,7 @@ var basicCompletions = map[reflect.Type]Events{
 	reflect.TypeOf(BMEDIA("e/b")): {ACL(0)},
 }
 
-func getBasicCompletion(stream Events) Events {
+func GetBasicCompletion(stream Events) Events {
 	if len(stream) == 0 {
 		return Events{}
 	}
@@ -517,7 +517,7 @@ func allPossibleEventStreams(
 			newStream = append(newStream, prefix...)
 			newStream = append(newStream, event)
 			newStream = append(newStream, following)
-			newStream = append(newStream, getBasicCompletion(newStream)...)
+			newStream = append(newStream, GetBasicCompletion(newStream)...)
 			newStream = append(newStream, suffix...)
 			newStream = append(newStream, docEnd...)
 			allEvents = append(allEvents, newStream)
@@ -527,7 +527,7 @@ func allPossibleEventStreams(
 			newStream := copyEvents(docBegin)
 			newStream = append(newStream, L(), MARK("a"))
 			newStream = append(newStream, following)
-			newStream = append(newStream, getBasicCompletion(newStream)...)
+			newStream = append(newStream, GetBasicCompletion(newStream)...)
 			newStream = append(newStream, prefix...)
 			newStream = append(newStream, REFL("a"))
 			newStream = append(newStream, suffix...)
@@ -542,7 +542,7 @@ func allPossibleEventStreams(
 			newStream = append(newStream, prefix...)
 			newStream = append(newStream, event)
 			newStream = append(newStream, following)
-			newStream = append(newStream, getBasicCompletion(newStream)...)
+			newStream = append(newStream, GetBasicCompletion(newStream)...)
 			newStream = append(newStream, suffix...)
 			newStream = append(newStream, docEnd...)
 			allEvents = append(allEvents, newStream)
@@ -581,7 +581,7 @@ func allPossibleEventStreams(
 		newStream := copyEvents(docBegin)
 		newStream = append(newStream, prefix...)
 		newStream = append(newStream, event)
-		newStream = append(newStream, getBasicCompletion(newStream)...)
+		newStream = append(newStream, GetBasicCompletion(newStream)...)
 		newStream = append(newStream, suffix...)
 		newStream = append(newStream, docEnd...)
 		allEvents = append(allEvents, newStream)
