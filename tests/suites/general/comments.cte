@@ -11,7 +11,7 @@ c0
 
         {
             "name" = "Comment basic structure"
-            "mustSucceed" = [
+            "must_succeed" = [
                 {
                     "events" = ["cs=" "n=1"]
                     "cte" = "\.^
@@ -127,7 +127,7 @@ multiline*/
                     "events" = ["cm= x " "n=1"]
                 }
             ]
-            "mustFail" = [
+            "must_fail" = [
                 {"cte"="//"}             // No content
                 {"cte"="/*"}             // Unterminated
                 {"cte"="/**"}            // Unterminated
@@ -142,7 +142,7 @@ multiline*/
 
         {
             "name" = "Comment positioning (list)"
-            "encodeDecode" = [
+            "must_succeed" = [
                 {
                     "events" = ["l" "cs= x" "e"]
                     "cte" = "\.^
@@ -189,40 +189,36 @@ multiline*/
     /* x */
 ]^"
                 }
-            ]
-            "decodeEncode" = [
                 {
-                    "cte" = "\.^
+                    "from_cte" = "\.^
 [
     "abc"// x
 ]^"
                     "events" = ["l" "s=abc" "cs= x" "e"]
                 }
                 {
-                    "cte" = "\.^
+                    "from_cte" = "\.^
 [
     "abc" // x
 ]^"
                     "events" = ["l" "s=abc" "cs= x" "e"]
                 }
                 {
-                    "cte" = "\.^
+                    "from_cte" = "\.^
 [
     "abc" /* x */
 ]^"
                     "events" = ["l" "s=abc" "cm= x " "e"]
                 }
-/* TODO: Allow "abc"/* x */
                 {
-                    "cte" = "\.^
+                    "from_cte" = "\.^
 [
     "abc"/* x */
 ]^"
                     "events" = ["l" "s=abc" "cm= x " "e"]
                 }
-*/
                 {
-                    "cte" = "\.^
+                    "from_cte" = "\.^
 [
     /* x */ "abc"
 ]^"
@@ -235,7 +231,7 @@ multiline*/
 
         {
             "name" = "Comment positioning (map)"
-            "encodeDecode" = [
+            "must_succeed" = [
                 {
                     "events" = ["m" "cs= x" "e"]
                     "cte" = "\.^
@@ -298,10 +294,8 @@ multiline*/
     1
 }^"
                 }
-            ]
-            "decodeEncode" = [
                 {
-                    "cte" = "\.^
+                    "from_cte" = "\.^
 {
     "abc"// x
     = 1
@@ -309,7 +303,7 @@ multiline*/
                     "events" = ["m" "s=abc" "cs= x" "n=1" "e"]
                 }
                 {
-                    "cte" = "\.^
+                    "from_cte" = "\.^
 {
     "abc" // x
     = 1
@@ -317,7 +311,7 @@ multiline*/
                     "events" = ["m" "s=abc" "cs= x" "n=1" "e"]
                 }
                 {
-                    "cte" = "\.^
+                    "from_cte" = "\.^
 {
     "abc" = // x
     1
@@ -325,7 +319,7 @@ multiline*/
                     "events" = ["m" "s=abc" "cs= x" "n=1" "e"]
                 }
                 {
-                    "cte" = "\.^
+                    "from_cte" = "\.^
 {
     "abc" /* x */
     = 1
@@ -333,7 +327,7 @@ multiline*/
                     "events" = ["m" "s=abc" "cm= x " "n=1" "e"]
                 }
                 {
-                    "cte" = "\.^
+                    "from_cte" = "\.^
 {
     "abc" = /* x */
     1
@@ -341,7 +335,7 @@ multiline*/
                     "events" = ["m" "s=abc" "cm= x " "n=1" "e"]
                 }
                 {
-                    "cte" = "\.^
+                    "from_cte" = "\.^
 {
     "abc"/* x */
     = 1
@@ -349,7 +343,7 @@ multiline*/
                     "events" = ["m" "s=abc" "cm= x " "n=1" "e"]
                 }
                 {
-                    "cte" = "\.^
+                    "from_cte" = "\.^
 {
     /* x */ "abc" = 1
 }^"
@@ -361,8 +355,143 @@ multiline*/
         // ====================================================================
 
         {
+            "name" = "Comment positioning (record type)"
+            "must_succeed" = [
+                {
+                    "events" = ["cs= x" "rt=a" "e" "n=1"]
+                    "cte" = "\.^
+// x
+@a<>
+1^"
+                }
+                {
+                    "events" = ["cm= x " "rt=a" "e" "n=1"]
+                    "cte" = "\.^
+/* x */
+@a<>
+1^"
+                }
+                {
+                    "events" = ["cs= x" "rt=a" "e" "cs= y" "n=1"]
+                    "cte" = "\.^
+// x
+@a<>
+// y
+1^"
+                }
+                {
+                    "events" = ["cm= x " "rt=a" "e" "cm= y " "n=1"]
+                    "cte" = "\.^
+/* x */
+@a<>
+/* y */
+1^"
+                }
+                {
+                    "events" = ["cs= x" "rt=a" "n=1" "e" "cs= y" "n=1"]
+                    "cte" = "\.^
+// x
+@a<
+    1
+>
+// y
+1^"
+                }
+                {
+                    "events" = ["rt=a" "cs= x" "e" "n=1"]
+                    "cte" = "\.^
+@a<
+    // x
+>
+1^"
+                }
+                {
+                    "events" = ["rt=a" "cm= x " "e" "n=1"]
+                    "cte" = "\.^
+@a<
+    /* x */
+>
+1^"
+                }
+                {
+                    "events" = ["rt=a" "cs= x" "s=abc" "e" "n=1"]
+                    "cte" = "\.^
+@a<
+    // x
+    "abc"
+>
+1^"
+                }
+                {
+                    "events" = ["rt=a" "cm= x " "s=abc" "e" "n=1"]
+                    "cte" = "\.^
+@a<
+    /* x */
+    "abc"
+>
+1^"
+                }
+                {
+                    "events" = ["rt=a" "s=abc" "cs= x" "e" "n=1"]
+                    "cte" = "\.^
+@a<
+    "abc"
+    // x
+>
+1^"
+                }
+                {
+                    "events" = ["rt=a" "s=abc" "cm= x " "e" "n=1"]
+                    "cte" = "\.^
+@a<
+    "abc"
+    /* x */
+>
+1^"
+                }
+                {
+                    "from_cte" = "\.^
+[
+    "abc"// x
+]^"
+                    "events" = ["l" "s=abc" "cs= x" "e"]
+                }
+                {
+                    "from_cte" = "\.^
+[
+    "abc" // x
+]^"
+                    "events" = ["l" "s=abc" "cs= x" "e"]
+                }
+                {
+                    "from_cte" = "\.^
+[
+    "abc" /* x */
+]^"
+                    "events" = ["l" "s=abc" "cm= x " "e"]
+                }
+                {
+                    "from_cte" = "\.^
+[
+    "abc"/* x */
+]^"
+                    "events" = ["l" "s=abc" "cm= x " "e"]
+                }
+                {
+                    "from_cte" = "\.^
+[
+    /* x */ "abc"
+]^"
+                    "events" = ["l" "cm= x " "s=abc" "e"]
+                }
+            ]
+        }
+
+        // ====================================================================
+
+        {
             "name" = "Comment positioning (edge)"
-            "encodeDecode" = [
+            "must_succeed" = [
                 {
                     "events" = ["l" "edge" "cs= x" "n=1" "n=2" "n=3" "e" "e"]
                     "cte" = "\.^
@@ -442,7 +571,7 @@ multiline*/
 
         {
             "name" = "Comment positioning (node)"
-            "encodeDecode" = [
+            "must_succeed" = [
                 {
                     "events" = ["l" "node" "cs= x" "n=1" "e" "e"]
                     "cte" = "\.^
@@ -490,7 +619,7 @@ multiline*/
 
         {
             "name" = "Complex comment"
-            "encodeDecode" = [
+            "must_succeed" = [
                 {
                     "events" = ["cm="
                                     "m"
@@ -514,7 +643,7 @@ multiline*/
 
         {
             "name" = "Comments in array"
-            "mustFail" = [
+            "must_fail" = [
                 {"cte" = "|u8 /**/|"}
                 {"cte" = "\.%%%%
 |u8x // Comment at the start of the array

@@ -369,7 +369,7 @@ mode MODE_STRING_ESCAPE;
 VERBATIM_INIT:  '.' -> mode(MODE_VERBATIM);
 CODEPOINT_INIT: '[' -> mode(MODE_CODEPOINT);
 CONTINUATION:   [\r\n] CHAR_WS* -> popMode;
-ESCAPE_CHAR:    ([rnt"*-_] | '/' | '\\') -> popMode;
+ESCAPE_CHAR:    ([rRnNtT"*_] | '-' | '/' | '\\') -> popMode;
 
 
 // ===============

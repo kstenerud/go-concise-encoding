@@ -629,8 +629,20 @@ test~"]
                     "events"=["refr=test\[9]test"]
                 }
                 {
+                    // Escaped tab (uppercase)
+                    "from_cte"="\.~ $"test\Ttest"~"
+                    "cbe"=|u8x 7f f2 12 74 65 73 74 09 74 65 73 74|
+                    "events"=["refr=test\[9]test"]
+                }
+                {
                     // Escaped CR
                     "from_cte"="\.~ $"test\rtest"~"
+                    "cbe"=|u8x 7f f2 12 74 65 73 74 0d 74 65 73 74|
+                    "events"=["refr=test\[d]test"]
+                }
+                {
+                    // Escaped CR (uppercase)
+                    "from_cte"="\.~ $"test\Rtest"~"
                     "cbe"=|u8x 7f f2 12 74 65 73 74 0d 74 65 73 74|
                     "events"=["refr=test\[d]test"]
                 }
@@ -727,6 +739,13 @@ test~"]
                 {
                     // Escaped newline
                     "from_cte"="\.~ $"test\ntest"~"
+                    "cbe"=|u8x 7f f2 12 74 65 73 74 0a 74 65 73 74|
+                    "events"=["refr=\.~ test
+test~"]
+                }
+                {
+                    // Escaped newline (uppercase)
+                    "from_cte"="\.~ $"test\Ntest"~"
                     "cbe"=|u8x 7f f2 12 74 65 73 74 0a 74 65 73 74|
                     "events"=["refr=\.~ test
 test~"]

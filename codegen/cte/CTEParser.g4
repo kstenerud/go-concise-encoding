@@ -21,7 +21,7 @@
 parser grammar CTEParser;
 options { tokenVocab=CTELexer; }
 
-cte: version WSL recordTypes? separator* value WSL? EOF;
+cte: version WSL (recordTypes | separator)* value WSL? EOF;
 
 version: VERSION;
 
@@ -107,14 +107,14 @@ codepointSequence: CODEPOINT_INIT codepointContents;
 codepointContents: CODEPOINT;
 escapeChar:        ESCAPE_CHAR;
 
-customText:   ARRAY_TYPE_CUSTOM customType CUSTOM_TEXT  (stringContents | customEscape)* CT_STRING_END;
+customText:   ARRAY_TYPE_CUSTOM customType CUSTOM_TEXT (stringContents | customEscape)* CT_STRING_END;
 customEscape: CT_STRING_ESCAPE (verbatimSequence | codepointSequence | escapeChar | CONTINUATION);
 customBinary: (ARRAY_TYPE_CUSTOM customType CUSTOM_BINARY arrayElemByteX (BYTES_WS arrayElemByteX)* BYTES_END)
             | (ARRAY_TYPE_CUSTOM customType CUSTOM_END)
             ;
 customType:   CUSTOM_TYPE;
 
-mediaText:   ARRAY_TYPE_MEDIA mediaType MEDIA_TEXT  (stringContents | mediaEscape)* MEDIA_STRING_END;
+mediaText:   ARRAY_TYPE_MEDIA mediaType MEDIA_TEXT (stringContents | mediaEscape)* MEDIA_STRING_END;
 mediaEscape: MEDIA_STRING_ESCAPE (verbatimSequence | codepointSequence | escapeChar | CONTINUATION);
 mediaBinary: (ARRAY_TYPE_MEDIA mediaType MEDIA_BINARY arrayElemByteX (BYTES_WS arrayElemByteX)* BYTES_END)
            | (ARRAY_TYPE_MEDIA mediaType MEDIA_END)

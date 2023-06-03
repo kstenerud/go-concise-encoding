@@ -396,11 +396,11 @@ func (_this *cteListener) ExitEscapeChar(ctx *parser.EscapeCharContext) {
 	ch := ctx.GetText()[0]
 	var appendCh rune
 	switch ch {
-	case 'r':
+	case 'r', 'R':
 		appendCh = '\r'
-	case 'n':
+	case 'n', 'N':
 		appendCh = '\n'
-	case 't':
+	case 't', 'T':
 		appendCh = '\t'
 	case '"':
 		appendCh = '"'

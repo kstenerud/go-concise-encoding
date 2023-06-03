@@ -32,6 +32,14 @@ import (
 	"github.com/kstenerud/go-equivalence"
 )
 
+// TODO
+// func TestCurrent(t *testing.T) {
+// 	assertDecode(t, `c0
+// 	    |.text/plain|
+
+// 	`)
+// }
+
 // TODO: Generates incorrect line/column when reporting an error
 // func TestBrokenLineColReporting(t *testing.T) {
 // 	v := 0.0
