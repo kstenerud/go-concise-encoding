@@ -50,6 +50,13 @@ func (_this *arrayEncoderEngine) Init(stream *Writer, config *configuration.CTEE
 	_this.config = config
 }
 
+func (_this *arrayEncoderEngine) reset() {
+	_this.arrayChunkLeftover = _this.arrayChunkLeftover[:0]
+	_this.stringBuffer = _this.stringBuffer[:0]
+	_this.remainingChunkElements = 0
+	_this.hasWrittenElements = false
+}
+
 func (_this *arrayEncoderEngine) setElementBitWidth(width int) {
 	_this.arrayElementBitWidth = width
 	_this.arrayElementByteWidth = width / 8
@@ -95,28 +102,24 @@ func (_this *arrayEncoderEngine) EncodeArray(arrayType events.ArrayType, element
 }
 
 func (_this *arrayEncoderEngine) EncodeMedia(mediaType string, data []byte) {
-	_this.stream.WriteFmtNotLF("|.%v", mediaType)
+	_this.stream.WriteFmtNotLF("@%v[", mediaType)
 	_this.stream.WriteHexBytes(data)
 	_this.stream.WriteArrayEnd()
 }
 
 func (_this *arrayEncoderEngine) EncodeCustomBinary(customType uint64, data []byte) {
-	_this.stream.WriteFmtNotLF("|c%v", customType)
+	_this.stream.WriteFmtNotLF("@%v[", customType)
 	_this.stream.WriteHexBytes(data)
 	_this.stream.WriteArrayEnd()
 }
 
 func (_this *arrayEncoderEngine) EncodeCustomText(customType uint64, data string) {
-	_this.stream.WriteFmtNotLF("|c%v ", customType)
+	_this.stream.WriteFmtNotLF("@%v", customType)
 	_this.stream.WriteQuotedString(true, data)
-	_this.stream.WriteArrayEnd()
 }
 
 func (_this *arrayEncoderEngine) BeginArray(arrayType events.ArrayType, onComplete func()) {
-	_this.arrayChunkLeftover = _this.arrayChunkLeftover[:0]
-	_this.stringBuffer = _this.stringBuffer[:0]
-	_this.remainingChunkElements = 0
-	_this.hasWrittenElements = false
+	_this.reset()
 
 	// Default completion operation
 	_this.onComplete = func() {
@@ -129,14 +132,14 @@ func (_this *arrayEncoderEngine) BeginArray(arrayType events.ArrayType, onComple
 }
 
 func (_this *arrayEncoderEngine) BeginMedia(mediaType string, onComplete func()) {
-	_this.arrayChunkLeftover = _this.arrayChunkLeftover[:0]
-	_this.stringBuffer = _this.stringBuffer[:0]
-	_this.remainingChunkElements = 0
-	_this.hasWrittenElements = false
+	_this.reset()
 
 	_this.setElementByteWidth(1)
-	_this.stream.WriteFmtNotLF("|.%v", mediaType)
-	_this.addElementsFunc = func(data []byte) { _this.stream.WriteHexBytes(data) }
+	_this.stream.WriteFmtNotLF("@%v[", mediaType)
+	_this.addElementsFunc = func(data []byte) {
+		_this.writeSpaceIfNotFirstElement()
+		_this.stream.WriteHexBytes(data)
+	}
 	_this.onComplete = func() {
 		_this.stream.WriteArrayEnd()
 		onComplete()
@@ -144,35 +147,28 @@ func (_this *arrayEncoderEngine) BeginMedia(mediaType string, onComplete func())
 }
 
 func (_this *arrayEncoderEngine) BeginCustomText(customType uint64, onComplete func()) {
-	_this.arrayChunkLeftover = _this.arrayChunkLeftover[:0]
-	_this.stringBuffer = _this.stringBuffer[:0]
-	_this.remainingChunkElements = 0
-	_this.hasWrittenElements = false
+	_this.reset()
 
 	_this.setElementByteWidth(1)
-	_this.stream.WriteFmtNotLF("|c%v", customType)
+	_this.stream.WriteFmtNotLF("@%v", customType)
 	_this.addElementsFunc = func(data []byte) {
-		_this.handleFirstElement(data)
 		_this.appendStringbuffer(data)
 	}
 	_this.onComplete = func() {
-		if len(_this.stringBuffer) > 0 {
-			_this.stream.WriteQuotedStringBytes(true, _this.stringBuffer)
-		}
-		_this.stream.WriteArrayEnd()
+		_this.stream.WriteQuotedStringBytes(true, _this.stringBuffer)
 		onComplete()
 	}
 }
 
 func (_this *arrayEncoderEngine) BeginCustomBinary(customType uint64, onComplete func()) {
-	_this.arrayChunkLeftover = _this.arrayChunkLeftover[:0]
-	_this.stringBuffer = _this.stringBuffer[:0]
-	_this.remainingChunkElements = 0
-	_this.hasWrittenElements = false
+	_this.reset()
 
 	_this.setElementByteWidth(1)
-	_this.stream.WriteFmtNotLF("|c%v", customType)
-	_this.addElementsFunc = func(data []byte) { _this.stream.WriteHexBytes(data) }
+	_this.stream.WriteFmtNotLF("@%v[", customType)
+	_this.addElementsFunc = func(data []byte) {
+		_this.writeSpaceIfNotFirstElement()
+		_this.stream.WriteHexBytes(data)
+	}
 	_this.onComplete = func() {
 		_this.stream.WriteArrayEnd()
 		onComplete()
@@ -183,11 +179,11 @@ func (_this *arrayEncoderEngine) endArray() {
 	_this.onComplete()
 }
 
-func (_this *arrayEncoderEngine) handleFirstElement(data []byte) {
-	if !_this.hasWrittenElements && len(data) > 0 {
+func (_this *arrayEncoderEngine) writeSpaceIfNotFirstElement() {
+	if _this.hasWrittenElements {
 		_this.stream.WriteByteNotLF(' ')
-		_this.hasWrittenElements = true
 	}
+	_this.hasWrittenElements = true
 }
 
 func (_this *arrayEncoderEngine) BeginChunk(elementCount uint64, moreChunksFollow bool) {
@@ -200,7 +196,6 @@ func (_this *arrayEncoderEngine) BeginChunk(elementCount uint64, moreChunksFollo
 }
 
 func (_this *arrayEncoderEngine) addBooleanArrayData(data []byte) {
-	_this.handleFirstElement(data)
 	for _this.remainingChunkElements >= 8 && len(data) > 0 {
 		b := data[0]
 		for i := 0; i < 8; i++ {
@@ -273,7 +268,7 @@ func (_this *arrayEncoderEngine) AddArrayData(data []byte) {
 
 func (_this *arrayEncoderEngine) beginArrayBoolean(onComplete func()) {
 	_this.setElementBitWidth(1)
-	_this.stream.WriteStringNotLF("|b")
+	_this.stream.WriteStringNotLF("@b[")
 }
 
 func (_this *arrayEncoderEngine) beginArrayString(onComplete func()) {
@@ -311,7 +306,7 @@ func (_this *arrayEncoderEngine) beginArrayUint8(onComplete func()) {
 	format := arrayFormats8[_this.config.DefaultNumericFormats.Array.Uint8]
 	_this.addElementsFunc = func(data []byte) {
 		for _, b := range data {
-			_this.stream.WriteByteNotLF(' ')
+			_this.writeSpaceIfNotFirstElement()
 			_this.stream.WriteFmtNotLF(format, b)
 		}
 	}
@@ -324,7 +319,7 @@ func (_this *arrayEncoderEngine) beginArrayUint16(onComplete func()) {
 	format := arrayFormats16[_this.config.DefaultNumericFormats.Array.Uint16]
 	_this.addElementsFunc = func(data []byte) {
 		for len(data) > 0 {
-			_this.stream.WriteByteNotLF(' ')
+			_this.writeSpaceIfNotFirstElement()
 			_this.stream.WriteFmtNotLF(format, uint(data[0])|(uint(data[1])<<8))
 			data = data[elemWidth:]
 		}
@@ -338,7 +333,7 @@ func (_this *arrayEncoderEngine) beginArrayUint32(onComplete func()) {
 	format := arrayFormats32[_this.config.DefaultNumericFormats.Array.Uint32]
 	_this.addElementsFunc = func(data []byte) {
 		for len(data) > 0 {
-			_this.stream.WriteByteNotLF(' ')
+			_this.writeSpaceIfNotFirstElement()
 			_this.stream.WriteFmtNotLF(format, uint(data[0])|(uint(data[1])<<8)|(uint(data[2])<<16)|(uint(data[3])<<24))
 			data = data[elemWidth:]
 		}
@@ -352,7 +347,7 @@ func (_this *arrayEncoderEngine) beginArrayUint64(onComplete func()) {
 	format := arrayFormats64[_this.config.DefaultNumericFormats.Array.Uint64]
 	_this.addElementsFunc = func(data []byte) {
 		for len(data) > 0 {
-			_this.stream.WriteByteNotLF(' ')
+			_this.writeSpaceIfNotFirstElement()
 			_this.stream.WriteFmtNotLF(format, uint64(data[0])|(uint64(data[1])<<8)|(uint64(data[2])<<16)|(uint64(data[3])<<24)|
 				(uint64(data[4])<<32)|(uint64(data[5])<<40)|(uint64(data[6])<<48)|(uint64(data[7])<<56))
 			data = data[elemWidth:]
@@ -366,7 +361,7 @@ func (_this *arrayEncoderEngine) beginArrayInt8(onComplete func()) {
 	format := arrayFormats8[_this.config.DefaultNumericFormats.Array.Int8]
 	_this.addElementsFunc = func(data []byte) {
 		for _, b := range data {
-			_this.stream.WriteByteNotLF(' ')
+			_this.writeSpaceIfNotFirstElement()
 			_this.stream.WriteFmtNotLF(format, int8(b))
 		}
 	}
@@ -379,7 +374,7 @@ func (_this *arrayEncoderEngine) beginArrayInt16(onComplete func()) {
 	format := arrayFormats16[_this.config.DefaultNumericFormats.Array.Int16]
 	_this.addElementsFunc = func(data []byte) {
 		for len(data) > 0 {
-			_this.stream.WriteByteNotLF(' ')
+			_this.writeSpaceIfNotFirstElement()
 			_this.stream.WriteFmtNotLF(format, int16(data[0])|(int16(data[1])<<8))
 			data = data[elemWidth:]
 		}
@@ -393,7 +388,7 @@ func (_this *arrayEncoderEngine) beginArrayInt32(onComplete func()) {
 	format := arrayFormats32[_this.config.DefaultNumericFormats.Array.Int32]
 	_this.addElementsFunc = func(data []byte) {
 		for len(data) > 0 {
-			_this.stream.WriteByteNotLF(' ')
+			_this.writeSpaceIfNotFirstElement()
 			_this.stream.WriteFmtNotLF(format, int32(data[0])|(int32(data[1])<<8)|(int32(data[2])<<16)|(int32(data[3])<<24))
 			data = data[elemWidth:]
 		}
@@ -407,7 +402,7 @@ func (_this *arrayEncoderEngine) beginArrayInt64(onComplete func()) {
 	format := arrayFormats64[_this.config.DefaultNumericFormats.Array.Int64]
 	_this.addElementsFunc = func(data []byte) {
 		for len(data) > 0 {
-			_this.stream.WriteByteNotLF(' ')
+			_this.writeSpaceIfNotFirstElement()
 			_this.stream.WriteFmtNotLF(format, int64(data[0])|(int64(data[1])<<8)|(int64(data[2])<<16)|(int64(data[3])<<24)|
 				(int64(data[4])<<32)|(int64(data[5])<<40)|(int64(data[6])<<48)|(int64(data[7])<<56))
 			data = data[elemWidth:]
@@ -422,7 +417,7 @@ func (_this *arrayEncoderEngine) beginArrayFloat16(onComplete func()) {
 	if _this.config.DefaultNumericFormats.Array.Float16 == configuration.CTEEncodingFormatHexadecimal {
 		_this.addElementsFunc = func(data []byte) {
 			for len(data) > 0 {
-				_this.stream.WriteByteNotLF(' ')
+				_this.writeSpaceIfNotFirstElement()
 				bits := uint16(data[0]) | (uint16(data[1]) << 8)
 				_this.stream.WriteFloatHexNoPrefix(common.Float64FromFloat16Bits(bits))
 				data = data[elemWidth:]
@@ -434,7 +429,7 @@ func (_this *arrayEncoderEngine) beginArrayFloat16(onComplete func()) {
 	format := arrayFormatsGeneral[_this.config.DefaultNumericFormats.Array.Float16]
 	_this.addElementsFunc = func(data []byte) {
 		for len(data) > 0 {
-			_this.stream.WriteByteNotLF(' ')
+			_this.writeSpaceIfNotFirstElement()
 			bits := uint16(data[0]) | (uint16(data[1]) << 8)
 			_this.stream.WriteFloatUsingFormat(common.Float64FromFloat16Bits(bits), format)
 			data = data[elemWidth:]
@@ -449,7 +444,7 @@ func (_this *arrayEncoderEngine) beginArrayFloat32(onComplete func()) {
 	if _this.config.DefaultNumericFormats.Array.Float32 == configuration.CTEEncodingFormatHexadecimal {
 		_this.addElementsFunc = func(data []byte) {
 			for len(data) > 0 {
-				_this.stream.WriteByteNotLF(' ')
+				_this.writeSpaceIfNotFirstElement()
 				bits := uint32(data[0]) | (uint32(data[1]) << 8) | (uint32(data[2]) << 16) | (uint32(data[3]) << 24)
 				_this.stream.WriteFloatHexNoPrefix(common.Float64FromFloat32Bits(bits))
 				data = data[elemWidth:]
@@ -461,7 +456,7 @@ func (_this *arrayEncoderEngine) beginArrayFloat32(onComplete func()) {
 	format := arrayFormatsGeneral[_this.config.DefaultNumericFormats.Array.Float32]
 	_this.addElementsFunc = func(data []byte) {
 		for len(data) > 0 {
-			_this.stream.WriteByteNotLF(' ')
+			_this.writeSpaceIfNotFirstElement()
 			bits := uint32(data[0]) | (uint32(data[1]) << 8) | (uint32(data[2]) << 16) | (uint32(data[3]) << 24)
 			_this.stream.WriteFloatUsingFormat(common.Float64FromFloat32Bits(bits), format)
 			data = data[elemWidth:]
@@ -476,7 +471,7 @@ func (_this *arrayEncoderEngine) beginArrayFloat64(onComplete func()) {
 	if _this.config.DefaultNumericFormats.Array.Float64 == configuration.CTEEncodingFormatHexadecimal {
 		_this.addElementsFunc = func(data []byte) {
 			for len(data) > 0 {
-				_this.stream.WriteByteNotLF(' ')
+				_this.writeSpaceIfNotFirstElement()
 				bits := uint64(data[0]) | (uint64(data[1]) << 8) | (uint64(data[2]) << 16) | (uint64(data[3]) << 24) |
 					(uint64(data[4]) << 32) | (uint64(data[5]) << 40) | (uint64(data[6]) << 48) | (uint64(data[7]) << 56)
 				_this.stream.WriteFloatHexNoPrefix(math.Float64frombits(bits))
@@ -489,7 +484,7 @@ func (_this *arrayEncoderEngine) beginArrayFloat64(onComplete func()) {
 	format := arrayFormatsGeneral[_this.config.DefaultNumericFormats.Array.Float64]
 	_this.addElementsFunc = func(data []byte) {
 		for len(data) > 0 {
-			_this.stream.WriteByteNotLF(' ')
+			_this.writeSpaceIfNotFirstElement()
 			bits := uint64(data[0]) | (uint64(data[1]) << 8) | (uint64(data[2]) << 16) | (uint64(data[3]) << 24) |
 				(uint64(data[4]) << 32) | (uint64(data[5]) << 40) | (uint64(data[6]) << 48) | (uint64(data[7]) << 56)
 			_this.stream.WriteFloatUsingFormat(math.Float64frombits(bits), format)
@@ -501,10 +496,10 @@ func (_this *arrayEncoderEngine) beginArrayFloat64(onComplete func()) {
 func (_this *arrayEncoderEngine) beginArrayUID(onComplete func()) {
 	const elemWidth = 16
 	_this.setElementByteWidth(elemWidth)
-	_this.stream.WriteStringNotLF("|u")
+	_this.stream.WriteStringNotLF("@uid[")
 	_this.addElementsFunc = func(data []byte) {
 		for len(data) > 0 {
-			_this.stream.WriteByteNotLF(' ')
+			_this.writeSpaceIfNotFirstElement()
 			_this.stream.WriteUID(data[:elemWidth])
 			data = data[elemWidth:]
 		}
@@ -589,101 +584,101 @@ var arrayFormats64 = []string{
 }
 
 var arrayHeadersUint8 = []string{
-	configuration.CTEEncodingFormatDecimal:               "|u8",
-	configuration.CTEEncodingFormatBinary:                "|u8b",
-	configuration.CTEEncodingFormatBinaryZeroFilled:      "|u8b",
-	configuration.CTEEncodingFormatOctal:                 "|u8o",
-	configuration.CTEEncodingFormatOctalZeroFilled:       "|u8o",
-	configuration.CTEEncodingFormatHexadecimal:           "|u8x",
-	configuration.CTEEncodingFormatHexadecimalZeroFilled: "|u8x",
+	configuration.CTEEncodingFormatDecimal:               "@u8[",
+	configuration.CTEEncodingFormatBinary:                "@u8b[",
+	configuration.CTEEncodingFormatBinaryZeroFilled:      "@u8b[",
+	configuration.CTEEncodingFormatOctal:                 "@u8o[",
+	configuration.CTEEncodingFormatOctalZeroFilled:       "@u8o[",
+	configuration.CTEEncodingFormatHexadecimal:           "@u8x[",
+	configuration.CTEEncodingFormatHexadecimalZeroFilled: "@u8x[",
 }
 var arrayHeadersUint16 = []string{
-	configuration.CTEEncodingFormatDecimal:               "|u16",
-	configuration.CTEEncodingFormatBinary:                "|u16b",
-	configuration.CTEEncodingFormatBinaryZeroFilled:      "|u16b",
-	configuration.CTEEncodingFormatOctal:                 "|u16o",
-	configuration.CTEEncodingFormatOctalZeroFilled:       "|u16o",
-	configuration.CTEEncodingFormatHexadecimal:           "|u16x",
-	configuration.CTEEncodingFormatHexadecimalZeroFilled: "|u16x",
+	configuration.CTEEncodingFormatDecimal:               "@u16[",
+	configuration.CTEEncodingFormatBinary:                "@u16b[",
+	configuration.CTEEncodingFormatBinaryZeroFilled:      "@u16b[",
+	configuration.CTEEncodingFormatOctal:                 "@u16o[",
+	configuration.CTEEncodingFormatOctalZeroFilled:       "@u16o[",
+	configuration.CTEEncodingFormatHexadecimal:           "@u16x[",
+	configuration.CTEEncodingFormatHexadecimalZeroFilled: "@u16x[",
 }
 var arrayHeadersUint32 = []string{
-	configuration.CTEEncodingFormatDecimal:               "|u32",
-	configuration.CTEEncodingFormatBinary:                "|u32b",
-	configuration.CTEEncodingFormatBinaryZeroFilled:      "|u32b",
-	configuration.CTEEncodingFormatOctal:                 "|u32o",
-	configuration.CTEEncodingFormatOctalZeroFilled:       "|u32o",
-	configuration.CTEEncodingFormatHexadecimal:           "|u32x",
-	configuration.CTEEncodingFormatHexadecimalZeroFilled: "|u32x",
+	configuration.CTEEncodingFormatDecimal:               "@u32[",
+	configuration.CTEEncodingFormatBinary:                "@u32b[",
+	configuration.CTEEncodingFormatBinaryZeroFilled:      "@u32b[",
+	configuration.CTEEncodingFormatOctal:                 "@u32o[",
+	configuration.CTEEncodingFormatOctalZeroFilled:       "@u32o[",
+	configuration.CTEEncodingFormatHexadecimal:           "@u32x[",
+	configuration.CTEEncodingFormatHexadecimalZeroFilled: "@u32x[",
 }
 var arrayHeadersUint64 = []string{
-	configuration.CTEEncodingFormatDecimal:               "|u64",
-	configuration.CTEEncodingFormatBinary:                "|u64b",
-	configuration.CTEEncodingFormatBinaryZeroFilled:      "|u64b",
-	configuration.CTEEncodingFormatOctal:                 "|u64o",
-	configuration.CTEEncodingFormatOctalZeroFilled:       "|u64o",
-	configuration.CTEEncodingFormatHexadecimal:           "|u64x",
-	configuration.CTEEncodingFormatHexadecimalZeroFilled: "|u64x",
+	configuration.CTEEncodingFormatDecimal:               "@u64[",
+	configuration.CTEEncodingFormatBinary:                "@u64b[",
+	configuration.CTEEncodingFormatBinaryZeroFilled:      "@u64b[",
+	configuration.CTEEncodingFormatOctal:                 "@u64o[",
+	configuration.CTEEncodingFormatOctalZeroFilled:       "@u64o[",
+	configuration.CTEEncodingFormatHexadecimal:           "@u64x[",
+	configuration.CTEEncodingFormatHexadecimalZeroFilled: "@u64x[",
 }
 var arrayHeadersInt8 = []string{
-	configuration.CTEEncodingFormatDecimal:               "|i8",
-	configuration.CTEEncodingFormatBinary:                "|i8b",
-	configuration.CTEEncodingFormatBinaryZeroFilled:      "|i8b",
-	configuration.CTEEncodingFormatOctal:                 "|i8o",
-	configuration.CTEEncodingFormatOctalZeroFilled:       "|i8o",
-	configuration.CTEEncodingFormatHexadecimal:           "|i8x",
-	configuration.CTEEncodingFormatHexadecimalZeroFilled: "|i8x",
+	configuration.CTEEncodingFormatDecimal:               "@i8[",
+	configuration.CTEEncodingFormatBinary:                "@i8b[",
+	configuration.CTEEncodingFormatBinaryZeroFilled:      "@i8b[",
+	configuration.CTEEncodingFormatOctal:                 "@i8o[",
+	configuration.CTEEncodingFormatOctalZeroFilled:       "@i8o[",
+	configuration.CTEEncodingFormatHexadecimal:           "@i8x[",
+	configuration.CTEEncodingFormatHexadecimalZeroFilled: "@i8x[",
 }
 var arrayHeadersInt16 = []string{
-	configuration.CTEEncodingFormatDecimal:               "|i16",
-	configuration.CTEEncodingFormatBinary:                "|i16b",
-	configuration.CTEEncodingFormatBinaryZeroFilled:      "|i16b",
-	configuration.CTEEncodingFormatOctal:                 "|i16o",
-	configuration.CTEEncodingFormatOctalZeroFilled:       "|i16o",
-	configuration.CTEEncodingFormatHexadecimal:           "|i16x",
-	configuration.CTEEncodingFormatHexadecimalZeroFilled: "|i16x",
+	configuration.CTEEncodingFormatDecimal:               "@i16[",
+	configuration.CTEEncodingFormatBinary:                "@i16b[",
+	configuration.CTEEncodingFormatBinaryZeroFilled:      "@i16b[",
+	configuration.CTEEncodingFormatOctal:                 "@i16o[",
+	configuration.CTEEncodingFormatOctalZeroFilled:       "@i16o[",
+	configuration.CTEEncodingFormatHexadecimal:           "@i16x[",
+	configuration.CTEEncodingFormatHexadecimalZeroFilled: "@i16x[",
 }
 var arrayHeadersInt32 = []string{
-	configuration.CTEEncodingFormatDecimal:               "|i32",
-	configuration.CTEEncodingFormatBinary:                "|i32b",
-	configuration.CTEEncodingFormatBinaryZeroFilled:      "|i32b",
-	configuration.CTEEncodingFormatOctal:                 "|i32o",
-	configuration.CTEEncodingFormatOctalZeroFilled:       "|i32o",
-	configuration.CTEEncodingFormatHexadecimal:           "|i32x",
-	configuration.CTEEncodingFormatHexadecimalZeroFilled: "|i32x",
+	configuration.CTEEncodingFormatDecimal:               "@i32[",
+	configuration.CTEEncodingFormatBinary:                "@i32b[",
+	configuration.CTEEncodingFormatBinaryZeroFilled:      "@i32b[",
+	configuration.CTEEncodingFormatOctal:                 "@i32o[",
+	configuration.CTEEncodingFormatOctalZeroFilled:       "@i32o[",
+	configuration.CTEEncodingFormatHexadecimal:           "@i32x[",
+	configuration.CTEEncodingFormatHexadecimalZeroFilled: "@i32x[",
 }
 var arrayHeadersInt64 = []string{
-	configuration.CTEEncodingFormatDecimal:               "|i64",
-	configuration.CTEEncodingFormatBinary:                "|i64b",
-	configuration.CTEEncodingFormatBinaryZeroFilled:      "|i64b",
-	configuration.CTEEncodingFormatOctal:                 "|i64o",
-	configuration.CTEEncodingFormatOctalZeroFilled:       "|i64o",
-	configuration.CTEEncodingFormatHexadecimal:           "|i64x",
-	configuration.CTEEncodingFormatHexadecimalZeroFilled: "|i64x",
+	configuration.CTEEncodingFormatDecimal:               "@i64[",
+	configuration.CTEEncodingFormatBinary:                "@i64b[",
+	configuration.CTEEncodingFormatBinaryZeroFilled:      "@i64b[",
+	configuration.CTEEncodingFormatOctal:                 "@i64o[",
+	configuration.CTEEncodingFormatOctalZeroFilled:       "@i64o[",
+	configuration.CTEEncodingFormatHexadecimal:           "@i64x[",
+	configuration.CTEEncodingFormatHexadecimalZeroFilled: "@i64x[",
 }
 var arrayHeadersFloat16 = []string{
-	configuration.CTEEncodingFormatDecimal:               "|f16",
-	configuration.CTEEncodingFormatBinary:                "|f16b",
-	configuration.CTEEncodingFormatBinaryZeroFilled:      "|f16b",
-	configuration.CTEEncodingFormatOctal:                 "|f16o",
-	configuration.CTEEncodingFormatOctalZeroFilled:       "|f16o",
-	configuration.CTEEncodingFormatHexadecimal:           "|f16x",
-	configuration.CTEEncodingFormatHexadecimalZeroFilled: "|f16x",
+	configuration.CTEEncodingFormatDecimal:               "@f16[",
+	configuration.CTEEncodingFormatBinary:                "@f16b[",
+	configuration.CTEEncodingFormatBinaryZeroFilled:      "@f16b[",
+	configuration.CTEEncodingFormatOctal:                 "@f16o[",
+	configuration.CTEEncodingFormatOctalZeroFilled:       "@f16o[",
+	configuration.CTEEncodingFormatHexadecimal:           "@f16x[",
+	configuration.CTEEncodingFormatHexadecimalZeroFilled: "@f16x[",
 }
 var arrayHeadersFloat32 = []string{
-	configuration.CTEEncodingFormatDecimal:               "|f32",
-	configuration.CTEEncodingFormatBinary:                "|f32b",
-	configuration.CTEEncodingFormatBinaryZeroFilled:      "|f32b",
-	configuration.CTEEncodingFormatOctal:                 "|f32o",
-	configuration.CTEEncodingFormatOctalZeroFilled:       "|f32o",
-	configuration.CTEEncodingFormatHexadecimal:           "|f32x",
-	configuration.CTEEncodingFormatHexadecimalZeroFilled: "|f32x",
+	configuration.CTEEncodingFormatDecimal:               "@f32[",
+	configuration.CTEEncodingFormatBinary:                "@f32b[",
+	configuration.CTEEncodingFormatBinaryZeroFilled:      "@f32b[",
+	configuration.CTEEncodingFormatOctal:                 "@f32o[",
+	configuration.CTEEncodingFormatOctalZeroFilled:       "@f32o[",
+	configuration.CTEEncodingFormatHexadecimal:           "@f32x[",
+	configuration.CTEEncodingFormatHexadecimalZeroFilled: "@f32x[",
 }
 var arrayHeadersFloat64 = []string{
-	configuration.CTEEncodingFormatDecimal:               "|f64",
-	configuration.CTEEncodingFormatBinary:                "|f64b",
-	configuration.CTEEncodingFormatBinaryZeroFilled:      "|f64b",
-	configuration.CTEEncodingFormatOctal:                 "|f64o",
-	configuration.CTEEncodingFormatOctalZeroFilled:       "|f64o",
-	configuration.CTEEncodingFormatHexadecimal:           "|f64x",
-	configuration.CTEEncodingFormatHexadecimalZeroFilled: "|f64x",
+	configuration.CTEEncodingFormatDecimal:               "@f64[",
+	configuration.CTEEncodingFormatBinary:                "@f64b[",
+	configuration.CTEEncodingFormatBinaryZeroFilled:      "@f64b[",
+	configuration.CTEEncodingFormatOctal:                 "@f64o[",
+	configuration.CTEEncodingFormatOctalZeroFilled:       "@f64o[",
+	configuration.CTEEncodingFormatHexadecimal:           "@f64x[",
+	configuration.CTEEncodingFormatHexadecimalZeroFilled: "@f64x[",
 }

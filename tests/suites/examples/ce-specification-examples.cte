@@ -18,7 +18,7 @@ c0
                     "cte" = "\.%%%%
 null
 %%%%"
-                    "cbe"    = |u8x 7d|
+                    "cbe"    = @u8x[7d]
                     "events" = ["null"]
                 }
             ]
@@ -37,13 +37,13 @@ null
     3
 ]
 %%%%"
-                    "cbe" = |u8x
+                    "cbe" = @u8x[
                         9a
                             01
                             02
                             03
                         9b
-                    |
+                    ]
                     "events" = [
                         "l"
                             "n=1"
@@ -67,12 +67,12 @@ null
     false
 ]
 %%%%"
-                    "cbe" = |u8x
+                    "cbe" = @u8x[
                         9a
                             79
                             78
                         9b
-                    |
+                    ]
                     "events" = [
                         "l"
                             "b=true"
@@ -95,12 +95,12 @@ null
     -1000000000000000000000000000000000000000000000000000
 ]
 %%%%"
-                    "cbe" = |u8x
+                    "cbe" = @u8x[
                         9a
                             2a
                             67 16 00 00 00 00 00 00 e8 15 e9 11 34 a8 3b 4e 01 b8 bf db 4e 3a ac 02
                         9b
-                    |
+                    ]
                     "events" = [
                         "l"
                             "n=42"
@@ -123,12 +123,12 @@ null
     4.195342e-10000
 ]
 %%%%"
-                    "cbe" = |u8x
+                    "cbe" = @u8x[
                         9a
                             76 0b 99 02
                             76 da b8 02 8e 88 80 02
                         9b
-                    |
+                    ]
                     "events" = [
                         "l"
                             "n=-2.81"
@@ -151,12 +151,12 @@ null
     0x1.0p0
 ]
 %%%%"
-                    "cbe" = |u8x
+                    "cbe" = @u8x[
                         9a
                             71 80 fb 23 56
                             70 80 3f
                         9b
-                    |
+                    ]
                     "events" = [
                         "l"
                             "n=0xa.3fb8p+42"
@@ -178,11 +178,11 @@ null
     123e4567-e89b-12d3-a456-426655440000
 ]
 %%%%"
-                    "cbe" = |u8x
+                    "cbe" = @u8x[
                         9a
                             65 12 3e 45 67 e8 9b 12 d3 a4 56 42 66 55 44 00 00
                         9b
-                    |
+                    ]
                     "events" = [
                         "l"
                             "uid=123e4567-e89b-12d3-a456-426655440000"
@@ -205,13 +205,13 @@ null
     -300-12-21
 ]
 %%%%"
-                    "cbe" = |u8x
+                    "cbe" = @u8x[
                         9a
                             7a 05 4d 00
                             7a 7e 24 30
                             7a 95 ef 23
                         9b
-                    |
+                    ]
                     "events" = [
                         "l"
                             "t=2019-08-05"
@@ -238,7 +238,7 @@ null
     09:00:00/Local
 ]
 %%%%"
-                    "cbe" = |u8x
+                    "cbe" = @u8x[
                         9a
                             7b fe 4f d6 dc f7 fd fe
                             7b 32 43 2e d8
@@ -246,7 +246,7 @@ null
                             7b 19 d2 f8 6d f5 ac bc
                             7b 01 80 f4 02 4c
                         9b
-                    |
+                    ]
                     "events" = [
                         "l"
                             "t=23:59:59.999999999"
@@ -273,13 +273,13 @@ null
     5192-11-01/03:00:00/48.86/2.36
 ]
 %%%%"
-                    "cbe" = |u8x
+                    "cbe" = @u8x[
                         9a
                             7c ec e5 f2 19 71 37 4c 00
                             7c 4b 23 a0 82 d6 0e 1a 4d 2f 4c 6f 73 5f 41 6e 67 65 6c 65 73
                             7c 01 80 11 16 9e 06 2d 26 ec 00
                         9b
-                    |
+                    ]
                     "events" = [
                         "l"
                             "t=2019-01-23/14:08:51.941245"
@@ -309,11 +309,11 @@ null
                     ]
                 }
                 {
-                    "cbe" = |u8x
+                    "cbe" = @u8x[
                         9a
                             91 1c 68 74 74 70 73 3a 2f 2f 78 2e 63 6f 6d 2f
                         9b
-                    |
+                    ]
                     "events" = [
                         "l"
                             "brid" "acl=14" "adt=https://x.com/"
@@ -331,11 +331,11 @@ null
                 {
                     "from_cte" = "\.%%%%
 [
-    |u8x 9f 47 cb 9a 3c|
-    |f32 1.5 0x4.f391p100 30 9.31e-30|
-    |i16 0b1001010 0o744 1000 0x7fff|
-    |u 3a04f62f-cea5-4d2a-8598-bc156b99ea3b 1d4e205c-5ea3-46ea-92a3-98d9d3e6332f|
-    |b 1 1 0 1 0|
+    @u8x[9f 47 cb 9a 3c]
+    @f32[1.5 0x4.f391p100 30 9.31e-30]
+    @i16[0b1001010 0o744 1000 0x7fff]
+    @uid[3a04f62f-cea5-4d2a-8598-bc156b99ea3b 1d4e205c-5ea3-46ea-92a3-98d9d3e6332f]
+    @b[1 1 0 1 0]
 ]
 %%%%"
                     "events" = [
@@ -349,7 +349,7 @@ null
                     ]
                 }
                 {
-                    "cbe" = |u8x
+                    "cbe" = @u8x[
                         9a
                             93 0a 9f 47 cb 9a 3c
                             7f 94 00 00 c0 3f 20 72 9e 72 00 00 f0 41 49 d4 3c 0f
@@ -357,7 +357,7 @@ null
                             7f 02 3a 04 f6 2f ce a5 4d 2a 85 98 bc 15 6b 99 ea 3b 1d 4e 20 5c 5e a3 46 ea 92 a3 98 d9 d3 e6 33 2f
                             94 0a 0b
                         9b
-                    |
+                    ]
                     "events" = [
                         "l"
                             "bau8" "acl=5" "adu8x=9f 47 cb 9a 3c"
@@ -379,7 +379,7 @@ null
                 {
                     "cte" = "\.%%%%
 [
-    |.application/x-sh 23 21 2f 62 69 6e 2f 73 68 0a 0a 65 63 68 6f 20 68 65 6c 6c 6f 20 77 6f 72 6c 64 0a|
+    @application/x-sh[23 21 2f 62 69 6e 2f 73 68 0a 0a 65 63 68 6f 20 68 65 6c 6c 6f 20 77 6f 72 6c 64 0a]
 ]
 %%%%"
                     "events" = [
@@ -389,13 +389,13 @@ null
                     ]
                 }
                 {
-                    "cbe" = |u8x
+                    "cbe" = @u8x[
                         9a
                             7f f3
                                 10 61 70 70 6c 69 63 61 74 69 6f 6e 2f 78 2d 73 68 38
                                 23 21 2f 62 69 6e 2f 73 68 0a 0a 65 63 68 6f 20 68 65 6c 6c 6f 20 77 6f 72 6c 64 0a
                         9b
-                    |
+                    ]
                     "events" = [
                         "l"
                             "bmedia=application/x-sh" "acl=28" "adu8x=23 21 2f 62 69 6e 2f 73 68 0a 0a 65 63 68 6f 20 68 65 6c 6c 6f 20 77 6f 72 6c 64 0a"
@@ -413,7 +413,7 @@ null
                 {
                     "cte" = "\.%%%%
 [
-    |c99 f6 28 3c 40 00 00 40 40|
+    @99[f6 28 3c 40 00 00 40 40]
 ]
 %%%%"
                     "events" = [
@@ -423,11 +423,11 @@ null
                     ]
                 }
                 {
-                    "cbe" = |u8x
+                    "cbe" = @u8x[
                         9a
                             92 63 10 f6 28 3c 40 00 00 40 40
                         9b
-                    |
+                    ]
                     "events" = [
                         "l"
                             "bcb=99" "acl=8" "adu8x=f6 28 3c 40 00 00 40 40"
@@ -445,7 +445,7 @@ null
                 {
                     "cte" = "\.%%%%
 [
-    |c99 "2.94+3i"|
+    @99"2.94+3i"
 ]
 %%%%"
                     "events" = [
@@ -472,7 +472,7 @@ null
     null
 ]
 %%%%"
-                    "cbe" = |u8x
+                    "cbe" = @u8x[
                         9a
                             01
                             83 74 77 6f
@@ -481,7 +481,7 @@ null
                             9b
                             7d
                         9b
-                    |
+                    ]
                     "events" = [
                         "l"
                             "n=1"
@@ -512,7 +512,7 @@ null
     2000-01-01 = "New millenium"
 }
 %%%%"
-                    "cbe" = |u8x
+                    "cbe" = @u8x[
                         99
                             01
                             85 61 6c 70 68 61
@@ -528,7 +528,7 @@ null
                             7a 21 00 00
                             8d 4e 65 77 20 6d 69 6c 6c 65 6e 69 75 6d
                         9b
-                    |
+                    ]
                     "events" = [
                         "m"
                             "n=1" "s=alpha"
@@ -580,7 +580,7 @@ null
                     ]
                 }
                 {
-                    "cbe" = |u8x
+                    "cbe" = @u8x[
                         9a
                             97
                                 91 58 68 74 74 70 73 3a 2f 2f 73 70 72 69 6e 67 66 69 65 6c 64 2e 67 6f 76 2f 70 65 6f 70 6c 65 23 68 6f 6d 65 72 5f 73 69 6d 70 73 6f 6e
@@ -593,7 +593,7 @@ null
                                 91 6a 68 74 74 70 73 3a 2f 2f 73 70 72 69 6e 67 66 69 65 6c 64 2e 67 6f 76 2f 65 6d 70 6c 6f 79 65 72 73 2f 6e 75 63 6c 65 61 72 5f 70 6f 77 65 72 5f 70 6c 61 6e 74
                             9b
                         9b
-                    |
+                    ]
                     "events" = [
                         "l"
                             "edge"
@@ -694,7 +694,7 @@ null
                     ]
                 }
                 {
-                    "cbe" = |u8x
+                    "cbe" = @u8x[
                         99
                             91 58 68 74 74 70 73 3a 2f 2f 73 70 72 69 6e 67 66 69 65 6c 64 2e 67 6f 76 2f 70 65 6f 70 6c 65 23 68 6f 6d 65 72 5f 73 69 6d 70 73 6f 6e
                             99
@@ -739,7 +739,7 @@ null
                                     9b
                             9b
                         9b
-                    |
+                    ]
                     "events" = [
                         "m"
                             "brid" "acl=44" "adt=https://springfield.gov/people#homer_simpson" "m"
@@ -804,7 +804,7 @@ null
     )
 )
 %%%%"
-                    "cbe" = |u8x
+                    "cbe" = @u8x[
                         98
                             02
                             98
@@ -825,7 +825,7 @@ null
                                 9b
                             9b
                         9b
-                    |
+                    ]
                     "events" = [
                         "node" "n=2"
                             "node" "n=7"
@@ -861,7 +861,7 @@ null
     }
 ]
 %%%%"
-                    "cbe" = |u8x
+                    "cbe" = @u8x[
                         9a
                             7f f0 0b 72 65 6d 65 6d 62 65 72 5f 6d 65
                                 8d 52 65 6d 65 6d 62 65 72 20 74 68 69 73
@@ -871,7 +871,7 @@ null
                                 01
                             9b
                         9b
-                    |
+                    ]
                     "events" = [
                         "l"
                             "mark=remember_me" "s=Remember this"
@@ -907,7 +907,7 @@ null
     }
 }
 %%%%"
-                    "cbe" = |u8x
+                    "cbe" = @u8x[
                         99
                             8b 73 6f 6d 65 20 6f 62 6a 65 63 74
                             99
@@ -936,7 +936,7 @@ null
                                     77 0d 6c 61 74 65 72 5f 6f 62 6a 5f 72 65 66
                                 9b
                         9b
-                    |
+                    ]
                     "events" = [
                         "m"
                             "s=some object" "m"
@@ -982,7 +982,7 @@ null
                     ]
                 }
                 {
-                    "cbe" = |u8x
+                    "cbe" = @u8x[
                         99
                             90 30 72 65 66 20 74 6f 20 64 6f 63 20 6f 6e 20 66 69 6c 65 73 79 73 74 65 6d
                             7f f2 22 73 6f 6d 65 5f 64 6f 63 75 6d 65 6e 74 2e 63 62 65
@@ -993,7 +993,7 @@ null
                             90 3e 72 65 66 20 74 6f 20 6d 61 72 6b 65 64 20 6f 62 6a 20 69 6e 20 72 65 6d 6f 74 65 20 64 6f 63
                             7f f2 5a 68 74 74 70 73 3a 2f 2f 73 6f 6d 65 77 68 65 72 65 2e 63 6f 6d 2f 6d 79 5f 64 6f 63 75 6d 65 6e 74 2e 63 62 65 23 77 69 64 67 65 74 73
                         9b
-                    |
+                    ]
                     "events" = [
                         "m"
                             "bs" "acl=24" "adt=ref to doc on filesystem" "brefr" "acl=17" "adt=some_document.cbe"
@@ -1028,7 +1028,7 @@ null
     @"mailto:someone@somewhere.com"
     "a" = "We're inside a string, so /* this is not a comment; it's part of the string! */"
     "data" = // A comment before some binary data
-    |u8 1 2 3|
+    @u8[1 2 3]
     // Comment before the end of the top-level object (the map), but not after!
 }
 %%%%"

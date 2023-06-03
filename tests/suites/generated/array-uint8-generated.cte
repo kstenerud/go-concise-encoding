@@ -12,15 +12,15 @@ c0
             "name" = "Empty Array"
             "must_succeed" = [
                 {
-                    "to_cbe" = |u8x 93 00|
-                    "cte" = "|u8|"
+                    "to_cbe" = @u8x[93 00]
+                    "cte" = "@u8[]"
                     "events" = [
                         "au8"
                     ]
                 }
                 {
-                    "cbe" = |u8x 93 00|
-                    "to_cte" = "|u8|"
+                    "cbe" = @u8x[93 00]
+                    "to_cte" = "@u8[]"
                     "events" = [
                         "bau8"
                         "acl=0"
@@ -32,106 +32,106 @@ c0
             "name" = "Short Array"
             "must_succeed" = [
                 {
-                    "to_cbe" = |u8x 93 02 f9|
-                    "cte" = "|u8 249|"
+                    "to_cbe" = @u8x[93 02 f9]
+                    "cte" = "@u8[249]"
                     "events" = [
                         "au8=0xf9"
                     ]
                 }
                 {
-                    "to_cbe" = |u8x 93 04 f9 fa|
-                    "cte" = "|u8 249 250|"
+                    "to_cbe" = @u8x[93 04 f9 fa]
+                    "cte" = "@u8[249 250]"
                     "events" = [
                         "au8=0xf9 0xfa"
                     ]
                 }
                 {
-                    "to_cbe" = |u8x 93 06 f9 fa fb|
-                    "cte" = "|u8 249 250 251|"
+                    "to_cbe" = @u8x[93 06 f9 fa fb]
+                    "cte" = "@u8[249 250 251]"
                     "events" = [
                         "au8=0xf9 0xfa 0xfb"
                     ]
                 }
                 {
-                    "to_cbe" = |u8x 93 08 f9 fa fb fc|
-                    "cte" = "|u8 249 250 251 252|"
+                    "to_cbe" = @u8x[93 08 f9 fa fb fc]
+                    "cte" = "@u8[249 250 251 252]"
                     "events" = [
                         "au8=0xf9 0xfa 0xfb 0xfc"
                     ]
                 }
                 {
-                    "to_cbe" = |u8x 93 0a f9 fa fb fc fd|
-                    "cte" = "|u8 249 250 251 252 253|"
+                    "to_cbe" = @u8x[93 0a f9 fa fb fc fd]
+                    "cte" = "@u8[249 250 251 252 253]"
                     "events" = [
                         "au8=0xf9 0xfa 0xfb 0xfc 0xfd"
                     ]
                 }
                 {
-                    "to_cbe" = |u8x 93 0c f9 fa fb fc fd fe|
-                    "cte" = "|u8 249 250 251 252 253 254|"
+                    "to_cbe" = @u8x[93 0c f9 fa fb fc fd fe]
+                    "cte" = "@u8[249 250 251 252 253 254]"
                     "events" = [
                         "au8=0xf9 0xfa 0xfb 0xfc 0xfd 0xfe"
                     ]
                 }
                 {
-                    "to_cbe" = |u8x 93 0e f9 fa fb fc fd fe ff|
-                    "cte" = "|u8 249 250 251 252 253 254 255|"
+                    "to_cbe" = @u8x[93 0e f9 fa fb fc fd fe ff]
+                    "cte" = "@u8[249 250 251 252 253 254 255]"
                     "events" = [
                         "au8=0xf9 0xfa 0xfb 0xfc 0xfd 0xfe 0xff"
                     ]
                 }
                 {
-                    "to_cbe" = |u8x 93 10 f9 fa fb fc fd fe ff 00|
-                    "cte" = "|u8 249 250 251 252 253 254 255 0|"
+                    "to_cbe" = @u8x[93 10 f9 fa fb fc fd fe ff 00]
+                    "cte" = "@u8[249 250 251 252 253 254 255 0]"
                     "events" = [
                         "au8=0xf9 0xfa 0xfb 0xfc 0xfd 0xfe 0xff 0x00"
                     ]
                 }
                 {
-                    "to_cbe" = |u8x 93 12 f9 fa fb fc fd fe ff 00 01|
-                    "cte" = "|u8 249 250 251 252 253 254 255 0 1|"
+                    "to_cbe" = @u8x[93 12 f9 fa fb fc fd fe ff 00 01]
+                    "cte" = "@u8[249 250 251 252 253 254 255 0 1]"
                     "events" = [
                         "au8=0xf9 0xfa 0xfb 0xfc 0xfd 0xfe 0xff 0x00 0x01"
                     ]
                 }
                 {
-                    "to_cbe" = |u8x 93 14 f9 fa fb fc fd fe ff 00 01 02|
-                    "cte" = "|u8 249 250 251 252 253 254 255 0 1 2|"
+                    "to_cbe" = @u8x[93 14 f9 fa fb fc fd fe ff 00 01 02]
+                    "cte" = "@u8[249 250 251 252 253 254 255 0 1 2]"
                     "events" = [
                         "au8=0xf9 0xfa 0xfb 0xfc 0xfd 0xfe 0xff 0x00 0x01 0x02"
                     ]
                 }
                 {
-                    "to_cbe" = |u8x 93 16 f9 fa fb fc fd fe ff 00 01 02 03|
-                    "cte" = "|u8 249 250 251 252 253 254 255 0 1 2 3|"
+                    "to_cbe" = @u8x[93 16 f9 fa fb fc fd fe ff 00 01 02 03]
+                    "cte" = "@u8[249 250 251 252 253 254 255 0 1 2 3]"
                     "events" = [
                         "au8=0xf9 0xfa 0xfb 0xfc 0xfd 0xfe 0xff 0x00 0x01 0x02 0x03"
                     ]
                 }
                 {
-                    "to_cbe" = |u8x 93 18 f9 fa fb fc fd fe ff 00 01 02 03 04|
-                    "cte" = "|u8 249 250 251 252 253 254 255 0 1 2 3 4|"
+                    "to_cbe" = @u8x[93 18 f9 fa fb fc fd fe ff 00 01 02 03 04]
+                    "cte" = "@u8[249 250 251 252 253 254 255 0 1 2 3 4]"
                     "events" = [
                         "au8=0xf9 0xfa 0xfb 0xfc 0xfd 0xfe 0xff 0x00 0x01 0x02 0x03 0x04"
                     ]
                 }
                 {
-                    "to_cbe" = |u8x 93 1a f9 fa fb fc fd fe ff 00 01 02 03 04 05|
-                    "cte" = "|u8 249 250 251 252 253 254 255 0 1 2 3 4 5|"
+                    "to_cbe" = @u8x[93 1a f9 fa fb fc fd fe ff 00 01 02 03 04 05]
+                    "cte" = "@u8[249 250 251 252 253 254 255 0 1 2 3 4 5]"
                     "events" = [
                         "au8=0xf9 0xfa 0xfb 0xfc 0xfd 0xfe 0xff 0x00 0x01 0x02 0x03 0x04 0x05"
                     ]
                 }
                 {
-                    "to_cbe" = |u8x 93 1c f9 fa fb fc fd fe ff 00 01 02 03 04 05 06|
-                    "cte" = "|u8 249 250 251 252 253 254 255 0 1 2 3 4 5 6|"
+                    "to_cbe" = @u8x[93 1c f9 fa fb fc fd fe ff 00 01 02 03 04 05 06]
+                    "cte" = "@u8[249 250 251 252 253 254 255 0 1 2 3 4 5 6]"
                     "events" = [
                         "au8=0xf9 0xfa 0xfb 0xfc 0xfd 0xfe 0xff 0x00 0x01 0x02 0x03 0x04 0x05 0x06"
                     ]
                 }
                 {
-                    "to_cbe" = |u8x 93 1e f9 fa fb fc fd fe ff 00 01 02 03 04 05 06 07|
-                    "cte" = "|u8 249 250 251 252 253 254 255 0 1 2 3 4 5 6 7|"
+                    "to_cbe" = @u8x[93 1e f9 fa fb fc fd fe ff 00 01 02 03 04 05 06 07]
+                    "cte" = "@u8[249 250 251 252 253 254 255 0 1 2 3 4 5 6 7]"
                     "events" = [
                         "au8=0xf9 0xfa 0xfb 0xfc 0xfd 0xfe 0xff 0x00 0x01 0x02 0x03 0x04 0x05 0x06 0x07"
                     ]
@@ -142,16 +142,16 @@ c0
             "name" = "Chunked Array"
             "must_succeed" = [
                 {
-                    "cbe" = |u8x 93 00|
-                    "to_cte" = "|u8|"
+                    "cbe" = @u8x[93 00]
+                    "to_cte" = "@u8[]"
                     "events" = [
                         "bau8"
                         "acl=0"
                     ]
                 }
                 {
-                    "cbe" = |u8x 93 02 f9|
-                    "to_cte" = "|u8 249|"
+                    "cbe" = @u8x[93 02 f9]
+                    "to_cte" = "@u8[249]"
                     "events" = [
                         "bau8"
                         "acl=1"
@@ -159,8 +159,8 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 93 04 f9 fa|
-                    "to_cte" = "|u8 249 250|"
+                    "cbe" = @u8x[93 04 f9 fa]
+                    "to_cte" = "@u8[249 250]"
                     "events" = [
                         "bau8"
                         "acl=2"
@@ -168,8 +168,8 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 93 06 f9 fa fb|
-                    "to_cte" = "|u8 249 250 251|"
+                    "cbe" = @u8x[93 06 f9 fa fb]
+                    "to_cte" = "@u8[249 250 251]"
                     "events" = [
                         "bau8"
                         "acl=3"
@@ -177,8 +177,8 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 93 08 f9 fa fb fc|
-                    "to_cte" = "|u8 249 250 251 252|"
+                    "cbe" = @u8x[93 08 f9 fa fb fc]
+                    "to_cte" = "@u8[249 250 251 252]"
                     "events" = [
                         "bau8"
                         "acl=4"
@@ -186,8 +186,8 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 93 0a f9 fa fb fc fd|
-                    "to_cte" = "|u8 249 250 251 252 253|"
+                    "cbe" = @u8x[93 0a f9 fa fb fc fd]
+                    "to_cte" = "@u8[249 250 251 252 253]"
                     "events" = [
                         "bau8"
                         "acl=5"
@@ -195,8 +195,8 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 93 0c f9 fa fb fc fd fe|
-                    "to_cte" = "|u8 249 250 251 252 253 254|"
+                    "cbe" = @u8x[93 0c f9 fa fb fc fd fe]
+                    "to_cte" = "@u8[249 250 251 252 253 254]"
                     "events" = [
                         "bau8"
                         "acl=6"
@@ -204,8 +204,8 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 93 0e f9 fa fb fc fd fe ff|
-                    "to_cte" = "|u8 249 250 251 252 253 254 255|"
+                    "cbe" = @u8x[93 0e f9 fa fb fc fd fe ff]
+                    "to_cte" = "@u8[249 250 251 252 253 254 255]"
                     "events" = [
                         "bau8"
                         "acl=7"
@@ -213,8 +213,8 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 93 10 f9 fa fb fc fd fe ff 00|
-                    "to_cte" = "|u8 249 250 251 252 253 254 255 0|"
+                    "cbe" = @u8x[93 10 f9 fa fb fc fd fe ff 00]
+                    "to_cte" = "@u8[249 250 251 252 253 254 255 0]"
                     "events" = [
                         "bau8"
                         "acl=8"
@@ -222,8 +222,8 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 93 12 f9 fa fb fc fd fe ff 00 01|
-                    "to_cte" = "|u8 249 250 251 252 253 254 255 0 1|"
+                    "cbe" = @u8x[93 12 f9 fa fb fc fd fe ff 00 01]
+                    "to_cte" = "@u8[249 250 251 252 253 254 255 0 1]"
                     "events" = [
                         "bau8"
                         "acl=9"
@@ -231,8 +231,8 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 93 14 f9 fa fb fc fd fe ff 00 01 02|
-                    "to_cte" = "|u8 249 250 251 252 253 254 255 0 1 2|"
+                    "cbe" = @u8x[93 14 f9 fa fb fc fd fe ff 00 01 02]
+                    "to_cte" = "@u8[249 250 251 252 253 254 255 0 1 2]"
                     "events" = [
                         "bau8"
                         "acl=10"
@@ -240,8 +240,8 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 93 16 f9 fa fb fc fd fe ff 00 01 02 03|
-                    "to_cte" = "|u8 249 250 251 252 253 254 255 0 1 2 3|"
+                    "cbe" = @u8x[93 16 f9 fa fb fc fd fe ff 00 01 02 03]
+                    "to_cte" = "@u8[249 250 251 252 253 254 255 0 1 2 3]"
                     "events" = [
                         "bau8"
                         "acl=11"
@@ -249,8 +249,8 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 93 18 f9 fa fb fc fd fe ff 00 01 02 03 04|
-                    "to_cte" = "|u8 249 250 251 252 253 254 255 0 1 2 3 4|"
+                    "cbe" = @u8x[93 18 f9 fa fb fc fd fe ff 00 01 02 03 04]
+                    "to_cte" = "@u8[249 250 251 252 253 254 255 0 1 2 3 4]"
                     "events" = [
                         "bau8"
                         "acl=12"
@@ -258,8 +258,8 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 93 1a f9 fa fb fc fd fe ff 00 01 02 03 04 05|
-                    "to_cte" = "|u8 249 250 251 252 253 254 255 0 1 2 3 4 5|"
+                    "cbe" = @u8x[93 1a f9 fa fb fc fd fe ff 00 01 02 03 04 05]
+                    "to_cte" = "@u8[249 250 251 252 253 254 255 0 1 2 3 4 5]"
                     "events" = [
                         "bau8"
                         "acl=13"
@@ -267,8 +267,8 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 93 1c f9 fa fb fc fd fe ff 00 01 02 03 04 05 06|
-                    "to_cte" = "|u8 249 250 251 252 253 254 255 0 1 2 3 4 5 6|"
+                    "cbe" = @u8x[93 1c f9 fa fb fc fd fe ff 00 01 02 03 04 05 06]
+                    "to_cte" = "@u8[249 250 251 252 253 254 255 0 1 2 3 4 5 6]"
                     "events" = [
                         "bau8"
                         "acl=14"
@@ -276,8 +276,8 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 93 1e f9 fa fb fc fd fe ff 00 01 02 03 04 05 06 07|
-                    "to_cte" = "|u8 249 250 251 252 253 254 255 0 1 2 3 4 5 6 7|"
+                    "cbe" = @u8x[93 1e f9 fa fb fc fd fe ff 00 01 02 03 04 05 06 07]
+                    "to_cte" = "@u8[249 250 251 252 253 254 255 0 1 2 3 4 5 6 7]"
                     "events" = [
                         "bau8"
                         "acl=15"
@@ -285,8 +285,8 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 93 20 f9 fa fb fc fd fe ff 00 01 02 03 04 05 06 07 08|
-                    "to_cte" = "|u8 249 250 251 252 253 254 255 0 1 2 3 4 5 6 7 8|"
+                    "cbe" = @u8x[93 20 f9 fa fb fc fd fe ff 00 01 02 03 04 05 06 07 08]
+                    "to_cte" = "@u8[249 250 251 252 253 254 255 0 1 2 3 4 5 6 7 8]"
                     "events" = [
                         "bau8"
                         "acl=16"
@@ -294,8 +294,8 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 93 22 f9 fa fb fc fd fe ff 00 01 02 03 04 05 06 07 08 09|
-                    "to_cte" = "|u8 249 250 251 252 253 254 255 0 1 2 3 4 5 6 7 8 9|"
+                    "cbe" = @u8x[93 22 f9 fa fb fc fd fe ff 00 01 02 03 04 05 06 07 08 09]
+                    "to_cte" = "@u8[249 250 251 252 253 254 255 0 1 2 3 4 5 6 7 8 9]"
                     "events" = [
                         "bau8"
                         "acl=17"
@@ -303,8 +303,8 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 93 24 f9 fa fb fc fd fe ff 00 01 02 03 04 05 06 07 08 09 0a|
-                    "to_cte" = "|u8 249 250 251 252 253 254 255 0 1 2 3 4 5 6 7 8 9 10|"
+                    "cbe" = @u8x[93 24 f9 fa fb fc fd fe ff 00 01 02 03 04 05 06 07 08 09 0a]
+                    "to_cte" = "@u8[249 250 251 252 253 254 255 0 1 2 3 4 5 6 7 8 9 10]"
                     "events" = [
                         "bau8"
                         "acl=18"
@@ -312,8 +312,8 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 93 26 f9 fa fb fc fd fe ff 00 01 02 03 04 05 06 07 08 09 0a 0b|
-                    "to_cte" = "|u8 249 250 251 252 253 254 255 0 1 2 3 4 5 6 7 8 9 10 11|"
+                    "cbe" = @u8x[93 26 f9 fa fb fc fd fe ff 00 01 02 03 04 05 06 07 08 09 0a 0b]
+                    "to_cte" = "@u8[249 250 251 252 253 254 255 0 1 2 3 4 5 6 7 8 9 10 11]"
                     "events" = [
                         "bau8"
                         "acl=19"
@@ -321,8 +321,8 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 93 28 f9 fa fb fc fd fe ff 00 01 02 03 04 05 06 07 08 09 0a 0b 0c|
-                    "to_cte" = "|u8 249 250 251 252 253 254 255 0 1 2 3 4 5 6 7 8 9 10 11 12|"
+                    "cbe" = @u8x[93 28 f9 fa fb fc fd fe ff 00 01 02 03 04 05 06 07 08 09 0a 0b 0c]
+                    "to_cte" = "@u8[249 250 251 252 253 254 255 0 1 2 3 4 5 6 7 8 9 10 11 12]"
                     "events" = [
                         "bau8"
                         "acl=20"
@@ -335,8 +335,8 @@ c0
             "name" = "Various Array Elements"
             "must_succeed" = [
                 {
-                    "cbe" = |u8x 93 38 00 08 10 18 20 28 30 38 40 48 50 58 60 68 70 78 80 88 90 98 a0 a8 b0 b8 c0 c8 d0 d8|
-                    "to_cte" = "|u8 0 8 16 24 32 40 48 56 64 72 80 88 96 104 112 120 128 136 144 152 160 168 176 184 192 200 208 216|"
+                    "cbe" = @u8x[93 38 00 08 10 18 20 28 30 38 40 48 50 58 60 68 70 78 80 88 90 98 a0 a8 b0 b8 c0 c8 d0 d8]
+                    "to_cte" = "@u8[0 8 16 24 32 40 48 56 64 72 80 88 96 104 112 120 128 136 144 152 160 168 176 184 192 200 208 216]"
                     "events" = [
                         "bau8"
                         "acl=28"
@@ -344,7 +344,7 @@ c0
                     ]
                 }
                 {
-                    "from_cte" = "|u8 8 0b1011 0B1010 0o31 0O33 0x10 0X15|"
+                    "from_cte" = "@u8[8 0b1011 0B1010 0o31 0O33 0x10 0X15]"
                     "events" = [
                         "au8=0x08 0x0b 0x0a 0x19 0x1b 0x10 0x15"
                     ]
@@ -355,22 +355,22 @@ c0
             "name" = "Base 2, 8, 16"
             "must_succeed" = [
                 {
-                    "to_cbe" = |u8x 93 0e 00 24 48 6c 90 b4 d8|
-                    "from_cte" = "|u8b 0 100100 1001000 1101100 10010000 10110100 11011000|"
+                    "to_cbe" = @u8x[93 0e 00 24 48 6c 90 b4 d8]
+                    "from_cte" = "@u8b[0 100100 1001000 1101100 10010000 10110100 11011000]"
                     "events" = [
                         "au8=0x00 0x24 0x48 0x6c 0x90 0xb4 0xd8"
                     ]
                 }
                 {
-                    "to_cbe" = |u8x 93 0e 00 24 48 6c 90 b4 d8|
-                    "from_cte" = "|u8o 0 44 110 154 220 264 330|"
+                    "to_cbe" = @u8x[93 0e 00 24 48 6c 90 b4 d8]
+                    "from_cte" = "@u8o[0 44 110 154 220 264 330]"
                     "events" = [
                         "au8=0x00 0x24 0x48 0x6c 0x90 0xb4 0xd8"
                     ]
                 }
                 {
-                    "to_cbe" = |u8x 93 0e 00 24 48 6c 90 b4 d8|
-                    "from_cte" = "|u8x 0 24 48 6c 90 b4 d8|"
+                    "to_cbe" = @u8x[93 0e 00 24 48 6c 90 b4 d8]
+                    "from_cte" = "@u8x[0 24 48 6c 90 b4 d8]"
                     "events" = [
                         "au8=0x00 0x24 0x48 0x6c 0x90 0xb4 0xd8"
                     ]
@@ -381,8 +381,8 @@ c0
             "name" = "Chunking Variations"
             "must_succeed" = [
                 {
-                    "cbe" = |u8x 93 01 03 00 05 00 24 07 00 24 48 09 00 24 48 6c 0b 00 24 48 6c 90 0d 00 24 48 6c 90 b4 00|
-                    "to_cte" = "|u8 0 0 36 0 36 72 0 36 72 108 0 36 72 108 144 0 36 72 108 144 180|"
+                    "cbe" = @u8x[93 01 03 00 05 00 24 07 00 24 48 09 00 24 48 6c 0b 00 24 48 6c 90 0d 00 24 48 6c 90 b4 00]
+                    "to_cte" = "@u8[0 0 36 0 36 72 0 36 72 108 0 36 72 108 144 0 36 72 108 144 180]"
                     "events" = [
                         "bau8"
                         "acm=0"
@@ -402,8 +402,8 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 93 09 00 24 48 6c 06 00 24 48|
-                    "to_cte" = "|u8 0 36 72 108 0 36 72|"
+                    "cbe" = @u8x[93 09 00 24 48 6c 06 00 24 48]
+                    "to_cte" = "@u8[0 36 72 108 0 36 72]"
                     "events" = [
                         "bau8"
                         "acm=4"
@@ -418,8 +418,8 @@ c0
             "name" = "Edge Case Element Values"
             "must_succeed" = [
                 {
-                    "cbe" = |u8x 93 5a 00 01 7f 80 81 ff 00 01 ff 00 01 ff 00 01 ff 00 01 ff 00 01 ff ff 81 80 7f 01 00 ff 01 00 ff 01 00 ff 01 00 ff 01 00 ff 01 00 00 01 ff|
-                    "to_cte" = "|u8 0 1 127 128 129 255 0 1 255 0 1 255 0 1 255 0 1 255 0 1 255 255 129 128 127 1 0 255 1 0 255 1 0 255 1 0 255 1 0 255 1 0 0 1 255|"
+                    "cbe" = @u8x[93 5a 00 01 7f 80 81 ff 00 01 ff 00 01 ff 00 01 ff 00 01 ff 00 01 ff ff 81 80 7f 01 00 ff 01 00 ff 01 00 ff 01 00 ff 01 00 ff 01 00 00 01 ff]
+                    "to_cte" = "@u8[0 1 127 128 129 255 0 1 255 0 1 255 0 1 255 0 1 255 0 1 255 255 129 128 127 1 0 255 1 0 255 1 0 255 1 0 255 1 0 255 1 0 0 1 255]"
                     "events" = [
                         "bau8"
                         "acl=45"
@@ -432,49 +432,49 @@ c0
             "name" = "Whitespace at end of array"
             "must_succeed" = [
                 {
-                    "from_cte" = "|u8 |"
+                    "from_cte" = "@u8[ ]"
                     "events" = [
                         "au8"
                     ]
                 }
                 {
-                    "from_cte" = "|u8 1 |"
+                    "from_cte" = "@u8[1 ]"
                     "events" = [
                         "au8=0x01"
                     ]
                 }
                 {
-                    "from_cte" = "|u8b |"
+                    "from_cte" = "@u8b[ ]"
                     "events" = [
                         "au8"
                     ]
                 }
                 {
-                    "from_cte" = "|u8b 1 |"
+                    "from_cte" = "@u8b[ 1 ]"
                     "events" = [
                         "au8=0x01"
                     ]
                 }
                 {
-                    "from_cte" = "|u8o |"
+                    "from_cte" = "@u8o[ ]"
                     "events" = [
                         "au8"
                     ]
                 }
                 {
-                    "from_cte" = "|u8o 1 |"
+                    "from_cte" = "@u8o[ 1 ]"
                     "events" = [
                         "au8=0x01"
                     ]
                 }
                 {
-                    "from_cte" = "|u8x |"
+                    "from_cte" = "@u8x[ ]"
                     "events" = [
                         "au8"
                     ]
                 }
                 {
-                    "from_cte" = "|u8x 1 |"
+                    "from_cte" = "@u8x[ 1 ]"
                     "events" = [
                         "au8=0x01"
                     ]
@@ -485,19 +485,19 @@ c0
             "name" = "Space before array type"
             "must_fail" = [
                 {
-                    "cte" = "c0 | u8|"
+                    "cte" = "c0 @ u8[]"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "c0 | u8b|"
+                    "cte" = "c0 @ u8b[]"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "c0 | u8o|"
+                    "cte" = "c0 @ u8o[]"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "c0 | u8x|"
+                    "cte" = "c0 @ u8x[]"
                     "raw_document" = true
                 }
             ]
@@ -506,70 +506,70 @@ c0
             "name" = "Truncated Array"
             "must_fail" = [
                 {
-                    "cbe" = |u8x 93|
+                    "cbe" = @u8x[93]
                 }
                 {
-                    "cbe" = |u8x 93 02|
+                    "cbe" = @u8x[93 02]
                 }
                 {
-                    "cbe" = |u8x 93 04 00|
+                    "cbe" = @u8x[93 04 00]
                 }
                 {
-                    "cbe" = |u8x 93 02|
+                    "cbe" = @u8x[93 02]
                 }
                 {
-                    "cbe" = |u8x 93 06 00|
+                    "cbe" = @u8x[93 06 00]
                 }
                 {
-                    "cbe" = |u8x 93 02|
+                    "cbe" = @u8x[93 02]
                 }
                 {
-                    "cbe" = |u8x 93 08 00 01|
+                    "cbe" = @u8x[93 08 00 01]
                 }
                 {
-                    "cbe" = |u8x 93 04 00|
+                    "cbe" = @u8x[93 04 00]
                 }
                 {
-                    "cbe" = |u8x 93 0a 00 01|
+                    "cbe" = @u8x[93 0a 00 01]
                 }
                 {
-                    "cbe" = |u8x 93 04 00|
+                    "cbe" = @u8x[93 04 00]
                 }
                 {
-                    "cbe" = |u8x 93 0c 00 01 7f|
+                    "cbe" = @u8x[93 0c 00 01 7f]
                 }
                 {
-                    "cbe" = |u8x 93 06 00 01|
+                    "cbe" = @u8x[93 06 00 01]
                 }
                 {
-                    "cbe" = |u8x 93 0e 00 01 7f|
+                    "cbe" = @u8x[93 0e 00 01 7f]
                 }
                 {
-                    "cbe" = |u8x 93 06 00 01|
+                    "cbe" = @u8x[93 06 00 01]
                 }
                 {
-                    "cbe" = |u8x 93 10 00 01 7f 80|
+                    "cbe" = @u8x[93 10 00 01 7f 80]
                 }
                 {
-                    "cbe" = |u8x 93 08 00 01 7f|
+                    "cbe" = @u8x[93 08 00 01 7f]
                 }
                 {
-                    "cbe" = |u8x 93 12 00 01 7f 80|
+                    "cbe" = @u8x[93 12 00 01 7f 80]
                 }
                 {
-                    "cbe" = |u8x 93 08 00 01 7f|
+                    "cbe" = @u8x[93 08 00 01 7f]
                 }
                 {
-                    "cbe" = |u8x 93 14 00 01 7f 80 81|
+                    "cbe" = @u8x[93 14 00 01 7f 80 81]
                 }
                 {
-                    "cbe" = |u8x 93 0a 00 01 7f 80|
+                    "cbe" = @u8x[93 0a 00 01 7f 80]
                 }
                 {
-                    "cte" = "|u8"
+                    "cte" = "@u8["
                 }
                 {
-                    "cte" = "|u8 0"
+                    "cte" = "@u8[0"
                 }
             ]
         }
@@ -577,46 +577,46 @@ c0
             "name" = "Element value out of range"
             "must_fail" = [
                 {
-                    "cte" = "|u8b 100000000|"
+                    "cte" = "@u8b[100000000]"
                 }
                 {
-                    "cte" = "|u8o 400|"
+                    "cte" = "@u8o[400]"
                 }
                 {
-                    "cte" = "|u8x 100|"
+                    "cte" = "@u8x[100]"
                 }
                 {
-                    "cte" = "|u8 256|"
+                    "cte" = "@u8[256]"
                 }
                 {
-                    "cte" = "|u8 0b100000000|"
+                    "cte" = "@u8[0b100000000]"
                 }
                 {
-                    "cte" = "|u8 0o400|"
+                    "cte" = "@u8[0o400]"
                 }
                 {
-                    "cte" = "|u8 0x100|"
+                    "cte" = "@u8[0x100]"
                 }
                 {
-                    "cte" = "|u8b -1|"
+                    "cte" = "@u8b[-1]"
                 }
                 {
-                    "cte" = "|u8o -1|"
+                    "cte" = "@u8o[-1]"
                 }
                 {
-                    "cte" = "|u8x -1|"
+                    "cte" = "@u8x[-1]"
                 }
                 {
-                    "cte" = "|u8 -1|"
+                    "cte" = "@u8[-1]"
                 }
                 {
-                    "cte" = "|u8 -0b1|"
+                    "cte" = "@u8[-0b1]"
                 }
                 {
-                    "cte" = "|u8 -0o1|"
+                    "cte" = "@u8[-0o1]"
                 }
                 {
-                    "cte" = "|u8 -0x1|"
+                    "cte" = "@u8[-0x1]"
                 }
             ]
         }
@@ -624,34 +624,34 @@ c0
             "name" = "Numeric digit out of range"
             "must_fail" = [
                 {
-                    "cte" = "|u8x 1g|"
+                    "cte" = "@u8x[1g]"
                 }
                 {
-                    "cte" = "|u8 1g|"
+                    "cte" = "@u8[1g]"
                 }
                 {
-                    "cte" = "|u8 1a|"
+                    "cte" = "@u8[1a]"
                 }
                 {
-                    "cte" = "|u8o 1g|"
+                    "cte" = "@u8o[1g]"
                 }
                 {
-                    "cte" = "|u8o 1a|"
+                    "cte" = "@u8o[1a]"
                 }
                 {
-                    "cte" = "|u8o 18|"
+                    "cte" = "@u8o[18]"
                 }
                 {
-                    "cte" = "|u8b 1g|"
+                    "cte" = "@u8b[1g]"
                 }
                 {
-                    "cte" = "|u8b 1a|"
+                    "cte" = "@u8b[1a]"
                 }
                 {
-                    "cte" = "|u8b 18|"
+                    "cte" = "@u8b[18]"
                 }
                 {
-                    "cte" = "|u8b 12|"
+                    "cte" = "@u8b[12]"
                 }
             ]
         }
@@ -659,148 +659,148 @@ c0
             "name" = "Invalid special values"
             "must_fail" = [
                 {
-                    "cte" = "|u8x null|"
+                    "cte" = "@u8x[null]"
                 }
                 {
-                    "cte" = "|u8x -null|"
+                    "cte" = "@u8x[-null]"
                 }
                 {
-                    "cte" = "|u8x true|"
+                    "cte" = "@u8x[true]"
                 }
                 {
-                    "cte" = "|u8x -true|"
+                    "cte" = "@u8x[-true]"
                 }
                 {
-                    "cte" = "|u8x false|"
+                    "cte" = "@u8x[false]"
                 }
                 {
-                    "cte" = "|u8x -false|"
+                    "cte" = "@u8x[-false]"
                 }
                 {
-                    "cte" = "|u8x nan|"
+                    "cte" = "@u8x[nan]"
                 }
                 {
-                    "cte" = "|u8x -nan|"
+                    "cte" = "@u8x[-nan]"
                 }
                 {
-                    "cte" = "|u8x snan|"
+                    "cte" = "@u8x[snan]"
                 }
                 {
-                    "cte" = "|u8x -snan|"
+                    "cte" = "@u8x[-snan]"
                 }
                 {
-                    "cte" = "|u8x inf|"
+                    "cte" = "@u8x[inf]"
                 }
                 {
-                    "cte" = "|u8x -inf|"
+                    "cte" = "@u8x[-inf]"
                 }
                 {
-                    "cte" = "|u8 null|"
+                    "cte" = "@u8[null]"
                 }
                 {
-                    "cte" = "|u8 -null|"
+                    "cte" = "@u8[-null]"
                 }
                 {
-                    "cte" = "|u8 true|"
+                    "cte" = "@u8[true]"
                 }
                 {
-                    "cte" = "|u8 -true|"
+                    "cte" = "@u8[-true]"
                 }
                 {
-                    "cte" = "|u8 false|"
+                    "cte" = "@u8[false]"
                 }
                 {
-                    "cte" = "|u8 -false|"
+                    "cte" = "@u8[-false]"
                 }
                 {
-                    "cte" = "|u8 nan|"
+                    "cte" = "@u8[nan]"
                 }
                 {
-                    "cte" = "|u8 -nan|"
+                    "cte" = "@u8[-nan]"
                 }
                 {
-                    "cte" = "|u8 snan|"
+                    "cte" = "@u8[snan]"
                 }
                 {
-                    "cte" = "|u8 -snan|"
+                    "cte" = "@u8[-snan]"
                 }
                 {
-                    "cte" = "|u8 inf|"
+                    "cte" = "@u8[inf]"
                 }
                 {
-                    "cte" = "|u8 -inf|"
+                    "cte" = "@u8[-inf]"
                 }
                 {
-                    "cte" = "|u8o null|"
+                    "cte" = "@u8o[null]"
                 }
                 {
-                    "cte" = "|u8o -null|"
+                    "cte" = "@u8o[-null]"
                 }
                 {
-                    "cte" = "|u8o true|"
+                    "cte" = "@u8o[true]"
                 }
                 {
-                    "cte" = "|u8o -true|"
+                    "cte" = "@u8o[-true]"
                 }
                 {
-                    "cte" = "|u8o false|"
+                    "cte" = "@u8o[false]"
                 }
                 {
-                    "cte" = "|u8o -false|"
+                    "cte" = "@u8o[-false]"
                 }
                 {
-                    "cte" = "|u8o nan|"
+                    "cte" = "@u8o[nan]"
                 }
                 {
-                    "cte" = "|u8o -nan|"
+                    "cte" = "@u8o[-nan]"
                 }
                 {
-                    "cte" = "|u8o snan|"
+                    "cte" = "@u8o[snan]"
                 }
                 {
-                    "cte" = "|u8o -snan|"
+                    "cte" = "@u8o[-snan]"
                 }
                 {
-                    "cte" = "|u8o inf|"
+                    "cte" = "@u8o[inf]"
                 }
                 {
-                    "cte" = "|u8o -inf|"
+                    "cte" = "@u8o[-inf]"
                 }
                 {
-                    "cte" = "|u8b null|"
+                    "cte" = "@u8b[null]"
                 }
                 {
-                    "cte" = "|u8b -null|"
+                    "cte" = "@u8b[-null]"
                 }
                 {
-                    "cte" = "|u8b true|"
+                    "cte" = "@u8b[true]"
                 }
                 {
-                    "cte" = "|u8b -true|"
+                    "cte" = "@u8b[-true]"
                 }
                 {
-                    "cte" = "|u8b false|"
+                    "cte" = "@u8b[false]"
                 }
                 {
-                    "cte" = "|u8b -false|"
+                    "cte" = "@u8b[-false]"
                 }
                 {
-                    "cte" = "|u8b nan|"
+                    "cte" = "@u8b[nan]"
                 }
                 {
-                    "cte" = "|u8b -nan|"
+                    "cte" = "@u8b[-nan]"
                 }
                 {
-                    "cte" = "|u8b snan|"
+                    "cte" = "@u8b[snan]"
                 }
                 {
-                    "cte" = "|u8b -snan|"
+                    "cte" = "@u8b[-snan]"
                 }
                 {
-                    "cte" = "|u8b inf|"
+                    "cte" = "@u8b[inf]"
                 }
                 {
-                    "cte" = "|u8b -inf|"
+                    "cte" = "@u8b[-inf]"
                 }
             ]
         }
@@ -808,16 +808,16 @@ c0
             "name" = "Float value in int array"
             "must_fail" = [
                 {
-                    "cte" = "|u8x 1.2|"
+                    "cte" = "@u8x[1.2]"
                 }
                 {
-                    "cte" = "|u8 1.2|"
+                    "cte" = "@u8[1.2]"
                 }
                 {
-                    "cte" = "|u8o 1.2|"
+                    "cte" = "@u8o[1.2]"
                 }
                 {
-                    "cte" = "|u8b 1.2|"
+                    "cte" = "@u8b[1.2]"
                 }
             ]
         }

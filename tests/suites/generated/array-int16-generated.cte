@@ -12,15 +12,15 @@ c0
             "name" = "Empty Array"
             "must_succeed" = [
                 {
-                    "cbe" = |u8x 7f 30|
-                    "cte" = "|i16|"
+                    "cbe" = @u8x[7f 30]
+                    "cte" = "@i16[]"
                     "events" = [
                         "ai16"
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 30|
-                    "to_cte" = "|i16|"
+                    "cbe" = @u8x[7f 30]
+                    "to_cte" = "@i16[]"
                     "events" = [
                         "bai16"
                         "acl=0"
@@ -32,106 +32,106 @@ c0
             "name" = "Short Array"
             "must_succeed" = [
                 {
-                    "cbe" = |u8x 7f 31 f9 ff|
-                    "cte" = "|i16 -7|"
+                    "cbe" = @u8x[7f 31 f9 ff]
+                    "cte" = "@i16[-7]"
                     "events" = [
                         "ai16=-7"
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 32 f9 ff fa ff|
-                    "cte" = "|i16 -7 -6|"
+                    "cbe" = @u8x[7f 32 f9 ff fa ff]
+                    "cte" = "@i16[-7 -6]"
                     "events" = [
                         "ai16=-7 -6"
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 33 f9 ff fa ff fb ff|
-                    "cte" = "|i16 -7 -6 -5|"
+                    "cbe" = @u8x[7f 33 f9 ff fa ff fb ff]
+                    "cte" = "@i16[-7 -6 -5]"
                     "events" = [
                         "ai16=-7 -6 -5"
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 34 f9 ff fa ff fb ff fc ff|
-                    "cte" = "|i16 -7 -6 -5 -4|"
+                    "cbe" = @u8x[7f 34 f9 ff fa ff fb ff fc ff]
+                    "cte" = "@i16[-7 -6 -5 -4]"
                     "events" = [
                         "ai16=-7 -6 -5 -4"
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 35 f9 ff fa ff fb ff fc ff fd ff|
-                    "cte" = "|i16 -7 -6 -5 -4 -3|"
+                    "cbe" = @u8x[7f 35 f9 ff fa ff fb ff fc ff fd ff]
+                    "cte" = "@i16[-7 -6 -5 -4 -3]"
                     "events" = [
                         "ai16=-7 -6 -5 -4 -3"
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 36 f9 ff fa ff fb ff fc ff fd ff fe ff|
-                    "cte" = "|i16 -7 -6 -5 -4 -3 -2|"
+                    "cbe" = @u8x[7f 36 f9 ff fa ff fb ff fc ff fd ff fe ff]
+                    "cte" = "@i16[-7 -6 -5 -4 -3 -2]"
                     "events" = [
                         "ai16=-7 -6 -5 -4 -3 -2"
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 37 f9 ff fa ff fb ff fc ff fd ff fe ff ff ff|
-                    "cte" = "|i16 -7 -6 -5 -4 -3 -2 -1|"
+                    "cbe" = @u8x[7f 37 f9 ff fa ff fb ff fc ff fd ff fe ff ff ff]
+                    "cte" = "@i16[-7 -6 -5 -4 -3 -2 -1]"
                     "events" = [
                         "ai16=-7 -6 -5 -4 -3 -2 -1"
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 38 f9 ff fa ff fb ff fc ff fd ff fe ff ff ff 00 00|
-                    "cte" = "|i16 -7 -6 -5 -4 -3 -2 -1 0|"
+                    "cbe" = @u8x[7f 38 f9 ff fa ff fb ff fc ff fd ff fe ff ff ff 00 00]
+                    "cte" = "@i16[-7 -6 -5 -4 -3 -2 -1 0]"
                     "events" = [
                         "ai16=-7 -6 -5 -4 -3 -2 -1 0"
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 39 f9 ff fa ff fb ff fc ff fd ff fe ff ff ff 00 00 01 00|
-                    "cte" = "|i16 -7 -6 -5 -4 -3 -2 -1 0 1|"
+                    "cbe" = @u8x[7f 39 f9 ff fa ff fb ff fc ff fd ff fe ff ff ff 00 00 01 00]
+                    "cte" = "@i16[-7 -6 -5 -4 -3 -2 -1 0 1]"
                     "events" = [
                         "ai16=-7 -6 -5 -4 -3 -2 -1 0 1"
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 3a f9 ff fa ff fb ff fc ff fd ff fe ff ff ff 00 00 01 00 02 00|
-                    "cte" = "|i16 -7 -6 -5 -4 -3 -2 -1 0 1 2|"
+                    "cbe" = @u8x[7f 3a f9 ff fa ff fb ff fc ff fd ff fe ff ff ff 00 00 01 00 02 00]
+                    "cte" = "@i16[-7 -6 -5 -4 -3 -2 -1 0 1 2]"
                     "events" = [
                         "ai16=-7 -6 -5 -4 -3 -2 -1 0 1 2"
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 3b f9 ff fa ff fb ff fc ff fd ff fe ff ff ff 00 00 01 00 02 00 03 00|
-                    "cte" = "|i16 -7 -6 -5 -4 -3 -2 -1 0 1 2 3|"
+                    "cbe" = @u8x[7f 3b f9 ff fa ff fb ff fc ff fd ff fe ff ff ff 00 00 01 00 02 00 03 00]
+                    "cte" = "@i16[-7 -6 -5 -4 -3 -2 -1 0 1 2 3]"
                     "events" = [
                         "ai16=-7 -6 -5 -4 -3 -2 -1 0 1 2 3"
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 3c f9 ff fa ff fb ff fc ff fd ff fe ff ff ff 00 00 01 00 02 00 03 00 04 00|
-                    "cte" = "|i16 -7 -6 -5 -4 -3 -2 -1 0 1 2 3 4|"
+                    "cbe" = @u8x[7f 3c f9 ff fa ff fb ff fc ff fd ff fe ff ff ff 00 00 01 00 02 00 03 00 04 00]
+                    "cte" = "@i16[-7 -6 -5 -4 -3 -2 -1 0 1 2 3 4]"
                     "events" = [
                         "ai16=-7 -6 -5 -4 -3 -2 -1 0 1 2 3 4"
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 3d f9 ff fa ff fb ff fc ff fd ff fe ff ff ff 00 00 01 00 02 00 03 00 04 00 05 00|
-                    "cte" = "|i16 -7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5|"
+                    "cbe" = @u8x[7f 3d f9 ff fa ff fb ff fc ff fd ff fe ff ff ff 00 00 01 00 02 00 03 00 04 00 05 00]
+                    "cte" = "@i16[-7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5]"
                     "events" = [
                         "ai16=-7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5"
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 3e f9 ff fa ff fb ff fc ff fd ff fe ff ff ff 00 00 01 00 02 00 03 00 04 00 05 00 06 00|
-                    "cte" = "|i16 -7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6|"
+                    "cbe" = @u8x[7f 3e f9 ff fa ff fb ff fc ff fd ff fe ff ff ff 00 00 01 00 02 00 03 00 04 00 05 00 06 00]
+                    "cte" = "@i16[-7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6]"
                     "events" = [
                         "ai16=-7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6"
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 3f f9 ff fa ff fb ff fc ff fd ff fe ff ff ff 00 00 01 00 02 00 03 00 04 00 05 00 06 00 07 00|
-                    "cte" = "|i16 -7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7|"
+                    "cbe" = @u8x[7f 3f f9 ff fa ff fb ff fc ff fd ff fe ff ff ff 00 00 01 00 02 00 03 00 04 00 05 00 06 00 07 00]
+                    "cte" = "@i16[-7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7]"
                     "events" = [
                         "ai16=-7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7"
                     ]
@@ -142,16 +142,16 @@ c0
             "name" = "Chunked Array"
             "must_succeed" = [
                 {
-                    "cbe" = |u8x 7f 30|
-                    "to_cte" = "|i16|"
+                    "cbe" = @u8x[7f 30]
+                    "to_cte" = "@i16[]"
                     "events" = [
                         "bai16"
                         "acl=0"
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 31 f9 ff|
-                    "to_cte" = "|i16 -7|"
+                    "cbe" = @u8x[7f 31 f9 ff]
+                    "to_cte" = "@i16[-7]"
                     "events" = [
                         "bai16"
                         "acl=1"
@@ -159,8 +159,8 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 32 f9 ff fa ff|
-                    "to_cte" = "|i16 -7 -6|"
+                    "cbe" = @u8x[7f 32 f9 ff fa ff]
+                    "to_cte" = "@i16[-7 -6]"
                     "events" = [
                         "bai16"
                         "acl=2"
@@ -168,8 +168,8 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 33 f9 ff fa ff fb ff|
-                    "to_cte" = "|i16 -7 -6 -5|"
+                    "cbe" = @u8x[7f 33 f9 ff fa ff fb ff]
+                    "to_cte" = "@i16[-7 -6 -5]"
                     "events" = [
                         "bai16"
                         "acl=3"
@@ -177,8 +177,8 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 34 f9 ff fa ff fb ff fc ff|
-                    "to_cte" = "|i16 -7 -6 -5 -4|"
+                    "cbe" = @u8x[7f 34 f9 ff fa ff fb ff fc ff]
+                    "to_cte" = "@i16[-7 -6 -5 -4]"
                     "events" = [
                         "bai16"
                         "acl=4"
@@ -186,8 +186,8 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 35 f9 ff fa ff fb ff fc ff fd ff|
-                    "to_cte" = "|i16 -7 -6 -5 -4 -3|"
+                    "cbe" = @u8x[7f 35 f9 ff fa ff fb ff fc ff fd ff]
+                    "to_cte" = "@i16[-7 -6 -5 -4 -3]"
                     "events" = [
                         "bai16"
                         "acl=5"
@@ -195,8 +195,8 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 36 f9 ff fa ff fb ff fc ff fd ff fe ff|
-                    "to_cte" = "|i16 -7 -6 -5 -4 -3 -2|"
+                    "cbe" = @u8x[7f 36 f9 ff fa ff fb ff fc ff fd ff fe ff]
+                    "to_cte" = "@i16[-7 -6 -5 -4 -3 -2]"
                     "events" = [
                         "bai16"
                         "acl=6"
@@ -204,8 +204,8 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 37 f9 ff fa ff fb ff fc ff fd ff fe ff ff ff|
-                    "to_cte" = "|i16 -7 -6 -5 -4 -3 -2 -1|"
+                    "cbe" = @u8x[7f 37 f9 ff fa ff fb ff fc ff fd ff fe ff ff ff]
+                    "to_cte" = "@i16[-7 -6 -5 -4 -3 -2 -1]"
                     "events" = [
                         "bai16"
                         "acl=7"
@@ -213,8 +213,8 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 38 f9 ff fa ff fb ff fc ff fd ff fe ff ff ff 00 00|
-                    "to_cte" = "|i16 -7 -6 -5 -4 -3 -2 -1 0|"
+                    "cbe" = @u8x[7f 38 f9 ff fa ff fb ff fc ff fd ff fe ff ff ff 00 00]
+                    "to_cte" = "@i16[-7 -6 -5 -4 -3 -2 -1 0]"
                     "events" = [
                         "bai16"
                         "acl=8"
@@ -222,8 +222,8 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 39 f9 ff fa ff fb ff fc ff fd ff fe ff ff ff 00 00 01 00|
-                    "to_cte" = "|i16 -7 -6 -5 -4 -3 -2 -1 0 1|"
+                    "cbe" = @u8x[7f 39 f9 ff fa ff fb ff fc ff fd ff fe ff ff ff 00 00 01 00]
+                    "to_cte" = "@i16[-7 -6 -5 -4 -3 -2 -1 0 1]"
                     "events" = [
                         "bai16"
                         "acl=9"
@@ -231,8 +231,8 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 3a f9 ff fa ff fb ff fc ff fd ff fe ff ff ff 00 00 01 00 02 00|
-                    "to_cte" = "|i16 -7 -6 -5 -4 -3 -2 -1 0 1 2|"
+                    "cbe" = @u8x[7f 3a f9 ff fa ff fb ff fc ff fd ff fe ff ff ff 00 00 01 00 02 00]
+                    "to_cte" = "@i16[-7 -6 -5 -4 -3 -2 -1 0 1 2]"
                     "events" = [
                         "bai16"
                         "acl=10"
@@ -240,8 +240,8 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 3b f9 ff fa ff fb ff fc ff fd ff fe ff ff ff 00 00 01 00 02 00 03 00|
-                    "to_cte" = "|i16 -7 -6 -5 -4 -3 -2 -1 0 1 2 3|"
+                    "cbe" = @u8x[7f 3b f9 ff fa ff fb ff fc ff fd ff fe ff ff ff 00 00 01 00 02 00 03 00]
+                    "to_cte" = "@i16[-7 -6 -5 -4 -3 -2 -1 0 1 2 3]"
                     "events" = [
                         "bai16"
                         "acl=11"
@@ -249,8 +249,8 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 3c f9 ff fa ff fb ff fc ff fd ff fe ff ff ff 00 00 01 00 02 00 03 00 04 00|
-                    "to_cte" = "|i16 -7 -6 -5 -4 -3 -2 -1 0 1 2 3 4|"
+                    "cbe" = @u8x[7f 3c f9 ff fa ff fb ff fc ff fd ff fe ff ff ff 00 00 01 00 02 00 03 00 04 00]
+                    "to_cte" = "@i16[-7 -6 -5 -4 -3 -2 -1 0 1 2 3 4]"
                     "events" = [
                         "bai16"
                         "acl=12"
@@ -258,8 +258,8 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 3d f9 ff fa ff fb ff fc ff fd ff fe ff ff ff 00 00 01 00 02 00 03 00 04 00 05 00|
-                    "to_cte" = "|i16 -7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5|"
+                    "cbe" = @u8x[7f 3d f9 ff fa ff fb ff fc ff fd ff fe ff ff ff 00 00 01 00 02 00 03 00 04 00 05 00]
+                    "to_cte" = "@i16[-7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5]"
                     "events" = [
                         "bai16"
                         "acl=13"
@@ -267,8 +267,8 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 3e f9 ff fa ff fb ff fc ff fd ff fe ff ff ff 00 00 01 00 02 00 03 00 04 00 05 00 06 00|
-                    "to_cte" = "|i16 -7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6|"
+                    "cbe" = @u8x[7f 3e f9 ff fa ff fb ff fc ff fd ff fe ff ff ff 00 00 01 00 02 00 03 00 04 00 05 00 06 00]
+                    "to_cte" = "@i16[-7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6]"
                     "events" = [
                         "bai16"
                         "acl=14"
@@ -276,8 +276,8 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 3f f9 ff fa ff fb ff fc ff fd ff fe ff ff ff 00 00 01 00 02 00 03 00 04 00 05 00 06 00 07 00|
-                    "to_cte" = "|i16 -7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7|"
+                    "cbe" = @u8x[7f 3f f9 ff fa ff fb ff fc ff fd ff fe ff ff ff 00 00 01 00 02 00 03 00 04 00 05 00 06 00 07 00]
+                    "to_cte" = "@i16[-7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7]"
                     "events" = [
                         "bai16"
                         "acl=15"
@@ -285,8 +285,8 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f e3 20 f9 ff fa ff fb ff fc ff fd ff fe ff ff ff 00 00 01 00 02 00 03 00 04 00 05 00 06 00 07 00 08 00|
-                    "to_cte" = "|i16 -7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7 8|"
+                    "cbe" = @u8x[7f e3 20 f9 ff fa ff fb ff fc ff fd ff fe ff ff ff 00 00 01 00 02 00 03 00 04 00 05 00 06 00 07 00 08 00]
+                    "to_cte" = "@i16[-7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7 8]"
                     "events" = [
                         "bai16"
                         "acl=16"
@@ -294,8 +294,8 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f e3 22 f9 ff fa ff fb ff fc ff fd ff fe ff ff ff 00 00 01 00 02 00 03 00 04 00 05 00 06 00 07 00 08 00 09 00|
-                    "to_cte" = "|i16 -7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7 8 9|"
+                    "cbe" = @u8x[7f e3 22 f9 ff fa ff fb ff fc ff fd ff fe ff ff ff 00 00 01 00 02 00 03 00 04 00 05 00 06 00 07 00 08 00 09 00]
+                    "to_cte" = "@i16[-7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7 8 9]"
                     "events" = [
                         "bai16"
                         "acl=17"
@@ -303,8 +303,8 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f e3 24 f9 ff fa ff fb ff fc ff fd ff fe ff ff ff 00 00 01 00 02 00 03 00 04 00 05 00 06 00 07 00 08 00 09 00 0a 00|
-                    "to_cte" = "|i16 -7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7 8 9 10|"
+                    "cbe" = @u8x[7f e3 24 f9 ff fa ff fb ff fc ff fd ff fe ff ff ff 00 00 01 00 02 00 03 00 04 00 05 00 06 00 07 00 08 00 09 00 0a 00]
+                    "to_cte" = "@i16[-7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7 8 9 10]"
                     "events" = [
                         "bai16"
                         "acl=18"
@@ -312,8 +312,8 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f e3 26 f9 ff fa ff fb ff fc ff fd ff fe ff ff ff 00 00 01 00 02 00 03 00 04 00 05 00 06 00 07 00 08 00 09 00 0a 00 0b 00|
-                    "to_cte" = "|i16 -7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7 8 9 10 11|"
+                    "cbe" = @u8x[7f e3 26 f9 ff fa ff fb ff fc ff fd ff fe ff ff ff 00 00 01 00 02 00 03 00 04 00 05 00 06 00 07 00 08 00 09 00 0a 00 0b 00]
+                    "to_cte" = "@i16[-7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7 8 9 10 11]"
                     "events" = [
                         "bai16"
                         "acl=19"
@@ -321,8 +321,8 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f e3 28 f9 ff fa ff fb ff fc ff fd ff fe ff ff ff 00 00 01 00 02 00 03 00 04 00 05 00 06 00 07 00 08 00 09 00 0a 00 0b 00 0c 00|
-                    "to_cte" = "|i16 -7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7 8 9 10 11 12|"
+                    "cbe" = @u8x[7f e3 28 f9 ff fa ff fb ff fc ff fd ff fe ff ff ff 00 00 01 00 02 00 03 00 04 00 05 00 06 00 07 00 08 00 09 00 0a 00 0b 00 0c 00]
+                    "to_cte" = "@i16[-7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7 8 9 10 11 12]"
                     "events" = [
                         "bai16"
                         "acl=20"
@@ -335,8 +335,8 @@ c0
             "name" = "Various Array Elements"
             "must_succeed" = [
                 {
-                    "cbe" = |u8x 7f e3 7c 00 80 21 84 42 88 63 8c 84 90 a5 94 c6 98 e7 9c 08 a1 29 a5 4a a9 6b ad 8c b1 ad b5 ce b9 ef bd 10 c2 31 c6 52 ca 73 ce 94 d2 b5 d6 d6 da f7 de 18 e3 39 e7 5a eb 7b ef 9c f3 bd f7 de fb ff ff 20 04 41 08 62 0c 83 10 a4 14 c5 18 e6 1c 07 21 28 25 49 29 6a 2d 8b 31 ac 35 cd 39 ee 3d 0f 42 30 46 51 4a 72 4e 93 52 b4 56 d5 5a f6 5e 17 63 38 67 59 6b 7a 6f 9b 73 bc 77 dd 7b|
-                    "to_cte" = "|i16 -32768 -31711 -30654 -29597 -28540 -27483 -26426 -25369 -24312 -23255 -22198 -21141 -20084 -19027 -17970 -16913 -15856 -14799 -13742 -12685 -11628 -10571 -9514 -8457 -7400 -6343 -5286 -4229 -3172 -2115 -1058 -1 1056 2113 3170 4227 5284 6341 7398 8455 9512 10569 11626 12683 13740 14797 15854 16911 17968 19025 20082 21139 22196 23253 24310 25367 26424 27481 28538 29595 30652 31709|"
+                    "cbe" = @u8x[7f e3 7c 00 80 21 84 42 88 63 8c 84 90 a5 94 c6 98 e7 9c 08 a1 29 a5 4a a9 6b ad 8c b1 ad b5 ce b9 ef bd 10 c2 31 c6 52 ca 73 ce 94 d2 b5 d6 d6 da f7 de 18 e3 39 e7 5a eb 7b ef 9c f3 bd f7 de fb ff ff 20 04 41 08 62 0c 83 10 a4 14 c5 18 e6 1c 07 21 28 25 49 29 6a 2d 8b 31 ac 35 cd 39 ee 3d 0f 42 30 46 51 4a 72 4e 93 52 b4 56 d5 5a f6 5e 17 63 38 67 59 6b 7a 6f 9b 73 bc 77 dd 7b]
+                    "to_cte" = "@i16[-32768 -31711 -30654 -29597 -28540 -27483 -26426 -25369 -24312 -23255 -22198 -21141 -20084 -19027 -17970 -16913 -15856 -14799 -13742 -12685 -11628 -10571 -9514 -8457 -7400 -6343 -5286 -4229 -3172 -2115 -1058 -1 1056 2113 3170 4227 5284 6341 7398 8455 9512 10569 11626 12683 13740 14797 15854 16911 17968 19025 20082 21139 22196 23253 24310 25367 26424 27481 28538 29595 30652 31709]"
                     "events" = [
                         "bai16"
                         "acl=62"
@@ -344,7 +344,7 @@ c0
                     ]
                 }
                 {
-                    "from_cte" = "|i16 8 -17 0b1011 0B1010 -0b1100 -0B1101 0o31 0O33 -0o10 -0O5 0x10 0X15 -0x22 -0X33|"
+                    "from_cte" = "@i16[8 -17 0b1011 0B1010 -0b1100 -0B1101 0o31 0O33 -0o10 -0O5 0x10 0X15 -0x22 -0X33]"
                     "events" = [
                         "ai16=8 -17 11 10 -12 -13 25 27 -8 -5 16 21 -34 -51"
                     ]
@@ -355,43 +355,43 @@ c0
             "name" = "Base 2, 8, 16"
             "must_succeed" = [
                 {
-                    "cbe" = |u8x 7f 37 00 80 92 a4 24 c9 b6 ed 48 12 da 36 6c 5b|
-                    "from_cte" = "|i16b -1000000000000000 -101101101101110 -11011011011100 -1001001001010 1001001001000 11011011011010 101101101101100|"
+                    "cbe" = @u8x[7f 37 00 80 92 a4 24 c9 b6 ed 48 12 da 36 6c 5b]
+                    "from_cte" = "@i16b[-1000000000000000 -101101101101110 -11011011011100 -1001001001010 1001001001000 11011011011010 101101101101100]"
                     "events" = [
                         "ai16=-32768 -23406 -14044 -4682 4680 14042 23404"
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 30|
-                    "from_cte" = "|i16b|"
+                    "cbe" = @u8x[7f 30]
+                    "from_cte" = "@i16b[]"
                     "events" = [
                         "ai16"
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 37 00 80 92 a4 24 c9 b6 ed 48 12 da 36 6c 5b|
-                    "from_cte" = "|i16o -100000 -55556 -33334 -11112 11110 33332 55554|"
+                    "cbe" = @u8x[7f 37 00 80 92 a4 24 c9 b6 ed 48 12 da 36 6c 5b]
+                    "from_cte" = "@i16o[-100000 -55556 -33334 -11112 11110 33332 55554]"
                     "events" = [
                         "ai16=-32768 -23406 -14044 -4682 4680 14042 23404"
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 30|
-                    "from_cte" = "|i16o|"
+                    "cbe" = @u8x[7f 30]
+                    "from_cte" = "@i16o[]"
                     "events" = [
                         "ai16"
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 37 00 80 92 a4 24 c9 b6 ed 48 12 da 36 6c 5b|
-                    "from_cte" = "|i16x -8000 -5b6e -36dc -124a 1248 36da 5b6c|"
+                    "cbe" = @u8x[7f 37 00 80 92 a4 24 c9 b6 ed 48 12 da 36 6c 5b]
+                    "from_cte" = "@i16x[-8000 -5b6e -36dc -124a 1248 36da 5b6c]"
                     "events" = [
                         "ai16=-32768 -23406 -14044 -4682 4680 14042 23404"
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 30|
-                    "from_cte" = "|i16x|"
+                    "cbe" = @u8x[7f 30]
+                    "from_cte" = "@i16x[]"
                     "events" = [
                         "ai16"
                     ]
@@ -402,8 +402,8 @@ c0
             "name" = "Chunking Variations"
             "must_succeed" = [
                 {
-                    "cbe" = |u8x 7f e3 01 03 00 80 05 00 80 92 a4 07 00 80 92 a4 24 c9 09 00 80 92 a4 24 c9 b6 ed 0b 00 80 92 a4 24 c9 b6 ed 48 12 0d 00 80 92 a4 24 c9 b6 ed 48 12 da 36 00|
-                    "to_cte" = "|i16 -32768 -32768 -23406 -32768 -23406 -14044 -32768 -23406 -14044 -4682 -32768 -23406 -14044 -4682 4680 -32768 -23406 -14044 -4682 4680 14042|"
+                    "cbe" = @u8x[7f e3 01 03 00 80 05 00 80 92 a4 07 00 80 92 a4 24 c9 09 00 80 92 a4 24 c9 b6 ed 0b 00 80 92 a4 24 c9 b6 ed 48 12 0d 00 80 92 a4 24 c9 b6 ed 48 12 da 36 00]
+                    "to_cte" = "@i16[-32768 -32768 -23406 -32768 -23406 -14044 -32768 -23406 -14044 -4682 -32768 -23406 -14044 -4682 4680 -32768 -23406 -14044 -4682 4680 14042]"
                     "events" = [
                         "bai16"
                         "acm=0"
@@ -423,8 +423,8 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f e3 09 00 80 92 a4 24 c9 b6 ed 06 00 80 92 a4 24 c9|
-                    "to_cte" = "|i16 -32768 -23406 -14044 -4682 -32768 -23406 -14044|"
+                    "cbe" = @u8x[7f e3 09 00 80 92 a4 24 c9 b6 ed 06 00 80 92 a4 24 c9]
+                    "to_cte" = "@i16[-32768 -23406 -14044 -4682 -32768 -23406 -14044]"
                     "events" = [
                         "bai16"
                         "acm=4"
@@ -439,8 +439,8 @@ c0
             "name" = "Edge Case Element Values"
             "must_succeed" = [
                 {
-                    "cbe" = |u8x 7f e3 5a 00 00 01 00 7f 00 80 00 81 00 ff 00 00 01 01 01 ff 7f 00 80 01 80 ff ff 00 00 01 00 ff ff 00 00 01 00 ff ff 00 00 01 00 ff ff ff ff 81 ff 80 ff 7f ff 01 ff 00 ff ff fe 01 80 00 80 ff 7f 01 00 00 00 ff ff 01 00 00 00 ff ff 01 00 00 00 ff ff 01 00 00 00 00 00 01 00 ff ff|
-                    "to_cte" = "|i16 0 1 127 128 129 255 256 257 32767 -32768 -32767 -1 0 1 -1 0 1 -1 0 1 -1 -1 -127 -128 -129 -255 -256 -257 -32767 -32768 32767 1 0 -1 1 0 -1 1 0 -1 1 0 0 1 -1|"
+                    "cbe" = @u8x[7f e3 5a 00 00 01 00 7f 00 80 00 81 00 ff 00 00 01 01 01 ff 7f 00 80 01 80 ff ff 00 00 01 00 ff ff 00 00 01 00 ff ff 00 00 01 00 ff ff ff ff 81 ff 80 ff 7f ff 01 ff 00 ff ff fe 01 80 00 80 ff 7f 01 00 00 00 ff ff 01 00 00 00 ff ff 01 00 00 00 ff ff 01 00 00 00 00 00 01 00 ff ff]
+                    "to_cte" = "@i16[0 1 127 128 129 255 256 257 32767 -32768 -32767 -1 0 1 -1 0 1 -1 0 1 -1 -1 -127 -128 -129 -255 -256 -257 -32767 -32768 32767 1 0 -1 1 0 -1 1 0 -1 1 0 0 1 -1]"
                     "events" = [
                         "bai16"
                         "acl=45"
@@ -453,49 +453,49 @@ c0
             "name" = "Whitespace at end of array"
             "must_succeed" = [
                 {
-                    "from_cte" = "|i16 |"
+                    "from_cte" = "@i16[ ]"
                     "events" = [
                         "ai16"
                     ]
                 }
                 {
-                    "from_cte" = "|i16 1 |"
+                    "from_cte" = "@i16[ 1 ]"
                     "events" = [
                         "ai16=1"
                     ]
                 }
                 {
-                    "from_cte" = "|i16b |"
+                    "from_cte" = "@i16b[ ]"
                     "events" = [
                         "ai16"
                     ]
                 }
                 {
-                    "from_cte" = "|i16b 1 |"
+                    "from_cte" = "@i16b[ 1 ]"
                     "events" = [
                         "ai16=1"
                     ]
                 }
                 {
-                    "from_cte" = "|i16o |"
+                    "from_cte" = "@i16o[ ]"
                     "events" = [
                         "ai16"
                     ]
                 }
                 {
-                    "from_cte" = "|i16o 1 |"
+                    "from_cte" = "@i16o[ 1 ]"
                     "events" = [
                         "ai16=1"
                     ]
                 }
                 {
-                    "from_cte" = "|i16x |"
+                    "from_cte" = "@i16x[ ]"
                     "events" = [
                         "ai16"
                     ]
                 }
                 {
-                    "from_cte" = "|i16x 1 |"
+                    "from_cte" = "@i16x[ 1 ]"
                     "events" = [
                         "ai16=1"
                     ]
@@ -506,19 +506,19 @@ c0
             "name" = "Space before array type"
             "must_fail" = [
                 {
-                    "cte" = "c0 | i16|"
+                    "cte" = "c0 @ i16[]"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "c0 | i16b|"
+                    "cte" = "c0 @ i16b[]"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "c0 | i16o|"
+                    "cte" = "c0 @ i16o[]"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "c0 | i16x|"
+                    "cte" = "c0 @ i16x[]"
                     "raw_document" = true
                 }
             ]
@@ -527,70 +527,70 @@ c0
             "name" = "Truncated Array"
             "must_fail" = [
                 {
-                    "cbe" = |u8x 7f e3|
+                    "cbe" = @u8x[7f e3]
                 }
                 {
-                    "cbe" = |u8x 7f 31|
+                    "cbe" = @u8x[7f 31]
                 }
                 {
-                    "cbe" = |u8x 7f 32 00 00|
+                    "cbe" = @u8x[7f 32 00 00]
                 }
                 {
-                    "cbe" = |u8x 7f 31 00|
+                    "cbe" = @u8x[7f 31 00]
                 }
                 {
-                    "cbe" = |u8x 7f 33 00 00|
+                    "cbe" = @u8x[7f 33 00 00]
                 }
                 {
-                    "cbe" = |u8x 7f 31 00|
+                    "cbe" = @u8x[7f 31 00]
                 }
                 {
-                    "cbe" = |u8x 7f 34 00 00 01 00|
+                    "cbe" = @u8x[7f 34 00 00 01 00]
                 }
                 {
-                    "cbe" = |u8x 7f 32 00 00 01|
+                    "cbe" = @u8x[7f 32 00 00 01]
                 }
                 {
-                    "cbe" = |u8x 7f 35 00 00 01 00|
+                    "cbe" = @u8x[7f 35 00 00 01 00]
                 }
                 {
-                    "cbe" = |u8x 7f 32 00 00 01|
+                    "cbe" = @u8x[7f 32 00 00 01]
                 }
                 {
-                    "cbe" = |u8x 7f 36 00 00 01 00 7f 00|
+                    "cbe" = @u8x[7f 36 00 00 01 00 7f 00]
                 }
                 {
-                    "cbe" = |u8x 7f 33 00 00 01 00 7f|
+                    "cbe" = @u8x[7f 33 00 00 01 00 7f]
                 }
                 {
-                    "cbe" = |u8x 7f 37 00 00 01 00 7f 00|
+                    "cbe" = @u8x[7f 37 00 00 01 00 7f 00]
                 }
                 {
-                    "cbe" = |u8x 7f 33 00 00 01 00 7f|
+                    "cbe" = @u8x[7f 33 00 00 01 00 7f]
                 }
                 {
-                    "cbe" = |u8x 7f 38 00 00 01 00 7f 00 80 00|
+                    "cbe" = @u8x[7f 38 00 00 01 00 7f 00 80 00]
                 }
                 {
-                    "cbe" = |u8x 7f 34 00 00 01 00 7f 00 80|
+                    "cbe" = @u8x[7f 34 00 00 01 00 7f 00 80]
                 }
                 {
-                    "cbe" = |u8x 7f 39 00 00 01 00 7f 00 80 00|
+                    "cbe" = @u8x[7f 39 00 00 01 00 7f 00 80 00]
                 }
                 {
-                    "cbe" = |u8x 7f 34 00 00 01 00 7f 00 80|
+                    "cbe" = @u8x[7f 34 00 00 01 00 7f 00 80]
                 }
                 {
-                    "cbe" = |u8x 7f 3a 00 00 01 00 7f 00 80 00 81 00|
+                    "cbe" = @u8x[7f 3a 00 00 01 00 7f 00 80 00 81 00]
                 }
                 {
-                    "cbe" = |u8x 7f 35 00 00 01 00 7f 00 80 00 81|
+                    "cbe" = @u8x[7f 35 00 00 01 00 7f 00 80 00 81]
                 }
                 {
-                    "cte" = "|i16"
+                    "cte" = "@i16["
                 }
                 {
-                    "cte" = "|i16 0"
+                    "cte" = "@i16[0"
                 }
             ]
         }
@@ -598,46 +598,46 @@ c0
             "name" = "Element value out of range"
             "must_fail" = [
                 {
-                    "cte" = "|i16b 1000000000000000|"
+                    "cte" = "@i16b[1000000000000000]"
                 }
                 {
-                    "cte" = "|i16o 100000|"
+                    "cte" = "@i16o[100000]"
                 }
                 {
-                    "cte" = "|i16x 8000|"
+                    "cte" = "@i16x[8000]"
                 }
                 {
-                    "cte" = "|i16 32768|"
+                    "cte" = "@i16[32768]"
                 }
                 {
-                    "cte" = "|i16 0b1000000000000000|"
+                    "cte" = "@i16[0b1000000000000000]"
                 }
                 {
-                    "cte" = "|i16 0o100000|"
+                    "cte" = "@i16[0o100000]"
                 }
                 {
-                    "cte" = "|i16 0x8000|"
+                    "cte" = "@i16[0x8000]"
                 }
                 {
-                    "cte" = "|i16b -1000000000000001|"
+                    "cte" = "@i16b[-1000000000000001]"
                 }
                 {
-                    "cte" = "|i16o -100001|"
+                    "cte" = "@i16o[-100001]"
                 }
                 {
-                    "cte" = "|i16x -8001|"
+                    "cte" = "@i16x[-8001]"
                 }
                 {
-                    "cte" = "|i16 -32769|"
+                    "cte" = "@i16[-32769]"
                 }
                 {
-                    "cte" = "|i16 -0b1000000000000001|"
+                    "cte" = "@i16[-0b1000000000000001]"
                 }
                 {
-                    "cte" = "|i16 -0o100001|"
+                    "cte" = "@i16[-0o100001]"
                 }
                 {
-                    "cte" = "|i16 -0x8001|"
+                    "cte" = "@i16[-0x8001]"
                 }
             ]
         }
@@ -645,34 +645,34 @@ c0
             "name" = "Numeric digit out of range"
             "must_fail" = [
                 {
-                    "cte" = "|i16x 1g|"
+                    "cte" = "@i16x[1g]"
                 }
                 {
-                    "cte" = "|i16 1g|"
+                    "cte" = "@i16[1g]"
                 }
                 {
-                    "cte" = "|i16 1a|"
+                    "cte" = "@i16[1a]"
                 }
                 {
-                    "cte" = "|i16o 1g|"
+                    "cte" = "@i16o[1g]"
                 }
                 {
-                    "cte" = "|i16o 1a|"
+                    "cte" = "@i16o[1a]"
                 }
                 {
-                    "cte" = "|i16o 18|"
+                    "cte" = "@i16o[18]"
                 }
                 {
-                    "cte" = "|i16b 1g|"
+                    "cte" = "@i16b[1g]"
                 }
                 {
-                    "cte" = "|i16b 1a|"
+                    "cte" = "@i16b[1a]"
                 }
                 {
-                    "cte" = "|i16b 18|"
+                    "cte" = "@i16b[18]"
                 }
                 {
-                    "cte" = "|i16b 12|"
+                    "cte" = "@i16b[12]"
                 }
             ]
         }
@@ -680,148 +680,148 @@ c0
             "name" = "Invalid special values"
             "must_fail" = [
                 {
-                    "cte" = "|i16x null|"
+                    "cte" = "@i16x[null]"
                 }
                 {
-                    "cte" = "|i16x -null|"
+                    "cte" = "@i16x[-null]"
                 }
                 {
-                    "cte" = "|i16x true|"
+                    "cte" = "@i16x[true]"
                 }
                 {
-                    "cte" = "|i16x -true|"
+                    "cte" = "@i16x[-true]"
                 }
                 {
-                    "cte" = "|i16x false|"
+                    "cte" = "@i16x[false]"
                 }
                 {
-                    "cte" = "|i16x -false|"
+                    "cte" = "@i16x[-false]"
                 }
                 {
-                    "cte" = "|i16x nan|"
+                    "cte" = "@i16x[nan]"
                 }
                 {
-                    "cte" = "|i16x -nan|"
+                    "cte" = "@i16x[-nan]"
                 }
                 {
-                    "cte" = "|i16x snan|"
+                    "cte" = "@i16x[snan]"
                 }
                 {
-                    "cte" = "|i16x -snan|"
+                    "cte" = "@i16x[-snan]"
                 }
                 {
-                    "cte" = "|i16x inf|"
+                    "cte" = "@i16x[inf]"
                 }
                 {
-                    "cte" = "|i16x -inf|"
+                    "cte" = "@i16x[-inf]"
                 }
                 {
-                    "cte" = "|i16 null|"
+                    "cte" = "@i16[null]"
                 }
                 {
-                    "cte" = "|i16 -null|"
+                    "cte" = "@i16[-null]"
                 }
                 {
-                    "cte" = "|i16 true|"
+                    "cte" = "@i16[true]"
                 }
                 {
-                    "cte" = "|i16 -true|"
+                    "cte" = "@i16[-true]"
                 }
                 {
-                    "cte" = "|i16 false|"
+                    "cte" = "@i16[false]"
                 }
                 {
-                    "cte" = "|i16 -false|"
+                    "cte" = "@i16[-false]"
                 }
                 {
-                    "cte" = "|i16 nan|"
+                    "cte" = "@i16[nan]"
                 }
                 {
-                    "cte" = "|i16 -nan|"
+                    "cte" = "@i16[-nan]"
                 }
                 {
-                    "cte" = "|i16 snan|"
+                    "cte" = "@i16[snan]"
                 }
                 {
-                    "cte" = "|i16 -snan|"
+                    "cte" = "@i16[-snan]"
                 }
                 {
-                    "cte" = "|i16 inf|"
+                    "cte" = "@i16[inf]"
                 }
                 {
-                    "cte" = "|i16 -inf|"
+                    "cte" = "@i16[-inf]"
                 }
                 {
-                    "cte" = "|i16o null|"
+                    "cte" = "@i16o[null]"
                 }
                 {
-                    "cte" = "|i16o -null|"
+                    "cte" = "@i16o[-null]"
                 }
                 {
-                    "cte" = "|i16o true|"
+                    "cte" = "@i16o[true]"
                 }
                 {
-                    "cte" = "|i16o -true|"
+                    "cte" = "@i16o[-true]"
                 }
                 {
-                    "cte" = "|i16o false|"
+                    "cte" = "@i16o[false]"
                 }
                 {
-                    "cte" = "|i16o -false|"
+                    "cte" = "@i16o[-false]"
                 }
                 {
-                    "cte" = "|i16o nan|"
+                    "cte" = "@i16o[nan]"
                 }
                 {
-                    "cte" = "|i16o -nan|"
+                    "cte" = "@i16o[-nan]"
                 }
                 {
-                    "cte" = "|i16o snan|"
+                    "cte" = "@i16o[snan]"
                 }
                 {
-                    "cte" = "|i16o -snan|"
+                    "cte" = "@i16o[-snan]"
                 }
                 {
-                    "cte" = "|i16o inf|"
+                    "cte" = "@i16o[inf]"
                 }
                 {
-                    "cte" = "|i16o -inf|"
+                    "cte" = "@i16o[-inf]"
                 }
                 {
-                    "cte" = "|i16b null|"
+                    "cte" = "@i16b[null]"
                 }
                 {
-                    "cte" = "|i16b -null|"
+                    "cte" = "@i16b[-null]"
                 }
                 {
-                    "cte" = "|i16b true|"
+                    "cte" = "@i16b[true]"
                 }
                 {
-                    "cte" = "|i16b -true|"
+                    "cte" = "@i16b[-true]"
                 }
                 {
-                    "cte" = "|i16b false|"
+                    "cte" = "@i16b[false]"
                 }
                 {
-                    "cte" = "|i16b -false|"
+                    "cte" = "@i16b[-false]"
                 }
                 {
-                    "cte" = "|i16b nan|"
+                    "cte" = "@i16b[nan]"
                 }
                 {
-                    "cte" = "|i16b -nan|"
+                    "cte" = "@i16b[-nan]"
                 }
                 {
-                    "cte" = "|i16b snan|"
+                    "cte" = "@i16b[snan]"
                 }
                 {
-                    "cte" = "|i16b -snan|"
+                    "cte" = "@i16b[-snan]"
                 }
                 {
-                    "cte" = "|i16b inf|"
+                    "cte" = "@i16b[inf]"
                 }
                 {
-                    "cte" = "|i16b -inf|"
+                    "cte" = "@i16b[-inf]"
                 }
             ]
         }
@@ -829,16 +829,16 @@ c0
             "name" = "Float value in int array"
             "must_fail" = [
                 {
-                    "cte" = "|i16x 1.2|"
+                    "cte" = "@i16x[1.2]"
                 }
                 {
-                    "cte" = "|i16 1.2|"
+                    "cte" = "@i16[1.2]"
                 }
                 {
-                    "cte" = "|i16o 1.2|"
+                    "cte" = "@i16o[1.2]"
                 }
                 {
-                    "cte" = "|i16b 1.2|"
+                    "cte" = "@i16b[1.2]"
                 }
             ]
         }

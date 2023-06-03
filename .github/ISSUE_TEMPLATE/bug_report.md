@@ -28,7 +28,7 @@ c0
     "a" = true
 }
             %%%%"
-            "cbe"    = |u8x 83 00 79 81 61 7d 7b|
+            "cbe"    = @u8x[83 00 79 81 61 7d 7b]
             "events" = [
                             "bd" "v 0" "m"
                                 "s a" "tt"

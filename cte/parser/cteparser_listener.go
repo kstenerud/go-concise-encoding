@@ -89,26 +89,26 @@ type CTEParserListener interface {
 	// EnterCustomText is called when entering the customText production.
 	EnterCustomText(c *CustomTextContext)
 
-	// EnterCustomEscape is called when entering the customEscape production.
-	EnterCustomEscape(c *CustomEscapeContext)
-
 	// EnterCustomBinary is called when entering the customBinary production.
 	EnterCustomBinary(c *CustomBinaryContext)
 
-	// EnterCustomType is called when entering the customType production.
-	EnterCustomType(c *CustomTypeContext)
+	// EnterCustomTextBegin is called when entering the customTextBegin production.
+	EnterCustomTextBegin(c *CustomTextBeginContext)
+
+	// EnterCustomBinaryBegin is called when entering the customBinaryBegin production.
+	EnterCustomBinaryBegin(c *CustomBinaryBeginContext)
 
 	// EnterMediaText is called when entering the mediaText production.
 	EnterMediaText(c *MediaTextContext)
 
-	// EnterMediaEscape is called when entering the mediaEscape production.
-	EnterMediaEscape(c *MediaEscapeContext)
-
 	// EnterMediaBinary is called when entering the mediaBinary production.
 	EnterMediaBinary(c *MediaBinaryContext)
 
-	// EnterMediaType is called when entering the mediaType production.
-	EnterMediaType(c *MediaTypeContext)
+	// EnterMediaTextBegin is called when entering the mediaTextBegin production.
+	EnterMediaTextBegin(c *MediaTextBeginContext)
+
+	// EnterMediaBinaryBegin is called when entering the mediaBinaryBegin production.
+	EnterMediaBinaryBegin(c *MediaBinaryBeginContext)
 
 	// EnterValueRid is called when entering the valueRid production.
 	EnterValueRid(c *ValueRidContext)
@@ -323,26 +323,26 @@ type CTEParserListener interface {
 	// ExitCustomText is called when exiting the customText production.
 	ExitCustomText(c *CustomTextContext)
 
-	// ExitCustomEscape is called when exiting the customEscape production.
-	ExitCustomEscape(c *CustomEscapeContext)
-
 	// ExitCustomBinary is called when exiting the customBinary production.
 	ExitCustomBinary(c *CustomBinaryContext)
 
-	// ExitCustomType is called when exiting the customType production.
-	ExitCustomType(c *CustomTypeContext)
+	// ExitCustomTextBegin is called when exiting the customTextBegin production.
+	ExitCustomTextBegin(c *CustomTextBeginContext)
+
+	// ExitCustomBinaryBegin is called when exiting the customBinaryBegin production.
+	ExitCustomBinaryBegin(c *CustomBinaryBeginContext)
 
 	// ExitMediaText is called when exiting the mediaText production.
 	ExitMediaText(c *MediaTextContext)
 
-	// ExitMediaEscape is called when exiting the mediaEscape production.
-	ExitMediaEscape(c *MediaEscapeContext)
-
 	// ExitMediaBinary is called when exiting the mediaBinary production.
 	ExitMediaBinary(c *MediaBinaryContext)
 
-	// ExitMediaType is called when exiting the mediaType production.
-	ExitMediaType(c *MediaTypeContext)
+	// ExitMediaTextBegin is called when exiting the mediaTextBegin production.
+	ExitMediaTextBegin(c *MediaTextBeginContext)
+
+	// ExitMediaBinaryBegin is called when exiting the mediaBinaryBegin production.
+	ExitMediaBinaryBegin(c *MediaBinaryBeginContext)
 
 	// ExitValueRid is called when exiting the valueRid production.
 	ExitValueRid(c *ValueRidContext)

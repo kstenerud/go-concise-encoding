@@ -670,14 +670,23 @@ func (_this *Writer) WriteEscapedQuotedStringBytes(mayContainLF bool, value []by
 }
 
 func (_this *Writer) WriteHexBytes(value []byte) {
-	length := len(value) * 3
+	if len(value) == 0 {
+		return
+	}
+
+	length := len(value)*3 - 1
 	_this.ExpandBuffer(length)
 	dst := _this.Buffer
-	for i := 0; i < len(value); i++ {
-		b := value[i]
-		dst[i*3] = ' '
-		dst[i*3+1] = chars.HexChars[b>>4]
-		dst[i*3+2] = chars.HexChars[b&15]
+	offset := 0
+	for i, b := range value {
+		if i > 0 {
+			dst[offset] = ' '
+			offset++
+		}
+		dst[offset] = chars.HexChars[b>>4]
+		offset++
+		dst[offset] = chars.HexChars[b&15]
+		offset++
 	}
 	_this.FlushBufferNotLF(length)
 }
@@ -744,11 +753,11 @@ func (_this *Writer) WriteRecordEnd() {
 }
 
 func (_this *Writer) WriteArrayBegin() {
-	_this.WriteByteNotLF('|')
+	_this.WriteByteNotLF('[')
 }
 
 func (_this *Writer) WriteArrayEnd() {
-	_this.WriteByteNotLF('|')
+	_this.WriteByteNotLF(']')
 }
 
 func (_this *Writer) WriteEdgeBegin() {

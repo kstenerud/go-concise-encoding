@@ -29,7 +29,7 @@ c0
             "name"     = "CBE is wrongfully allowed"
             "mustFail" = [
                 {
-                    "cbe"      = |u8x 99 81 61 79 9b 9b|
+                    "cbe"      = @u8x[99 81 61 79 9b 9b]
                 }
             ]
         }

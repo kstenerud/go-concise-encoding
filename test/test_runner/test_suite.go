@@ -76,7 +76,8 @@ func (_this *TestSuite) PostDecodeInit(sourceFile string) (errors []error) {
 }
 
 func (_this *TestSuite) Run() (errors []error) {
-	for _, test := range _this.Tests {
+	for i, test := range _this.Tests {
+		defer func() { wrapPanic(recover(), "while running test %v in %v", i, _this.context) }()
 		if nextErrors := test.Run(); nextErrors != nil {
 			errors = append(errors, nextErrors...)
 		}

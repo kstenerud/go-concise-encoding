@@ -71,7 +71,7 @@ c0
     "time" = 18:04:00.940231541/Europe/Prague
     "timestamp" = 2010-07-15/13:28:15.415942344
     "null" = null
-    "bytes" = |u8 16 255 56 154 221 0 79 79 145|
+    "bytes" = @u8[16 255 56 154 221 0 79 79 145]
     "url" = @"https://example.com/"
     "email" = @"mailto:me@somewhere.com"
     1.5 = "Keys don't have to be strings"

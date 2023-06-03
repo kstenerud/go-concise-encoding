@@ -11,14 +11,14 @@ c0
             "mustSucceed" = [
                 { // TODO: Remove when v1 released
                     "raw_document" = true
-                    "cbe" = |u8x 81 00 01|
+                    "cbe" = @u8x[81 00 01]
                     "cte" = "c0
 1"
                     "events" = ["v=0" "n=1"]
                 }
                 //{ // TODO: Uncomment when v1 released
                 //    "rawDocument" = true
-                //    "cbe" = |u8x 81 01 01|
+                //    "cbe" = @u8x[81 01 01]
                 //    "cte" = "c1 1"
                 //    "events" = ["v=1" "n=1"]
                 //}
@@ -26,11 +26,11 @@ c0
             "mustFail" = [
                 //{
                 //    "rawDocument" = true
-                //    "cbe" = |u8x 81 00 00| // TODO: Uncomment when v1 released
+                //    "cbe" = @u8x[81 00 00] // TODO: Uncomment when v1 released
                 //}
                 {
                     "rawDocument" = true
-                    "cbe" = |u8x 81 02 00| // v2 not released yet
+                    "cbe" = @u8x[81 02 00] // v2 not released yet
                 }
             ]
         }

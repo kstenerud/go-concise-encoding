@@ -114,13 +114,13 @@ WSL: WHITESPACE_NL;
 COMMENT_LINE:  LINE_COMMENT;
 COMMENT_BLOCK: BLOCK_COMMENT;
 
-LIST_BEGIN:    '[';
-LIST_END:      ']';
-MAP_BEGIN:     '{';
+LIST_BEGIN:        '[';
+LIST_END:          ']';
+MAP_BEGIN:         '{';
 MAP_OR_RECORD_END: '}';
-KV_SEPARATOR:  '=';
-NODE_BEGIN:    '(';
-EDGE_OR_NODE_END: ')';
+KV_SEPARATOR:      '=';
+NODE_BEGIN:        '(';
+EDGE_OR_NODE_END:  ')';
 
 NULL:  N U L L;
 TRUE:  T R U E;
@@ -160,65 +160,54 @@ EDGE_BEGIN:        '@(';
 RECORD_TYPE_BEGIN: '@' IDENTIFIER '<';
 RECORD_BEGIN:      '@' IDENTIFIER '{';
 
-ARRAY_TYPE_I8:        '|' I '8' CHAR_WS -> pushMode(MODE_ARRAY_I);
-ARRAY_TYPE_I8_EMPTY:  '|' I '8' (B | O | X)? ARRAY_END;
-ARRAY_TYPE_I8B:       '|' I '8' B CHAR_WS -> pushMode(MODE_ARRAY_I_B);
-ARRAY_TYPE_I8O:       '|' I '8' O CHAR_WS -> pushMode(MODE_ARRAY_I_O);
-ARRAY_TYPE_I8X:       '|' I '8' X CHAR_WS -> pushMode(MODE_ARRAY_I_X);
-ARRAY_TYPE_I16:       '|' I '16' CHAR_WS -> pushMode(MODE_ARRAY_I);
-ARRAY_TYPE_I16_EMPTY: '|' I '16' (B | O | X)? ARRAY_END;
-ARRAY_TYPE_I16B:      '|' I '16' B CHAR_WS -> pushMode(MODE_ARRAY_I_B);
-ARRAY_TYPE_I16O:      '|' I '16' O CHAR_WS -> pushMode(MODE_ARRAY_I_O);
-ARRAY_TYPE_I16X:      '|' I '16' X CHAR_WS -> pushMode(MODE_ARRAY_I_X);
-ARRAY_TYPE_I32:       '|' I '32' CHAR_WS -> pushMode(MODE_ARRAY_I);
-ARRAY_TYPE_I32_EMPTY: '|' I '32' (B | O | X)? ARRAY_END;
-ARRAY_TYPE_I32B:      '|' I '32' B CHAR_WS -> pushMode(MODE_ARRAY_I_B);
-ARRAY_TYPE_I32O:      '|' I '32' O CHAR_WS -> pushMode(MODE_ARRAY_I_O);
-ARRAY_TYPE_I32X:      '|' I '32' X CHAR_WS -> pushMode(MODE_ARRAY_I_X);
-ARRAY_TYPE_I64:       '|' I '64' CHAR_WS -> pushMode(MODE_ARRAY_I);
-ARRAY_TYPE_I64_EMPTY: '|' I '64' (B | O | X)? ARRAY_END;
-ARRAY_TYPE_I64B:      '|' I '64' B CHAR_WS -> pushMode(MODE_ARRAY_I_B);
-ARRAY_TYPE_I64O:      '|' I '64' O CHAR_WS -> pushMode(MODE_ARRAY_I_O);
-ARRAY_TYPE_I64X:      '|' I '64' X CHAR_WS -> pushMode(MODE_ARRAY_I_X);
+ARRAY_TYPE_I8:         '@' I '8'    '[' -> pushMode(MODE_ARRAY_I);
+ARRAY_TYPE_I8B:        '@' I '8'  B '[' -> pushMode(MODE_ARRAY_I_B);
+ARRAY_TYPE_I8O:        '@' I '8'  O '[' -> pushMode(MODE_ARRAY_I_O);
+ARRAY_TYPE_I8X:        '@' I '8'  X '[' -> pushMode(MODE_ARRAY_I_X);
+ARRAY_TYPE_I16:        '@' I '16'   '[' -> pushMode(MODE_ARRAY_I);
+ARRAY_TYPE_I16B:       '@' I '16' B '[' -> pushMode(MODE_ARRAY_I_B);
+ARRAY_TYPE_I16O:       '@' I '16' O '[' -> pushMode(MODE_ARRAY_I_O);
+ARRAY_TYPE_I16X:       '@' I '16' X '[' -> pushMode(MODE_ARRAY_I_X);
+ARRAY_TYPE_I32:        '@' I '32'   '[' -> pushMode(MODE_ARRAY_I);
+ARRAY_TYPE_I32B:       '@' I '32' B '[' -> pushMode(MODE_ARRAY_I_B);
+ARRAY_TYPE_I32O:       '@' I '32' O '[' -> pushMode(MODE_ARRAY_I_O);
+ARRAY_TYPE_I32X:       '@' I '32' X '[' -> pushMode(MODE_ARRAY_I_X);
+ARRAY_TYPE_I64:        '@' I '64'   '[' -> pushMode(MODE_ARRAY_I);
+ARRAY_TYPE_I64B:       '@' I '64' B '[' -> pushMode(MODE_ARRAY_I_B);
+ARRAY_TYPE_I64O:       '@' I '64' O '[' -> pushMode(MODE_ARRAY_I_O);
+ARRAY_TYPE_I64X:       '@' I '64' X '[' -> pushMode(MODE_ARRAY_I_X);
 
-ARRAY_TYPE_U8:        '|' U '8' CHAR_WS -> pushMode(MODE_ARRAY_U);
-ARRAY_TYPE_U8_EMPTY:  '|' U '8' (B | O | X)? ARRAY_END;
-ARRAY_TYPE_U8B:       '|' U '8' B CHAR_WS -> pushMode(MODE_ARRAY_U_B);
-ARRAY_TYPE_U8O:       '|' U '8' O CHAR_WS -> pushMode(MODE_ARRAY_U_O);
-ARRAY_TYPE_U8X:       '|' U '8' X CHAR_WS -> pushMode(MODE_ARRAY_U_X);
-ARRAY_TYPE_U16:       '|' U '16' CHAR_WS -> pushMode(MODE_ARRAY_U);
-ARRAY_TYPE_U16_EMPTY: '|' U '16' (B | O | X)? ARRAY_END;
-ARRAY_TYPE_U16B:      '|' U '16' B CHAR_WS -> pushMode(MODE_ARRAY_U_B);
-ARRAY_TYPE_U16O:      '|' U '16' O CHAR_WS -> pushMode(MODE_ARRAY_U_O);
-ARRAY_TYPE_U16X:      '|' U '16' X CHAR_WS -> pushMode(MODE_ARRAY_U_X);
-ARRAY_TYPE_U32:       '|' U '32' CHAR_WS -> pushMode(MODE_ARRAY_U);
-ARRAY_TYPE_U32_EMPTY: '|' U '32' (B | O | X)? ARRAY_END;
-ARRAY_TYPE_U32B:      '|' U '32' B CHAR_WS -> pushMode(MODE_ARRAY_U_B);
-ARRAY_TYPE_U32O:      '|' U '32' O CHAR_WS -> pushMode(MODE_ARRAY_U_O);
-ARRAY_TYPE_U32X:      '|' U '32' X CHAR_WS -> pushMode(MODE_ARRAY_U_X);
-ARRAY_TYPE_U64:       '|' U '64' CHAR_WS -> pushMode(MODE_ARRAY_U);
-ARRAY_TYPE_U64_EMPTY: '|' U '64' (B | O | X)? ARRAY_END;
-ARRAY_TYPE_U64B:      '|' U '64' B CHAR_WS -> pushMode(MODE_ARRAY_U_B);
-ARRAY_TYPE_U64O:      '|' U '64' O CHAR_WS -> pushMode(MODE_ARRAY_U_O);
-ARRAY_TYPE_U64X:      '|' U '64' X CHAR_WS -> pushMode(MODE_ARRAY_U_X);
+ARRAY_TYPE_U8:         '@' U '8'    '[' -> pushMode(MODE_ARRAY_U);
+ARRAY_TYPE_U8B:        '@' U '8'  B '[' -> pushMode(MODE_ARRAY_U_B);
+ARRAY_TYPE_U8O:        '@' U '8'  O '[' -> pushMode(MODE_ARRAY_U_O);
+ARRAY_TYPE_U8X:        '@' U '8'  X '[' -> pushMode(MODE_ARRAY_U_X);
+ARRAY_TYPE_U16:        '@' U '16'   '[' -> pushMode(MODE_ARRAY_U);
+ARRAY_TYPE_U16B:       '@' U '16' B '[' -> pushMode(MODE_ARRAY_U_B);
+ARRAY_TYPE_U16O:       '@' U '16' O '[' -> pushMode(MODE_ARRAY_U_O);
+ARRAY_TYPE_U16X:       '@' U '16' X '[' -> pushMode(MODE_ARRAY_U_X);
+ARRAY_TYPE_U32:        '@' U '32'   '[' -> pushMode(MODE_ARRAY_U);
+ARRAY_TYPE_U32B:       '@' U '32' B '[' -> pushMode(MODE_ARRAY_U_B);
+ARRAY_TYPE_U32O:       '@' U '32' O '[' -> pushMode(MODE_ARRAY_U_O);
+ARRAY_TYPE_U32X:       '@' U '32' X '[' -> pushMode(MODE_ARRAY_U_X);
+ARRAY_TYPE_U64:        '@' U '64'   '[' -> pushMode(MODE_ARRAY_U);
+ARRAY_TYPE_U64B:       '@' U '64' B '[' -> pushMode(MODE_ARRAY_U_B);
+ARRAY_TYPE_U64O:       '@' U '64' O '[' -> pushMode(MODE_ARRAY_U_O);
+ARRAY_TYPE_U64X:       '@' U '64' X '[' -> pushMode(MODE_ARRAY_U_X);
 
-ARRAY_TYPE_F16:       '|' F '16' CHAR_WS -> pushMode(MODE_ARRAY_F);
-ARRAY_TYPE_F16_EMPTY: '|' F '16' X? ARRAY_END;
-ARRAY_TYPE_F16X:      '|' F '16' X CHAR_WS -> pushMode(MODE_ARRAY_F_X);
-ARRAY_TYPE_F32:       '|' F '32' CHAR_WS -> pushMode(MODE_ARRAY_F);
-ARRAY_TYPE_F32_EMPTY: '|' F '32' X? ARRAY_END;
-ARRAY_TYPE_F32X:      '|' F '32' X CHAR_WS -> pushMode(MODE_ARRAY_F_X);
-ARRAY_TYPE_F64:       '|' F '64' CHAR_WS -> pushMode(MODE_ARRAY_F);
-ARRAY_TYPE_F64_EMPTY: '|' F '64' X? ARRAY_END;
-ARRAY_TYPE_F64X:      '|' F '64' X CHAR_WS -> pushMode(MODE_ARRAY_F_X);
+ARRAY_TYPE_F16:        '@' F '16'   '[' -> pushMode(MODE_ARRAY_F);
+ARRAY_TYPE_F16X:       '@' F '16' X '[' -> pushMode(MODE_ARRAY_F_X);
+ARRAY_TYPE_F32:        '@' F '32'   '[' -> pushMode(MODE_ARRAY_F);
+ARRAY_TYPE_F32X:       '@' F '32' X '[' -> pushMode(MODE_ARRAY_F_X);
+ARRAY_TYPE_F64:        '@' F '64'   '[' -> pushMode(MODE_ARRAY_F);
+ARRAY_TYPE_F64X:       '@' F '64' X '[' -> pushMode(MODE_ARRAY_F_X);
 
-ARRAY_TYPE_UID:       '|' U CHAR_WS -> pushMode(MODE_ARRAY_UID);
-ARRAY_TYPE_UID_EMPTY: '|' U ARRAY_END;
+ARRAY_TYPE_UID:        '@' U I D '['    -> pushMode(MODE_ARRAY_UID);
+ARRAY_TYPE_BIT:        '@' B '['        -> pushMode(MODE_ARRAY_BIT);
 
-ARRAY_TYPE_BIT:       '|' B CHAR_WS -> pushMode(MODE_ARRAY_BIT);
-ARRAY_TYPE_BIT_EMPTY: '|' B ARRAY_END;
-ARRAY_TYPE_CUSTOM:    '|' C -> pushMode(MODE_CUSTOM_TYPE_SELECT);
-ARRAY_TYPE_MEDIA:     '|' '.' -> pushMode(MODE_MEDIA_TYPE_SELECT);
+ARRAY_TYPE_CUSTOM_BIN: '@' CUSTOM_TYPE '[' -> pushMode(MODE_BYTES);
+ARRAY_TYPE_CUSTOM_TXT: '@' CUSTOM_TYPE '"' -> pushMode(MODE_STRING);
+ARRAY_TYPE_MEDIA_BIN:  '@' MEDIA_TYPE '['  -> pushMode(MODE_BYTES);
+ARRAY_TYPE_MEDIA_TXT:  '@' MEDIA_TYPE '"'  -> pushMode(MODE_STRING);
 
 
 // ==============
@@ -408,56 +397,6 @@ mode MODE_CODEPOINT;
 CODEPOINT: HEX+ ']' -> popMode;
 
 
-// =========================
-mode MODE_CUSTOM_TYPE_SELECT;
-// =========================
-
-CUSTOM_TYPE: DEC+ -> mode(MODE_CUSTOM_CONTENTS_INIT);
-
-
-// ===========================
-mode MODE_CUSTOM_CONTENTS_INIT;
-// ===========================
-
-CUSTOM_END:     CHAR_WS* ARRAY_END -> popMode;
-CUSTOM_TEXT:    CHAR_WS+ '"' -> mode(MODE_CUSTOM_TEXT);
-CUSTOM_BINARY:  CHAR_WS+ -> mode(MODE_BYTES);
-
-
-// ==================
-mode MODE_CUSTOM_TEXT;
-// ==================
-
-CT_STRING_END:      '"' CHAR_WS* ARRAY_END -> popMode;
-CT_STRING_ESCAPE:   '\\' -> pushMode(MODE_STRING_ESCAPE);
-CT_STRING_CONTENTS: CHAR_QUOTED_STRING;
-
-
-// ========================
-mode MODE_MEDIA_TYPE_SELECT;
-// ========================
-
-MEDIA_TYPE: CHAR_MEDIA_TYPE_FIRST CHAR_MEDIA_TYPE* -> mode(MODE_MEDIA_CONTENTS_INIT);
-
-
-// ==========================
-mode MODE_MEDIA_CONTENTS_INIT;
-// ==========================
-
-MEDIA_END:     CHAR_WS* ARRAY_END -> popMode;
-MEDIA_TEXT:    CHAR_WS+ '"' -> mode(MODE_MEDIA_TEXT);
-MEDIA_BINARY:  CHAR_WS+ -> mode(MODE_BYTES);
-
-
-// =================
-mode MODE_MEDIA_TEXT;
-// =================
-
-MEDIA_STRING_END:      '"' CHAR_WS* ARRAY_END -> popMode;
-MEDIA_STRING_ESCAPE:   '\\' -> pushMode(MODE_STRING_ESCAPE);
-MEDIA_STRING_CONTENTS: CHAR_QUOTED_STRING;
-
-
 // =========
 // Fragments
 // =========
@@ -467,6 +406,7 @@ fragment WHITESPACE_NL: CHAR_WS+;
 fragment A: [aA];
 fragment B: [bB];
 fragment C: [cC];
+fragment D: [dD];
 fragment E: [eE];
 fragment F: [fF];
 fragment I: [iI];
@@ -480,8 +420,10 @@ fragment T: [tT];
 fragment U: [uU];
 fragment X: [xX];
 
-fragment ARRAY_END: '|';
+fragment ARRAY_END: ']';
 fragment IDENTIFIER: CHAR_IDENTIFIER+;
+fragment MEDIA_TYPE: CHAR_MEDIA_TYPE_FIRST CHAR_MEDIA_TYPE_NEXT* '/' CHAR_MEDIA_TYPE_NEXT+;
+fragment CUSTOM_TYPE: DEC+;
 
 fragment PREFIX_BIN:    '0' B;
 fragment PREFIX_OCT:    '0' O;
@@ -547,7 +489,7 @@ fragment FLOAT_OR_INT_H_NOPREFIX: NEG? DIGITS_HEX
 fragment DATE_PORTION: NEG? DIGITS_DEC '-' DEC DEC? '-' DEC DEC?;
 fragment TIME_PORTION: DEC DEC? ':' DEC DEC ':' DEC DEC (RADIX DEC DEC? DEC? DEC? DEC? DEC? DEC? DEC? DEC?)? TIME_ZONE?;
 fragment TIME_ZONE:    TZ_AREALOC | TZ_LATLONG | TZ_OFFSET;
-fragment TZ_AREALOC:   '/' CHAR_AREA_LOC_FIRST CHAR_AREA_LOC*;
+fragment TZ_AREALOC:   '/' CHAR_AREA_LOC_FIRST CHAR_AREA_LOC_NEXT*;
 fragment TZ_LATLONG:   '/' NEG? DEC DEC? (RADIX DEC DEC?)?
                        '/' NEG? DEC DEC? DEC? (RADIX DEC DEC?)? 
                        ;
@@ -559,11 +501,11 @@ fragment LINE_END: '\n' | '\r\n';
 fragment CHAR_IDENTIFIER: [\p{Cf}\p{L}\p{M}\p{N}_.-];
 
 fragment CHAR_AREA_LOC_FIRST: [A-Z];
-fragment CHAR_AREA_LOC:       [a-zA-Z0-9_-] | '.' | '/' | '+';
+fragment CHAR_AREA_LOC_NEXT:  [a-zA-Z0-9_-] | '.' | '/' | '+';
 
 // https://datatracker.ietf.org/doc/html/rfc2045#section-5.1
 fragment CHAR_MEDIA_TYPE_FIRST: [a-zA-Z];
-fragment CHAR_MEDIA_TYPE:       [a-zA-Z0-9!#$%&'*+.^_`|~/] | '{' | '}' | '-';
+fragment CHAR_MEDIA_TYPE_NEXT:  [a-zA-Z0-9!#$%&'*+.^_`|~] | '{' | '}' | '-';
 
 // TODO
 // fragment CHAR_QUOTED_STRING: ~[\u0000-\u0008\u000b\u000c\u000e-\u001f"\\]; // TODO

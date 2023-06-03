@@ -31,16 +31,16 @@ c0
             "mustSucceed" = [
                 {
                     "cte" = "\.%%%%
-{
-    "a" = true
-}
+[
+    @application/x-sh[23 21 2f 62 69 6e 2f 73 68 0a 0a 65 63 68 6f 20 68 65 6c 6c 6f 20 77 6f 72 6c 64 0a]
+]
 %%%%"
-                    "cbe"    = |u8x 99 81 61 79 9b|
                     "events" = [
-                        "m"
-                            "s=a" "b=true"
+                        "l"
+                            "media=application/x-sh 23 21 2f 62 69 6e 2f 73 68 0a 0a 65 63 68 6f 20 68 65 6c 6c 6f 20 77 6f 72 6c 64 0a"
                         "e"
                     ]
+                    "debug"=true
                 }
             ]
             "mustFail" = [

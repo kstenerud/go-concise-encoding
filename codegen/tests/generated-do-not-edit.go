@@ -71,7 +71,7 @@ func generateArrayInt8Tests() []*test_runner.UnitTest {
 		contents = append(contents, int8(i))
 	}
 	mustSucceed = append(mustSucceed, newMustSucceedTest(DirectionsAll, &config, BAI8(), ACL(uint64(len(contents))), ADI8(contents)))
-	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|i8 8 -17 0b1011 0B1010 -0b1100 -0B1101 0o31 0O33 -0o10 -0O5 0x10 0X15 -0x22 -0X33|",
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("@i8[8 -17 0b1011 0B1010 -0b1100 -0B1101 0o31 0O33 -0o10 -0O5 0x10 0X15 -0x22 -0X33]",
 		AI8([]int8{8, -17, 0b1011, 0b1010, -0b1100, -0b1101, 0o31, 0o33, -0o10, -0o5, 0x10, 0x15, -0x22, -0x33})))
 	unitTests = append(unitTests, newMustSucceedUnitTest("Various Array Elements", mustSucceed...))
 
@@ -121,14 +121,14 @@ func generateArrayInt8Tests() []*test_runner.UnitTest {
 
 	// Whitespace at end of array
 	mustSucceed = nil
-	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|i8 |", AI8([]int8{})))
-	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|i8 1 |", AI8([]int8{1})))
-	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|i8b |", AI8([]int8{})))
-	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|i8b 1 |", AI8([]int8{1})))
-	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|i8o |", AI8([]int8{})))
-	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|i8o 1 |", AI8([]int8{1})))
-	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|i8x |", AI8([]int8{})))
-	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|i8x 1 |", AI8([]int8{1})))
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("@i8[ ]", AI8([]int8{})))
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("@i8[ 1 ]", AI8([]int8{1})))
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("@i8b[ ]", AI8([]int8{})))
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("@i8b[ 1 ]", AI8([]int8{1})))
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("@i8o[ ]", AI8([]int8{})))
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("@i8o[ 1 ]", AI8([]int8{1})))
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("@i8x[ ]", AI8([]int8{})))
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("@i8x[ 1 ]", AI8([]int8{1})))
 	unitTests = append(unitTests, newMustSucceedUnitTest("Whitespace at end of array", mustSucceed...))
 
 	// Fail mode tests
@@ -136,10 +136,10 @@ func generateArrayInt8Tests() []*test_runner.UnitTest {
 
 	// Space before array type
 	mustFail = nil
-	mustFail = append(mustFail, newCTEMustFailTest("| i8|"))
-	mustFail = append(mustFail, newCTEMustFailTest("| i8b|"))
-	mustFail = append(mustFail, newCTEMustFailTest("| i8o|"))
-	mustFail = append(mustFail, newCTEMustFailTest("| i8x|"))
+	mustFail = append(mustFail, newCTEMustFailTest("@ i8[]"))
+	mustFail = append(mustFail, newCTEMustFailTest("@ i8b[]"))
+	mustFail = append(mustFail, newCTEMustFailTest("@ i8o[]"))
+	mustFail = append(mustFail, newCTEMustFailTest("@ i8x[]"))
 	unitTests = append(unitTests, newMustFailUnitTest("Space before array type", mustFail...))
 
 	// Truncated Array
@@ -163,21 +163,21 @@ func generateArrayInt8Tests() []*test_runner.UnitTest {
 	smallValue.Neg(smallValue)
 	unitTests = append(unitTests, newMustFailUnitTest(
 		"Element value out of range",
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|i8b %b|", bigValue)}},
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|i8o %o|", bigValue)}},
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|i8x %x|", bigValue)}},
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|i8 %d|", bigValue)}},
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|i8 0b%b|", bigValue)}},
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|i8 0o%o|", bigValue)}},
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|i8 0x%x|", bigValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@i8b[%b]", bigValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@i8o[%o]", bigValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@i8x[%x]", bigValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@i8[%d]", bigValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@i8[0b%b]", bigValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@i8[0o%o]", bigValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@i8[0x%x]", bigValue)}},
 
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|i8b -%b|", smallValue)}},
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|i8o -%o|", smallValue)}},
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|i8x -%x|", smallValue)}},
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|i8 -%d|", smallValue)}},
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|i8 -0b%b|", smallValue)}},
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|i8 -0o%o|", smallValue)}},
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|i8 -0x%x|", smallValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@i8b[-%b]", smallValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@i8o[-%o]", smallValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@i8x[-%x]", smallValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@i8[-%d]", smallValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@i8[-0b%b]", smallValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@i8[-0o%o]", smallValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@i8[-0x%x]", smallValue)}},
 	))
 
 	// Numeric digit out of range
@@ -185,7 +185,7 @@ func generateArrayInt8Tests() []*test_runner.UnitTest {
 	for iB, base := range intBases {
 		for iV, v := range baseOutOfRange {
 			if iV <= iB {
-				mustFail = append(mustFail, &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|i8%v %v|", base, v)}})
+				mustFail = append(mustFail, &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@i8%v[%v]", base, v)}})
 			}
 		}
 	}
@@ -195,7 +195,7 @@ func generateArrayInt8Tests() []*test_runner.UnitTest {
 	mustFail = nil
 	for _, base := range intBases {
 		for _, special := range nonIntSpecials {
-			mustFail = append(mustFail, &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|i8%v %v|", base, special)}})
+			mustFail = append(mustFail, &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@i8%v[%v]", base, special)}})
 		}
 	}
 	unitTests = append(unitTests, newMustFailUnitTest("Invalid special values", mustFail...))
@@ -203,7 +203,7 @@ func generateArrayInt8Tests() []*test_runner.UnitTest {
 	// Float value in int array
 	mustFail = nil
 	for _, base := range intBases {
-		mustFail = append(mustFail, &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|i8%v 1.2|", base)}})
+		mustFail = append(mustFail, &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@i8%v[1.2]", base)}})
 	}
 	unitTests = append(unitTests, newMustFailUnitTest("Float value in int array", mustFail...))
 
@@ -248,7 +248,7 @@ func generateArrayInt16Tests() []*test_runner.UnitTest {
 		contents = append(contents, int16(i))
 	}
 	mustSucceed = append(mustSucceed, newMustSucceedTest(DirectionsAll, &config, BAI16(), ACL(uint64(len(contents))), ADI16(contents)))
-	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|i16 8 -17 0b1011 0B1010 -0b1100 -0B1101 0o31 0O33 -0o10 -0O5 0x10 0X15 -0x22 -0X33|",
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("@i16[8 -17 0b1011 0B1010 -0b1100 -0B1101 0o31 0O33 -0o10 -0O5 0x10 0X15 -0x22 -0X33]",
 		AI16([]int16{8, -17, 0b1011, 0b1010, -0b1100, -0b1101, 0o31, 0o33, -0o10, -0o5, 0x10, 0x15, -0x22, -0x33})))
 	unitTests = append(unitTests, newMustSucceedUnitTest("Various Array Elements", mustSucceed...))
 
@@ -298,14 +298,14 @@ func generateArrayInt16Tests() []*test_runner.UnitTest {
 
 	// Whitespace at end of array
 	mustSucceed = nil
-	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|i16 |", AI16([]int16{})))
-	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|i16 1 |", AI16([]int16{1})))
-	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|i16b |", AI16([]int16{})))
-	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|i16b 1 |", AI16([]int16{1})))
-	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|i16o |", AI16([]int16{})))
-	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|i16o 1 |", AI16([]int16{1})))
-	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|i16x |", AI16([]int16{})))
-	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|i16x 1 |", AI16([]int16{1})))
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("@i16[ ]", AI16([]int16{})))
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("@i16[ 1 ]", AI16([]int16{1})))
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("@i16b[ ]", AI16([]int16{})))
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("@i16b[ 1 ]", AI16([]int16{1})))
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("@i16o[ ]", AI16([]int16{})))
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("@i16o[ 1 ]", AI16([]int16{1})))
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("@i16x[ ]", AI16([]int16{})))
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("@i16x[ 1 ]", AI16([]int16{1})))
 	unitTests = append(unitTests, newMustSucceedUnitTest("Whitespace at end of array", mustSucceed...))
 
 	// Fail mode tests
@@ -313,10 +313,10 @@ func generateArrayInt16Tests() []*test_runner.UnitTest {
 
 	// Space before array type
 	mustFail = nil
-	mustFail = append(mustFail, newCTEMustFailTest("| i16|"))
-	mustFail = append(mustFail, newCTEMustFailTest("| i16b|"))
-	mustFail = append(mustFail, newCTEMustFailTest("| i16o|"))
-	mustFail = append(mustFail, newCTEMustFailTest("| i16x|"))
+	mustFail = append(mustFail, newCTEMustFailTest("@ i16[]"))
+	mustFail = append(mustFail, newCTEMustFailTest("@ i16b[]"))
+	mustFail = append(mustFail, newCTEMustFailTest("@ i16o[]"))
+	mustFail = append(mustFail, newCTEMustFailTest("@ i16x[]"))
 	unitTests = append(unitTests, newMustFailUnitTest("Space before array type", mustFail...))
 
 	// Truncated Array
@@ -340,21 +340,21 @@ func generateArrayInt16Tests() []*test_runner.UnitTest {
 	smallValue.Neg(smallValue)
 	unitTests = append(unitTests, newMustFailUnitTest(
 		"Element value out of range",
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|i16b %b|", bigValue)}},
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|i16o %o|", bigValue)}},
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|i16x %x|", bigValue)}},
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|i16 %d|", bigValue)}},
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|i16 0b%b|", bigValue)}},
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|i16 0o%o|", bigValue)}},
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|i16 0x%x|", bigValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@i16b[%b]", bigValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@i16o[%o]", bigValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@i16x[%x]", bigValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@i16[%d]", bigValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@i16[0b%b]", bigValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@i16[0o%o]", bigValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@i16[0x%x]", bigValue)}},
 
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|i16b -%b|", smallValue)}},
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|i16o -%o|", smallValue)}},
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|i16x -%x|", smallValue)}},
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|i16 -%d|", smallValue)}},
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|i16 -0b%b|", smallValue)}},
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|i16 -0o%o|", smallValue)}},
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|i16 -0x%x|", smallValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@i16b[-%b]", smallValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@i16o[-%o]", smallValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@i16x[-%x]", smallValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@i16[-%d]", smallValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@i16[-0b%b]", smallValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@i16[-0o%o]", smallValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@i16[-0x%x]", smallValue)}},
 	))
 
 	// Numeric digit out of range
@@ -362,7 +362,7 @@ func generateArrayInt16Tests() []*test_runner.UnitTest {
 	for iB, base := range intBases {
 		for iV, v := range baseOutOfRange {
 			if iV <= iB {
-				mustFail = append(mustFail, &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|i16%v %v|", base, v)}})
+				mustFail = append(mustFail, &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@i16%v[%v]", base, v)}})
 			}
 		}
 	}
@@ -372,7 +372,7 @@ func generateArrayInt16Tests() []*test_runner.UnitTest {
 	mustFail = nil
 	for _, base := range intBases {
 		for _, special := range nonIntSpecials {
-			mustFail = append(mustFail, &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|i16%v %v|", base, special)}})
+			mustFail = append(mustFail, &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@i16%v[%v]", base, special)}})
 		}
 	}
 	unitTests = append(unitTests, newMustFailUnitTest("Invalid special values", mustFail...))
@@ -380,7 +380,7 @@ func generateArrayInt16Tests() []*test_runner.UnitTest {
 	// Float value in int array
 	mustFail = nil
 	for _, base := range intBases {
-		mustFail = append(mustFail, &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|i16%v 1.2|", base)}})
+		mustFail = append(mustFail, &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@i16%v[1.2]", base)}})
 	}
 	unitTests = append(unitTests, newMustFailUnitTest("Float value in int array", mustFail...))
 
@@ -425,7 +425,7 @@ func generateArrayInt64Tests() []*test_runner.UnitTest {
 		contents = append(contents, int64(i))
 	}
 	mustSucceed = append(mustSucceed, newMustSucceedTest(DirectionsAll, &config, BAI64(), ACL(uint64(len(contents))), ADI64(contents)))
-	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|i64 8 -17 0b1011 0B1010 -0b1100 -0B1101 0o31 0O33 -0o10 -0O5 0x10 0X15 -0x22 -0X33|",
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("@i64[8 -17 0b1011 0B1010 -0b1100 -0B1101 0o31 0O33 -0o10 -0O5 0x10 0X15 -0x22 -0X33]",
 		AI64([]int64{8, -17, 0b1011, 0b1010, -0b1100, -0b1101, 0o31, 0o33, -0o10, -0o5, 0x10, 0x15, -0x22, -0x33})))
 	unitTests = append(unitTests, newMustSucceedUnitTest("Various Array Elements", mustSucceed...))
 
@@ -475,14 +475,14 @@ func generateArrayInt64Tests() []*test_runner.UnitTest {
 
 	// Whitespace at end of array
 	mustSucceed = nil
-	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|i64 |", AI64([]int64{})))
-	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|i64 1 |", AI64([]int64{1})))
-	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|i64b |", AI64([]int64{})))
-	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|i64b 1 |", AI64([]int64{1})))
-	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|i64o |", AI64([]int64{})))
-	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|i64o 1 |", AI64([]int64{1})))
-	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|i64x |", AI64([]int64{})))
-	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|i64x 1 |", AI64([]int64{1})))
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("@i64[ ]", AI64([]int64{})))
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("@i64[ 1 ]", AI64([]int64{1})))
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("@i64b[ ]", AI64([]int64{})))
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("@i64b[ 1 ]", AI64([]int64{1})))
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("@i64o[ ]", AI64([]int64{})))
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("@i64o[ 1 ]", AI64([]int64{1})))
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("@i64x[ ]", AI64([]int64{})))
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("@i64x[ 1 ]", AI64([]int64{1})))
 	unitTests = append(unitTests, newMustSucceedUnitTest("Whitespace at end of array", mustSucceed...))
 
 	// Fail mode tests
@@ -490,10 +490,10 @@ func generateArrayInt64Tests() []*test_runner.UnitTest {
 
 	// Space before array type
 	mustFail = nil
-	mustFail = append(mustFail, newCTEMustFailTest("| i64|"))
-	mustFail = append(mustFail, newCTEMustFailTest("| i64b|"))
-	mustFail = append(mustFail, newCTEMustFailTest("| i64o|"))
-	mustFail = append(mustFail, newCTEMustFailTest("| i64x|"))
+	mustFail = append(mustFail, newCTEMustFailTest("@ i64[]"))
+	mustFail = append(mustFail, newCTEMustFailTest("@ i64b[]"))
+	mustFail = append(mustFail, newCTEMustFailTest("@ i64o[]"))
+	mustFail = append(mustFail, newCTEMustFailTest("@ i64x[]"))
 	unitTests = append(unitTests, newMustFailUnitTest("Space before array type", mustFail...))
 
 	// Truncated Array
@@ -517,21 +517,21 @@ func generateArrayInt64Tests() []*test_runner.UnitTest {
 	smallValue.Neg(smallValue)
 	unitTests = append(unitTests, newMustFailUnitTest(
 		"Element value out of range",
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|i64b %b|", bigValue)}},
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|i64o %o|", bigValue)}},
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|i64x %x|", bigValue)}},
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|i64 %d|", bigValue)}},
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|i64 0b%b|", bigValue)}},
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|i64 0o%o|", bigValue)}},
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|i64 0x%x|", bigValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@i64b[%b]", bigValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@i64o[%o]", bigValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@i64x[%x]", bigValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@i64[%d]", bigValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@i64[0b%b]", bigValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@i64[0o%o]", bigValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@i64[0x%x]", bigValue)}},
 
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|i64b -%b|", smallValue)}},
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|i64o -%o|", smallValue)}},
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|i64x -%x|", smallValue)}},
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|i64 -%d|", smallValue)}},
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|i64 -0b%b|", smallValue)}},
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|i64 -0o%o|", smallValue)}},
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|i64 -0x%x|", smallValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@i64b[-%b]", smallValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@i64o[-%o]", smallValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@i64x[-%x]", smallValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@i64[-%d]", smallValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@i64[-0b%b]", smallValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@i64[-0o%o]", smallValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@i64[-0x%x]", smallValue)}},
 	))
 
 	// Numeric digit out of range
@@ -539,7 +539,7 @@ func generateArrayInt64Tests() []*test_runner.UnitTest {
 	for iB, base := range intBases {
 		for iV, v := range baseOutOfRange {
 			if iV <= iB {
-				mustFail = append(mustFail, &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|i64%v %v|", base, v)}})
+				mustFail = append(mustFail, &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@i64%v[%v]", base, v)}})
 			}
 		}
 	}
@@ -549,7 +549,7 @@ func generateArrayInt64Tests() []*test_runner.UnitTest {
 	mustFail = nil
 	for _, base := range intBases {
 		for _, special := range nonIntSpecials {
-			mustFail = append(mustFail, &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|i64%v %v|", base, special)}})
+			mustFail = append(mustFail, &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@i64%v[%v]", base, special)}})
 		}
 	}
 	unitTests = append(unitTests, newMustFailUnitTest("Invalid special values", mustFail...))
@@ -557,7 +557,7 @@ func generateArrayInt64Tests() []*test_runner.UnitTest {
 	// Float value in int array
 	mustFail = nil
 	for _, base := range intBases {
-		mustFail = append(mustFail, &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|i64%v 1.2|", base)}})
+		mustFail = append(mustFail, &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@i64%v[1.2]", base)}})
 	}
 	unitTests = append(unitTests, newMustFailUnitTest("Float value in int array", mustFail...))
 
@@ -602,7 +602,7 @@ func generateArrayUint8Tests() []*test_runner.UnitTest {
 		contents = append(contents, uint8(i))
 	}
 	mustSucceed = append(mustSucceed, newMustSucceedTest(DirectionsAll, &config, BAU8(), ACL(uint64(len(contents))), ADU8(contents)))
-	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|u8 8 0b1011 0B1010 0o31 0O33 0x10 0X15|",
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("@u8[8 0b1011 0B1010 0o31 0O33 0x10 0X15]",
 		AU8([]uint8{8, 0b1011, 0b1010, 0o31, 0o33, 0x10, 0x15})))
 	unitTests = append(unitTests, newMustSucceedUnitTest("Various Array Elements", mustSucceed...))
 
@@ -652,14 +652,14 @@ func generateArrayUint8Tests() []*test_runner.UnitTest {
 
 	// Whitespace at end of array
 	mustSucceed = nil
-	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|u8 |", AU8([]uint8{})))
-	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|u8 1 |", AU8([]uint8{1})))
-	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|u8b |", AU8([]uint8{})))
-	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|u8b 1 |", AU8([]uint8{1})))
-	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|u8o |", AU8([]uint8{})))
-	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|u8o 1 |", AU8([]uint8{1})))
-	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|u8x |", AU8([]uint8{})))
-	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|u8x 1 |", AU8([]uint8{1})))
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("@u8[ ]", AU8([]uint8{})))
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("@u8[1 ]", AU8([]uint8{1})))
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("@u8b[ ]", AU8([]uint8{})))
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("@u8b[ 1 ]", AU8([]uint8{1})))
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("@u8o[ ]", AU8([]uint8{})))
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("@u8o[ 1 ]", AU8([]uint8{1})))
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("@u8x[ ]", AU8([]uint8{})))
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("@u8x[ 1 ]", AU8([]uint8{1})))
 	unitTests = append(unitTests, newMustSucceedUnitTest("Whitespace at end of array", mustSucceed...))
 
 	// Fail mode tests
@@ -667,10 +667,10 @@ func generateArrayUint8Tests() []*test_runner.UnitTest {
 
 	// Space before array type
 	mustFail = nil
-	mustFail = append(mustFail, newCTEMustFailTest("| u8|"))
-	mustFail = append(mustFail, newCTEMustFailTest("| u8b|"))
-	mustFail = append(mustFail, newCTEMustFailTest("| u8o|"))
-	mustFail = append(mustFail, newCTEMustFailTest("| u8x|"))
+	mustFail = append(mustFail, newCTEMustFailTest("@ u8[]"))
+	mustFail = append(mustFail, newCTEMustFailTest("@ u8b[]"))
+	mustFail = append(mustFail, newCTEMustFailTest("@ u8o[]"))
+	mustFail = append(mustFail, newCTEMustFailTest("@ u8x[]"))
 	unitTests = append(unitTests, newMustFailUnitTest("Space before array type", mustFail...))
 
 	// Truncated Array
@@ -693,21 +693,21 @@ func generateArrayUint8Tests() []*test_runner.UnitTest {
 	smallValue.Neg(smallValue)
 	unitTests = append(unitTests, newMustFailUnitTest(
 		"Element value out of range",
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|u8b %b|", bigValue)}},
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|u8o %o|", bigValue)}},
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|u8x %x|", bigValue)}},
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|u8 %d|", bigValue)}},
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|u8 0b%b|", bigValue)}},
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|u8 0o%o|", bigValue)}},
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|u8 0x%x|", bigValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@u8b[%b]", bigValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@u8o[%o]", bigValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@u8x[%x]", bigValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@u8[%d]", bigValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@u8[0b%b]", bigValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@u8[0o%o]", bigValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@u8[0x%x]", bigValue)}},
 
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|u8b -%b|", smallValue)}},
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|u8o -%o|", smallValue)}},
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|u8x -%x|", smallValue)}},
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|u8 -%d|", smallValue)}},
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|u8 -0b%b|", smallValue)}},
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|u8 -0o%o|", smallValue)}},
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|u8 -0x%x|", smallValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@u8b[-%b]", smallValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@u8o[-%o]", smallValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@u8x[-%x]", smallValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@u8[-%d]", smallValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@u8[-0b%b]", smallValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@u8[-0o%o]", smallValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@u8[-0x%x]", smallValue)}},
 	))
 
 	// Numeric digit out of range
@@ -715,7 +715,7 @@ func generateArrayUint8Tests() []*test_runner.UnitTest {
 	for iB, base := range intBases {
 		for iV, v := range baseOutOfRange {
 			if iV <= iB {
-				mustFail = append(mustFail, &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|u8%v %v|", base, v)}})
+				mustFail = append(mustFail, &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@u8%v[%v]", base, v)}})
 			}
 		}
 	}
@@ -725,7 +725,7 @@ func generateArrayUint8Tests() []*test_runner.UnitTest {
 	mustFail = nil
 	for _, base := range intBases {
 		for _, special := range nonIntSpecials {
-			mustFail = append(mustFail, &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|u8%v %v|", base, special)}})
+			mustFail = append(mustFail, &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@u8%v[%v]", base, special)}})
 		}
 	}
 	unitTests = append(unitTests, newMustFailUnitTest("Invalid special values", mustFail...))
@@ -733,7 +733,7 @@ func generateArrayUint8Tests() []*test_runner.UnitTest {
 	// Float value in int array
 	mustFail = nil
 	for _, base := range intBases {
-		mustFail = append(mustFail, &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|u8%v 1.2|", base)}})
+		mustFail = append(mustFail, &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@u8%v[1.2]", base)}})
 	}
 	unitTests = append(unitTests, newMustFailUnitTest("Float value in int array", mustFail...))
 
@@ -778,7 +778,7 @@ func generateArrayUint16Tests() []*test_runner.UnitTest {
 		contents = append(contents, uint16(i))
 	}
 	mustSucceed = append(mustSucceed, newMustSucceedTest(DirectionsAll, &config, BAU16(), ACL(uint64(len(contents))), ADU16(contents)))
-	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|u16 8 0b1011 0B1010 0o31 0O33 0x10 0X15|",
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("@u16[8 0b1011 0B1010 0o31 0O33 0x10 0X15]",
 		AU16([]uint16{8, 0b1011, 0b1010, 0o31, 0o33, 0x10, 0x15})))
 	unitTests = append(unitTests, newMustSucceedUnitTest("Various Array Elements", mustSucceed...))
 
@@ -828,14 +828,14 @@ func generateArrayUint16Tests() []*test_runner.UnitTest {
 
 	// Whitespace at end of array
 	mustSucceed = nil
-	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|u16 |", AU16([]uint16{})))
-	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|u16 1 |", AU16([]uint16{1})))
-	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|u16b |", AU16([]uint16{})))
-	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|u16b 1 |", AU16([]uint16{1})))
-	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|u16o |", AU16([]uint16{})))
-	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|u16o 1 |", AU16([]uint16{1})))
-	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|u16x |", AU16([]uint16{})))
-	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|u16x 1 |", AU16([]uint16{1})))
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("@u16[ ]", AU16([]uint16{})))
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("@u16[1 ]", AU16([]uint16{1})))
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("@u16b[ ]", AU16([]uint16{})))
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("@u16b[ 1 ]", AU16([]uint16{1})))
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("@u16o[ ]", AU16([]uint16{})))
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("@u16o[ 1 ]", AU16([]uint16{1})))
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("@u16x[ ]", AU16([]uint16{})))
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("@u16x[ 1 ]", AU16([]uint16{1})))
 	unitTests = append(unitTests, newMustSucceedUnitTest("Whitespace at end of array", mustSucceed...))
 
 	// Fail mode tests
@@ -843,10 +843,10 @@ func generateArrayUint16Tests() []*test_runner.UnitTest {
 
 	// Space before array type
 	mustFail = nil
-	mustFail = append(mustFail, newCTEMustFailTest("| u16|"))
-	mustFail = append(mustFail, newCTEMustFailTest("| u16b|"))
-	mustFail = append(mustFail, newCTEMustFailTest("| u16o|"))
-	mustFail = append(mustFail, newCTEMustFailTest("| u16x|"))
+	mustFail = append(mustFail, newCTEMustFailTest("@ u16[]"))
+	mustFail = append(mustFail, newCTEMustFailTest("@ u16b[]"))
+	mustFail = append(mustFail, newCTEMustFailTest("@ u16o[]"))
+	mustFail = append(mustFail, newCTEMustFailTest("@ u16x[]"))
 	unitTests = append(unitTests, newMustFailUnitTest("Space before array type", mustFail...))
 
 	// Truncated Array
@@ -869,21 +869,21 @@ func generateArrayUint16Tests() []*test_runner.UnitTest {
 	smallValue.Neg(smallValue)
 	unitTests = append(unitTests, newMustFailUnitTest(
 		"Element value out of range",
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|u16b %b|", bigValue)}},
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|u16o %o|", bigValue)}},
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|u16x %x|", bigValue)}},
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|u16 %d|", bigValue)}},
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|u16 0b%b|", bigValue)}},
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|u16 0o%o|", bigValue)}},
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|u16 0x%x|", bigValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@u16b[%b]", bigValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@u16o[%o]", bigValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@u16x[%x]", bigValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@u16[%d]", bigValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@u16[0b%b]", bigValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@u16[0o%o]", bigValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@u16[0x%x]", bigValue)}},
 
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|u16b -%b|", smallValue)}},
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|u16o -%o|", smallValue)}},
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|u16x -%x|", smallValue)}},
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|u16 -%d|", smallValue)}},
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|u16 -0b%b|", smallValue)}},
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|u16 -0o%o|", smallValue)}},
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|u16 -0x%x|", smallValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@u16b[-%b]", smallValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@u16o[-%o]", smallValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@u16x[-%x]", smallValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@u16[-%d]", smallValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@u16[-0b%b]", smallValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@u16[-0o%o]", smallValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@u16[-0x%x]", smallValue)}},
 	))
 
 	// Numeric digit out of range
@@ -891,7 +891,7 @@ func generateArrayUint16Tests() []*test_runner.UnitTest {
 	for iB, base := range intBases {
 		for iV, v := range baseOutOfRange {
 			if iV <= iB {
-				mustFail = append(mustFail, &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|u16%v %v|", base, v)}})
+				mustFail = append(mustFail, &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@u16%v[%v]", base, v)}})
 			}
 		}
 	}
@@ -901,7 +901,7 @@ func generateArrayUint16Tests() []*test_runner.UnitTest {
 	mustFail = nil
 	for _, base := range intBases {
 		for _, special := range nonIntSpecials {
-			mustFail = append(mustFail, &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|u16%v %v|", base, special)}})
+			mustFail = append(mustFail, &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@u16%v[%v]", base, special)}})
 		}
 	}
 	unitTests = append(unitTests, newMustFailUnitTest("Invalid special values", mustFail...))
@@ -909,7 +909,7 @@ func generateArrayUint16Tests() []*test_runner.UnitTest {
 	// Float value in int array
 	mustFail = nil
 	for _, base := range intBases {
-		mustFail = append(mustFail, &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|u16%v 1.2|", base)}})
+		mustFail = append(mustFail, &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@u16%v[1.2]", base)}})
 	}
 	unitTests = append(unitTests, newMustFailUnitTest("Float value in int array", mustFail...))
 
@@ -954,7 +954,7 @@ func generateArrayUint64Tests() []*test_runner.UnitTest {
 		contents = append(contents, uint64(i))
 	}
 	mustSucceed = append(mustSucceed, newMustSucceedTest(DirectionsAll, &config, BAU64(), ACL(uint64(len(contents))), ADU64(contents)))
-	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|u64 8 0b1011 0B1010 0o31 0O33 0x10 0X15|",
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("@u64[8 0b1011 0B1010 0o31 0O33 0x10 0X15]",
 		AU64([]uint64{8, 0b1011, 0b1010, 0o31, 0o33, 0x10, 0x15})))
 	unitTests = append(unitTests, newMustSucceedUnitTest("Various Array Elements", mustSucceed...))
 
@@ -1004,14 +1004,14 @@ func generateArrayUint64Tests() []*test_runner.UnitTest {
 
 	// Whitespace at end of array
 	mustSucceed = nil
-	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|u64 |", AU64([]uint64{})))
-	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|u64 1 |", AU64([]uint64{1})))
-	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|u64b |", AU64([]uint64{})))
-	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|u64b 1 |", AU64([]uint64{1})))
-	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|u64o |", AU64([]uint64{})))
-	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|u64o 1 |", AU64([]uint64{1})))
-	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|u64x |", AU64([]uint64{})))
-	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|u64x 1 |", AU64([]uint64{1})))
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("@u64[ ]", AU64([]uint64{})))
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("@u64[1 ]", AU64([]uint64{1})))
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("@u64b[ ]", AU64([]uint64{})))
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("@u64b[ 1 ]", AU64([]uint64{1})))
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("@u64o[ ]", AU64([]uint64{})))
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("@u64o[ 1 ]", AU64([]uint64{1})))
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("@u64x[ ]", AU64([]uint64{})))
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("@u64x[ 1 ]", AU64([]uint64{1})))
 	unitTests = append(unitTests, newMustSucceedUnitTest("Whitespace at end of array", mustSucceed...))
 
 	// Fail mode tests
@@ -1019,10 +1019,10 @@ func generateArrayUint64Tests() []*test_runner.UnitTest {
 
 	// Space before array type
 	mustFail = nil
-	mustFail = append(mustFail, newCTEMustFailTest("| u64|"))
-	mustFail = append(mustFail, newCTEMustFailTest("| u64b|"))
-	mustFail = append(mustFail, newCTEMustFailTest("| u64o|"))
-	mustFail = append(mustFail, newCTEMustFailTest("| u64x|"))
+	mustFail = append(mustFail, newCTEMustFailTest("@ u64[]"))
+	mustFail = append(mustFail, newCTEMustFailTest("@ u64b[]"))
+	mustFail = append(mustFail, newCTEMustFailTest("@ u64o[]"))
+	mustFail = append(mustFail, newCTEMustFailTest("@ u64x[]"))
 	unitTests = append(unitTests, newMustFailUnitTest("Space before array type", mustFail...))
 
 	// Truncated Array
@@ -1045,21 +1045,21 @@ func generateArrayUint64Tests() []*test_runner.UnitTest {
 	smallValue.Neg(smallValue)
 	unitTests = append(unitTests, newMustFailUnitTest(
 		"Element value out of range",
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|u64b %b|", bigValue)}},
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|u64o %o|", bigValue)}},
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|u64x %x|", bigValue)}},
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|u64 %d|", bigValue)}},
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|u64 0b%b|", bigValue)}},
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|u64 0o%o|", bigValue)}},
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|u64 0x%x|", bigValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@u64b[%b]", bigValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@u64o[%o]", bigValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@u64x[%x]", bigValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@u64[%d]", bigValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@u64[0b%b]", bigValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@u64[0o%o]", bigValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@u64[0x%x]", bigValue)}},
 
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|u64b -%b|", smallValue)}},
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|u64o -%o|", smallValue)}},
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|u64x -%x|", smallValue)}},
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|u64 -%d|", smallValue)}},
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|u64 -0b%b|", smallValue)}},
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|u64 -0o%o|", smallValue)}},
-		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|u64 -0x%x|", smallValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@u64b[-%b]", smallValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@u64o[-%o]", smallValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@u64x[-%x]", smallValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@u64[-%d]", smallValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@u64[-0b%b]", smallValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@u64[-0o%o]", smallValue)}},
+		&test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@u64[-0x%x]", smallValue)}},
 	))
 
 	// Numeric digit out of range
@@ -1067,7 +1067,7 @@ func generateArrayUint64Tests() []*test_runner.UnitTest {
 	for iB, base := range intBases {
 		for iV, v := range baseOutOfRange {
 			if iV <= iB {
-				mustFail = append(mustFail, &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|u64%v %v|", base, v)}})
+				mustFail = append(mustFail, &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@u64%v[%v]", base, v)}})
 			}
 		}
 	}
@@ -1077,7 +1077,7 @@ func generateArrayUint64Tests() []*test_runner.UnitTest {
 	mustFail = nil
 	for _, base := range intBases {
 		for _, special := range nonIntSpecials {
-			mustFail = append(mustFail, &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|u64%v %v|", base, special)}})
+			mustFail = append(mustFail, &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@u64%v[%v]", base, special)}})
 		}
 	}
 	unitTests = append(unitTests, newMustFailUnitTest("Invalid special values", mustFail...))
@@ -1085,7 +1085,7 @@ func generateArrayUint64Tests() []*test_runner.UnitTest {
 	// Float value in int array
 	mustFail = nil
 	for _, base := range intBases {
-		mustFail = append(mustFail, &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("|u64%v 1.2|", base)}})
+		mustFail = append(mustFail, &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: fmt.Sprintf("@u64%v[1.2]", base)}})
 	}
 	unitTests = append(unitTests, newMustFailUnitTest("Float value in int array", mustFail...))
 
@@ -1176,10 +1176,10 @@ func generateArrayFloat16Tests() []*test_runner.UnitTest {
 
 	// Whitespace at end of array
 	mustSucceed = nil
-	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|f16 |", AF16([]float32{})))
-	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|f16 1 |", AF16([]float32{1})))
-	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|f16x |", AF16([]float32{})))
-	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|f16x 1 |", AF16([]float32{1})))
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("@f16[ ]", AF16([]float32{})))
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("@f16[ 1 ]", AF16([]float32{1})))
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("@f16x[ ]", AF16([]float32{})))
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("@f16x[ 1 ]", AF16([]float32{1})))
 	unitTests = append(unitTests, newMustSucceedUnitTest("Whitespace at end of array", mustSucceed...))
 
 	// Fail mode tests
@@ -1187,8 +1187,8 @@ func generateArrayFloat16Tests() []*test_runner.UnitTest {
 
 	// Space before array type
 	mustFail = nil
-	mustFail = append(mustFail, newCTEMustFailTest("| f16|"))
-	mustFail = append(mustFail, newCTEMustFailTest("| f16x|"))
+	mustFail = append(mustFail, newCTEMustFailTest("@ f16[]"))
+	mustFail = append(mustFail, newCTEMustFailTest("@ f16x[]"))
 	unitTests = append(unitTests, newMustFailUnitTest("Space before array type", mustFail...))
 
 	// Truncated Array
@@ -1318,10 +1318,10 @@ func generateArrayFloat64Tests() []*test_runner.UnitTest {
 
 	// Whitespace at end of array
 	mustSucceed = nil
-	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|f64 |", AF64([]float64{})))
-	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|f64 1 |", AF64([]float64{1})))
-	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|f64x |", AF64([]float64{})))
-	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("|f64x 1 |", AF64([]float64{1})))
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("@f64[ ]", AF64([]float64{})))
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("@f64[ 1 ]", AF64([]float64{1})))
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("@f64x[ ]", AF64([]float64{})))
+	mustSucceed = append(mustSucceed, newCTEMustSucceedTest("@f64x[ 1 ]", AF64([]float64{1})))
 	unitTests = append(unitTests, newMustSucceedUnitTest("Whitespace at end of array", mustSucceed...))
 
 	// Fail mode tests
@@ -1329,8 +1329,8 @@ func generateArrayFloat64Tests() []*test_runner.UnitTest {
 
 	// Space before array type
 	mustFail = nil
-	mustFail = append(mustFail, newCTEMustFailTest("| f64|"))
-	mustFail = append(mustFail, newCTEMustFailTest("| f64x|"))
+	mustFail = append(mustFail, newCTEMustFailTest("@ f64[]"))
+	mustFail = append(mustFail, newCTEMustFailTest("@ f64x[]"))
 	unitTests = append(unitTests, newMustFailUnitTest("Space before array type", mustFail...))
 
 	// Truncated Array

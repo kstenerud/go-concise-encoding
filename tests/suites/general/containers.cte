@@ -14,7 +14,7 @@ c0
             "mustSucceed" = [
                 {
                     "cte"="[]"
-                    "cbe"=|u8x 9a 9b|
+                    "cbe"=@u8x[9a 9b]
                     "events"=["l" "e"]
                 }
                 {
@@ -24,7 +24,7 @@ c0
     2
     3
 ]#"
-                    "cbe"=|u8x 9a 01 02 03 9b|
+                    "cbe"=@u8x[9a 01 02 03 9b]
                     "events"=["l" "n=1" "n=2" "n=3" "e"]
                 }
                 {
@@ -41,7 +41,7 @@ c0
         ]
     ]
 ]#"
-                    "cbe"=|u8x 9a 01 9a 9a 02 9a 03 9a 9b 9b 9b 9b 9b|
+                    "cbe"=@u8x[9a 01 9a 9a 02 9a 03 9a 9b 9b 9b 9b 9b]
                     "events"=["l" "n=1" "l" "l" "n=2" "l" "n=3" "l" "e" "e" "e" "e" "e"]
                 }
             ]
@@ -51,10 +51,10 @@ c0
                 {"cte"="[)"}                  // Wrong terminator
                 {"cte"="[>"}                  // Wrong terminator
                 {"cte"="[|"}                  // Wrong terminator
-                {"cbe"=|u8x 9a|}              // Unterminated
-                {"cbe"=|u8x 9a 01 02|}        // Unterminated
-                {"cbe"=|u8x 9a 9a 9b|}        // Unterminated
-                {"cbe"=|u8x 9a 9b 9b|}        // Terminated too many times
+                {"cbe"=@u8x[9a]}              // Unterminated
+                {"cbe"=@u8x[9a 01 02]}        // Unterminated
+                {"cbe"=@u8x[9a 9a 9b]}        // Unterminated
+                {"cbe"=@u8x[9a 9b 9b]}        // Terminated too many times
             ]
         }
 
@@ -65,7 +65,7 @@ c0
             "mustSucceed" = [
                 {
                     "cte"="{}"
-                    "cbe"=|u8x 99 9b|
+                    "cbe"=@u8x[99 9b]
                     "events"=["m" "e"]
                 }
                 {
@@ -73,7 +73,7 @@ c0
 {
     1 = 2
 }#"
-                    "cbe"=|u8x 99 01 02 9b|
+                    "cbe"=@u8x[99 01 02 9b]
                     "events"=["m" "n=1" "n=2" "e"]
                 }
             ]
@@ -87,11 +87,11 @@ c0
                 {"cte"="{)"}                          // Wrong terminator
                 {"cte"="{>"}                          // Wrong terminator
                 {"cte"="{|"}                          // Wrong terminator
-                {"cbe"=|u8x 99|}                      // Unterminated
-                {"cbe"=|u8x 99 01|}                   // Unterminated
-                {"cbe"=|u8x 99 01 02|}                // Unterminated
-                {"cbe"=|u8x 99 9b 9b|}                // Terminated too many times
-                {"cbe"=|u8x 99 01 9b|}                // Missing value
+                {"cbe"=@u8x[99]}                      // Unterminated
+                {"cbe"=@u8x[99 01]}                   // Unterminated
+                {"cbe"=@u8x[99 01 02]}                // Unterminated
+                {"cbe"=@u8x[99 9b 9b]}                // Terminated too many times
+                {"cbe"=@u8x[99 01 9b]}                // Missing value
             ]
         }
 
@@ -103,7 +103,7 @@ c0
                 {
                     "cte"="@a<>
 @a{}"
-                    "cbe"=|u8x 7f f1 01 61 9b 96 01 61 9b|
+                    "cbe"=@u8x[7f f1 01 61 9b 96 01 61 9b]
                     "events"=["rt=a" "e" "rec=a" "e"]
                 }
                 {
@@ -113,7 +113,7 @@ c0
 @a{
     1
 }"
-                    "cbe"=|u8x 7f f1 01 61 01 9b 96 01 61 01 9b|
+                    "cbe"=@u8x[7f f1 01 61 01 9b 96 01 61 01 9b]
                     "events"=["rt=a" "n=1" "e" "rec=a" "n=1" "e"]
                 }
             ]
@@ -137,18 +137,18 @@ c0
                 {"cte"="@a<1> @a{1 2}"}         // Mismatched argcount
                 {"cte"="@a<1 2> @a{1}"}         // Mismatched argcount
                 // {"cte"="@a<1 1> @a{1 2}"}       // Duplicate key TODO
-                {"cbe"=|u8x 96|}                // Incomplete
-                {"cbe"=|u8x 96 01|}             // Incomplete
-                {"cbe"=|u8x 7f f1|}             // Incomplete
-                {"cbe"=|u8x 7f f1 01|}          // Incomplete
-                {"cbe"=|u8x 7f f1 01 61|}       // Incomplete
-                {"cbe"=|u8x 7f f1 01 61 7b 96 01 61|} // Incomplete
-                {"cbe"=|u8x 96 01 61 7b|}       // Unknown ID
-                {"cbe"=|u8x 7f f1 01 61 7b 7f f1 01 61 7b 01|} // Duplicate ID
-                {"cbe"=|u8x 7f f1 01 61 01 9b 96 01 61 01 02 9b|} // Mismatched argcount
-                {"cbe"=|u8x 7f f1 01 61 01 02 9b 96 01 61 01 9b|} // Mismatched argcount
+                {"cbe"=@u8x[96]}                // Incomplete
+                {"cbe"=@u8x[96 01]}             // Incomplete
+                {"cbe"=@u8x[7f f1]}             // Incomplete
+                {"cbe"=@u8x[7f f1 01]}          // Incomplete
+                {"cbe"=@u8x[7f f1 01 61]}       // Incomplete
+                {"cbe"=@u8x[7f f1 01 61 7b 96 01 61]} // Incomplete
+                {"cbe"=@u8x[96 01 61 7b]}       // Unknown ID
+                {"cbe"=@u8x[7f f1 01 61 7b 7f f1 01 61 7b 01]} // Duplicate ID
+                {"cbe"=@u8x[7f f1 01 61 01 9b 96 01 61 01 02 9b]} // Mismatched argcount
+                {"cbe"=@u8x[7f f1 01 61 01 02 9b 96 01 61 01 9b]} // Mismatched argcount
                 { // ID too long
-                    "cbe"=|u8x 7f f1 80
+                    "cbe"=@u8x[7f f1 80
                         61 61 61 61 61 61 61 61 61 61 61 61 61 61 61 61
                         61 61 61 61 61 61 61 61 61 61 61 61 61 61 61 61
                         61 61 61 61 61 61 61 61 61 61 61 61 61 61 61 61
@@ -158,7 +158,7 @@ c0
                         61 61 61 61 61 61 61 61 61 61 61 61 61 61 61 61
                         61 61 61 61 61 61 61 61 61 61 61 61 61 61 61 61
                         7b 01
-                    |
+                    ]
                 }
             ]
         }
@@ -174,7 +174,7 @@ c0
     0
     0
 )"
-                    "cbe"=|u8x 97 00 00 00 9b|
+                    "cbe"=@u8x[97 00 00 00 9b]
                     "events"=["edge" "n=0" "n=0" "n=0" "e"]
                 }
                 {
@@ -185,7 +185,7 @@ c0
     @"b"
 )
 #"
-                    "cbe"=|u8x 97 91 02 61 7d 91 02 62 9b|
+                    "cbe"=@u8x[97 91 02 61 7d 91 02 62 9b]
                     "events"=["edge" "brid" "acl=1" "adt=a" "null" "brid" "acl=1" "adt=b" "e"]
                 }
             ]
@@ -203,12 +203,12 @@ c0
                 {"cte"="@(|"}                 // Wrong terminator
                 {"cte"="@(null 2 3)"}         // Invalid source
                 {"cte"="@(1 2 null)"}         // Invalid destination
-                {"cbe"=|u8x 97|}              // Unterminated
-                {"cbe"=|u8x 97 00|}           // Unterminated
-                {"cbe"=|u8x 97 00 00|}        // Unterminated
-                {"cbe"=|u8x 97 00 00 00|}     // Unterminated
-                {"cbe"=|u8x 97 7d 00 00 9b|}  // Invalid source
-                {"cbe"=|u8x 97 00 00 7d 9b|}  // Invalid destination
+                {"cbe"=@u8x[97]}              // Unterminated
+                {"cbe"=@u8x[97 00]}           // Unterminated
+                {"cbe"=@u8x[97 00 00]}        // Unterminated
+                {"cbe"=@u8x[97 00 00 00]}     // Unterminated
+                {"cbe"=@u8x[97 7d 00 00 9b]}  // Invalid source
+                {"cbe"=@u8x[97 00 00 7d 9b]}  // Invalid destination
             ]
         }
 
@@ -220,7 +220,7 @@ c0
                 {
                     "cte"="(0
 )"
-                    "cbe"=|u8x 98 00 9b|
+                    "cbe"=@u8x[98 00 9b]
                     "events"=["node" "n=0" "e"]
                 }
                 {
@@ -229,7 +229,7 @@ c0
     ("a"
     )
 )#"
-                    "cbe"=|u8x 98 00 98 81 61 9b 9b|
+                    "cbe"=@u8x[98 00 98 81 61 9b 9b]
                     "events"=["node" "n=0" "node" "s=a" "e" "e"]
                 }
             ]
@@ -241,10 +241,10 @@ c0
                 {"cte"="(>"}               // Wrong terminator
                 {"cte"="(|"}               // Wrong terminator
                 {"cte"="()"}               // Missing value
-                {"cbe"=|u8x 98|}           // Unterminated
-                {"cbe"=|u8x 98 01|}        // Unterminated
-                {"cbe"=|u8x 98 01 9b 9b|}  // Terminated too many times
-                {"cbe"=|u8x 98 9b|}        // Missing value
+                {"cbe"=@u8x[98]}           // Unterminated
+                {"cbe"=@u8x[98 01]}        // Unterminated
+                {"cbe"=@u8x[98 01 9b 9b]}  // Terminated too many times
+                {"cbe"=@u8x[98 9b]}        // Missing value
             ]
         }
 
@@ -310,7 +310,7 @@ c0
         0
     )
 ]#"
-                    "cbe"=|u8x
+                    "cbe"=@u8x[
                         9a
                             9a
                                 9a
@@ -379,7 +379,7 @@ c0
                                 00
                             9b
                         9b
-                    |
+                    ]
                     "events"=[
                         "l"
                             "l"

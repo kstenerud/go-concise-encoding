@@ -14,7 +14,7 @@ c0
             "mustSucceed" = [
                 {
                     "cte"="\"this is a string\""
-                    "cbe"=|u8x 90 20 74 68 69 73 20 69 73 20 61 20 73 74 72 69 6e 67|
+                    "cbe"=@u8x[90 20 74 68 69 73 20 69 73 20 61 20 73 74 72 69 6e 67]
                     "events"=["s=this is a string"]
                 }
                 {
@@ -24,7 +24,7 @@ c0
                         asûman асман ທ້ອງຟ້າ небото ആകാശം आकाश тэнгэр ကောင်းကင် \
                         आकाश ଆକାଶ اسمان آسمان céu ਅਸਮਾਨ небо අහස வானம் күк ఆకాశం \
                         ท้องฟ้า gökyüzü آسمان ئاسمان bầu trời הימל ọrun\""
-                    "cbe"=|u8x 90 d8 08
+                    "cbe"=@u8x[90 d8 08
                                73 6b 79 20 e0 ae b5 e0 ae be e0 ae a9 e0 ae ae
                                e0 af 8d 20 e1 88 b0 e1 88 9b e1 8b ad 20 d8 b3
                                d9 85 d8 a7 d8 a1 20 d5 a5 d6 80 d5 af d5 ab d5
@@ -60,7 +60,7 @@ c0
                                d9 86 20 d8 a6 d8 a7 d8 b3 d9 85 d8 a7 d9 86 20
                                62 e1 ba a7 75 20 74 72 e1 bb 9d 69 20 d7 94 d7
                                99 d7 9e d7 9c 20 e1 bb 8d 72 75 6e
-                          |
+                    ]
                     "events"=["s=\
                         sky வானம் ሰማይ سماء երկինք səma неба আকাশ небето 天空 \
                         ცა ουρανός આકાશ syèl שָׁמַיִם आकाश ég 空 ಆಕಾಶ аспан មេឃ 하늘 \
@@ -69,7 +69,7 @@ c0
                         ท้องฟ้า gökyüzü آسمان ئاسمان bầu trời הימל ọrun"]
                 }
                 {
-                    "cbe"=|u8x 90 da 03
+                    "cbe"=@u8x[ 90 da 03
                         50 61 72 74 69 63 6c 65 20 6d 61 6e 2c 20 70 61
                         72 74 69 63 6c 65 20 6d 61 6e 0a 44 6f 69 6e 67
                         20 74 68 65 20 74 68 69 6e 67 73 20 61 20 70 61
@@ -84,8 +84,9 @@ c0
                         4f 72 20 64 6f 65 73 20 74 68 65 20 77 61 74 65
                         72 20 67 65 74 20 68 69 6d 20 69 6e 73 74 65 61
                         64 3f 0a 4e 6f 62 6f 64 79 20 6b 6e 6f 77 73 2c
-                        20 50 61 72 74 69 63 6c 65 20 6d 61 6e|
-                "cte"="\.#
+                        20 50 61 72 74 69 63 6c 65 20 6d 61 6e
+                    ]
+                    "cte"="\.#
 "Particle man, particle man
 Doing the things a particle can
 What's he like? It's not important
@@ -94,10 +95,10 @@ Is he a dot, or is he a speck?
 When he's underwater does he get wet?
 Or does the water get him instead?
 Nobody knows, Particle man"#"
-                "events"=[
-                    "bs"
-                    "acl=237"
-                    "adt=\.#
+                    "events"=[
+                        "bs"
+                        "acl=237"
+                        "adt=\.#
 Particle man, particle man
 Doing the things a particle can
 What's he like? It's not important
@@ -105,19 +106,20 @@ Particle man
 Is he a dot, or is he a speck?
 When he's underwater does he get wet?
 Or does the water get him instead?
-Nobody knows, Particle man#"]
+Nobody knows, Particle man#"
+                    ]
                 }
                 {
-                    "cbe"=|u8x 90 01 00|
+                    "cbe"=@u8x[90 01 00]
                     "to_cte"=""
                     "events"=["bs" "acm=0" "acl=0"]
                 }
                 {
-                    "cbe" = |u8x
+                    "cbe" = @u8x[
                         90
                         37 50 61 72 74 69 63 6c 65 20 6d 61 6e 2c 20 70 61 72 74 69 63 6c 65 20 6d 61 6e 0a
                         40 44 6f 69 6e 67 20 74 68 65 20 74 68 69 6e 67 73 20 61 20 70 61 72 74 69 63 6c 65 20 63 61 6e 0a
-                    |
+                    ]
                     "to_cte" = "\"Particle man, particle man\nDoing the things a particle can\n\""
                     "events" = [
                         "bs"
@@ -127,125 +129,125 @@ Nobody knows, Particle man#"]
                 }
                 {
                     "cte"="\"test test\""
-                    "cbe"=|u8x 89 74 65 73 74 20 74 65 73 74|
+                    "cbe"=@u8x[89 74 65 73 74 20 74 65 73 74]
                     "events"=["s=test test"]
                 }
                 {
                     // Empty string
                     "cte"="\"\""
-                    "cbe"=|u8x 80|
+                    "cbe"=@u8x[80]
                     "events"=["s="]
                 }
                 {
                     "cte"="\"a\""
-                    "cbe"=|u8x 81 61|
+                    "cbe"=@u8x[81 61]
                     "events"=["s=a"]
                 }
                 {
                     "cte"="\"aa\""
-                    "cbe"=|u8x 82 61 61|
+                    "cbe"=@u8x[82 61 61]
                     "events"=["s=aa"]
                 }
                 {
                     "cte"="\"aaa\""
-                    "cbe"=|u8x 83 61 61 61|
+                    "cbe"=@u8x[83 61 61 61]
                     "events"=["s=aaa"]
                 }
                 {
                     "cte"="\"aaaa\""
-                    "cbe"=|u8x 84 61 61 61 61|
+                    "cbe"=@u8x[84 61 61 61 61]
                     "events"=["s=aaaa"]
                 }
                 {
                     "cte"="\"aaaaa\""
-                    "cbe"=|u8x 85 61 61 61 61 61|
+                    "cbe"=@u8x[85 61 61 61 61 61]
                     "events"=["s=aaaaa"]
                 }
                 {
                     "cte"="\"aaaaaa\""
-                    "cbe"=|u8x 86 61 61 61 61 61 61|
+                    "cbe"=@u8x[86 61 61 61 61 61 61]
                     "events"=["s=aaaaaa"]
                 }
                 {
                     "cte"="\"aaaaaaa\""
-                    "cbe"=|u8x 87 61 61 61 61 61 61 61|
+                    "cbe"=@u8x[87 61 61 61 61 61 61 61]
                     "events"=["s=aaaaaaa"]
                 }
                 {
                     "cte"="\"aaaaaaaa\""
-                    "cbe"=|u8x 88 61 61 61 61 61 61 61 61|
+                    "cbe"=@u8x[88 61 61 61 61 61 61 61 61]
                     "events"=["s=aaaaaaaa"]
                 }
                 {
                     "cte"="\"aaaaaaaaa\""
-                    "cbe"=|u8x 89 61 61 61 61 61 61 61 61 61|
+                    "cbe"=@u8x[89 61 61 61 61 61 61 61 61 61]
                     "events"=["s=aaaaaaaaa"]
                 }
                 {
                     "cte"="\"aaaaaaaaaa\""
-                    "cbe"=|u8x 8a 61 61 61 61 61 61 61 61 61 61|
+                    "cbe"=@u8x[8a 61 61 61 61 61 61 61 61 61 61]
                     "events"=["s=aaaaaaaaaa"]
                 }
                 {
                     "cte"="\"aaaaaaaaaaa\""
-                    "cbe"=|u8x 8b 61 61 61 61 61 61 61 61 61 61 61|
+                    "cbe"=@u8x[8b 61 61 61 61 61 61 61 61 61 61 61]
                     "events"=["s=aaaaaaaaaaa"]
                 }
                 {
                     "cte"="\"aaaaaaaaaaaa\""
-                    "cbe"=|u8x 8c 61 61 61 61 61 61 61 61 61 61 61 61|
+                    "cbe"=@u8x[8c 61 61 61 61 61 61 61 61 61 61 61 61]
                     "events"=["s=aaaaaaaaaaaa"]
                 }
                 {
                     "cte"="\"aaaaaaaaaaaaa\""
-                    "cbe"=|u8x 8d 61 61 61 61 61 61 61 61 61 61 61 61 61|
+                    "cbe"=@u8x[8d 61 61 61 61 61 61 61 61 61 61 61 61 61]
                     "events"=["s=aaaaaaaaaaaaa"]
                 }
                 {
                     "cte"="\"aaaaaaaaaaaaaa\""
-                    "cbe"=|u8x 8e 61 61 61 61 61 61 61 61 61 61 61 61 61 61|
+                    "cbe"=@u8x[8e 61 61 61 61 61 61 61 61 61 61 61 61 61 61]
                     "events"=["s=aaaaaaaaaaaaaa"]
                 }
                 {
                     "cte"="\"aaaaaaaaaaaaaaa\""
-                    "cbe"=|u8x 8f 61 61 61 61 61 61 61 61 61 61 61 61 61 61 61|
+                    "cbe"=@u8x[8f 61 61 61 61 61 61 61 61 61 61 61 61 61 61 61]
                     "events"=["s=aaaaaaaaaaaaaaa"]
                 }
                 {
                     // Comment initiator inside a string
                     "cte"="\"test/*test\""
-                    "cbe"=|u8x 8a 74 65 73 74 2f 2a 74 65 73 74|
+                    "cbe"=@u8x[8a 74 65 73 74 2f 2a 74 65 73 74]
                     "events"=["s=test/*test"]
                 }
                 {
                     // Comment terminator inside a string
                     "cte"="\"test*/test\""
-                    "cbe"=|u8x 8a 74 65 73 74 2a 2f 74 65 73 74|
+                    "cbe"=@u8x[8a 74 65 73 74 2a 2f 74 65 73 74]
                     "events"=["s=test*/test"]
                 }
             ]
             "mustFail" = [
                 {"cte"="\.~ "test=test~"}                                  // Unterminated quotes
                 {"cte"="\.~ test test~"}                                   // Missing quotes
-                {"cbe"=|u8x 81|}                                           // Incomplete
-                {"cbe"=|u8x 82 61|}                                        // Incomplete
-                {"cbe"=|u8x 83 61 61|}                                     // Incomplete
-                {"cbe"=|u8x 84 61 61 61|}                                  // Incomplete
-                {"cbe"=|u8x 85 61 61 61 61|}                               // Incomplete
-                {"cbe"=|u8x 86 61 61 61 61 61|}                            // Incomplete
-                {"cbe"=|u8x 87 61 61 61 61 61 61|}                         // Incomplete
-                {"cbe"=|u8x 88 61 61 61 61 61 61 61|}                      // Incomplete
-                {"cbe"=|u8x 89 61 61 61 61 61 61 61 61|}                   // Incomplete
-                {"cbe"=|u8x 8a 61 61 61 61 61 61 61 61 61|}                // Incomplete
-                {"cbe"=|u8x 8b 61 61 61 61 61 61 61 61 61 61|}             // Incomplete
-                {"cbe"=|u8x 8c 61 61 61 61 61 61 61 61 61 61 61|}          // Incomplete
-                {"cbe"=|u8x 8d 61 61 61 61 61 61 61 61 61 61 61 61|}       // Incomplete
-                {"cbe"=|u8x 8e 61 61 61 61 61 61 61 61 61 61 61 61 61|}    // Incomplete
-                {"cbe"=|u8x 8f 61 61 61 61 61 61 61 61 61 61 61 61 61 61|} // Incomplete
-                {"cbe"=|u8x 90 01|}                                        // Incomplete
-                {"cbe"=|u8x 90 02|}                                        // Incomplete
-                {"cbe"=|u8x 90 04 40|}                                     // Incomplete
-                {"cbe"=|u8x 90 05 40 02|}                                  // Incomplete
+                {"cbe"=@u8x[81]}                                           // Incomplete
+                {"cbe"=@u8x[82 61]}                                        // Incomplete
+                {"cbe"=@u8x[83 61 61]}                                     // Incomplete
+                {"cbe"=@u8x[84 61 61 61]}                                  // Incomplete
+                {"cbe"=@u8x[85 61 61 61 61]}                               // Incomplete
+                {"cbe"=@u8x[86 61 61 61 61 61]}                            // Incomplete
+                {"cbe"=@u8x[87 61 61 61 61 61 61]}                         // Incomplete
+                {"cbe"=@u8x[88 61 61 61 61 61 61 61]}                      // Incomplete
+                {"cbe"=@u8x[89 61 61 61 61 61 61 61 61]}                   // Incomplete
+                {"cbe"=@u8x[8a 61 61 61 61 61 61 61 61 61]}                // Incomplete
+                {"cbe"=@u8x[8b 61 61 61 61 61 61 61 61 61 61]}             // Incomplete
+                {"cbe"=@u8x[8c 61 61 61 61 61 61 61 61 61 61 61]}          // Incomplete
+                {"cbe"=@u8x[8d 61 61 61 61 61 61 61 61 61 61 61 61]}       // Incomplete
+                {"cbe"=@u8x[8e 61 61 61 61 61 61 61 61 61 61 61 61 61]}    // Incomplete
+                {"cbe"=@u8x[8f 61 61 61 61 61 61 61 61 61 61 61 61 61 61]} // Incomplete
+                {"cbe"=@u8x[90 01]}                                        // Incomplete
+                {"cbe"=@u8x[90 02]}                                        // Incomplete
+                {"cbe"=@u8x[90 04 40]}                                     // Incomplete
+                {"cbe"=@u8x[90 05 40 02]}                                  // Incomplete
             ]
         }
 
@@ -256,82 +258,82 @@ Nobody knows, Particle man#"]
             "mustSucceed" = [
                 {
                     "cte"="\"\""
-                    "from_cbe"=|u8x 90 00|
+                    "from_cbe"=@u8x[90 00]
                     "events"=["s="]
                 }
                 {
                     "cte"="\"a\""
-                    "from_cbe"=|u8x 90 02 61|
+                    "from_cbe"=@u8x[90 02 61]
                     "events"=["s=a"]
                 }
                 {
                     "cte"="\"aa\""
-                    "from_cbe"=|u8x 90 04 61 61|
+                    "from_cbe"=@u8x[90 04 61 61]
                     "events"=["s=aa"]
                 }
                 {
                     "cte"="\"aaa\""
-                    "from_cbe"=|u8x 90 06 61 61 61|
+                    "from_cbe"=@u8x[90 06 61 61 61]
                     "events"=["s=aaa"]
                 }
                 {
                     "cte"="\"aaaa\""
-                    "from_cbe"=|u8x 90 08 61 61 61 61|
+                    "from_cbe"=@u8x[90 08 61 61 61 61]
                     "events"=["s=aaaa"]
                 }
                 {
                     "cte"="\"aaaaa\""
-                    "from_cbe"=|u8x 90 0a 61 61 61 61 61|
+                    "from_cbe"=@u8x[90 0a 61 61 61 61 61]
                     "events"=["s=aaaaa"]
                 }
                 {
                     "cte"="\"aaaaaa\""
-                    "from_cbe"=|u8x 90 0c 61 61 61 61 61 61|
+                    "from_cbe"=@u8x[90 0c 61 61 61 61 61 61]
                     "events"=["s=aaaaaa"]
                 }
                 {
                     "cte"="\"aaaaaaa\""
-                    "from_cbe"=|u8x 90 0e 61 61 61 61 61 61 61|
+                    "from_cbe"=@u8x[90 0e 61 61 61 61 61 61 61]
                     "events"=["s=aaaaaaa"]
                 }
                 {
                     "cte"="\"aaaaaaaa\""
-                    "from_cbe"=|u8x 90 10 61 61 61 61 61 61 61 61|
+                    "from_cbe"=@u8x[90 10 61 61 61 61 61 61 61 61]
                     "events"=["s=aaaaaaaa"]
                 }
                 {
                     "cte"="\"aaaaaaaaa\""
-                    "from_cbe"=|u8x 90 12 61 61 61 61 61 61 61 61 61|
+                    "from_cbe"=@u8x[90 12 61 61 61 61 61 61 61 61 61]
                     "events"=["s=aaaaaaaaa"]
                 }
                 {
                     "cte"="\"aaaaaaaaaa\""
-                    "from_cbe"=|u8x 90 14 61 61 61 61 61 61 61 61 61 61|
+                    "from_cbe"=@u8x[90 14 61 61 61 61 61 61 61 61 61 61]
                     "events"=["s=aaaaaaaaaa"]
                 }
                 {
                     "cte"="\"aaaaaaaaaaa\""
-                    "from_cbe"=|u8x 90 16 61 61 61 61 61 61 61 61 61 61 61|
+                    "from_cbe"=@u8x[90 16 61 61 61 61 61 61 61 61 61 61 61]
                     "events"=["s=aaaaaaaaaaa"]
                 }
                 {
                     "cte"="\"aaaaaaaaaaaa\""
-                    "from_cbe"=|u8x 90 18 61 61 61 61 61 61 61 61 61 61 61 61|
+                    "from_cbe"=@u8x[90 18 61 61 61 61 61 61 61 61 61 61 61 61]
                     "events"=["s=aaaaaaaaaaaa"]
                 }
                 {
                     "cte"="\"aaaaaaaaaaaaa\""
-                    "from_cbe"=|u8x 90 1a 61 61 61 61 61 61 61 61 61 61 61 61 61|
+                    "from_cbe"=@u8x[90 1a 61 61 61 61 61 61 61 61 61 61 61 61 61]
                     "events"=["s=aaaaaaaaaaaaa"]
                 }
                 {
                     "cte"="\"aaaaaaaaaaaaaa\""
-                    "from_cbe"=|u8x 90 1c 61 61 61 61 61 61 61 61 61 61 61 61 61 61|
+                    "from_cbe"=@u8x[90 1c 61 61 61 61 61 61 61 61 61 61 61 61 61 61]
                     "events"=["s=aaaaaaaaaaaaaa"]
                 }
                 {
                     "cte"="\"aaaaaaaaaaaaaaa\""
-                    "from_cbe"=|u8x 90 1e 61 61 61 61 61 61 61 61 61 61 61 61 61 61 61|
+                    "from_cbe"=@u8x[90 1e 61 61 61 61 61 61 61 61 61 61 61 61 61 61 61]
                     "events"=["s=aaaaaaaaaaaaaaa"]
                 }
             ]
@@ -345,109 +347,109 @@ Nobody knows, Particle man#"]
                 {
                     // Escaped tab
                     "from_cte"="\.~ "test\ttest"~"
-                    "cbe"=|u8x 89 74 65 73 74 09 74 65 73 74|
+                    "cbe"=@u8x[89 74 65 73 74 09 74 65 73 74]
                     "events"=["s=test\[9]test"]
                 }
                 {
                     // Escaped CR
                     "from_cte"="\.~ "test\rtest"~"
-                    "cbe"=|u8x 89 74 65 73 74 0d 74 65 73 74|
+                    "cbe"=@u8x[89 74 65 73 74 0d 74 65 73 74]
                     "events"=["s=test\[d]test"]
                 }
                 {
                     // Escaped quote
                     "from_cte"="\.~ "test\"test"~"
-                    "cbe"=|u8x 89 74 65 73 74 22 74 65 73 74|
+                    "cbe"=@u8x[89 74 65 73 74 22 74 65 73 74]
                     "events"=["s=\.~ test"test~"]
                 }
                 {
                     // Escaped backslash
                     "from_cte"="\.~ "test\\test"~"
-                    "cbe"=|u8x 89 74 65 73 74 5c 74 65 73 74|
+                    "cbe"=@u8x[89 74 65 73 74 5c 74 65 73 74]
                     "events"=["s=\.~ test\test~"]
                 }
                 {
                     // Escaped slash
                     "from_cte"="\.~ "test\/test"~"
-                    "cbe"=|u8x 89 74 65 73 74 2f 74 65 73 74|
+                    "cbe"=@u8x[89 74 65 73 74 2f 74 65 73 74]
                     "events"=["s=\.~ test/test~"]
                 }
                 {
                     // Escaped star
                     "from_cte"="\.~ "test\*test"~"
-                    "cbe"=|u8x 89 74 65 73 74 2a 74 65 73 74|
+                    "cbe"=@u8x[89 74 65 73 74 2a 74 65 73 74]
                     "events"=["s=\.~ test*test~"]
                 }
                 {
                     // Escaped non-breaking space
                     "from_cte"="\.~ "test\_test"~"
-                    "cbe"=|u8x 8a 74 65 73 74 c2 a0 74 65 73 74|
+                    "cbe"=@u8x[8a 74 65 73 74 c2 a0 74 65 73 74]
                     "events"=["s=test\[a0]test"]
                 }
                 {
                     // Escaped soft hyphen
                     "from_cte"="\.~ "test\-test"~"
-                    "cbe"=|u8x 8a 74 65 73 74 c2 ad 74 65 73 74|
+                    "cbe"=@u8x[8a 74 65 73 74 c2 ad 74 65 73 74]
                     "events"=["s=test\[ad]test"]
                 }
                 {
                     // Escaped 1-digit codepoint
                     "from_cte"="\.~ "test\[a]test"~"
-                    "cbe"=|u8x 89 74 65 73 74 0a 74 65 73 74|
+                    "cbe"=@u8x[89 74 65 73 74 0a 74 65 73 74]
                     "events"=["s=test\ntest"]
                 }
                 {
                     // Escaped 2-digit codepoint
                     "from_cte"="\.~ "test\[f7]test"~"
-                    "cbe"=|u8x 8a 74 65 73 74 c3 b7 74 65 73 74|
+                    "cbe"=@u8x[8a 74 65 73 74 c3 b7 74 65 73 74]
                     "events"=["s=test÷test"]
                 }
                 {
                     // Escaped 3-digit codepoint
                     "from_cte"="\.~ "test\[17d]test"~"
-                    "cbe"=|u8x 8a 74 65 73 74 c5 bd 74 65 73 74|
+                    "cbe"=@u8x[8a 74 65 73 74 c5 bd 74 65 73 74]
                     "events"=["s=testŽtest"]
                 }
                 {
                     // Escaped 4-digit codepoint
                     "from_cte"="\.~ "test\[2021]test"~"
-                    "cbe"=|u8x 8b 74 65 73 74 e2 80 a1 74 65 73 74|
+                    "cbe"=@u8x[8b 74 65 73 74 e2 80 a1 74 65 73 74]
                     "events"=["s=test‡test"]
                 }
                 {
                     // Escaped 5-digit codepoint
                     "from_cte"="\.~ "test\[1f43a]test"~"
-                    "cbe"=|u8x 8c 74 65 73 74 f0 9f 90 ba 74 65 73 74|
+                    "cbe"=@u8x[8c 74 65 73 74 f0 9f 90 ba 74 65 73 74]
                     "events"=["s=test🐺test"]    
                 }
                 {
                     // Escaped 6-digit codepoint
                     "from_cte"="\.~ "test\[000020]test"~"
-                    "cbe"=|u8x 89 74 65 73 74 20 74 65 73 74|
+                    "cbe"=@u8x[89 74 65 73 74 20 74 65 73 74]
                     "events"=["s=test test"]
                 }
                 {
                     // Escaped 7-digit codepoint
                     "from_cte"="\.~ "test\[0000020]test"~"
-                    "cbe"=|u8x 89 74 65 73 74 20 74 65 73 74|
+                    "cbe"=@u8x[89 74 65 73 74 20 74 65 73 74]
                     "events"=["s=test test"]
                 }
                 {
                     // Escaped 8-digit codepoint
                     "from_cte"="\.~ "test\[00000020]test"~"
-                    "cbe"=|u8x 89 74 65 73 74 20 74 65 73 74|
+                    "cbe"=@u8x[89 74 65 73 74 20 74 65 73 74]
                     "events"=["s=test test"]
                 }
                 {
                     // Escaped 9-digit codepoint
                     "from_cte"="\.~ "test\[000000020]test"~"
-                    "cbe"=|u8x 89 74 65 73 74 20 74 65 73 74|
+                    "cbe"=@u8x[89 74 65 73 74 20 74 65 73 74]
                     "events"=["s=test test"]
                 }
                 {
                     // Escaped newline
                     "from_cte"="\.~ "test\ntest"~"
-                    "cbe"=|u8x 89 74 65 73 74 0a 74 65 73 74|
+                    "cbe"=@u8x[89 74 65 73 74 0a 74 65 73 74]
                     "events"=["s=\.~ test
 test~"]
                 }
@@ -455,7 +457,7 @@ test~"]
                     // Continuation
                     "from_cte"="\.~ "test\
                                 test"~"
-                    "cbe"=|u8x 88 74 65 73 74 74 65 73 74|
+                    "cbe"=@u8x[88 74 65 73 74 74 65 73 74]
                     "events"=["s=testtest"]
                 }
             ]
@@ -485,109 +487,109 @@ test~"]
                 {
                     // Escaped tab
                     "from_cte"="\.~ @"test\ttest"~"
-                    "cbe"=|u8x 91 12 74 65 73 74 09 74 65 73 74|
+                    "cbe"=@u8x[91 12 74 65 73 74 09 74 65 73 74]
                     "events"=["rid=test\[9]test"]
                 }
                 {
                     // Escaped CR
                     "from_cte"="\.~ @"test\rtest"~"
-                    "cbe"=|u8x 91 12 74 65 73 74 0d 74 65 73 74|
+                    "cbe"=@u8x[91 12 74 65 73 74 0d 74 65 73 74]
                     "events"=["rid=test\[d]test"]
                 }
                 {
                     // Escaped quote
                     "from_cte"="\.~ @"test\"test"~"
-                    "cbe"=|u8x 91 12 74 65 73 74 22 74 65 73 74|
+                    "cbe"=@u8x[91 12 74 65 73 74 22 74 65 73 74]
                     "events"=["rid=\.~ test"test~"]
                 }
                 {
                     // Escaped backslash
                     "from_cte"="\.~ @"test\\test"~"
-                    "cbe"=|u8x 91 12 74 65 73 74 5c 74 65 73 74|
+                    "cbe"=@u8x[91 12 74 65 73 74 5c 74 65 73 74]
                     "events"=["rid=\.~ test\test~"]
                 }
                 {
                     // Escaped slash
                     "from_cte"="\.~ @"test\/test"~"
-                    "cbe"=|u8x 91 12 74 65 73 74 2f 74 65 73 74|
+                    "cbe"=@u8x[91 12 74 65 73 74 2f 74 65 73 74]
                     "events"=["rid=\.~ test/test~"]
                 }
                 {
                     // Escaped star
                     "from_cte"="\.~ @"test\*test"~"
-                    "cbe"=|u8x 91 12 74 65 73 74 2a 74 65 73 74|
+                    "cbe"=@u8x[91 12 74 65 73 74 2a 74 65 73 74]
                     "events"=["rid=\.~ test*test~"]
                 }
                 {
                     // Escaped non-breaking space
                     "from_cte"="\.~ @"test\_test"~"
-                    "cbe"=|u8x 91 14 74 65 73 74 c2 a0 74 65 73 74|
+                    "cbe"=@u8x[91 14 74 65 73 74 c2 a0 74 65 73 74]
                     "events"=["rid=test\[a0]test"]
                 }
                 {
                     // Escaped soft hyphen
                     "from_cte"="\.~ @"test\-test"~"
-                    "cbe"=|u8x 91 14 74 65 73 74 c2 ad 74 65 73 74|
+                    "cbe"=@u8x[91 14 74 65 73 74 c2 ad 74 65 73 74]
                     "events"=["rid=test\[ad]test"]
                 }
                 {
                     // Escaped 1-digit codepoint
                     "from_cte"="\.~ @"test\[a]test"~"
-                    "cbe"=|u8x 91 12 74 65 73 74 0a 74 65 73 74|
+                    "cbe"=@u8x[91 12 74 65 73 74 0a 74 65 73 74]
                     "events"=["rid=test\ntest"]
                 }
                 {
                     // Escaped 2-digit codepoint
                     "from_cte"="\.~ @"test\[f7]test"~"
-                    "cbe"=|u8x 91 14 74 65 73 74 c3 b7 74 65 73 74|
+                    "cbe"=@u8x[91 14 74 65 73 74 c3 b7 74 65 73 74]
                     "events"=["rid=test÷test"]
                 }
                 {
                     // Escaped 3-digit codepoint
                     "from_cte"="\.~ @"test\[17d]test"~"
-                    "cbe"=|u8x 91 14 74 65 73 74 c5 bd 74 65 73 74|
+                    "cbe"=@u8x[91 14 74 65 73 74 c5 bd 74 65 73 74]
                     "events"=["rid=testŽtest"]
                 }
                 {
                     // Escaped 4-digit codepoint
                     "from_cte"="\.~ @"test\[2021]test"~"
-                    "cbe"=|u8x 91 16 74 65 73 74 e2 80 a1 74 65 73 74|
+                    "cbe"=@u8x[91 16 74 65 73 74 e2 80 a1 74 65 73 74]
                     "events"=["rid=test‡test"]
                 }
                 {
                     // Escaped 5-digit codepoint
                     "from_cte"="\.~ @"test\[1f43a]test"~"
-                    "cbe"=|u8x 91 18 74 65 73 74 f0 9f 90 ba 74 65 73 74|
+                    "cbe"=@u8x[91 18 74 65 73 74 f0 9f 90 ba 74 65 73 74]
                     "events"=["rid=test🐺test"]    
                 }
                 {
                     // Escaped 6-digit codepoint
                     "from_cte"="\.~ @"test\[000020]test"~"
-                    "cbe"=|u8x 91 12 74 65 73 74 20 74 65 73 74|
+                    "cbe"=@u8x[91 12 74 65 73 74 20 74 65 73 74]
                     "events"=["rid=test test"]
                 }
                 {
                     // Escaped 7-digit codepoint
                     "from_cte"="\.~ @"test\[0000020]test"~"
-                    "cbe"=|u8x 91 12 74 65 73 74 20 74 65 73 74|
+                    "cbe"=@u8x[91 12 74 65 73 74 20 74 65 73 74]
                     "events"=["rid=test test"]
                 }
                 {
                     // Escaped 8-digit codepoint
                     "from_cte"="\.~ @"test\[00000020]test"~"
-                    "cbe"=|u8x 91 12 74 65 73 74 20 74 65 73 74|
+                    "cbe"=@u8x[91 12 74 65 73 74 20 74 65 73 74]
                     "events"=["rid=test test"]
                 }
                 {
                     // Escaped 9-digit codepoint
                     "from_cte"="\.~ @"test\[000000020]test"~"
-                    "cbe"=|u8x 91 12 74 65 73 74 20 74 65 73 74|
+                    "cbe"=@u8x[91 12 74 65 73 74 20 74 65 73 74]
                     "events"=["rid=test test"]
                 }
                 {
                     // Escaped newline
                     "from_cte"="\.~ @"test\ntest"~"
-                    "cbe"=|u8x 91 12 74 65 73 74 0a 74 65 73 74|
+                    "cbe"=@u8x[91 12 74 65 73 74 0a 74 65 73 74]
                     "events"=["rid=\.~ test
 test~"]
                 }
@@ -595,7 +597,7 @@ test~"]
                     // Continuation
                     "from_cte"="\.~ @"test\
                                 test"~"
-                    "cbe"=|u8x 91 10 74 65 73 74 74 65 73 74|
+                    "cbe"=@u8x[91 10 74 65 73 74 74 65 73 74]
                     "events"=["rid=testtest"]
                 }
             ]
@@ -625,128 +627,128 @@ test~"]
                 {
                     // Escaped tab
                     "from_cte"="\.~ $"test\ttest"~"
-                    "cbe"=|u8x 7f f2 12 74 65 73 74 09 74 65 73 74|
+                    "cbe"=@u8x[7f f2 12 74 65 73 74 09 74 65 73 74]
                     "events"=["refr=test\[9]test"]
                 }
                 {
                     // Escaped tab (uppercase)
                     "from_cte"="\.~ $"test\Ttest"~"
-                    "cbe"=|u8x 7f f2 12 74 65 73 74 09 74 65 73 74|
+                    "cbe"=@u8x[7f f2 12 74 65 73 74 09 74 65 73 74]
                     "events"=["refr=test\[9]test"]
                 }
                 {
                     // Escaped CR
                     "from_cte"="\.~ $"test\rtest"~"
-                    "cbe"=|u8x 7f f2 12 74 65 73 74 0d 74 65 73 74|
+                    "cbe"=@u8x[7f f2 12 74 65 73 74 0d 74 65 73 74]
                     "events"=["refr=test\[d]test"]
                 }
                 {
                     // Escaped CR (uppercase)
                     "from_cte"="\.~ $"test\Rtest"~"
-                    "cbe"=|u8x 7f f2 12 74 65 73 74 0d 74 65 73 74|
+                    "cbe"=@u8x[7f f2 12 74 65 73 74 0d 74 65 73 74]
                     "events"=["refr=test\[d]test"]
                 }
                 {
                     // Escaped quote
                     "from_cte"="\.~ $"test\"test"~"
-                    "cbe"=|u8x 7f f2 12 74 65 73 74 22 74 65 73 74|
+                    "cbe"=@u8x[7f f2 12 74 65 73 74 22 74 65 73 74]
                     "events"=["refr=\.~ test"test~"]
                 }
                 {
                     // Escaped backslash
                     "from_cte"="\.~ $"test\\test"~"
-                    "cbe"=|u8x 7f f2 12 74 65 73 74 5c 74 65 73 74|
+                    "cbe"=@u8x[7f f2 12 74 65 73 74 5c 74 65 73 74]
                     "events"=["refr=\.~ test\test~"]
                 }
                 {
                     // Escaped slash
                     "from_cte"="\.~ $"test\/test"~"
-                    "cbe"=|u8x 7f f2 12 74 65 73 74 2f 74 65 73 74|
+                    "cbe"=@u8x[7f f2 12 74 65 73 74 2f 74 65 73 74]
                     "events"=["refr=\.~ test/test~"]
                 }
                 {
                     // Escaped star
                     "from_cte"="\.~ $"test\*test"~"
-                    "cbe"=|u8x 7f f2 12 74 65 73 74 2a 74 65 73 74|
+                    "cbe"=@u8x[7f f2 12 74 65 73 74 2a 74 65 73 74]
                     "events"=["refr=\.~ test*test~"]
                 }
                 {
                     // Escaped non-breaking space
                     "from_cte"="\.~ $"test\_test"~"
-                    "cbe"=|u8x 7f f2 14 74 65 73 74 c2 a0 74 65 73 74|
+                    "cbe"=@u8x[7f f2 14 74 65 73 74 c2 a0 74 65 73 74]
                     "events"=["refr=test\[a0]test"]
                 }
                 {
                     // Escaped soft hyphen
                     "from_cte"="\.~ $"test\-test"~"
-                    "cbe"=|u8x 7f f2 14 74 65 73 74 c2 ad 74 65 73 74|
+                    "cbe"=@u8x[7f f2 14 74 65 73 74 c2 ad 74 65 73 74]
                     "events"=["refr=test\[ad]test"]
                 }
                 {
                     // Escaped 1-digit codepoint
                     "from_cte"="\.~ $"test\[a]test"~"
-                    "cbe"=|u8x 7f f2 12 74 65 73 74 0a 74 65 73 74|
+                    "cbe"=@u8x[7f f2 12 74 65 73 74 0a 74 65 73 74]
                     "events"=["refr=test\ntest"]
                 }
                 {
                     // Escaped 2-digit codepoint
                     "from_cte"="\.~ $"test\[f7]test"~"
-                    "cbe"=|u8x 7f f2 14 74 65 73 74 c3 b7 74 65 73 74|
+                    "cbe"=@u8x[7f f2 14 74 65 73 74 c3 b7 74 65 73 74]
                     "events"=["refr=test÷test"]
                 }
                 {
                     // Escaped 3-digit codepoint
                     "from_cte"="\.~ $"test\[17d]test"~"
-                    "cbe"=|u8x 7f f2 14 74 65 73 74 c5 bd 74 65 73 74|
+                    "cbe"=@u8x[7f f2 14 74 65 73 74 c5 bd 74 65 73 74]
                     "events"=["refr=testŽtest"]
                 }
                 {
                     // Escaped 4-digit codepoint
                     "from_cte"="\.~ $"test\[2021]test"~"
-                    "cbe"=|u8x 7f f2 16 74 65 73 74 e2 80 a1 74 65 73 74|
+                    "cbe"=@u8x[7f f2 16 74 65 73 74 e2 80 a1 74 65 73 74]
                     "events"=["refr=test‡test"]
                 }
                 {
                     // Escaped 5-digit codepoint
                     "from_cte"="\.~ $"test\[1f43a]test"~"
-                    "cbe"=|u8x 7f f2 18 74 65 73 74 f0 9f 90 ba 74 65 73 74|
+                    "cbe"=@u8x[7f f2 18 74 65 73 74 f0 9f 90 ba 74 65 73 74]
                     "events"=["refr=test🐺test"]    
                 }
                 {
                     // Escaped 6-digit codepoint
                     "from_cte"="\.~ $"test\[000020]test"~"
-                    "cbe"=|u8x 7f f2 12 74 65 73 74 20 74 65 73 74|
+                    "cbe"=@u8x[7f f2 12 74 65 73 74 20 74 65 73 74]
                     "events"=["refr=test test"]
                 }
                 {
                     // Escaped 7-digit codepoint
                     "from_cte"="\.~ $"test\[0000020]test"~"
-                    "cbe"=|u8x 7f f2 12 74 65 73 74 20 74 65 73 74|
+                    "cbe"=@u8x[7f f2 12 74 65 73 74 20 74 65 73 74]
                     "events"=["refr=test test"]
                 }
                 {
                     // Escaped 8-digit codepoint
                     "from_cte"="\.~ $"test\[00000020]test"~"
-                    "cbe"=|u8x 7f f2 12 74 65 73 74 20 74 65 73 74|
+                    "cbe"=@u8x[7f f2 12 74 65 73 74 20 74 65 73 74]
                     "events"=["refr=test test"]
                 }
                 {
                     // Escaped 9-digit codepoint
                     "from_cte"="\.~ $"test\[000000020]test"~"
-                    "cbe"=|u8x 7f f2 12 74 65 73 74 20 74 65 73 74|
+                    "cbe"=@u8x[7f f2 12 74 65 73 74 20 74 65 73 74]
                     "events"=["refr=test test"]
                 }
                 {
                     // Escaped newline
                     "from_cte"="\.~ $"test\ntest"~"
-                    "cbe"=|u8x 7f f2 12 74 65 73 74 0a 74 65 73 74|
+                    "cbe"=@u8x[7f f2 12 74 65 73 74 0a 74 65 73 74]
                     "events"=["refr=\.~ test
 test~"]
                 }
                 {
                     // Escaped newline (uppercase)
                     "from_cte"="\.~ $"test\Ntest"~"
-                    "cbe"=|u8x 7f f2 12 74 65 73 74 0a 74 65 73 74|
+                    "cbe"=@u8x[7f f2 12 74 65 73 74 0a 74 65 73 74]
                     "events"=["refr=\.~ test
 test~"]
                 }
@@ -754,7 +756,7 @@ test~"]
                     // Continuation
                     "from_cte"="\.~ $"test\
                                 test"~"
-                    "cbe"=|u8x 7f f2 10 74 65 73 74 74 65 73 74|
+                    "cbe"=@u8x[7f f2 10 74 65 73 74 74 65 73 74]
                     "events"=["refr=testtest"]
                 }
             ]
@@ -841,32 +843,32 @@ blah blahXXX"~"
             "mustSucceed" = [
                 {
                     "cte"="@\"\""
-                    "cbe"=|u8x 91 00|
+                    "cbe"=@u8x[91 00]
                     "events"=["brid" "acl=0"]
                 }
                 {
                     "cte"="@\"https://concise-encoding.org\""
-                    "cbe"=|u8x 91 38 68 74 74 70 73 3a 2f 2f 63 6f 6e 63 69 73 65 2d 65 6e 63 6f 64 69 6e 67 2e 6f 72 67|
+                    "cbe"=@u8x[91 38 68 74 74 70 73 3a 2f 2f 63 6f 6e 63 69 73 65 2d 65 6e 63 6f 64 69 6e 67 2e 6f 72 67]
                     "events"=["rid=https://concise-encoding.org"]
                 }
                 {
                     "cte"="\.~ @"http://x.com/a/b#1"~"
-                    "cbe"=|u8x 91 24 68 74 74 70 3a 2f 2f 78 2e 63 6f 6d 2f 61 2f 62 23 31|
+                    "cbe"=@u8x[91 24 68 74 74 70 3a 2f 2f 78 2e 63 6f 6d 2f 61 2f 62 23 31]
                     "events"=["rid=http://x.com/a/b#1"]
                 }
                 {
                     "to_cte"="@\"https://concise-encoding.org/\""
-                    "cbe"=|u8x 91 03 68 38 74 74 70 73 3a 2f 2f 63 6f 6e 63 69 73 65 2d 65 6e 63 6f 64 69 6e 67 2e 6f 72 67 2f|
+                    "cbe"=@u8x[91 03 68 38 74 74 70 73 3a 2f 2f 63 6f 6e 63 69 73 65 2d 65 6e 63 6f 64 69 6e 67 2e 6f 72 67 2f]
                     "events"=["brid" "acm=1" "adt=h" "acl=28" "adt=ttps://concise-encoding.org/"]
                 }
             ]
             "mustFail" = [
                 {"cte"="\.~ @"test=test~"} // Unterminated quotes
                 {"cte"="\.~ @test test~"}  // Missing quotes
-                {"cbe"=|u8x 91 01|}        // Incomplete
-                {"cbe"=|u8x 91 02|}        // Incomplete
-                {"cbe"=|u8x 91 04 40|}     // Incomplete
-                {"cbe"=|u8x 91 05 40 02|}  // Incomplete
+                {"cbe"=@u8x[91 01]}        // Incomplete
+                {"cbe"=@u8x[91 02]}        // Incomplete
+                {"cbe"=@u8x[91 04 40]}     // Incomplete
+                {"cbe"=@u8x[91 05 40 02]}  // Incomplete
             ]
         }
 
@@ -878,32 +880,32 @@ blah blahXXX"~"
             "mustSucceed" = [
                 {
                     "cte"="$\"\""
-                    "cbe"=|u8x 7f f2 00|
+                    "cbe"=@u8x[7f f2 00]
                     "events"=["brefr" "acl=0"]
                 }
                 {
                     "cte"="$\"https://concise-encoding.org\""
-                    "cbe"=|u8x 7f f2 38 68 74 74 70 73 3a 2f 2f 63 6f 6e 63 69 73 65 2d 65 6e 63 6f 64 69 6e 67 2e 6f 72 67|
+                    "cbe"=@u8x[7f f2 38 68 74 74 70 73 3a 2f 2f 63 6f 6e 63 69 73 65 2d 65 6e 63 6f 64 69 6e 67 2e 6f 72 67]
                     "events"=["refr=https://concise-encoding.org"]
                 }
                 {
                     "cte"="\.~ $"http://x.com/a/b#1"~"
-                    "cbe"=|u8x 7f f2 24 68 74 74 70 3a 2f 2f 78 2e 63 6f 6d 2f 61 2f 62 23 31|
+                    "cbe"=@u8x[7f f2 24 68 74 74 70 3a 2f 2f 78 2e 63 6f 6d 2f 61 2f 62 23 31]
                     "events"=["refr=http://x.com/a/b#1"]
                 }
                 {
                     "to_cte"="$\"https://concise-encoding.org/\""
-                    "cbe"=|u8x 7f f2 03 68 38 74 74 70 73 3a 2f 2f 63 6f 6e 63 69 73 65 2d 65 6e 63 6f 64 69 6e 67 2e 6f 72 67 2f|
+                    "cbe"=@u8x[7f f2 03 68 38 74 74 70 73 3a 2f 2f 63 6f 6e 63 69 73 65 2d 65 6e 63 6f 64 69 6e 67 2e 6f 72 67 2f]
                     "events"=["brefr" "acm=1" "adt=h" "acl=28" "adt=ttps://concise-encoding.org/"]
                 }
             ]
             "mustFail" = [
                 {"cte"="\.~ $"test=test~"}    // Unterminated quotes
                 {"cte"="\.~ $test test~"}     // Missing quotes
-                {"cbe"=|u8x 7f f2 01|}        // Incomplete
-                {"cbe"=|u8x 7f f2 02|}        // Incomplete
-                {"cbe"=|u8x 7f f2 04 40|}     // Incomplete
-                {"cbe"=|u8x 7f f2 05 40 02|}  // Incomplete
+                {"cbe"=@u8x[7f f2 01]}        // Incomplete
+                {"cbe"=@u8x[7f f2 02]}        // Incomplete
+                {"cbe"=@u8x[7f f2 04 40]}     // Incomplete
+                {"cbe"=@u8x[7f f2 05 40 02]}  // Incomplete
             ]
         }
 
@@ -913,44 +915,44 @@ blah blahXXX"~"
             // Custom text has the same capabilities and restrictions as strings.
             "name" = "Custom Text"
             "mustSucceed" = [
-                {"cte"="|c0 \"cplx(2.94+3i)\"|"  "events"=["ct=0 cplx(2.94+3i)"]}
-                {"cte"="\.~ |c0 "something(123)"|~"             "events"=["ct=0 something(123)"]}
-                {"from_cte"="\.~ |c0 ""|~"                      "events"=["ct=0"]}                // Empty String
-                {"cte"="\.~ |c0 "test/*test"|~"                 "events"=["ct=0 test/*test"]}     // Comment initiator inside a string
-                {"cte"="\.~ |c0 "test*/test"|~"                 "events"=["ct=0 test*/test"]}     // Comment terminator inside a string
-                {"from_cte"="\.~ |c0 "test\ttest"|~"            "events"=["ct=0 test\[9]test"]}   // Escaped tab
-                {"from_cte"="\.~ |c0 "test\rtest"|~"            "events"=["ct=0 test\[d]test"]}   // Escaped CR
-                {"from_cte"="\.~ |c0 "test\"test"|~"            "events"=["ct=0 \.~ test"test~"]} // Escaped quote
-                {"from_cte"="\.~ |c0 "test\\test"|~"            "events"=["ct=0 \.~ test\test~"]} // Escaped backslash
-                {"from_cte"="\.~ |c0 "test\/test"|~"            "events"=["ct=0 \.~ test/test~"]} // Escaped slash
-                {"from_cte"="\.~ |c0 "test\*test"|~"            "events"=["ct=0 \.~ test*test~"]} // Escaped star
-                {"from_cte"="\.~ |c0 "test\_test"|~"            "events"=["ct=0 test\[a0]test"]}  // Escaped non-breaking space
-                {"from_cte"="\.~ |c0 "test\-test"|~"            "events"=["ct=0 test\[ad]test"]}  // Escaped soft hyphen
-                {"from_cte"="\.~ |c0 "test\[a]test"|~"          "events"=["ct=0 test\ntest"]}     // Escaped 1-digit codepoint
-                {"from_cte"="\.~ |c0 "test\[f7]test"|~"         "events"=["ct=0 test÷test"]}      // Escaped 2-digit codepoint
-                {"from_cte"="\.~ |c0 "test\[17d]test"|~"        "events"=["ct=0 testŽtest"]}      // Escaped 3-digit codepoint
-                {"from_cte"="\.~ |c0 "test\[2021]test"|~"       "events"=["ct=0 test‡test"]}      // Escaped 4-digit codepoint
-                {"from_cte"="\.~ |c0 "test\[1f43a]test"|~"      "events"=["ct=0 test🐺test"]}     // Escaped 5-digit codepoint
-                {"from_cte"="\.~ |c0 "test\[000000020]test"|~"  "events"=["ct=0 test test"]}      // Escaped 9-digit codepoint
-                {"from_cte"="\.~ |c0 "test\ntest"|~"            "events"=["ct=0 \.~ test
+                {"cte"="@0\"cplx(2.94+3i)\""                 "events"=["ct=0 cplx(2.94+3i)"]}
+                {"cte"="\.~ @0"something(123)"~"             "events"=["ct=0 something(123)"]}
+                {"from_cte"="\.~ @0""~"                      "events"=["ct=0"]}                // Empty String
+                {"cte"="\.~ @0"test/*test"~"                 "events"=["ct=0 test/*test"]}     // Comment initiator inside a string
+                {"cte"="\.~ @0"test*/test"~"                 "events"=["ct=0 test*/test"]}     // Comment terminator inside a string
+                {"from_cte"="\.~ @0"test\ttest"~"            "events"=["ct=0 test\[9]test"]}   // Escaped tab
+                {"from_cte"="\.~ @0"test\rtest"~"            "events"=["ct=0 test\[d]test"]}   // Escaped CR
+                {"from_cte"="\.~ @0"test\"test"~"            "events"=["ct=0 \.~ test"test~"]} // Escaped quote
+                {"from_cte"="\.~ @0"test\\test"~"            "events"=["ct=0 \.~ test\test~"]} // Escaped backslash
+                {"from_cte"="\.~ @0"test\/test"~"            "events"=["ct=0 \.~ test/test~"]} // Escaped slash
+                {"from_cte"="\.~ @0"test\*test"~"            "events"=["ct=0 \.~ test*test~"]} // Escaped star
+                {"from_cte"="\.~ @0"test\_test"~"            "events"=["ct=0 test\[a0]test"]}  // Escaped non-breaking space
+                {"from_cte"="\.~ @0"test\-test"~"            "events"=["ct=0 test\[ad]test"]}  // Escaped soft hyphen
+                {"from_cte"="\.~ @0"test\[a]test"~"          "events"=["ct=0 test\ntest"]}     // Escaped 1-digit codepoint
+                {"from_cte"="\.~ @0"test\[f7]test"~"         "events"=["ct=0 test÷test"]}      // Escaped 2-digit codepoint
+                {"from_cte"="\.~ @0"test\[17d]test"~"        "events"=["ct=0 testŽtest"]}      // Escaped 3-digit codepoint
+                {"from_cte"="\.~ @0"test\[2021]test"~"       "events"=["ct=0 test‡test"]}      // Escaped 4-digit codepoint
+                {"from_cte"="\.~ @0"test\[1f43a]test"~"      "events"=["ct=0 test🐺test"]}     // Escaped 5-digit codepoint
+                {"from_cte"="\.~ @0"test\[000000020]test"~"  "events"=["ct=0 test test"]}      // Escaped 9-digit codepoint
+                {"from_cte"="\.~ @0"test\ntest"~"            "events"=["ct=0 \.~ test
 test~"]}  // Escaped newline
-                {"from_cte"="\.~ |c0 "test\
-                                          test"|~"               "events"=["ct=0 testtest"]}  // Continuation
+                {"from_cte"="\.~ @0"test\
+                                          test"~"               "events"=["ct=0 testtest"]}  // Continuation
             ]
             "mustFail" = [
-                {"cte"="\.~ |c0 "test\1gtest"|~"}   // Invalid codepoint digit
-                {"cte"="\.~ |c0 "test\xtest"|~"}    // Invalid escape character
-                {"cte"="\.~ |c0 "test=test"~"}      // Unterminated
-                {"cte"="\.~ test test~"}            // Missing bars
-                {"cte"="\.~ |c0 "test\"|~"}         // Unterminated escape
-                {"cte"="\.~ |c0 "test\1"|~"}        // Unterminated codepoint
-                {"cte"="\.~ |c0 "test\01"|~"}       // Unterminated codepoint
-                {"cte"="\.~ |c0 "test\001"|~"}      // Unterminated codepoint
-                {"cte"="\.~ |c0 "test\0001"|~"}     // Unterminated codepoint
-                {"cte"="\.~ |c0 "test\00001"|~"}    // Unterminated codepoint
-                {"cte"="\.~ |c0 "test\000001"|~"}   // Unterminated codepoint
-                {"cte"="\.~ |c0 "test\0000001"|~"}  // Unterminated codepoint
-                {"cte"="\.~ |c0 "test\00000001"|~"} // Unterminated codepoint
+                {"cte"="\.~ @0"test\1gtest"~"}    // Invalid codepoint digit
+                {"cte"="\.~ @0"test\xtest"~"}     // Invalid escape character
+                {"cte"="\.~ @0"test=test~"}       // Unterminated
+                {"cte"="\.~ test test~"}          // Missing decorators
+                {"cte"="\.~ @0"test\"~"}          // Unterminated escape
+                {"cte"="\.~ @0"test\1"~"}         // Unterminated codepoint
+                {"cte"="\.~ @0"test\01"~"}        // Unterminated codepoint
+                {"cte"="\.~ @0"test\001"~"}       // Unterminated codepoint
+                {"cte"="\.~ @0"test\0001"~"}      // Unterminated codepoint
+                {"cte"="\.~ @0"test\00001"~"}     // Unterminated codepoint
+                {"cte"="\.~ @0"test\000001"~"}    // Unterminated codepoint
+                {"cte"="\.~ @0"test\0000001"~"}   // Unterminated codepoint
+                {"cte"="\.~ @0"test\00000001"~"}  // Unterminated codepoint
             ]
         }
 
@@ -960,16 +962,16 @@ test~"]}  // Escaped newline
             "name" = "Media (text)"
             "mustSucceed" = [
                 {
-                    "to_cbe" = |u8x 7f f3
+                    "to_cbe" = @u8x[7f f3
                                     10 61 70 70 6c 69 63 61 74 69 6f 6e 2f 78 2d 73 68
                                     38 23 21 2f 62 69 6e 2f 73 68 0a 0a 65 63 68 6f 20 68 65 6c 6c 6f 20 77 6f 72 6c 64 0a
-                               |
+                    ]
                     "from_cte" = "\.^^
-|.application/x-sh "\.@@
+@application/x-sh"\.@@
 #!/bin/sh
 
 echo hello world
-@@"|
+@@"
 ^^"
                     "to_events" = ["media=application/x-sh 23 21 2f 62 69 6e 2f 73 68 0a 0a 65 63 68 6f 20 68 65 6c 6c 6f 20 77 6f 72 6c 64 0a"]
                 }

@@ -428,12 +428,13 @@ func (_this *cteListener) ExitValueRid(ctx *parser.ValueRidContext) {
 	_this.eventReceiver.OnArray(events.ArrayTypeResourceID, uint64(len(_this.arrayData)), _this.arrayData)
 }
 
-func (_this *cteListener) ExitCustomType(ctx *parser.CustomTypeContext) {
+func (_this *cteListener) ExitCustomTextBegin(ctx *parser.CustomTextBeginContext) {
 	defer func() {
 		_this.wrapPanic(recover(), ctx.BaseParserRuleContext)
 	}()
 
-	_this.customType = parseSmallUint(ctx.GetText())
+	text := ctx.GetText()
+	_this.customType = parseSmallUint(text[1 : len(text)-1])
 }
 
 func (_this *cteListener) EnterCustomText(ctx *parser.CustomTextContext) {
@@ -452,6 +453,15 @@ func (_this *cteListener) ExitCustomText(ctx *parser.CustomTextContext) {
 	_this.eventReceiver.OnCustomText(_this.customType, string(_this.arrayData))
 }
 
+func (_this *cteListener) ExitCustomBinaryBegin(ctx *parser.CustomBinaryBeginContext) {
+	defer func() {
+		_this.wrapPanic(recover(), ctx.BaseParserRuleContext)
+	}()
+
+	text := ctx.GetText()
+	_this.customType = parseSmallUint(text[1 : len(text)-1])
+}
+
 func (_this *cteListener) EnterCustomBinary(ctx *parser.CustomBinaryContext) {
 	defer func() {
 		_this.wrapPanic(recover(), ctx.BaseParserRuleContext)
@@ -468,12 +478,13 @@ func (_this *cteListener) ExitCustomBinary(ctx *parser.CustomBinaryContext) {
 	_this.eventReceiver.OnCustomBinary(_this.customType, _this.arrayData)
 }
 
-func (_this *cteListener) ExitMediaType(ctx *parser.MediaTypeContext) {
+func (_this *cteListener) ExitMediaTextBegin(ctx *parser.MediaTextBeginContext) {
 	defer func() {
 		_this.wrapPanic(recover(), ctx.BaseParserRuleContext)
 	}()
 
-	_this.mediaType = ctx.GetText()
+	text := ctx.GetText()
+	_this.mediaType = text[1 : len(text)-1]
 }
 
 func (_this *cteListener) EnterMediaText(ctx *parser.MediaTextContext) {
@@ -490,6 +501,15 @@ func (_this *cteListener) ExitMediaText(ctx *parser.MediaTextContext) {
 	}()
 
 	_this.eventReceiver.OnMedia(_this.mediaType, _this.arrayData)
+}
+
+func (_this *cteListener) ExitMediaBinaryBegin(ctx *parser.MediaBinaryBeginContext) {
+	defer func() {
+		_this.wrapPanic(recover(), ctx.BaseParserRuleContext)
+	}()
+
+	text := ctx.GetText()
+	_this.mediaType = text[1 : len(text)-1]
 }
 
 func (_this *cteListener) EnterMediaBinary(ctx *parser.MediaBinaryContext) {

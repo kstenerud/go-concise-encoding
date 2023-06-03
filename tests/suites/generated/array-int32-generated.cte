@@ -12,15 +12,15 @@ c0
             "name" = "Empty Array"
             "must_succeed" = [
                 {
-                    "cbe" = |u8x 7f 50|
-                    "cte" = "|i32|"
+                    "cbe" = @u8x[7f 50]
+                    "cte" = "@i32[]"
                     "events" = [
                         "ai32"
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 50|
-                    "to_cte" = "|i32|"
+                    "cbe" = @u8x[7f 50]
+                    "to_cte" = "@i32[]"
                     "events" = [
                         "bai32"
                         "acl=0"
@@ -32,106 +32,106 @@ c0
             "name" = "Short Array"
             "must_succeed" = [
                 {
-                    "cbe" = |u8x 7f 51 f9 ff ff ff|
-                    "cte" = "|i32 -7|"
+                    "cbe" = @u8x[7f 51 f9 ff ff ff]
+                    "cte" = "@i32[-7]"
                     "events" = [
                         "ai32=-7"
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 52 f9 ff ff ff fa ff ff ff|
-                    "cte" = "|i32 -7 -6|"
+                    "cbe" = @u8x[7f 52 f9 ff ff ff fa ff ff ff]
+                    "cte" = "@i32[-7 -6]"
                     "events" = [
                         "ai32=-7 -6"
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 53 f9 ff ff ff fa ff ff ff fb ff ff ff|
-                    "cte" = "|i32 -7 -6 -5|"
+                    "cbe" = @u8x[7f 53 f9 ff ff ff fa ff ff ff fb ff ff ff]
+                    "cte" = "@i32[-7 -6 -5]"
                     "events" = [
                         "ai32=-7 -6 -5"
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 54 f9 ff ff ff fa ff ff ff fb ff ff ff fc ff ff ff|
-                    "cte" = "|i32 -7 -6 -5 -4|"
+                    "cbe" = @u8x[7f 54 f9 ff ff ff fa ff ff ff fb ff ff ff fc ff ff ff]
+                    "cte" = "@i32[-7 -6 -5 -4]"
                     "events" = [
                         "ai32=-7 -6 -5 -4"
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 55 f9 ff ff ff fa ff ff ff fb ff ff ff fc ff ff ff fd ff ff ff|
-                    "cte" = "|i32 -7 -6 -5 -4 -3|"
+                    "cbe" = @u8x[7f 55 f9 ff ff ff fa ff ff ff fb ff ff ff fc ff ff ff fd ff ff ff]
+                    "cte" = "@i32[-7 -6 -5 -4 -3]"
                     "events" = [
                         "ai32=-7 -6 -5 -4 -3"
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 56 f9 ff ff ff fa ff ff ff fb ff ff ff fc ff ff ff fd ff ff ff fe ff ff ff|
-                    "cte" = "|i32 -7 -6 -5 -4 -3 -2|"
+                    "cbe" = @u8x[7f 56 f9 ff ff ff fa ff ff ff fb ff ff ff fc ff ff ff fd ff ff ff fe ff ff ff]
+                    "cte" = "@i32[-7 -6 -5 -4 -3 -2]"
                     "events" = [
                         "ai32=-7 -6 -5 -4 -3 -2"
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 57 f9 ff ff ff fa ff ff ff fb ff ff ff fc ff ff ff fd ff ff ff fe ff ff ff ff ff ff ff|
-                    "cte" = "|i32 -7 -6 -5 -4 -3 -2 -1|"
+                    "cbe" = @u8x[7f 57 f9 ff ff ff fa ff ff ff fb ff ff ff fc ff ff ff fd ff ff ff fe ff ff ff ff ff ff ff]
+                    "cte" = "@i32[-7 -6 -5 -4 -3 -2 -1]"
                     "events" = [
                         "ai32=-7 -6 -5 -4 -3 -2 -1"
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 58 f9 ff ff ff fa ff ff ff fb ff ff ff fc ff ff ff fd ff ff ff fe ff ff ff ff ff ff ff 00 00 00 00|
-                    "cte" = "|i32 -7 -6 -5 -4 -3 -2 -1 0|"
+                    "cbe" = @u8x[7f 58 f9 ff ff ff fa ff ff ff fb ff ff ff fc ff ff ff fd ff ff ff fe ff ff ff ff ff ff ff 00 00 00 00]
+                    "cte" = "@i32[-7 -6 -5 -4 -3 -2 -1 0]"
                     "events" = [
                         "ai32=-7 -6 -5 -4 -3 -2 -1 0"
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 59 f9 ff ff ff fa ff ff ff fb ff ff ff fc ff ff ff fd ff ff ff fe ff ff ff ff ff ff ff 00 00 00 00 01 00 00 00|
-                    "cte" = "|i32 -7 -6 -5 -4 -3 -2 -1 0 1|"
+                    "cbe" = @u8x[7f 59 f9 ff ff ff fa ff ff ff fb ff ff ff fc ff ff ff fd ff ff ff fe ff ff ff ff ff ff ff 00 00 00 00 01 00 00 00]
+                    "cte" = "@i32[-7 -6 -5 -4 -3 -2 -1 0 1]"
                     "events" = [
                         "ai32=-7 -6 -5 -4 -3 -2 -1 0 1"
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 5a f9 ff ff ff fa ff ff ff fb ff ff ff fc ff ff ff fd ff ff ff fe ff ff ff ff ff ff ff 00 00 00 00 01 00 00 00 02 00 00 00|
-                    "cte" = "|i32 -7 -6 -5 -4 -3 -2 -1 0 1 2|"
+                    "cbe" = @u8x[7f 5a f9 ff ff ff fa ff ff ff fb ff ff ff fc ff ff ff fd ff ff ff fe ff ff ff ff ff ff ff 00 00 00 00 01 00 00 00 02 00 00 00]
+                    "cte" = "@i32[-7 -6 -5 -4 -3 -2 -1 0 1 2]"
                     "events" = [
                         "ai32=-7 -6 -5 -4 -3 -2 -1 0 1 2"
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 5b f9 ff ff ff fa ff ff ff fb ff ff ff fc ff ff ff fd ff ff ff fe ff ff ff ff ff ff ff 00 00 00 00 01 00 00 00 02 00 00 00 03 00 00 00|
-                    "cte" = "|i32 -7 -6 -5 -4 -3 -2 -1 0 1 2 3|"
+                    "cbe" = @u8x[7f 5b f9 ff ff ff fa ff ff ff fb ff ff ff fc ff ff ff fd ff ff ff fe ff ff ff ff ff ff ff 00 00 00 00 01 00 00 00 02 00 00 00 03 00 00 00]
+                    "cte" = "@i32[-7 -6 -5 -4 -3 -2 -1 0 1 2 3]"
                     "events" = [
                         "ai32=-7 -6 -5 -4 -3 -2 -1 0 1 2 3"
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 5c f9 ff ff ff fa ff ff ff fb ff ff ff fc ff ff ff fd ff ff ff fe ff ff ff ff ff ff ff 00 00 00 00 01 00 00 00 02 00 00 00 03 00 00 00 04 00 00 00|
-                    "cte" = "|i32 -7 -6 -5 -4 -3 -2 -1 0 1 2 3 4|"
+                    "cbe" = @u8x[7f 5c f9 ff ff ff fa ff ff ff fb ff ff ff fc ff ff ff fd ff ff ff fe ff ff ff ff ff ff ff 00 00 00 00 01 00 00 00 02 00 00 00 03 00 00 00 04 00 00 00]
+                    "cte" = "@i32[-7 -6 -5 -4 -3 -2 -1 0 1 2 3 4]"
                     "events" = [
                         "ai32=-7 -6 -5 -4 -3 -2 -1 0 1 2 3 4"
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 5d f9 ff ff ff fa ff ff ff fb ff ff ff fc ff ff ff fd ff ff ff fe ff ff ff ff ff ff ff 00 00 00 00 01 00 00 00 02 00 00 00 03 00 00 00 04 00 00 00 05 00 00 00|
-                    "cte" = "|i32 -7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5|"
+                    "cbe" = @u8x[7f 5d f9 ff ff ff fa ff ff ff fb ff ff ff fc ff ff ff fd ff ff ff fe ff ff ff ff ff ff ff 00 00 00 00 01 00 00 00 02 00 00 00 03 00 00 00 04 00 00 00 05 00 00 00]
+                    "cte" = "@i32[-7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5]"
                     "events" = [
                         "ai32=-7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5"
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 5e f9 ff ff ff fa ff ff ff fb ff ff ff fc ff ff ff fd ff ff ff fe ff ff ff ff ff ff ff 00 00 00 00 01 00 00 00 02 00 00 00 03 00 00 00 04 00 00 00 05 00 00 00 06 00 00 00|
-                    "cte" = "|i32 -7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6|"
+                    "cbe" = @u8x[7f 5e f9 ff ff ff fa ff ff ff fb ff ff ff fc ff ff ff fd ff ff ff fe ff ff ff ff ff ff ff 00 00 00 00 01 00 00 00 02 00 00 00 03 00 00 00 04 00 00 00 05 00 00 00 06 00 00 00]
+                    "cte" = "@i32[-7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6]"
                     "events" = [
                         "ai32=-7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6"
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 5f f9 ff ff ff fa ff ff ff fb ff ff ff fc ff ff ff fd ff ff ff fe ff ff ff ff ff ff ff 00 00 00 00 01 00 00 00 02 00 00 00 03 00 00 00 04 00 00 00 05 00 00 00 06 00 00 00 07 00 00 00|
-                    "cte" = "|i32 -7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7|"
+                    "cbe" = @u8x[7f 5f f9 ff ff ff fa ff ff ff fb ff ff ff fc ff ff ff fd ff ff ff fe ff ff ff ff ff ff ff 00 00 00 00 01 00 00 00 02 00 00 00 03 00 00 00 04 00 00 00 05 00 00 00 06 00 00 00 07 00 00 00]
+                    "cte" = "@i32[-7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7]"
                     "events" = [
                         "ai32=-7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7"
                     ]
@@ -142,16 +142,16 @@ c0
             "name" = "Chunked Array"
             "must_succeed" = [
                 {
-                    "cbe" = |u8x 7f 50|
-                    "to_cte" = "|i32|"
+                    "cbe" = @u8x[7f 50]
+                    "to_cte" = "@i32[]"
                     "events" = [
                         "bai32"
                         "acl=0"
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 51 f9 ff ff ff|
-                    "to_cte" = "|i32 -7|"
+                    "cbe" = @u8x[7f 51 f9 ff ff ff]
+                    "to_cte" = "@i32[-7]"
                     "events" = [
                         "bai32"
                         "acl=1"
@@ -159,8 +159,8 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 52 f9 ff ff ff fa ff ff ff|
-                    "to_cte" = "|i32 -7 -6|"
+                    "cbe" = @u8x[7f 52 f9 ff ff ff fa ff ff ff]
+                    "to_cte" = "@i32[-7 -6]"
                     "events" = [
                         "bai32"
                         "acl=2"
@@ -168,8 +168,8 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 53 f9 ff ff ff fa ff ff ff fb ff ff ff|
-                    "to_cte" = "|i32 -7 -6 -5|"
+                    "cbe" = @u8x[7f 53 f9 ff ff ff fa ff ff ff fb ff ff ff]
+                    "to_cte" = "@i32[-7 -6 -5]"
                     "events" = [
                         "bai32"
                         "acl=3"
@@ -177,8 +177,8 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 54 f9 ff ff ff fa ff ff ff fb ff ff ff fc ff ff ff|
-                    "to_cte" = "|i32 -7 -6 -5 -4|"
+                    "cbe" = @u8x[7f 54 f9 ff ff ff fa ff ff ff fb ff ff ff fc ff ff ff]
+                    "to_cte" = "@i32[-7 -6 -5 -4]"
                     "events" = [
                         "bai32"
                         "acl=4"
@@ -186,8 +186,8 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 55 f9 ff ff ff fa ff ff ff fb ff ff ff fc ff ff ff fd ff ff ff|
-                    "to_cte" = "|i32 -7 -6 -5 -4 -3|"
+                    "cbe" = @u8x[7f 55 f9 ff ff ff fa ff ff ff fb ff ff ff fc ff ff ff fd ff ff ff]
+                    "to_cte" = "@i32[-7 -6 -5 -4 -3]"
                     "events" = [
                         "bai32"
                         "acl=5"
@@ -195,8 +195,8 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 56 f9 ff ff ff fa ff ff ff fb ff ff ff fc ff ff ff fd ff ff ff fe ff ff ff|
-                    "to_cte" = "|i32 -7 -6 -5 -4 -3 -2|"
+                    "cbe" = @u8x[7f 56 f9 ff ff ff fa ff ff ff fb ff ff ff fc ff ff ff fd ff ff ff fe ff ff ff]
+                    "to_cte" = "@i32[-7 -6 -5 -4 -3 -2]"
                     "events" = [
                         "bai32"
                         "acl=6"
@@ -204,8 +204,8 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 57 f9 ff ff ff fa ff ff ff fb ff ff ff fc ff ff ff fd ff ff ff fe ff ff ff ff ff ff ff|
-                    "to_cte" = "|i32 -7 -6 -5 -4 -3 -2 -1|"
+                    "cbe" = @u8x[7f 57 f9 ff ff ff fa ff ff ff fb ff ff ff fc ff ff ff fd ff ff ff fe ff ff ff ff ff ff ff]
+                    "to_cte" = "@i32[-7 -6 -5 -4 -3 -2 -1]"
                     "events" = [
                         "bai32"
                         "acl=7"
@@ -213,8 +213,8 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 58 f9 ff ff ff fa ff ff ff fb ff ff ff fc ff ff ff fd ff ff ff fe ff ff ff ff ff ff ff 00 00 00 00|
-                    "to_cte" = "|i32 -7 -6 -5 -4 -3 -2 -1 0|"
+                    "cbe" = @u8x[7f 58 f9 ff ff ff fa ff ff ff fb ff ff ff fc ff ff ff fd ff ff ff fe ff ff ff ff ff ff ff 00 00 00 00]
+                    "to_cte" = "@i32[-7 -6 -5 -4 -3 -2 -1 0]"
                     "events" = [
                         "bai32"
                         "acl=8"
@@ -222,8 +222,8 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 59 f9 ff ff ff fa ff ff ff fb ff ff ff fc ff ff ff fd ff ff ff fe ff ff ff ff ff ff ff 00 00 00 00 01 00 00 00|
-                    "to_cte" = "|i32 -7 -6 -5 -4 -3 -2 -1 0 1|"
+                    "cbe" = @u8x[7f 59 f9 ff ff ff fa ff ff ff fb ff ff ff fc ff ff ff fd ff ff ff fe ff ff ff ff ff ff ff 00 00 00 00 01 00 00 00]
+                    "to_cte" = "@i32[-7 -6 -5 -4 -3 -2 -1 0 1]"
                     "events" = [
                         "bai32"
                         "acl=9"
@@ -231,8 +231,8 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 5a f9 ff ff ff fa ff ff ff fb ff ff ff fc ff ff ff fd ff ff ff fe ff ff ff ff ff ff ff 00 00 00 00 01 00 00 00 02 00 00 00|
-                    "to_cte" = "|i32 -7 -6 -5 -4 -3 -2 -1 0 1 2|"
+                    "cbe" = @u8x[7f 5a f9 ff ff ff fa ff ff ff fb ff ff ff fc ff ff ff fd ff ff ff fe ff ff ff ff ff ff ff 00 00 00 00 01 00 00 00 02 00 00 00]
+                    "to_cte" = "@i32[-7 -6 -5 -4 -3 -2 -1 0 1 2]"
                     "events" = [
                         "bai32"
                         "acl=10"
@@ -240,8 +240,8 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 5b f9 ff ff ff fa ff ff ff fb ff ff ff fc ff ff ff fd ff ff ff fe ff ff ff ff ff ff ff 00 00 00 00 01 00 00 00 02 00 00 00 03 00 00 00|
-                    "to_cte" = "|i32 -7 -6 -5 -4 -3 -2 -1 0 1 2 3|"
+                    "cbe" = @u8x[7f 5b f9 ff ff ff fa ff ff ff fb ff ff ff fc ff ff ff fd ff ff ff fe ff ff ff ff ff ff ff 00 00 00 00 01 00 00 00 02 00 00 00 03 00 00 00]
+                    "to_cte" = "@i32[-7 -6 -5 -4 -3 -2 -1 0 1 2 3]"
                     "events" = [
                         "bai32"
                         "acl=11"
@@ -249,8 +249,8 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 5c f9 ff ff ff fa ff ff ff fb ff ff ff fc ff ff ff fd ff ff ff fe ff ff ff ff ff ff ff 00 00 00 00 01 00 00 00 02 00 00 00 03 00 00 00 04 00 00 00|
-                    "to_cte" = "|i32 -7 -6 -5 -4 -3 -2 -1 0 1 2 3 4|"
+                    "cbe" = @u8x[7f 5c f9 ff ff ff fa ff ff ff fb ff ff ff fc ff ff ff fd ff ff ff fe ff ff ff ff ff ff ff 00 00 00 00 01 00 00 00 02 00 00 00 03 00 00 00 04 00 00 00]
+                    "to_cte" = "@i32[-7 -6 -5 -4 -3 -2 -1 0 1 2 3 4]"
                     "events" = [
                         "bai32"
                         "acl=12"
@@ -258,8 +258,8 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 5d f9 ff ff ff fa ff ff ff fb ff ff ff fc ff ff ff fd ff ff ff fe ff ff ff ff ff ff ff 00 00 00 00 01 00 00 00 02 00 00 00 03 00 00 00 04 00 00 00 05 00 00 00|
-                    "to_cte" = "|i32 -7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5|"
+                    "cbe" = @u8x[7f 5d f9 ff ff ff fa ff ff ff fb ff ff ff fc ff ff ff fd ff ff ff fe ff ff ff ff ff ff ff 00 00 00 00 01 00 00 00 02 00 00 00 03 00 00 00 04 00 00 00 05 00 00 00]
+                    "to_cte" = "@i32[-7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5]"
                     "events" = [
                         "bai32"
                         "acl=13"
@@ -267,8 +267,8 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 5e f9 ff ff ff fa ff ff ff fb ff ff ff fc ff ff ff fd ff ff ff fe ff ff ff ff ff ff ff 00 00 00 00 01 00 00 00 02 00 00 00 03 00 00 00 04 00 00 00 05 00 00 00 06 00 00 00|
-                    "to_cte" = "|i32 -7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6|"
+                    "cbe" = @u8x[7f 5e f9 ff ff ff fa ff ff ff fb ff ff ff fc ff ff ff fd ff ff ff fe ff ff ff ff ff ff ff 00 00 00 00 01 00 00 00 02 00 00 00 03 00 00 00 04 00 00 00 05 00 00 00 06 00 00 00]
+                    "to_cte" = "@i32[-7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6]"
                     "events" = [
                         "bai32"
                         "acl=14"
@@ -276,8 +276,8 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 5f f9 ff ff ff fa ff ff ff fb ff ff ff fc ff ff ff fd ff ff ff fe ff ff ff ff ff ff ff 00 00 00 00 01 00 00 00 02 00 00 00 03 00 00 00 04 00 00 00 05 00 00 00 06 00 00 00 07 00 00 00|
-                    "to_cte" = "|i32 -7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7|"
+                    "cbe" = @u8x[7f 5f f9 ff ff ff fa ff ff ff fb ff ff ff fc ff ff ff fd ff ff ff fe ff ff ff ff ff ff ff 00 00 00 00 01 00 00 00 02 00 00 00 03 00 00 00 04 00 00 00 05 00 00 00 06 00 00 00 07 00 00 00]
+                    "to_cte" = "@i32[-7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7]"
                     "events" = [
                         "bai32"
                         "acl=15"
@@ -285,8 +285,8 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f e5 20 f9 ff ff ff fa ff ff ff fb ff ff ff fc ff ff ff fd ff ff ff fe ff ff ff ff ff ff ff 00 00 00 00 01 00 00 00 02 00 00 00 03 00 00 00 04 00 00 00 05 00 00 00 06 00 00 00 07 00 00 00 08 00 00 00|
-                    "to_cte" = "|i32 -7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7 8|"
+                    "cbe" = @u8x[7f e5 20 f9 ff ff ff fa ff ff ff fb ff ff ff fc ff ff ff fd ff ff ff fe ff ff ff ff ff ff ff 00 00 00 00 01 00 00 00 02 00 00 00 03 00 00 00 04 00 00 00 05 00 00 00 06 00 00 00 07 00 00 00 08 00 00 00]
+                    "to_cte" = "@i32[-7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7 8]"
                     "events" = [
                         "bai32"
                         "acl=16"
@@ -294,8 +294,8 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f e5 22 f9 ff ff ff fa ff ff ff fb ff ff ff fc ff ff ff fd ff ff ff fe ff ff ff ff ff ff ff 00 00 00 00 01 00 00 00 02 00 00 00 03 00 00 00 04 00 00 00 05 00 00 00 06 00 00 00 07 00 00 00 08 00 00 00 09 00 00 00|
-                    "to_cte" = "|i32 -7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7 8 9|"
+                    "cbe" = @u8x[7f e5 22 f9 ff ff ff fa ff ff ff fb ff ff ff fc ff ff ff fd ff ff ff fe ff ff ff ff ff ff ff 00 00 00 00 01 00 00 00 02 00 00 00 03 00 00 00 04 00 00 00 05 00 00 00 06 00 00 00 07 00 00 00 08 00 00 00 09 00 00 00]
+                    "to_cte" = "@i32[-7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7 8 9]"
                     "events" = [
                         "bai32"
                         "acl=17"
@@ -303,8 +303,8 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f e5 24 f9 ff ff ff fa ff ff ff fb ff ff ff fc ff ff ff fd ff ff ff fe ff ff ff ff ff ff ff 00 00 00 00 01 00 00 00 02 00 00 00 03 00 00 00 04 00 00 00 05 00 00 00 06 00 00 00 07 00 00 00 08 00 00 00 09 00 00 00 0a 00 00 00|
-                    "to_cte" = "|i32 -7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7 8 9 10|"
+                    "cbe" = @u8x[7f e5 24 f9 ff ff ff fa ff ff ff fb ff ff ff fc ff ff ff fd ff ff ff fe ff ff ff ff ff ff ff 00 00 00 00 01 00 00 00 02 00 00 00 03 00 00 00 04 00 00 00 05 00 00 00 06 00 00 00 07 00 00 00 08 00 00 00 09 00 00 00 0a 00 00 00]
+                    "to_cte" = "@i32[-7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7 8 9 10]"
                     "events" = [
                         "bai32"
                         "acl=18"
@@ -312,8 +312,8 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f e5 26 f9 ff ff ff fa ff ff ff fb ff ff ff fc ff ff ff fd ff ff ff fe ff ff ff ff ff ff ff 00 00 00 00 01 00 00 00 02 00 00 00 03 00 00 00 04 00 00 00 05 00 00 00 06 00 00 00 07 00 00 00 08 00 00 00 09 00 00 00 0a 00 00 00 0b 00 00 00|
-                    "to_cte" = "|i32 -7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7 8 9 10 11|"
+                    "cbe" = @u8x[7f e5 26 f9 ff ff ff fa ff ff ff fb ff ff ff fc ff ff ff fd ff ff ff fe ff ff ff ff ff ff ff 00 00 00 00 01 00 00 00 02 00 00 00 03 00 00 00 04 00 00 00 05 00 00 00 06 00 00 00 07 00 00 00 08 00 00 00 09 00 00 00 0a 00 00 00 0b 00 00 00]
+                    "to_cte" = "@i32[-7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7 8 9 10 11]"
                     "events" = [
                         "bai32"
                         "acl=19"
@@ -321,8 +321,8 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f e5 28 f9 ff ff ff fa ff ff ff fb ff ff ff fc ff ff ff fd ff ff ff fe ff ff ff ff ff ff ff 00 00 00 00 01 00 00 00 02 00 00 00 03 00 00 00 04 00 00 00 05 00 00 00 06 00 00 00 07 00 00 00 08 00 00 00 09 00 00 00 0a 00 00 00 0b 00 00 00 0c 00 00 00|
-                    "to_cte" = "|i32 -7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7 8 9 10 11 12|"
+                    "cbe" = @u8x[7f e5 28 f9 ff ff ff fa ff ff ff fb ff ff ff fc ff ff ff fd ff ff ff fe ff ff ff ff ff ff ff 00 00 00 00 01 00 00 00 02 00 00 00 03 00 00 00 04 00 00 00 05 00 00 00 06 00 00 00 07 00 00 00 08 00 00 00 09 00 00 00 0a 00 00 00 0b 00 00 00 0c 00 00 00]
+                    "to_cte" = "@i32[-7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7 8 9 10 11 12]"
                     "events" = [
                         "bai32"
                         "acl=20"
@@ -335,8 +335,8 @@ c0
             "name" = "Various Array Elements"
             "must_succeed" = [
                 {
-                    "cbe" = |u8x 7f e5 7c 00 00 00 80 42 08 21 84 84 10 42 88 c6 18 63 8c 08 21 84 90 4a 29 a5 94 8c 31 c6 98 ce 39 e7 9c 10 42 08 a1 52 4a 29 a5 94 52 4a a9 d6 5a 6b ad 18 63 8c b1 5a 6b ad b5 9c 73 ce b9 de 7b ef bd 20 84 10 c2 62 8c 31 c6 a4 94 52 ca e6 9c 73 ce 28 a5 94 d2 6a ad b5 d6 ac b5 d6 da ee bd f7 de 30 c6 18 e3 72 ce 39 e7 b4 d6 5a eb f6 de 7b ef 38 e7 9c f3 7a ef bd f7 bc f7 de fb fe ff ff ff 40 08 21 04 82 10 42 08 c4 18 63 0c 06 21 84 10 48 29 a5 14 8a 31 c6 18 cc 39 e7 1c 0e 42 08 21 50 4a 29 25 92 52 4a 29 d4 5a 6b 2d 16 63 8c 31 58 6b ad 35 9a 73 ce 39 dc 7b ef 3d 1e 84 10 42 60 8c 31 46 a2 94 52 4a e4 9c 73 4e 26 a5 94 52 68 ad b5 56 aa b5 d6 5a ec bd f7 5e 2e c6 18 63 70 ce 39 67 b2 d6 5a 6b f4 de 7b 6f 36 e7 9c 73 78 ef bd 77 ba f7 de 7b|
-                    "to_cte" = "|i32 -2147483648 -2078209982 -2008936316 -1939662650 -1870388984 -1801115318 -1731841652 -1662567986 -1593294320 -1524020654 -1454746988 -1385473322 -1316199656 -1246925990 -1177652324 -1108378658 -1039104992 -969831326 -900557660 -831283994 -762010328 -692736662 -623462996 -554189330 -484915664 -415641998 -346368332 -277094666 -207821000 -138547334 -69273668 -2 69273664 138547330 207820996 277094662 346368328 415641994 484915660 554189326 623462992 692736658 762010324 831283990 900557656 969831322 1039104988 1108378654 1177652320 1246925986 1316199652 1385473318 1454746984 1524020650 1593294316 1662567982 1731841648 1801115314 1870388980 1939662646 2008936312 2078209978|"
+                    "cbe" = @u8x[7f e5 7c 00 00 00 80 42 08 21 84 84 10 42 88 c6 18 63 8c 08 21 84 90 4a 29 a5 94 8c 31 c6 98 ce 39 e7 9c 10 42 08 a1 52 4a 29 a5 94 52 4a a9 d6 5a 6b ad 18 63 8c b1 5a 6b ad b5 9c 73 ce b9 de 7b ef bd 20 84 10 c2 62 8c 31 c6 a4 94 52 ca e6 9c 73 ce 28 a5 94 d2 6a ad b5 d6 ac b5 d6 da ee bd f7 de 30 c6 18 e3 72 ce 39 e7 b4 d6 5a eb f6 de 7b ef 38 e7 9c f3 7a ef bd f7 bc f7 de fb fe ff ff ff 40 08 21 04 82 10 42 08 c4 18 63 0c 06 21 84 10 48 29 a5 14 8a 31 c6 18 cc 39 e7 1c 0e 42 08 21 50 4a 29 25 92 52 4a 29 d4 5a 6b 2d 16 63 8c 31 58 6b ad 35 9a 73 ce 39 dc 7b ef 3d 1e 84 10 42 60 8c 31 46 a2 94 52 4a e4 9c 73 4e 26 a5 94 52 68 ad b5 56 aa b5 d6 5a ec bd f7 5e 2e c6 18 63 70 ce 39 67 b2 d6 5a 6b f4 de 7b 6f 36 e7 9c 73 78 ef bd 77 ba f7 de 7b]
+                    "to_cte" = "@i32[-2147483648 -2078209982 -2008936316 -1939662650 -1870388984 -1801115318 -1731841652 -1662567986 -1593294320 -1524020654 -1454746988 -1385473322 -1316199656 -1246925990 -1177652324 -1108378658 -1039104992 -969831326 -900557660 -831283994 -762010328 -692736662 -623462996 -554189330 -484915664 -415641998 -346368332 -277094666 -207821000 -138547334 -69273668 -2 69273664 138547330 207820996 277094662 346368328 415641994 484915660 554189326 623462992 692736658 762010324 831283990 900557656 969831322 1039104988 1108378654 1177652320 1246925986 1316199652 1385473318 1454746984 1524020650 1593294316 1662567982 1731841648 1801115314 1870388980 1939662646 2008936312 2078209978]"
                     "events" = [
                         "bai32"
                         "acl=62"
@@ -344,7 +344,7 @@ c0
                     ]
                 }
                 {
-                    "from_cte" = "|i32 8 -17 0b1011 0B1010 -0b1100 -0B1101 0o31 0O33 -0o10 -0O5 0x10 0X15 -0x22 -0X33|"
+                    "from_cte" = "@i32[8 -17 0b1011 0B1010 -0b1100 -0B1101 0o31 0O33 -0o10 -0O5 0x10 0X15 -0x22 -0X33]"
                     "events" = [
                         "ai32=8 -17 11 10 -12 -13 25 27 -8 -5 16 21 -34 -51"
                     ]
@@ -355,43 +355,43 @@ c0
             "name" = "Base 2, 8, 16"
             "must_succeed" = [
                 {
-                    "cbe" = |u8x 7f 57 00 00 00 80 24 49 92 a4 48 92 24 c9 6c db b6 ed 90 24 49 12 b4 6d db 36 d8 b6 6d 5b|
-                    "from_cte" = "|i32b -10000000000000000000000000000000 -1011011011011011011011011011100 -110110110110110110110110111000 -10010010010010010010010010100 10010010010010010010010010000 110110110110110110110110110100 1011011011011011011011011011000|"
+                    "cbe" = @u8x[7f 57 00 00 00 80 24 49 92 a4 48 92 24 c9 6c db b6 ed 90 24 49 12 b4 6d db 36 d8 b6 6d 5b]
+                    "from_cte" = "@i32b[-10000000000000000000000000000000 -1011011011011011011011011011100 -110110110110110110110110111000 -10010010010010010010010010100 10010010010010010010010010000 110110110110110110110110110100 1011011011011011011011011011000]"
                     "events" = [
                         "ai32=-2147483648 -1533916892 -920350136 -306783380 306783376 920350132 1533916888"
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 50|
-                    "from_cte" = "|i32b|"
+                    "cbe" = @u8x[7f 50]
+                    "from_cte" = "@i32b[]"
                     "events" = [
                         "ai32"
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 57 00 00 00 80 24 49 92 a4 48 92 24 c9 6c db b6 ed 90 24 49 12 b4 6d db 36 d8 b6 6d 5b|
-                    "from_cte" = "|i32o -20000000000 -13333333334 -6666666670 -2222222224 2222222220 6666666664 13333333330|"
+                    "cbe" = @u8x[7f 57 00 00 00 80 24 49 92 a4 48 92 24 c9 6c db b6 ed 90 24 49 12 b4 6d db 36 d8 b6 6d 5b]
+                    "from_cte" = "@i32o[-20000000000 -13333333334 -6666666670 -2222222224 2222222220 6666666664 13333333330]"
                     "events" = [
                         "ai32=-2147483648 -1533916892 -920350136 -306783380 306783376 920350132 1533916888"
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 50|
-                    "from_cte" = "|i32o|"
+                    "cbe" = @u8x[7f 50]
+                    "from_cte" = "@i32o[]"
                     "events" = [
                         "ai32"
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 57 00 00 00 80 24 49 92 a4 48 92 24 c9 6c db b6 ed 90 24 49 12 b4 6d db 36 d8 b6 6d 5b|
-                    "from_cte" = "|i32x -80000000 -5b6db6dc -36db6db8 -12492494 12492490 36db6db4 5b6db6d8|"
+                    "cbe" = @u8x[7f 57 00 00 00 80 24 49 92 a4 48 92 24 c9 6c db b6 ed 90 24 49 12 b4 6d db 36 d8 b6 6d 5b]
+                    "from_cte" = "@i32x[-80000000 -5b6db6dc -36db6db8 -12492494 12492490 36db6db4 5b6db6d8]"
                     "events" = [
                         "ai32=-2147483648 -1533916892 -920350136 -306783380 306783376 920350132 1533916888"
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 50|
-                    "from_cte" = "|i32x|"
+                    "cbe" = @u8x[7f 50]
+                    "from_cte" = "@i32x[]"
                     "events" = [
                         "ai32"
                     ]
@@ -402,8 +402,8 @@ c0
             "name" = "Chunking Variations"
             "must_succeed" = [
                 {
-                    "cbe" = |u8x 7f e5 01 03 00 00 00 80 05 00 00 00 80 24 49 92 a4 07 00 00 00 80 24 49 92 a4 48 92 24 c9 09 00 00 00 80 24 49 92 a4 48 92 24 c9 6c db b6 ed 0b 00 00 00 80 24 49 92 a4 48 92 24 c9 6c db b6 ed 90 24 49 12 0d 00 00 00 80 24 49 92 a4 48 92 24 c9 6c db b6 ed 90 24 49 12 b4 6d db 36 00|
-                    "to_cte" = "|i32 -2147483648 -2147483648 -1533916892 -2147483648 -1533916892 -920350136 -2147483648 -1533916892 -920350136 -306783380 -2147483648 -1533916892 -920350136 -306783380 306783376 -2147483648 -1533916892 -920350136 -306783380 306783376 920350132|"
+                    "cbe" = @u8x[7f e5 01 03 00 00 00 80 05 00 00 00 80 24 49 92 a4 07 00 00 00 80 24 49 92 a4 48 92 24 c9 09 00 00 00 80 24 49 92 a4 48 92 24 c9 6c db b6 ed 0b 00 00 00 80 24 49 92 a4 48 92 24 c9 6c db b6 ed 90 24 49 12 0d 00 00 00 80 24 49 92 a4 48 92 24 c9 6c db b6 ed 90 24 49 12 b4 6d db 36 00]
+                    "to_cte" = "@i32[-2147483648 -2147483648 -1533916892 -2147483648 -1533916892 -920350136 -2147483648 -1533916892 -920350136 -306783380 -2147483648 -1533916892 -920350136 -306783380 306783376 -2147483648 -1533916892 -920350136 -306783380 306783376 920350132]"
                     "events" = [
                         "bai32"
                         "acm=0"
@@ -423,8 +423,8 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f e5 09 00 00 00 80 24 49 92 a4 48 92 24 c9 6c db b6 ed 06 00 00 00 80 24 49 92 a4 48 92 24 c9|
-                    "to_cte" = "|i32 -2147483648 -1533916892 -920350136 -306783380 -2147483648 -1533916892 -920350136|"
+                    "cbe" = @u8x[7f e5 09 00 00 00 80 24 49 92 a4 48 92 24 c9 6c db b6 ed 06 00 00 00 80 24 49 92 a4 48 92 24 c9]
+                    "to_cte" = "@i32[-2147483648 -1533916892 -920350136 -306783380 -2147483648 -1533916892 -920350136]"
                     "events" = [
                         "bai32"
                         "acm=4"
@@ -439,8 +439,8 @@ c0
             "name" = "Edge Case Element Values"
             "must_succeed" = [
                 {
-                    "cbe" = |u8x 7f e5 5a 00 00 00 00 01 00 00 00 7f 00 00 00 80 00 00 00 81 00 00 00 ff 00 00 00 00 01 00 00 01 01 00 00 ff 7f 00 00 00 80 00 00 01 80 00 00 ff ff 00 00 00 00 01 00 01 00 01 00 ff ff ff 7f 00 00 00 80 01 00 00 80 ff ff ff ff 00 00 00 00 01 00 00 00 ff ff ff ff ff ff ff ff 81 ff ff ff 80 ff ff ff 7f ff ff ff 01 ff ff ff 00 ff ff ff ff fe ff ff 01 80 ff ff 00 80 ff ff ff 7f ff ff 01 00 ff ff 00 00 ff ff ff ff fe ff 01 00 00 80 00 00 00 80 ff ff ff 7f 01 00 00 00 00 00 00 00 ff ff ff ff 01 00 00 00 00 00 00 00 00 00 00 00 01 00 00 00 ff ff ff ff|
-                    "to_cte" = "|i32 0 1 127 128 129 255 256 257 32767 32768 32769 65535 65536 65537 2147483647 -2147483648 -2147483647 -1 0 1 -1 -1 -127 -128 -129 -255 -256 -257 -32767 -32768 -32769 -65535 -65536 -65537 -2147483647 -2147483648 2147483647 1 0 -1 1 0 0 1 -1|"
+                    "cbe" = @u8x[7f e5 5a 00 00 00 00 01 00 00 00 7f 00 00 00 80 00 00 00 81 00 00 00 ff 00 00 00 00 01 00 00 01 01 00 00 ff 7f 00 00 00 80 00 00 01 80 00 00 ff ff 00 00 00 00 01 00 01 00 01 00 ff ff ff 7f 00 00 00 80 01 00 00 80 ff ff ff ff 00 00 00 00 01 00 00 00 ff ff ff ff ff ff ff ff 81 ff ff ff 80 ff ff ff 7f ff ff ff 01 ff ff ff 00 ff ff ff ff fe ff ff 01 80 ff ff 00 80 ff ff ff 7f ff ff 01 00 ff ff 00 00 ff ff ff ff fe ff 01 00 00 80 00 00 00 80 ff ff ff 7f 01 00 00 00 00 00 00 00 ff ff ff ff 01 00 00 00 00 00 00 00 00 00 00 00 01 00 00 00 ff ff ff ff]
+                    "to_cte" = "@i32[0 1 127 128 129 255 256 257 32767 32768 32769 65535 65536 65537 2147483647 -2147483648 -2147483647 -1 0 1 -1 -1 -127 -128 -129 -255 -256 -257 -32767 -32768 -32769 -65535 -65536 -65537 -2147483647 -2147483648 2147483647 1 0 -1 1 0 0 1 -1]"
                     "events" = [
                         "bai32"
                         "acl=45"
@@ -453,49 +453,49 @@ c0
             "name" = "Whitespace at end of array"
             "must_succeed" = [
                 {
-                    "from_cte" = "|i32 |"
+                    "from_cte" = "@i32[ ]"
                     "events" = [
                         "ai32"
                     ]
                 }
                 {
-                    "from_cte" = "|i32 1 |"
+                    "from_cte" = "@i32[ 1 ]"
                     "events" = [
                         "ai32=1"
                     ]
                 }
                 {
-                    "from_cte" = "|i32b |"
+                    "from_cte" = "@i32b[ ]"
                     "events" = [
                         "ai32"
                     ]
                 }
                 {
-                    "from_cte" = "|i32b 1 |"
+                    "from_cte" = "@i32b[ 1 ]"
                     "events" = [
                         "ai32=1"
                     ]
                 }
                 {
-                    "from_cte" = "|i32o |"
+                    "from_cte" = "@i32o[ ]"
                     "events" = [
                         "ai32"
                     ]
                 }
                 {
-                    "from_cte" = "|i32o 1 |"
+                    "from_cte" = "@i32o[ 1 ]"
                     "events" = [
                         "ai32=1"
                     ]
                 }
                 {
-                    "from_cte" = "|i32x |"
+                    "from_cte" = "@i32x[ ]"
                     "events" = [
                         "ai32"
                     ]
                 }
                 {
-                    "from_cte" = "|i32x 1 |"
+                    "from_cte" = "@i32x[ 1 ]"
                     "events" = [
                         "ai32=1"
                     ]
@@ -506,19 +506,19 @@ c0
             "name" = "Space before array type"
             "must_fail" = [
                 {
-                    "cte" = "c0 | i32|"
+                    "cte" = "c0 @ i32[]"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "c0 | i32b|"
+                    "cte" = "c0 @ i32b[]"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "c0 | i32o|"
+                    "cte" = "c0 @ i32o[]"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "c0 | i32x|"
+                    "cte" = "c0 @ i32x[]"
                     "raw_document" = true
                 }
             ]
@@ -527,70 +527,70 @@ c0
             "name" = "Truncated Array"
             "must_fail" = [
                 {
-                    "cbe" = |u8x 7f e5|
+                    "cbe" = @u8x[7f e5]
                 }
                 {
-                    "cbe" = |u8x 7f 51|
+                    "cbe" = @u8x[7f 51]
                 }
                 {
-                    "cbe" = |u8x 7f 52 00 00 00 00|
+                    "cbe" = @u8x[7f 52 00 00 00 00]
                 }
                 {
-                    "cbe" = |u8x 7f 51 00 00 00|
+                    "cbe" = @u8x[7f 51 00 00 00]
                 }
                 {
-                    "cbe" = |u8x 7f 53 00 00 00 00|
+                    "cbe" = @u8x[7f 53 00 00 00 00]
                 }
                 {
-                    "cbe" = |u8x 7f 51 00 00 00|
+                    "cbe" = @u8x[7f 51 00 00 00]
                 }
                 {
-                    "cbe" = |u8x 7f 54 00 00 00 00 01 00 00 00|
+                    "cbe" = @u8x[7f 54 00 00 00 00 01 00 00 00]
                 }
                 {
-                    "cbe" = |u8x 7f 52 00 00 00 00 01 00 00|
+                    "cbe" = @u8x[7f 52 00 00 00 00 01 00 00]
                 }
                 {
-                    "cbe" = |u8x 7f 55 00 00 00 00 01 00 00 00|
+                    "cbe" = @u8x[7f 55 00 00 00 00 01 00 00 00]
                 }
                 {
-                    "cbe" = |u8x 7f 52 00 00 00 00 01 00 00|
+                    "cbe" = @u8x[7f 52 00 00 00 00 01 00 00]
                 }
                 {
-                    "cbe" = |u8x 7f 56 00 00 00 00 01 00 00 00 7f 00 00 00|
+                    "cbe" = @u8x[7f 56 00 00 00 00 01 00 00 00 7f 00 00 00]
                 }
                 {
-                    "cbe" = |u8x 7f 53 00 00 00 00 01 00 00 00 7f 00 00|
+                    "cbe" = @u8x[7f 53 00 00 00 00 01 00 00 00 7f 00 00]
                 }
                 {
-                    "cbe" = |u8x 7f 57 00 00 00 00 01 00 00 00 7f 00 00 00|
+                    "cbe" = @u8x[7f 57 00 00 00 00 01 00 00 00 7f 00 00 00]
                 }
                 {
-                    "cbe" = |u8x 7f 53 00 00 00 00 01 00 00 00 7f 00 00|
+                    "cbe" = @u8x[7f 53 00 00 00 00 01 00 00 00 7f 00 00]
                 }
                 {
-                    "cbe" = |u8x 7f 58 00 00 00 00 01 00 00 00 7f 00 00 00 80 00 00 00|
+                    "cbe" = @u8x[7f 58 00 00 00 00 01 00 00 00 7f 00 00 00 80 00 00 00]
                 }
                 {
-                    "cbe" = |u8x 7f 54 00 00 00 00 01 00 00 00 7f 00 00 00 80 00 00|
+                    "cbe" = @u8x[7f 54 00 00 00 00 01 00 00 00 7f 00 00 00 80 00 00]
                 }
                 {
-                    "cbe" = |u8x 7f 59 00 00 00 00 01 00 00 00 7f 00 00 00 80 00 00 00|
+                    "cbe" = @u8x[7f 59 00 00 00 00 01 00 00 00 7f 00 00 00 80 00 00 00]
                 }
                 {
-                    "cbe" = |u8x 7f 54 00 00 00 00 01 00 00 00 7f 00 00 00 80 00 00|
+                    "cbe" = @u8x[7f 54 00 00 00 00 01 00 00 00 7f 00 00 00 80 00 00]
                 }
                 {
-                    "cbe" = |u8x 7f 5a 00 00 00 00 01 00 00 00 7f 00 00 00 80 00 00 00 81 00 00 00|
+                    "cbe" = @u8x[7f 5a 00 00 00 00 01 00 00 00 7f 00 00 00 80 00 00 00 81 00 00 00]
                 }
                 {
-                    "cbe" = |u8x 7f 55 00 00 00 00 01 00 00 00 7f 00 00 00 80 00 00 00 81 00 00|
+                    "cbe" = @u8x[7f 55 00 00 00 00 01 00 00 00 7f 00 00 00 80 00 00 00 81 00 00]
                 }
                 {
-                    "cte" = "|i32"
+                    "cte" = "@i32["
                 }
                 {
-                    "cte" = "|i32 0"
+                    "cte" = "@i32[0"
                 }
             ]
         }
@@ -598,46 +598,46 @@ c0
             "name" = "Element value out of range"
             "must_fail" = [
                 {
-                    "cte" = "|i32b 10000000000000000000000000000000|"
+                    "cte" = "@i32b[10000000000000000000000000000000]"
                 }
                 {
-                    "cte" = "|i32o 20000000000|"
+                    "cte" = "@i32o[20000000000]"
                 }
                 {
-                    "cte" = "|i32x 80000000|"
+                    "cte" = "@i32x[80000000]"
                 }
                 {
-                    "cte" = "|i32 2147483648|"
+                    "cte" = "@i32[2147483648]"
                 }
                 {
-                    "cte" = "|i32 0b10000000000000000000000000000000|"
+                    "cte" = "@i32[0b10000000000000000000000000000000]"
                 }
                 {
-                    "cte" = "|i32 0o20000000000|"
+                    "cte" = "@i32[0o20000000000]"
                 }
                 {
-                    "cte" = "|i32 0x80000000|"
+                    "cte" = "@i32[0x80000000]"
                 }
                 {
-                    "cte" = "|i32b -10000000000000000000000000000001|"
+                    "cte" = "@i32b[-10000000000000000000000000000001]"
                 }
                 {
-                    "cte" = "|i32o -20000000001|"
+                    "cte" = "@i32o[-20000000001]"
                 }
                 {
-                    "cte" = "|i32x -80000001|"
+                    "cte" = "@i32x[-80000001]"
                 }
                 {
-                    "cte" = "|i32 -2147483649|"
+                    "cte" = "@i32[-2147483649]"
                 }
                 {
-                    "cte" = "|i32 -0b10000000000000000000000000000001|"
+                    "cte" = "@i32[-0b10000000000000000000000000000001]"
                 }
                 {
-                    "cte" = "|i32 -0o20000000001|"
+                    "cte" = "@i32[-0o20000000001]"
                 }
                 {
-                    "cte" = "|i32 -0x80000001|"
+                    "cte" = "@i32[-0x80000001]"
                 }
             ]
         }
@@ -645,34 +645,34 @@ c0
             "name" = "Numeric digit out of range"
             "must_fail" = [
                 {
-                    "cte" = "|i32x 1g|"
+                    "cte" = "@i32x[1g]"
                 }
                 {
-                    "cte" = "|i32 1g|"
+                    "cte" = "@i32[1g]"
                 }
                 {
-                    "cte" = "|i32 1a|"
+                    "cte" = "@i32[1a]"
                 }
                 {
-                    "cte" = "|i32o 1g|"
+                    "cte" = "@i32o[1g]"
                 }
                 {
-                    "cte" = "|i32o 1a|"
+                    "cte" = "@i32o[1a]"
                 }
                 {
-                    "cte" = "|i32o 18|"
+                    "cte" = "@i32o[18]"
                 }
                 {
-                    "cte" = "|i32b 1g|"
+                    "cte" = "@i32b[1g]"
                 }
                 {
-                    "cte" = "|i32b 1a|"
+                    "cte" = "@i32b[1a]"
                 }
                 {
-                    "cte" = "|i32b 18|"
+                    "cte" = "@i32b[18]"
                 }
                 {
-                    "cte" = "|i32b 12|"
+                    "cte" = "@i32b[12]"
                 }
             ]
         }
@@ -680,148 +680,148 @@ c0
             "name" = "Invalid special values"
             "must_fail" = [
                 {
-                    "cte" = "|i32x null|"
+                    "cte" = "@i32x[null]"
                 }
                 {
-                    "cte" = "|i32x -null|"
+                    "cte" = "@i32x[-null]"
                 }
                 {
-                    "cte" = "|i32x true|"
+                    "cte" = "@i32x[true]"
                 }
                 {
-                    "cte" = "|i32x -true|"
+                    "cte" = "@i32x[-true]"
                 }
                 {
-                    "cte" = "|i32x false|"
+                    "cte" = "@i32x[false]"
                 }
                 {
-                    "cte" = "|i32x -false|"
+                    "cte" = "@i32x[-false]"
                 }
                 {
-                    "cte" = "|i32x nan|"
+                    "cte" = "@i32x[nan]"
                 }
                 {
-                    "cte" = "|i32x -nan|"
+                    "cte" = "@i32x[-nan]"
                 }
                 {
-                    "cte" = "|i32x snan|"
+                    "cte" = "@i32x[snan]"
                 }
                 {
-                    "cte" = "|i32x -snan|"
+                    "cte" = "@i32x[-snan]"
                 }
                 {
-                    "cte" = "|i32x inf|"
+                    "cte" = "@i32x[inf]"
                 }
                 {
-                    "cte" = "|i32x -inf|"
+                    "cte" = "@i32x[-inf]"
                 }
                 {
-                    "cte" = "|i32 null|"
+                    "cte" = "@i32[null]"
                 }
                 {
-                    "cte" = "|i32 -null|"
+                    "cte" = "@i32[-null]"
                 }
                 {
-                    "cte" = "|i32 true|"
+                    "cte" = "@i32[true]"
                 }
                 {
-                    "cte" = "|i32 -true|"
+                    "cte" = "@i32[-true]"
                 }
                 {
-                    "cte" = "|i32 false|"
+                    "cte" = "@i32[false]"
                 }
                 {
-                    "cte" = "|i32 -false|"
+                    "cte" = "@i32[-false]"
                 }
                 {
-                    "cte" = "|i32 nan|"
+                    "cte" = "@i32[nan]"
                 }
                 {
-                    "cte" = "|i32 -nan|"
+                    "cte" = "@i32[-nan]"
                 }
                 {
-                    "cte" = "|i32 snan|"
+                    "cte" = "@i32[snan]"
                 }
                 {
-                    "cte" = "|i32 -snan|"
+                    "cte" = "@i32[-snan]"
                 }
                 {
-                    "cte" = "|i32 inf|"
+                    "cte" = "@i32[inf]"
                 }
                 {
-                    "cte" = "|i32 -inf|"
+                    "cte" = "@i32[-inf]"
                 }
                 {
-                    "cte" = "|i32o null|"
+                    "cte" = "@i32o[null]"
                 }
                 {
-                    "cte" = "|i32o -null|"
+                    "cte" = "@i32o[-null]"
                 }
                 {
-                    "cte" = "|i32o true|"
+                    "cte" = "@i32o[true]"
                 }
                 {
-                    "cte" = "|i32o -true|"
+                    "cte" = "@i32o[-true]"
                 }
                 {
-                    "cte" = "|i32o false|"
+                    "cte" = "@i32o[false]"
                 }
                 {
-                    "cte" = "|i32o -false|"
+                    "cte" = "@i32o[-false]"
                 }
                 {
-                    "cte" = "|i32o nan|"
+                    "cte" = "@i32o[nan]"
                 }
                 {
-                    "cte" = "|i32o -nan|"
+                    "cte" = "@i32o[-nan]"
                 }
                 {
-                    "cte" = "|i32o snan|"
+                    "cte" = "@i32o[snan]"
                 }
                 {
-                    "cte" = "|i32o -snan|"
+                    "cte" = "@i32o[-snan]"
                 }
                 {
-                    "cte" = "|i32o inf|"
+                    "cte" = "@i32o[inf]"
                 }
                 {
-                    "cte" = "|i32o -inf|"
+                    "cte" = "@i32o[-inf]"
                 }
                 {
-                    "cte" = "|i32b null|"
+                    "cte" = "@i32b[null]"
                 }
                 {
-                    "cte" = "|i32b -null|"
+                    "cte" = "@i32b[-null]"
                 }
                 {
-                    "cte" = "|i32b true|"
+                    "cte" = "@i32b[true]"
                 }
                 {
-                    "cte" = "|i32b -true|"
+                    "cte" = "@i32b[-true]"
                 }
                 {
-                    "cte" = "|i32b false|"
+                    "cte" = "@i32b[false]"
                 }
                 {
-                    "cte" = "|i32b -false|"
+                    "cte" = "@i32b[-false]"
                 }
                 {
-                    "cte" = "|i32b nan|"
+                    "cte" = "@i32b[nan]"
                 }
                 {
-                    "cte" = "|i32b -nan|"
+                    "cte" = "@i32b[-nan]"
                 }
                 {
-                    "cte" = "|i32b snan|"
+                    "cte" = "@i32b[snan]"
                 }
                 {
-                    "cte" = "|i32b -snan|"
+                    "cte" = "@i32b[-snan]"
                 }
                 {
-                    "cte" = "|i32b inf|"
+                    "cte" = "@i32b[inf]"
                 }
                 {
-                    "cte" = "|i32b -inf|"
+                    "cte" = "@i32b[-inf]"
                 }
             ]
         }
@@ -829,16 +829,16 @@ c0
             "name" = "Float value in int array"
             "must_fail" = [
                 {
-                    "cte" = "|i32x 1.2|"
+                    "cte" = "@i32x[1.2]"
                 }
                 {
-                    "cte" = "|i32 1.2|"
+                    "cte" = "@i32[1.2]"
                 }
                 {
-                    "cte" = "|i32o 1.2|"
+                    "cte" = "@i32o[1.2]"
                 }
                 {
-                    "cte" = "|i32b 1.2|"
+                    "cte" = "@i32b[1.2]"
                 }
             ]
         }

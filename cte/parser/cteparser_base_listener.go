@@ -183,23 +183,23 @@ func (s *BaseCTEParserListener) EnterCustomText(ctx *CustomTextContext) {}
 // ExitCustomText is called when production customText is exited.
 func (s *BaseCTEParserListener) ExitCustomText(ctx *CustomTextContext) {}
 
-// EnterCustomEscape is called when production customEscape is entered.
-func (s *BaseCTEParserListener) EnterCustomEscape(ctx *CustomEscapeContext) {}
-
-// ExitCustomEscape is called when production customEscape is exited.
-func (s *BaseCTEParserListener) ExitCustomEscape(ctx *CustomEscapeContext) {}
-
 // EnterCustomBinary is called when production customBinary is entered.
 func (s *BaseCTEParserListener) EnterCustomBinary(ctx *CustomBinaryContext) {}
 
 // ExitCustomBinary is called when production customBinary is exited.
 func (s *BaseCTEParserListener) ExitCustomBinary(ctx *CustomBinaryContext) {}
 
-// EnterCustomType is called when production customType is entered.
-func (s *BaseCTEParserListener) EnterCustomType(ctx *CustomTypeContext) {}
+// EnterCustomTextBegin is called when production customTextBegin is entered.
+func (s *BaseCTEParserListener) EnterCustomTextBegin(ctx *CustomTextBeginContext) {}
 
-// ExitCustomType is called when production customType is exited.
-func (s *BaseCTEParserListener) ExitCustomType(ctx *CustomTypeContext) {}
+// ExitCustomTextBegin is called when production customTextBegin is exited.
+func (s *BaseCTEParserListener) ExitCustomTextBegin(ctx *CustomTextBeginContext) {}
+
+// EnterCustomBinaryBegin is called when production customBinaryBegin is entered.
+func (s *BaseCTEParserListener) EnterCustomBinaryBegin(ctx *CustomBinaryBeginContext) {}
+
+// ExitCustomBinaryBegin is called when production customBinaryBegin is exited.
+func (s *BaseCTEParserListener) ExitCustomBinaryBegin(ctx *CustomBinaryBeginContext) {}
 
 // EnterMediaText is called when production mediaText is entered.
 func (s *BaseCTEParserListener) EnterMediaText(ctx *MediaTextContext) {}
@@ -207,23 +207,23 @@ func (s *BaseCTEParserListener) EnterMediaText(ctx *MediaTextContext) {}
 // ExitMediaText is called when production mediaText is exited.
 func (s *BaseCTEParserListener) ExitMediaText(ctx *MediaTextContext) {}
 
-// EnterMediaEscape is called when production mediaEscape is entered.
-func (s *BaseCTEParserListener) EnterMediaEscape(ctx *MediaEscapeContext) {}
-
-// ExitMediaEscape is called when production mediaEscape is exited.
-func (s *BaseCTEParserListener) ExitMediaEscape(ctx *MediaEscapeContext) {}
-
 // EnterMediaBinary is called when production mediaBinary is entered.
 func (s *BaseCTEParserListener) EnterMediaBinary(ctx *MediaBinaryContext) {}
 
 // ExitMediaBinary is called when production mediaBinary is exited.
 func (s *BaseCTEParserListener) ExitMediaBinary(ctx *MediaBinaryContext) {}
 
-// EnterMediaType is called when production mediaType is entered.
-func (s *BaseCTEParserListener) EnterMediaType(ctx *MediaTypeContext) {}
+// EnterMediaTextBegin is called when production mediaTextBegin is entered.
+func (s *BaseCTEParserListener) EnterMediaTextBegin(ctx *MediaTextBeginContext) {}
 
-// ExitMediaType is called when production mediaType is exited.
-func (s *BaseCTEParserListener) ExitMediaType(ctx *MediaTypeContext) {}
+// ExitMediaTextBegin is called when production mediaTextBegin is exited.
+func (s *BaseCTEParserListener) ExitMediaTextBegin(ctx *MediaTextBeginContext) {}
+
+// EnterMediaBinaryBegin is called when production mediaBinaryBegin is entered.
+func (s *BaseCTEParserListener) EnterMediaBinaryBegin(ctx *MediaBinaryBeginContext) {}
+
+// ExitMediaBinaryBegin is called when production mediaBinaryBegin is exited.
+func (s *BaseCTEParserListener) ExitMediaBinaryBegin(ctx *MediaBinaryBeginContext) {}
 
 // EnterValueRid is called when production valueRid is entered.
 func (s *BaseCTEParserListener) EnterValueRid(ctx *ValueRidContext) {}

@@ -37,7 +37,7 @@ c0
     0:15:00/-13.54/-172.36
 ]
 %%%%"
-                    "cbe" = |u8x 9a 7b 19 d2 f8 6d f5 ac bc 7b a8 88 f4 7b 00 1e f0 7b 01 1e f0 6d f5 ac bc 9b|
+                    "cbe" = @u8x[9a 7b 19 d2 f8 6d f5 ac bc 7b a8 88 f4 7b 00 1e f0 7b 01 1e f0 6d f5 ac bc 9b]
                     "events" = [
                         "l"
                             "t=17:41:03/-13.54/-172.36"
@@ -74,7 +74,7 @@ c0
                     "cte" = "\.%%%%
 -0
 %%%%"
-                    "cbe" = |u8x 69 00|
+                    "cbe" = @u8x[69 00]
                     "events" = ["n=-0"]
                 }
             ]

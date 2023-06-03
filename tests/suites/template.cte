@@ -38,7 +38,7 @@ c0
                 {
                     // Required: At least one source and one destination
                     "cte"          = "null"   // or from_cte, or to_cte
-                    "cbe"          = |u8x 7d| // or from_cbe, or to_cbe
+                    "cbe"          = @u8x[7d] // or from_cbe, or to_cbe
                     "events"       = ["null"] // or from_events, or to_events
 
                     // Optional:
@@ -53,7 +53,7 @@ c0
                     "cte" = "[1 2 3" // Expected failure: Unterminated list (CTE)
                 }
                 {
-                    "cbe" = |u8x 9a 01 02 03| // Expected failure: Unterminated list (CBE)
+                    "cbe" = @u8x[9a 01 02 03] // Expected failure: Unterminated list (CBE)
                 }
             ]
         }

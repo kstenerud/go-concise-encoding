@@ -12,15 +12,15 @@ c0
             "name" = "Empty Array"
             "must_succeed" = [
                 {
-                    "cbe" = |u8x 7f 70|
-                    "cte" = "|i64|"
+                    "cbe" = @u8x[7f 70]
+                    "cte" = "@i64[]"
                     "events" = [
                         "ai64"
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 70|
-                    "to_cte" = "|i64|"
+                    "cbe" = @u8x[7f 70]
+                    "to_cte" = "@i64[]"
                     "events" = [
                         "bai64"
                         "acl=0"
@@ -32,106 +32,106 @@ c0
             "name" = "Short Array"
             "must_succeed" = [
                 {
-                    "cbe" = |u8x 7f 71 f9 ff ff ff ff ff ff ff|
-                    "cte" = "|i64 -7|"
+                    "cbe" = @u8x[7f 71 f9 ff ff ff ff ff ff ff]
+                    "cte" = "@i64[-7]"
                     "events" = [
                         "ai64=-7"
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 72 f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff|
-                    "cte" = "|i64 -7 -6|"
+                    "cbe" = @u8x[7f 72 f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff]
+                    "cte" = "@i64[-7 -6]"
                     "events" = [
                         "ai64=-7 -6"
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 73 f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff|
-                    "cte" = "|i64 -7 -6 -5|"
+                    "cbe" = @u8x[7f 73 f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff]
+                    "cte" = "@i64[-7 -6 -5]"
                     "events" = [
                         "ai64=-7 -6 -5"
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 74 f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff|
-                    "cte" = "|i64 -7 -6 -5 -4|"
+                    "cbe" = @u8x[7f 74 f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff]
+                    "cte" = "@i64[-7 -6 -5 -4]"
                     "events" = [
                         "ai64=-7 -6 -5 -4"
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 75 f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff fd ff ff ff ff ff ff ff|
-                    "cte" = "|i64 -7 -6 -5 -4 -3|"
+                    "cbe" = @u8x[7f 75 f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff fd ff ff ff ff ff ff ff]
+                    "cte" = "@i64[-7 -6 -5 -4 -3]"
                     "events" = [
                         "ai64=-7 -6 -5 -4 -3"
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 76 f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff fd ff ff ff ff ff ff ff fe ff ff ff ff ff ff ff|
-                    "cte" = "|i64 -7 -6 -5 -4 -3 -2|"
+                    "cbe" = @u8x[7f 76 f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff fd ff ff ff ff ff ff ff fe ff ff ff ff ff ff ff]
+                    "cte" = "@i64[-7 -6 -5 -4 -3 -2]"
                     "events" = [
                         "ai64=-7 -6 -5 -4 -3 -2"
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 77 f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff fd ff ff ff ff ff ff ff fe ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff|
-                    "cte" = "|i64 -7 -6 -5 -4 -3 -2 -1|"
+                    "cbe" = @u8x[7f 77 f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff fd ff ff ff ff ff ff ff fe ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff]
+                    "cte" = "@i64[-7 -6 -5 -4 -3 -2 -1]"
                     "events" = [
                         "ai64=-7 -6 -5 -4 -3 -2 -1"
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 78 f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff fd ff ff ff ff ff ff ff fe ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 00 00 00 00 00 00 00 00|
-                    "cte" = "|i64 -7 -6 -5 -4 -3 -2 -1 0|"
+                    "cbe" = @u8x[7f 78 f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff fd ff ff ff ff ff ff ff fe ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 00 00 00 00 00 00 00 00]
+                    "cte" = "@i64[-7 -6 -5 -4 -3 -2 -1 0]"
                     "events" = [
                         "ai64=-7 -6 -5 -4 -3 -2 -1 0"
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 79 f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff fd ff ff ff ff ff ff ff fe ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00|
-                    "cte" = "|i64 -7 -6 -5 -4 -3 -2 -1 0 1|"
+                    "cbe" = @u8x[7f 79 f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff fd ff ff ff ff ff ff ff fe ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00]
+                    "cte" = "@i64[-7 -6 -5 -4 -3 -2 -1 0 1]"
                     "events" = [
                         "ai64=-7 -6 -5 -4 -3 -2 -1 0 1"
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 7a f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff fd ff ff ff ff ff ff ff fe ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00|
-                    "cte" = "|i64 -7 -6 -5 -4 -3 -2 -1 0 1 2|"
+                    "cbe" = @u8x[7f 7a f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff fd ff ff ff ff ff ff ff fe ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00]
+                    "cte" = "@i64[-7 -6 -5 -4 -3 -2 -1 0 1 2]"
                     "events" = [
                         "ai64=-7 -6 -5 -4 -3 -2 -1 0 1 2"
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 7b f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff fd ff ff ff ff ff ff ff fe ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00 03 00 00 00 00 00 00 00|
-                    "cte" = "|i64 -7 -6 -5 -4 -3 -2 -1 0 1 2 3|"
+                    "cbe" = @u8x[7f 7b f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff fd ff ff ff ff ff ff ff fe ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00 03 00 00 00 00 00 00 00]
+                    "cte" = "@i64[-7 -6 -5 -4 -3 -2 -1 0 1 2 3]"
                     "events" = [
                         "ai64=-7 -6 -5 -4 -3 -2 -1 0 1 2 3"
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 7c f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff fd ff ff ff ff ff ff ff fe ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00 03 00 00 00 00 00 00 00 04 00 00 00 00 00 00 00|
-                    "cte" = "|i64 -7 -6 -5 -4 -3 -2 -1 0 1 2 3 4|"
+                    "cbe" = @u8x[7f 7c f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff fd ff ff ff ff ff ff ff fe ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00 03 00 00 00 00 00 00 00 04 00 00 00 00 00 00 00]
+                    "cte" = "@i64[-7 -6 -5 -4 -3 -2 -1 0 1 2 3 4]"
                     "events" = [
                         "ai64=-7 -6 -5 -4 -3 -2 -1 0 1 2 3 4"
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 7d f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff fd ff ff ff ff ff ff ff fe ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00 03 00 00 00 00 00 00 00 04 00 00 00 00 00 00 00 05 00 00 00 00 00 00 00|
-                    "cte" = "|i64 -7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5|"
+                    "cbe" = @u8x[7f 7d f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff fd ff ff ff ff ff ff ff fe ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00 03 00 00 00 00 00 00 00 04 00 00 00 00 00 00 00 05 00 00 00 00 00 00 00]
+                    "cte" = "@i64[-7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5]"
                     "events" = [
                         "ai64=-7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5"
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 7e f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff fd ff ff ff ff ff ff ff fe ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00 03 00 00 00 00 00 00 00 04 00 00 00 00 00 00 00 05 00 00 00 00 00 00 00 06 00 00 00 00 00 00 00|
-                    "cte" = "|i64 -7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6|"
+                    "cbe" = @u8x[7f 7e f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff fd ff ff ff ff ff ff ff fe ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00 03 00 00 00 00 00 00 00 04 00 00 00 00 00 00 00 05 00 00 00 00 00 00 00 06 00 00 00 00 00 00 00]
+                    "cte" = "@i64[-7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6]"
                     "events" = [
                         "ai64=-7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6"
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 7f f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff fd ff ff ff ff ff ff ff fe ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00 03 00 00 00 00 00 00 00 04 00 00 00 00 00 00 00 05 00 00 00 00 00 00 00 06 00 00 00 00 00 00 00 07 00 00 00 00 00 00 00|
-                    "cte" = "|i64 -7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7|"
+                    "cbe" = @u8x[7f 7f f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff fd ff ff ff ff ff ff ff fe ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00 03 00 00 00 00 00 00 00 04 00 00 00 00 00 00 00 05 00 00 00 00 00 00 00 06 00 00 00 00 00 00 00 07 00 00 00 00 00 00 00]
+                    "cte" = "@i64[-7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7]"
                     "events" = [
                         "ai64=-7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7"
                     ]
@@ -142,16 +142,16 @@ c0
             "name" = "Chunked Array"
             "must_succeed" = [
                 {
-                    "cbe" = |u8x 7f 70|
-                    "to_cte" = "|i64|"
+                    "cbe" = @u8x[7f 70]
+                    "to_cte" = "@i64[]"
                     "events" = [
                         "bai64"
                         "acl=0"
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 71 f9 ff ff ff ff ff ff ff|
-                    "to_cte" = "|i64 -7|"
+                    "cbe" = @u8x[7f 71 f9 ff ff ff ff ff ff ff]
+                    "to_cte" = "@i64[-7]"
                     "events" = [
                         "bai64"
                         "acl=1"
@@ -159,8 +159,8 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 72 f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff|
-                    "to_cte" = "|i64 -7 -6|"
+                    "cbe" = @u8x[7f 72 f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff]
+                    "to_cte" = "@i64[-7 -6]"
                     "events" = [
                         "bai64"
                         "acl=2"
@@ -168,8 +168,8 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 73 f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff|
-                    "to_cte" = "|i64 -7 -6 -5|"
+                    "cbe" = @u8x[7f 73 f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff]
+                    "to_cte" = "@i64[-7 -6 -5]"
                     "events" = [
                         "bai64"
                         "acl=3"
@@ -177,8 +177,8 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 74 f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff|
-                    "to_cte" = "|i64 -7 -6 -5 -4|"
+                    "cbe" = @u8x[7f 74 f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff]
+                    "to_cte" = "@i64[-7 -6 -5 -4]"
                     "events" = [
                         "bai64"
                         "acl=4"
@@ -186,8 +186,8 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 75 f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff fd ff ff ff ff ff ff ff|
-                    "to_cte" = "|i64 -7 -6 -5 -4 -3|"
+                    "cbe" = @u8x[7f 75 f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff fd ff ff ff ff ff ff ff]
+                    "to_cte" = "@i64[-7 -6 -5 -4 -3]"
                     "events" = [
                         "bai64"
                         "acl=5"
@@ -195,8 +195,8 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 76 f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff fd ff ff ff ff ff ff ff fe ff ff ff ff ff ff ff|
-                    "to_cte" = "|i64 -7 -6 -5 -4 -3 -2|"
+                    "cbe" = @u8x[7f 76 f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff fd ff ff ff ff ff ff ff fe ff ff ff ff ff ff ff]
+                    "to_cte" = "@i64[-7 -6 -5 -4 -3 -2]"
                     "events" = [
                         "bai64"
                         "acl=6"
@@ -204,8 +204,8 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 77 f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff fd ff ff ff ff ff ff ff fe ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff|
-                    "to_cte" = "|i64 -7 -6 -5 -4 -3 -2 -1|"
+                    "cbe" = @u8x[7f 77 f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff fd ff ff ff ff ff ff ff fe ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff]
+                    "to_cte" = "@i64[-7 -6 -5 -4 -3 -2 -1]"
                     "events" = [
                         "bai64"
                         "acl=7"
@@ -213,8 +213,8 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 78 f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff fd ff ff ff ff ff ff ff fe ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 00 00 00 00 00 00 00 00|
-                    "to_cte" = "|i64 -7 -6 -5 -4 -3 -2 -1 0|"
+                    "cbe" = @u8x[7f 78 f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff fd ff ff ff ff ff ff ff fe ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 00 00 00 00 00 00 00 00]
+                    "to_cte" = "@i64[-7 -6 -5 -4 -3 -2 -1 0]"
                     "events" = [
                         "bai64"
                         "acl=8"
@@ -222,8 +222,8 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 79 f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff fd ff ff ff ff ff ff ff fe ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00|
-                    "to_cte" = "|i64 -7 -6 -5 -4 -3 -2 -1 0 1|"
+                    "cbe" = @u8x[7f 79 f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff fd ff ff ff ff ff ff ff fe ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00]
+                    "to_cte" = "@i64[-7 -6 -5 -4 -3 -2 -1 0 1]"
                     "events" = [
                         "bai64"
                         "acl=9"
@@ -231,8 +231,8 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 7a f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff fd ff ff ff ff ff ff ff fe ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00|
-                    "to_cte" = "|i64 -7 -6 -5 -4 -3 -2 -1 0 1 2|"
+                    "cbe" = @u8x[7f 7a f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff fd ff ff ff ff ff ff ff fe ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00]
+                    "to_cte" = "@i64[-7 -6 -5 -4 -3 -2 -1 0 1 2]"
                     "events" = [
                         "bai64"
                         "acl=10"
@@ -240,8 +240,8 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 7b f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff fd ff ff ff ff ff ff ff fe ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00 03 00 00 00 00 00 00 00|
-                    "to_cte" = "|i64 -7 -6 -5 -4 -3 -2 -1 0 1 2 3|"
+                    "cbe" = @u8x[7f 7b f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff fd ff ff ff ff ff ff ff fe ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00 03 00 00 00 00 00 00 00]
+                    "to_cte" = "@i64[-7 -6 -5 -4 -3 -2 -1 0 1 2 3]"
                     "events" = [
                         "bai64"
                         "acl=11"
@@ -249,8 +249,8 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 7c f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff fd ff ff ff ff ff ff ff fe ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00 03 00 00 00 00 00 00 00 04 00 00 00 00 00 00 00|
-                    "to_cte" = "|i64 -7 -6 -5 -4 -3 -2 -1 0 1 2 3 4|"
+                    "cbe" = @u8x[7f 7c f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff fd ff ff ff ff ff ff ff fe ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00 03 00 00 00 00 00 00 00 04 00 00 00 00 00 00 00]
+                    "to_cte" = "@i64[-7 -6 -5 -4 -3 -2 -1 0 1 2 3 4]"
                     "events" = [
                         "bai64"
                         "acl=12"
@@ -258,8 +258,8 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 7d f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff fd ff ff ff ff ff ff ff fe ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00 03 00 00 00 00 00 00 00 04 00 00 00 00 00 00 00 05 00 00 00 00 00 00 00|
-                    "to_cte" = "|i64 -7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5|"
+                    "cbe" = @u8x[7f 7d f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff fd ff ff ff ff ff ff ff fe ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00 03 00 00 00 00 00 00 00 04 00 00 00 00 00 00 00 05 00 00 00 00 00 00 00]
+                    "to_cte" = "@i64[-7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5]"
                     "events" = [
                         "bai64"
                         "acl=13"
@@ -267,8 +267,8 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 7e f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff fd ff ff ff ff ff ff ff fe ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00 03 00 00 00 00 00 00 00 04 00 00 00 00 00 00 00 05 00 00 00 00 00 00 00 06 00 00 00 00 00 00 00|
-                    "to_cte" = "|i64 -7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6|"
+                    "cbe" = @u8x[7f 7e f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff fd ff ff ff ff ff ff ff fe ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00 03 00 00 00 00 00 00 00 04 00 00 00 00 00 00 00 05 00 00 00 00 00 00 00 06 00 00 00 00 00 00 00]
+                    "to_cte" = "@i64[-7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6]"
                     "events" = [
                         "bai64"
                         "acl=14"
@@ -276,8 +276,8 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 7f f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff fd ff ff ff ff ff ff ff fe ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00 03 00 00 00 00 00 00 00 04 00 00 00 00 00 00 00 05 00 00 00 00 00 00 00 06 00 00 00 00 00 00 00 07 00 00 00 00 00 00 00|
-                    "to_cte" = "|i64 -7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7|"
+                    "cbe" = @u8x[7f 7f f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff fd ff ff ff ff ff ff ff fe ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00 03 00 00 00 00 00 00 00 04 00 00 00 00 00 00 00 05 00 00 00 00 00 00 00 06 00 00 00 00 00 00 00 07 00 00 00 00 00 00 00]
+                    "to_cte" = "@i64[-7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7]"
                     "events" = [
                         "bai64"
                         "acl=15"
@@ -285,8 +285,8 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f e7 20 f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff fd ff ff ff ff ff ff ff fe ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00 03 00 00 00 00 00 00 00 04 00 00 00 00 00 00 00 05 00 00 00 00 00 00 00 06 00 00 00 00 00 00 00 07 00 00 00 00 00 00 00 08 00 00 00 00 00 00 00|
-                    "to_cte" = "|i64 -7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7 8|"
+                    "cbe" = @u8x[7f e7 20 f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff fd ff ff ff ff ff ff ff fe ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00 03 00 00 00 00 00 00 00 04 00 00 00 00 00 00 00 05 00 00 00 00 00 00 00 06 00 00 00 00 00 00 00 07 00 00 00 00 00 00 00 08 00 00 00 00 00 00 00]
+                    "to_cte" = "@i64[-7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7 8]"
                     "events" = [
                         "bai64"
                         "acl=16"
@@ -294,8 +294,8 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f e7 22 f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff fd ff ff ff ff ff ff ff fe ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00 03 00 00 00 00 00 00 00 04 00 00 00 00 00 00 00 05 00 00 00 00 00 00 00 06 00 00 00 00 00 00 00 07 00 00 00 00 00 00 00 08 00 00 00 00 00 00 00 09 00 00 00 00 00 00 00|
-                    "to_cte" = "|i64 -7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7 8 9|"
+                    "cbe" = @u8x[7f e7 22 f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff fd ff ff ff ff ff ff ff fe ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00 03 00 00 00 00 00 00 00 04 00 00 00 00 00 00 00 05 00 00 00 00 00 00 00 06 00 00 00 00 00 00 00 07 00 00 00 00 00 00 00 08 00 00 00 00 00 00 00 09 00 00 00 00 00 00 00]
+                    "to_cte" = "@i64[-7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7 8 9]"
                     "events" = [
                         "bai64"
                         "acl=17"
@@ -303,8 +303,8 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f e7 24 f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff fd ff ff ff ff ff ff ff fe ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00 03 00 00 00 00 00 00 00 04 00 00 00 00 00 00 00 05 00 00 00 00 00 00 00 06 00 00 00 00 00 00 00 07 00 00 00 00 00 00 00 08 00 00 00 00 00 00 00 09 00 00 00 00 00 00 00 0a 00 00 00 00 00 00 00|
-                    "to_cte" = "|i64 -7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7 8 9 10|"
+                    "cbe" = @u8x[7f e7 24 f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff fd ff ff ff ff ff ff ff fe ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00 03 00 00 00 00 00 00 00 04 00 00 00 00 00 00 00 05 00 00 00 00 00 00 00 06 00 00 00 00 00 00 00 07 00 00 00 00 00 00 00 08 00 00 00 00 00 00 00 09 00 00 00 00 00 00 00 0a 00 00 00 00 00 00 00]
+                    "to_cte" = "@i64[-7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7 8 9 10]"
                     "events" = [
                         "bai64"
                         "acl=18"
@@ -312,8 +312,8 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f e7 26 f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff fd ff ff ff ff ff ff ff fe ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00 03 00 00 00 00 00 00 00 04 00 00 00 00 00 00 00 05 00 00 00 00 00 00 00 06 00 00 00 00 00 00 00 07 00 00 00 00 00 00 00 08 00 00 00 00 00 00 00 09 00 00 00 00 00 00 00 0a 00 00 00 00 00 00 00 0b 00 00 00 00 00 00 00|
-                    "to_cte" = "|i64 -7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7 8 9 10 11|"
+                    "cbe" = @u8x[7f e7 26 f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff fd ff ff ff ff ff ff ff fe ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00 03 00 00 00 00 00 00 00 04 00 00 00 00 00 00 00 05 00 00 00 00 00 00 00 06 00 00 00 00 00 00 00 07 00 00 00 00 00 00 00 08 00 00 00 00 00 00 00 09 00 00 00 00 00 00 00 0a 00 00 00 00 00 00 00 0b 00 00 00 00 00 00 00]
+                    "to_cte" = "@i64[-7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7 8 9 10 11]"
                     "events" = [
                         "bai64"
                         "acl=19"
@@ -321,8 +321,8 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f e7 28 f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff fd ff ff ff ff ff ff ff fe ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00 03 00 00 00 00 00 00 00 04 00 00 00 00 00 00 00 05 00 00 00 00 00 00 00 06 00 00 00 00 00 00 00 07 00 00 00 00 00 00 00 08 00 00 00 00 00 00 00 09 00 00 00 00 00 00 00 0a 00 00 00 00 00 00 00 0b 00 00 00 00 00 00 00 0c 00 00 00 00 00 00 00|
-                    "to_cte" = "|i64 -7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7 8 9 10 11 12|"
+                    "cbe" = @u8x[7f e7 28 f9 ff ff ff ff ff ff ff fa ff ff ff ff ff ff ff fb ff ff ff ff ff ff ff fc ff ff ff ff ff ff ff fd ff ff ff ff ff ff ff fe ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00 03 00 00 00 00 00 00 00 04 00 00 00 00 00 00 00 05 00 00 00 00 00 00 00 06 00 00 00 00 00 00 00 07 00 00 00 00 00 00 00 08 00 00 00 00 00 00 00 09 00 00 00 00 00 00 00 0a 00 00 00 00 00 00 00 0b 00 00 00 00 00 00 00 0c 00 00 00 00 00 00 00]
+                    "to_cte" = "@i64[-7 -6 -5 -4 -3 -2 -1 0 1 2 3 4 5 6 7 8 9 10 11 12]"
                     "events" = [
                         "bai64"
                         "acl=20"
@@ -335,8 +335,8 @@ c0
             "name" = "Various Array Elements"
             "must_succeed" = [
                 {
-                    "cbe" = |u8x 7f e7 7c 00 00 00 00 00 00 00 80 08 21 84 10 42 08 21 84 10 42 08 21 84 10 42 88 18 63 8c 31 c6 18 63 8c 20 84 10 42 08 21 84 90 28 a5 94 52 4a 29 a5 94 30 c6 18 63 8c 31 c6 98 38 e7 9c 73 ce 39 e7 9c 40 08 21 84 10 42 08 a1 48 29 a5 94 52 4a 29 a5 50 4a 29 a5 94 52 4a a9 58 6b ad b5 d6 5a 6b ad 60 8c 31 c6 18 63 8c b1 68 ad b5 d6 5a 6b ad b5 70 ce 39 e7 9c 73 ce b9 78 ef bd f7 de 7b ef bd 80 10 42 08 21 84 10 c2 88 31 c6 18 63 8c 31 c6 90 52 4a 29 a5 94 52 ca 98 73 ce 39 e7 9c 73 ce a0 94 52 4a 29 a5 94 d2 a8 b5 d6 5a 6b ad b5 d6 b0 d6 5a 6b ad b5 d6 da b8 f7 de 7b ef bd f7 de c0 18 63 8c 31 c6 18 e3 c8 39 e7 9c 73 ce 39 e7 d0 5a 6b ad b5 d6 5a eb d8 7b ef bd f7 de 7b ef e0 9c 73 ce 39 e7 9c f3 e8 bd f7 de 7b ef bd f7 f0 de 7b ef bd f7 de fb f8 ff ff ff ff ff ff ff 00 21 84 10 42 08 21 04 08 42 08 21 84 10 42 08 10 63 8c 31 c6 18 63 0c 18 84 10 42 08 21 84 10 20 a5 94 52 4a 29 a5 14 28 c6 18 63 8c 31 c6 18 30 e7 9c 73 ce 39 e7 1c 38 08 21 84 10 42 08 21 40 29 a5 94 52 4a 29 25 48 4a 29 a5 94 52 4a 29 50 6b ad b5 d6 5a 6b 2d 58 8c 31 c6 18 63 8c 31 60 ad b5 d6 5a 6b ad 35 68 ce 39 e7 9c 73 ce 39 70 ef bd f7 de 7b ef 3d 78 10 42 08 21 84 10 42 80 31 c6 18 63 8c 31 46 88 52 4a 29 a5 94 52 4a 90 73 ce 39 e7 9c 73 4e 98 94 52 4a 29 a5 94 52 a0 b5 d6 5a 6b ad b5 56 a8 d6 5a 6b ad b5 d6 5a b0 f7 de 7b ef bd f7 5e b8 18 63 8c 31 c6 18 63 c0 39 e7 9c 73 ce 39 67 c8 5a 6b ad b5 d6 5a 6b d0 7b ef bd f7 de 7b 6f d8 9c 73 ce 39 e7 9c 73 e0 bd f7 de 7b ef bd 77 e8 de 7b ef bd f7 de 7b|
-                    "to_cte" = "|i64 -9223372036854775808 -8925843906633654008 -8628315776412532208 -8330787646191410408 -8033259515970288608 -7735731385749166808 -7438203255528045008 -7140675125306923208 -6843146995085801408 -6545618864864679608 -6248090734643557808 -5950562604422436008 -5653034474201314208 -5355506343980192408 -5057978213759070608 -4760450083537948808 -4462921953316827008 -4165393823095705208 -3867865692874583408 -3570337562653461608 -3272809432432339808 -2975281302211218008 -2677753171990096208 -2380225041768974408 -2082696911547852608 -1785168781326730808 -1487640651105609008 -1190112520884487208 -892584390663365408 -595056260442243608 -297528130221121808 -8 297528130221121792 595056260442243592 892584390663365392 1190112520884487192 1487640651105608992 1785168781326730792 2082696911547852592 2380225041768974392 2677753171990096192 2975281302211217992 3272809432432339792 3570337562653461592 3867865692874583392 4165393823095705192 4462921953316826992 4760450083537948792 5057978213759070592 5355506343980192392 5653034474201314192 5950562604422435992 6248090734643557792 6545618864864679592 6843146995085801392 7140675125306923192 7438203255528044992 7735731385749166792 8033259515970288592 8330787646191410392 8628315776412532192 8925843906633653992|"
+                    "cbe" = @u8x[7f e7 7c 00 00 00 00 00 00 00 80 08 21 84 10 42 08 21 84 10 42 08 21 84 10 42 88 18 63 8c 31 c6 18 63 8c 20 84 10 42 08 21 84 90 28 a5 94 52 4a 29 a5 94 30 c6 18 63 8c 31 c6 98 38 e7 9c 73 ce 39 e7 9c 40 08 21 84 10 42 08 a1 48 29 a5 94 52 4a 29 a5 50 4a 29 a5 94 52 4a a9 58 6b ad b5 d6 5a 6b ad 60 8c 31 c6 18 63 8c b1 68 ad b5 d6 5a 6b ad b5 70 ce 39 e7 9c 73 ce b9 78 ef bd f7 de 7b ef bd 80 10 42 08 21 84 10 c2 88 31 c6 18 63 8c 31 c6 90 52 4a 29 a5 94 52 ca 98 73 ce 39 e7 9c 73 ce a0 94 52 4a 29 a5 94 d2 a8 b5 d6 5a 6b ad b5 d6 b0 d6 5a 6b ad b5 d6 da b8 f7 de 7b ef bd f7 de c0 18 63 8c 31 c6 18 e3 c8 39 e7 9c 73 ce 39 e7 d0 5a 6b ad b5 d6 5a eb d8 7b ef bd f7 de 7b ef e0 9c 73 ce 39 e7 9c f3 e8 bd f7 de 7b ef bd f7 f0 de 7b ef bd f7 de fb f8 ff ff ff ff ff ff ff 00 21 84 10 42 08 21 04 08 42 08 21 84 10 42 08 10 63 8c 31 c6 18 63 0c 18 84 10 42 08 21 84 10 20 a5 94 52 4a 29 a5 14 28 c6 18 63 8c 31 c6 18 30 e7 9c 73 ce 39 e7 1c 38 08 21 84 10 42 08 21 40 29 a5 94 52 4a 29 25 48 4a 29 a5 94 52 4a 29 50 6b ad b5 d6 5a 6b 2d 58 8c 31 c6 18 63 8c 31 60 ad b5 d6 5a 6b ad 35 68 ce 39 e7 9c 73 ce 39 70 ef bd f7 de 7b ef 3d 78 10 42 08 21 84 10 42 80 31 c6 18 63 8c 31 46 88 52 4a 29 a5 94 52 4a 90 73 ce 39 e7 9c 73 4e 98 94 52 4a 29 a5 94 52 a0 b5 d6 5a 6b ad b5 56 a8 d6 5a 6b ad b5 d6 5a b0 f7 de 7b ef bd f7 5e b8 18 63 8c 31 c6 18 63 c0 39 e7 9c 73 ce 39 67 c8 5a 6b ad b5 d6 5a 6b d0 7b ef bd f7 de 7b 6f d8 9c 73 ce 39 e7 9c 73 e0 bd f7 de 7b ef bd 77 e8 de 7b ef bd f7 de 7b]
+                    "to_cte" = "@i64[-9223372036854775808 -8925843906633654008 -8628315776412532208 -8330787646191410408 -8033259515970288608 -7735731385749166808 -7438203255528045008 -7140675125306923208 -6843146995085801408 -6545618864864679608 -6248090734643557808 -5950562604422436008 -5653034474201314208 -5355506343980192408 -5057978213759070608 -4760450083537948808 -4462921953316827008 -4165393823095705208 -3867865692874583408 -3570337562653461608 -3272809432432339808 -2975281302211218008 -2677753171990096208 -2380225041768974408 -2082696911547852608 -1785168781326730808 -1487640651105609008 -1190112520884487208 -892584390663365408 -595056260442243608 -297528130221121808 -8 297528130221121792 595056260442243592 892584390663365392 1190112520884487192 1487640651105608992 1785168781326730792 2082696911547852592 2380225041768974392 2677753171990096192 2975281302211217992 3272809432432339792 3570337562653461592 3867865692874583392 4165393823095705192 4462921953316826992 4760450083537948792 5057978213759070592 5355506343980192392 5653034474201314192 5950562604422435992 6248090734643557792 6545618864864679592 6843146995085801392 7140675125306923192 7438203255528044992 7735731385749166792 8033259515970288592 8330787646191410392 8628315776412532192 8925843906633653992]"
                     "events" = [
                         "bai64"
                         "acl=62"
@@ -344,7 +344,7 @@ c0
                     ]
                 }
                 {
-                    "from_cte" = "|i64 8 -17 0b1011 0B1010 -0b1100 -0B1101 0o31 0O33 -0o10 -0O5 0x10 0X15 -0x22 -0X33|"
+                    "from_cte" = "@i64[8 -17 0b1011 0B1010 -0b1100 -0B1101 0o31 0O33 -0o10 -0O5 0x10 0X15 -0x22 -0X33]"
                     "events" = [
                         "ai64=8 -17 11 10 -12 -13 25 27 -8 -5 16 21 -34 -51"
                     ]
@@ -355,43 +355,43 @@ c0
             "name" = "Base 2, 8, 16"
             "must_succeed" = [
                 {
-                    "cbe" = |u8x 7f 77 00 00 00 00 00 00 00 80 92 24 49 92 24 49 92 a4 24 49 92 24 49 92 24 c9 b6 6d db b6 6d db b6 ed 48 92 24 49 92 24 49 12 da b6 6d db b6 6d db 36 6c db b6 6d db b6 6d 5b|
-                    "from_cte" = "|i64b -1000000000000000000000000000000000000000000000000000000000000000 -101101101101101101101101101101101101101101101101101101101101110 -11011011011011011011011011011011011011011011011011011011011100 -1001001001001001001001001001001001001001001001001001001001010 1001001001001001001001001001001001001001001001001001001001000 11011011011011011011011011011011011011011011011011011011011010 101101101101101101101101101101101101101101101101101101101101100|"
+                    "cbe" = @u8x[7f 77 00 00 00 00 00 00 00 80 92 24 49 92 24 49 92 a4 24 49 92 24 49 92 24 c9 b6 6d db b6 6d db b6 ed 48 92 24 49 92 24 49 12 da b6 6d db b6 6d db 36 6c db b6 6d db b6 6d 5b]
+                    "from_cte" = "@i64b[-1000000000000000000000000000000000000000000000000000000000000000 -101101101101101101101101101101101101101101101101101101101101110 -11011011011011011011011011011011011011011011011011011011011100 -1001001001001001001001001001001001001001001001001001001001010 1001001001001001001001001001001001001001001001001001001001000 11011011011011011011011011011011011011011011011011011011011010 101101101101101101101101101101101101101101101101101101101101100]"
                     "events" = [
                         "ai64=-9223372036854775808 -6588122883467697006 -3952873730080618204 -1317624576693539402 1317624576693539400 3952873730080618202 6588122883467697004"
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 70|
-                    "from_cte" = "|i64b|"
+                    "cbe" = @u8x[7f 70]
+                    "from_cte" = "@i64b[]"
                     "events" = [
                         "ai64"
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 77 00 00 00 00 00 00 00 80 92 24 49 92 24 49 92 a4 24 49 92 24 49 92 24 c9 b6 6d db b6 6d db b6 ed 48 92 24 49 92 24 49 12 da b6 6d db b6 6d db 36 6c db b6 6d db b6 6d 5b|
-                    "from_cte" = "|i64o -1000000000000000000000 -555555555555555555556 -333333333333333333334 -111111111111111111112 111111111111111111110 333333333333333333332 555555555555555555554|"
+                    "cbe" = @u8x[7f 77 00 00 00 00 00 00 00 80 92 24 49 92 24 49 92 a4 24 49 92 24 49 92 24 c9 b6 6d db b6 6d db b6 ed 48 92 24 49 92 24 49 12 da b6 6d db b6 6d db 36 6c db b6 6d db b6 6d 5b]
+                    "from_cte" = "@i64o[-1000000000000000000000 -555555555555555555556 -333333333333333333334 -111111111111111111112 111111111111111111110 333333333333333333332 555555555555555555554]"
                     "events" = [
                         "ai64=-9223372036854775808 -6588122883467697006 -3952873730080618204 -1317624576693539402 1317624576693539400 3952873730080618202 6588122883467697004"
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 70|
-                    "from_cte" = "|i64o|"
+                    "cbe" = @u8x[7f 70]
+                    "from_cte" = "@i64o[]"
                     "events" = [
                         "ai64"
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 77 00 00 00 00 00 00 00 80 92 24 49 92 24 49 92 a4 24 49 92 24 49 92 24 c9 b6 6d db b6 6d db b6 ed 48 92 24 49 92 24 49 12 da b6 6d db b6 6d db 36 6c db b6 6d db b6 6d 5b|
-                    "from_cte" = "|i64x -8000000000000000 -5b6db6db6db6db6e -36db6db6db6db6dc -124924924924924a 1249249249249248 36db6db6db6db6da 5b6db6db6db6db6c|"
+                    "cbe" = @u8x[7f 77 00 00 00 00 00 00 00 80 92 24 49 92 24 49 92 a4 24 49 92 24 49 92 24 c9 b6 6d db b6 6d db b6 ed 48 92 24 49 92 24 49 12 da b6 6d db b6 6d db 36 6c db b6 6d db b6 6d 5b]
+                    "from_cte" = "@i64x[-8000000000000000 -5b6db6db6db6db6e -36db6db6db6db6dc -124924924924924a 1249249249249248 36db6db6db6db6da 5b6db6db6db6db6c]"
                     "events" = [
                         "ai64=-9223372036854775808 -6588122883467697006 -3952873730080618204 -1317624576693539402 1317624576693539400 3952873730080618202 6588122883467697004"
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f 70|
-                    "from_cte" = "|i64x|"
+                    "cbe" = @u8x[7f 70]
+                    "from_cte" = "@i64x[]"
                     "events" = [
                         "ai64"
                     ]
@@ -402,8 +402,8 @@ c0
             "name" = "Chunking Variations"
             "must_succeed" = [
                 {
-                    "cbe" = |u8x 7f e7 01 03 00 00 00 00 00 00 00 80 05 00 00 00 00 00 00 00 80 92 24 49 92 24 49 92 a4 07 00 00 00 00 00 00 00 80 92 24 49 92 24 49 92 a4 24 49 92 24 49 92 24 c9 09 00 00 00 00 00 00 00 80 92 24 49 92 24 49 92 a4 24 49 92 24 49 92 24 c9 b6 6d db b6 6d db b6 ed 0b 00 00 00 00 00 00 00 80 92 24 49 92 24 49 92 a4 24 49 92 24 49 92 24 c9 b6 6d db b6 6d db b6 ed 48 92 24 49 92 24 49 12 0d 00 00 00 00 00 00 00 80 92 24 49 92 24 49 92 a4 24 49 92 24 49 92 24 c9 b6 6d db b6 6d db b6 ed 48 92 24 49 92 24 49 12 da b6 6d db b6 6d db 36 00|
-                    "to_cte" = "|i64 -9223372036854775808 -9223372036854775808 -6588122883467697006 -9223372036854775808 -6588122883467697006 -3952873730080618204 -9223372036854775808 -6588122883467697006 -3952873730080618204 -1317624576693539402 -9223372036854775808 -6588122883467697006 -3952873730080618204 -1317624576693539402 1317624576693539400 -9223372036854775808 -6588122883467697006 -3952873730080618204 -1317624576693539402 1317624576693539400 3952873730080618202|"
+                    "cbe" = @u8x[7f e7 01 03 00 00 00 00 00 00 00 80 05 00 00 00 00 00 00 00 80 92 24 49 92 24 49 92 a4 07 00 00 00 00 00 00 00 80 92 24 49 92 24 49 92 a4 24 49 92 24 49 92 24 c9 09 00 00 00 00 00 00 00 80 92 24 49 92 24 49 92 a4 24 49 92 24 49 92 24 c9 b6 6d db b6 6d db b6 ed 0b 00 00 00 00 00 00 00 80 92 24 49 92 24 49 92 a4 24 49 92 24 49 92 24 c9 b6 6d db b6 6d db b6 ed 48 92 24 49 92 24 49 12 0d 00 00 00 00 00 00 00 80 92 24 49 92 24 49 92 a4 24 49 92 24 49 92 24 c9 b6 6d db b6 6d db b6 ed 48 92 24 49 92 24 49 12 da b6 6d db b6 6d db 36 00]
+                    "to_cte" = "@i64[-9223372036854775808 -9223372036854775808 -6588122883467697006 -9223372036854775808 -6588122883467697006 -3952873730080618204 -9223372036854775808 -6588122883467697006 -3952873730080618204 -1317624576693539402 -9223372036854775808 -6588122883467697006 -3952873730080618204 -1317624576693539402 1317624576693539400 -9223372036854775808 -6588122883467697006 -3952873730080618204 -1317624576693539402 1317624576693539400 3952873730080618202]"
                     "events" = [
                         "bai64"
                         "acm=0"
@@ -423,8 +423,8 @@ c0
                     ]
                 }
                 {
-                    "cbe" = |u8x 7f e7 09 00 00 00 00 00 00 00 80 92 24 49 92 24 49 92 a4 24 49 92 24 49 92 24 c9 b6 6d db b6 6d db b6 ed 06 00 00 00 00 00 00 00 80 92 24 49 92 24 49 92 a4 24 49 92 24 49 92 24 c9|
-                    "to_cte" = "|i64 -9223372036854775808 -6588122883467697006 -3952873730080618204 -1317624576693539402 -9223372036854775808 -6588122883467697006 -3952873730080618204|"
+                    "cbe" = @u8x[7f e7 09 00 00 00 00 00 00 00 80 92 24 49 92 24 49 92 a4 24 49 92 24 49 92 24 c9 b6 6d db b6 6d db b6 ed 06 00 00 00 00 00 00 00 80 92 24 49 92 24 49 92 a4 24 49 92 24 49 92 24 c9]
+                    "to_cte" = "@i64[-9223372036854775808 -6588122883467697006 -3952873730080618204 -1317624576693539402 -9223372036854775808 -6588122883467697006 -3952873730080618204]"
                     "events" = [
                         "bai64"
                         "acm=4"
@@ -439,8 +439,8 @@ c0
             "name" = "Edge Case Element Values"
             "must_succeed" = [
                 {
-                    "cbe" = |u8x 7f e7 5a 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 7f 00 00 00 00 00 00 00 80 00 00 00 00 00 00 00 81 00 00 00 00 00 00 00 ff 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 01 01 00 00 00 00 00 00 ff 7f 00 00 00 00 00 00 00 80 00 00 00 00 00 00 01 80 00 00 00 00 00 00 ff ff 00 00 00 00 00 00 00 00 01 00 00 00 00 00 01 00 01 00 00 00 00 00 ff ff ff 7f 00 00 00 00 00 00 00 80 00 00 00 00 01 00 00 80 00 00 00 00 ff ff ff ff 00 00 00 00 00 00 00 00 01 00 00 00 01 00 00 00 01 00 00 00 ff ff ff ff ff ff ff 7f ff ff ff ff ff ff ff ff 81 ff ff ff ff ff ff ff 80 ff ff ff ff ff ff ff 7f ff ff ff ff ff ff ff 01 ff ff ff ff ff ff ff 00 ff ff ff ff ff ff ff ff fe ff ff ff ff ff ff 01 80 ff ff ff ff ff ff 00 80 ff ff ff ff ff ff ff 7f ff ff ff ff ff ff 01 00 ff ff ff ff ff ff 00 00 ff ff ff ff ff ff ff ff fe ff ff ff ff ff 01 00 00 80 ff ff ff ff 00 00 00 80 ff ff ff ff ff ff ff 7f ff ff ff ff 01 00 00 00 ff ff ff ff 00 00 00 00 ff ff ff ff ff ff ff ff fe ff ff ff 01 00 00 00 00 00 00 80 00 00 00 00 00 00 00 80 00 00 00 00 00 00 00 80 01 00 00 00 00 00 00 80 ff ff ff ff ff ff ff ff|
-                    "to_cte" = "|i64 0 1 127 128 129 255 256 257 32767 32768 32769 65535 65536 65537 2147483647 2147483648 2147483649 4294967295 4294967296 4294967297 9223372036854775807 -1 -127 -128 -129 -255 -256 -257 -32767 -32768 -32769 -65535 -65536 -65537 -2147483647 -2147483648 -2147483649 -4294967295 -4294967296 -4294967297 -9223372036854775807 -9223372036854775808 -9223372036854775808 -9223372036854775807 -1|"
+                    "cbe" = @u8x[7f e7 5a 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 7f 00 00 00 00 00 00 00 80 00 00 00 00 00 00 00 81 00 00 00 00 00 00 00 ff 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 01 01 00 00 00 00 00 00 ff 7f 00 00 00 00 00 00 00 80 00 00 00 00 00 00 01 80 00 00 00 00 00 00 ff ff 00 00 00 00 00 00 00 00 01 00 00 00 00 00 01 00 01 00 00 00 00 00 ff ff ff 7f 00 00 00 00 00 00 00 80 00 00 00 00 01 00 00 80 00 00 00 00 ff ff ff ff 00 00 00 00 00 00 00 00 01 00 00 00 01 00 00 00 01 00 00 00 ff ff ff ff ff ff ff 7f ff ff ff ff ff ff ff ff 81 ff ff ff ff ff ff ff 80 ff ff ff ff ff ff ff 7f ff ff ff ff ff ff ff 01 ff ff ff ff ff ff ff 00 ff ff ff ff ff ff ff ff fe ff ff ff ff ff ff 01 80 ff ff ff ff ff ff 00 80 ff ff ff ff ff ff ff 7f ff ff ff ff ff ff 01 00 ff ff ff ff ff ff 00 00 ff ff ff ff ff ff ff ff fe ff ff ff ff ff 01 00 00 80 ff ff ff ff 00 00 00 80 ff ff ff ff ff ff ff 7f ff ff ff ff 01 00 00 00 ff ff ff ff 00 00 00 00 ff ff ff ff ff ff ff ff fe ff ff ff 01 00 00 00 00 00 00 80 00 00 00 00 00 00 00 80 00 00 00 00 00 00 00 80 01 00 00 00 00 00 00 80 ff ff ff ff ff ff ff ff]
+                    "to_cte" = "@i64[0 1 127 128 129 255 256 257 32767 32768 32769 65535 65536 65537 2147483647 2147483648 2147483649 4294967295 4294967296 4294967297 9223372036854775807 -1 -127 -128 -129 -255 -256 -257 -32767 -32768 -32769 -65535 -65536 -65537 -2147483647 -2147483648 -2147483649 -4294967295 -4294967296 -4294967297 -9223372036854775807 -9223372036854775808 -9223372036854775808 -9223372036854775807 -1]"
                     "events" = [
                         "bai64"
                         "acl=45"
@@ -453,49 +453,49 @@ c0
             "name" = "Whitespace at end of array"
             "must_succeed" = [
                 {
-                    "from_cte" = "|i64 |"
+                    "from_cte" = "@i64[ ]"
                     "events" = [
                         "ai64"
                     ]
                 }
                 {
-                    "from_cte" = "|i64 1 |"
+                    "from_cte" = "@i64[ 1 ]"
                     "events" = [
                         "ai64=1"
                     ]
                 }
                 {
-                    "from_cte" = "|i64b |"
+                    "from_cte" = "@i64b[ ]"
                     "events" = [
                         "ai64"
                     ]
                 }
                 {
-                    "from_cte" = "|i64b 1 |"
+                    "from_cte" = "@i64b[ 1 ]"
                     "events" = [
                         "ai64=1"
                     ]
                 }
                 {
-                    "from_cte" = "|i64o |"
+                    "from_cte" = "@i64o[ ]"
                     "events" = [
                         "ai64"
                     ]
                 }
                 {
-                    "from_cte" = "|i64o 1 |"
+                    "from_cte" = "@i64o[ 1 ]"
                     "events" = [
                         "ai64=1"
                     ]
                 }
                 {
-                    "from_cte" = "|i64x |"
+                    "from_cte" = "@i64x[ ]"
                     "events" = [
                         "ai64"
                     ]
                 }
                 {
-                    "from_cte" = "|i64x 1 |"
+                    "from_cte" = "@i64x[ 1 ]"
                     "events" = [
                         "ai64=1"
                     ]
@@ -506,19 +506,19 @@ c0
             "name" = "Space before array type"
             "must_fail" = [
                 {
-                    "cte" = "c0 | i64|"
+                    "cte" = "c0 @ i64[]"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "c0 | i64b|"
+                    "cte" = "c0 @ i64b[]"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "c0 | i64o|"
+                    "cte" = "c0 @ i64o[]"
                     "raw_document" = true
                 }
                 {
-                    "cte" = "c0 | i64x|"
+                    "cte" = "c0 @ i64x[]"
                     "raw_document" = true
                 }
             ]
@@ -527,70 +527,70 @@ c0
             "name" = "Truncated Array"
             "must_fail" = [
                 {
-                    "cbe" = |u8x 7f e7|
+                    "cbe" = @u8x[7f e7]
                 }
                 {
-                    "cbe" = |u8x 7f 71|
+                    "cbe" = @u8x[7f 71]
                 }
                 {
-                    "cbe" = |u8x 7f 72 00 00 00 00 00 00 00 00|
+                    "cbe" = @u8x[7f 72 00 00 00 00 00 00 00 00]
                 }
                 {
-                    "cbe" = |u8x 7f 71 00 00 00 00 00 00 00|
+                    "cbe" = @u8x[7f 71 00 00 00 00 00 00 00]
                 }
                 {
-                    "cbe" = |u8x 7f 73 00 00 00 00 00 00 00 00|
+                    "cbe" = @u8x[7f 73 00 00 00 00 00 00 00 00]
                 }
                 {
-                    "cbe" = |u8x 7f 71 00 00 00 00 00 00 00|
+                    "cbe" = @u8x[7f 71 00 00 00 00 00 00 00]
                 }
                 {
-                    "cbe" = |u8x 7f 74 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00|
+                    "cbe" = @u8x[7f 74 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00]
                 }
                 {
-                    "cbe" = |u8x 7f 72 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00|
+                    "cbe" = @u8x[7f 72 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00]
                 }
                 {
-                    "cbe" = |u8x 7f 75 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00|
+                    "cbe" = @u8x[7f 75 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00]
                 }
                 {
-                    "cbe" = |u8x 7f 72 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00|
+                    "cbe" = @u8x[7f 72 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00]
                 }
                 {
-                    "cbe" = |u8x 7f 76 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 7f 00 00 00 00 00 00 00|
+                    "cbe" = @u8x[7f 76 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 7f 00 00 00 00 00 00 00]
                 }
                 {
-                    "cbe" = |u8x 7f 73 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 7f 00 00 00 00 00 00|
+                    "cbe" = @u8x[7f 73 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 7f 00 00 00 00 00 00]
                 }
                 {
-                    "cbe" = |u8x 7f 77 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 7f 00 00 00 00 00 00 00|
+                    "cbe" = @u8x[7f 77 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 7f 00 00 00 00 00 00 00]
                 }
                 {
-                    "cbe" = |u8x 7f 73 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 7f 00 00 00 00 00 00|
+                    "cbe" = @u8x[7f 73 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 7f 00 00 00 00 00 00]
                 }
                 {
-                    "cbe" = |u8x 7f 78 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 7f 00 00 00 00 00 00 00 80 00 00 00 00 00 00 00|
+                    "cbe" = @u8x[7f 78 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 7f 00 00 00 00 00 00 00 80 00 00 00 00 00 00 00]
                 }
                 {
-                    "cbe" = |u8x 7f 74 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 7f 00 00 00 00 00 00 00 80 00 00 00 00 00 00|
+                    "cbe" = @u8x[7f 74 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 7f 00 00 00 00 00 00 00 80 00 00 00 00 00 00]
                 }
                 {
-                    "cbe" = |u8x 7f 79 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 7f 00 00 00 00 00 00 00 80 00 00 00 00 00 00 00|
+                    "cbe" = @u8x[7f 79 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 7f 00 00 00 00 00 00 00 80 00 00 00 00 00 00 00]
                 }
                 {
-                    "cbe" = |u8x 7f 74 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 7f 00 00 00 00 00 00 00 80 00 00 00 00 00 00|
+                    "cbe" = @u8x[7f 74 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 7f 00 00 00 00 00 00 00 80 00 00 00 00 00 00]
                 }
                 {
-                    "cbe" = |u8x 7f 7a 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 7f 00 00 00 00 00 00 00 80 00 00 00 00 00 00 00 81 00 00 00 00 00 00 00|
+                    "cbe" = @u8x[7f 7a 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 7f 00 00 00 00 00 00 00 80 00 00 00 00 00 00 00 81 00 00 00 00 00 00 00]
                 }
                 {
-                    "cbe" = |u8x 7f 75 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 7f 00 00 00 00 00 00 00 80 00 00 00 00 00 00 00 81 00 00 00 00 00 00|
+                    "cbe" = @u8x[7f 75 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 7f 00 00 00 00 00 00 00 80 00 00 00 00 00 00 00 81 00 00 00 00 00 00]
                 }
                 {
-                    "cte" = "|i64"
+                    "cte" = "@i64["
                 }
                 {
-                    "cte" = "|i64 0"
+                    "cte" = "@i64[0"
                 }
             ]
         }
@@ -598,46 +598,46 @@ c0
             "name" = "Element value out of range"
             "must_fail" = [
                 {
-                    "cte" = "|i64b 1000000000000000000000000000000000000000000000000000000000000000|"
+                    "cte" = "@i64b[1000000000000000000000000000000000000000000000000000000000000000]"
                 }
                 {
-                    "cte" = "|i64o 1000000000000000000000|"
+                    "cte" = "@i64o[1000000000000000000000]"
                 }
                 {
-                    "cte" = "|i64x 8000000000000000|"
+                    "cte" = "@i64x[8000000000000000]"
                 }
                 {
-                    "cte" = "|i64 9223372036854775808|"
+                    "cte" = "@i64[9223372036854775808]"
                 }
                 {
-                    "cte" = "|i64 0b1000000000000000000000000000000000000000000000000000000000000000|"
+                    "cte" = "@i64[0b1000000000000000000000000000000000000000000000000000000000000000]"
                 }
                 {
-                    "cte" = "|i64 0o1000000000000000000000|"
+                    "cte" = "@i64[0o1000000000000000000000]"
                 }
                 {
-                    "cte" = "|i64 0x8000000000000000|"
+                    "cte" = "@i64[0x8000000000000000]"
                 }
                 {
-                    "cte" = "|i64b -1000000000000000000000000000000000000000000000000000000000000001|"
+                    "cte" = "@i64b[-1000000000000000000000000000000000000000000000000000000000000001]"
                 }
                 {
-                    "cte" = "|i64o -1000000000000000000001|"
+                    "cte" = "@i64o[-1000000000000000000001]"
                 }
                 {
-                    "cte" = "|i64x -8000000000000001|"
+                    "cte" = "@i64x[-8000000000000001]"
                 }
                 {
-                    "cte" = "|i64 -9223372036854775809|"
+                    "cte" = "@i64[-9223372036854775809]"
                 }
                 {
-                    "cte" = "|i64 -0b1000000000000000000000000000000000000000000000000000000000000001|"
+                    "cte" = "@i64[-0b1000000000000000000000000000000000000000000000000000000000000001]"
                 }
                 {
-                    "cte" = "|i64 -0o1000000000000000000001|"
+                    "cte" = "@i64[-0o1000000000000000000001]"
                 }
                 {
-                    "cte" = "|i64 -0x8000000000000001|"
+                    "cte" = "@i64[-0x8000000000000001]"
                 }
             ]
         }
@@ -645,34 +645,34 @@ c0
             "name" = "Numeric digit out of range"
             "must_fail" = [
                 {
-                    "cte" = "|i64x 1g|"
+                    "cte" = "@i64x[1g]"
                 }
                 {
-                    "cte" = "|i64 1g|"
+                    "cte" = "@i64[1g]"
                 }
                 {
-                    "cte" = "|i64 1a|"
+                    "cte" = "@i64[1a]"
                 }
                 {
-                    "cte" = "|i64o 1g|"
+                    "cte" = "@i64o[1g]"
                 }
                 {
-                    "cte" = "|i64o 1a|"
+                    "cte" = "@i64o[1a]"
                 }
                 {
-                    "cte" = "|i64o 18|"
+                    "cte" = "@i64o[18]"
                 }
                 {
-                    "cte" = "|i64b 1g|"
+                    "cte" = "@i64b[1g]"
                 }
                 {
-                    "cte" = "|i64b 1a|"
+                    "cte" = "@i64b[1a]"
                 }
                 {
-                    "cte" = "|i64b 18|"
+                    "cte" = "@i64b[18]"
                 }
                 {
-                    "cte" = "|i64b 12|"
+                    "cte" = "@i64b[12]"
                 }
             ]
         }
@@ -680,148 +680,148 @@ c0
             "name" = "Invalid special values"
             "must_fail" = [
                 {
-                    "cte" = "|i64x null|"
+                    "cte" = "@i64x[null]"
                 }
                 {
-                    "cte" = "|i64x -null|"
+                    "cte" = "@i64x[-null]"
                 }
                 {
-                    "cte" = "|i64x true|"
+                    "cte" = "@i64x[true]"
                 }
                 {
-                    "cte" = "|i64x -true|"
+                    "cte" = "@i64x[-true]"
                 }
                 {
-                    "cte" = "|i64x false|"
+                    "cte" = "@i64x[false]"
                 }
                 {
-                    "cte" = "|i64x -false|"
+                    "cte" = "@i64x[-false]"
                 }
                 {
-                    "cte" = "|i64x nan|"
+                    "cte" = "@i64x[nan]"
                 }
                 {
-                    "cte" = "|i64x -nan|"
+                    "cte" = "@i64x[-nan]"
                 }
                 {
-                    "cte" = "|i64x snan|"
+                    "cte" = "@i64x[snan]"
                 }
                 {
-                    "cte" = "|i64x -snan|"
+                    "cte" = "@i64x[-snan]"
                 }
                 {
-                    "cte" = "|i64x inf|"
+                    "cte" = "@i64x[inf]"
                 }
                 {
-                    "cte" = "|i64x -inf|"
+                    "cte" = "@i64x[-inf]"
                 }
                 {
-                    "cte" = "|i64 null|"
+                    "cte" = "@i64[null]"
                 }
                 {
-                    "cte" = "|i64 -null|"
+                    "cte" = "@i64[-null]"
                 }
                 {
-                    "cte" = "|i64 true|"
+                    "cte" = "@i64[true]"
                 }
                 {
-                    "cte" = "|i64 -true|"
+                    "cte" = "@i64[-true]"
                 }
                 {
-                    "cte" = "|i64 false|"
+                    "cte" = "@i64[false]"
                 }
                 {
-                    "cte" = "|i64 -false|"
+                    "cte" = "@i64[-false]"
                 }
                 {
-                    "cte" = "|i64 nan|"
+                    "cte" = "@i64[nan]"
                 }
                 {
-                    "cte" = "|i64 -nan|"
+                    "cte" = "@i64[-nan]"
                 }
                 {
-                    "cte" = "|i64 snan|"
+                    "cte" = "@i64[snan]"
                 }
                 {
-                    "cte" = "|i64 -snan|"
+                    "cte" = "@i64[-snan]"
                 }
                 {
-                    "cte" = "|i64 inf|"
+                    "cte" = "@i64[inf]"
                 }
                 {
-                    "cte" = "|i64 -inf|"
+                    "cte" = "@i64[-inf]"
                 }
                 {
-                    "cte" = "|i64o null|"
+                    "cte" = "@i64o[null]"
                 }
                 {
-                    "cte" = "|i64o -null|"
+                    "cte" = "@i64o[-null]"
                 }
                 {
-                    "cte" = "|i64o true|"
+                    "cte" = "@i64o[true]"
                 }
                 {
-                    "cte" = "|i64o -true|"
+                    "cte" = "@i64o[-true]"
                 }
                 {
-                    "cte" = "|i64o false|"
+                    "cte" = "@i64o[false]"
                 }
                 {
-                    "cte" = "|i64o -false|"
+                    "cte" = "@i64o[-false]"
                 }
                 {
-                    "cte" = "|i64o nan|"
+                    "cte" = "@i64o[nan]"
                 }
                 {
-                    "cte" = "|i64o -nan|"
+                    "cte" = "@i64o[-nan]"
                 }
                 {
-                    "cte" = "|i64o snan|"
+                    "cte" = "@i64o[snan]"
                 }
                 {
-                    "cte" = "|i64o -snan|"
+                    "cte" = "@i64o[-snan]"
                 }
                 {
-                    "cte" = "|i64o inf|"
+                    "cte" = "@i64o[inf]"
                 }
                 {
-                    "cte" = "|i64o -inf|"
+                    "cte" = "@i64o[-inf]"
                 }
                 {
-                    "cte" = "|i64b null|"
+                    "cte" = "@i64b[null]"
                 }
                 {
-                    "cte" = "|i64b -null|"
+                    "cte" = "@i64b[-null]"
                 }
                 {
-                    "cte" = "|i64b true|"
+                    "cte" = "@i64b[true]"
                 }
                 {
-                    "cte" = "|i64b -true|"
+                    "cte" = "@i64b[-true]"
                 }
                 {
-                    "cte" = "|i64b false|"
+                    "cte" = "@i64b[false]"
                 }
                 {
-                    "cte" = "|i64b -false|"
+                    "cte" = "@i64b[-false]"
                 }
                 {
-                    "cte" = "|i64b nan|"
+                    "cte" = "@i64b[nan]"
                 }
                 {
-                    "cte" = "|i64b -nan|"
+                    "cte" = "@i64b[-nan]"
                 }
                 {
-                    "cte" = "|i64b snan|"
+                    "cte" = "@i64b[snan]"
                 }
                 {
-                    "cte" = "|i64b -snan|"
+                    "cte" = "@i64b[-snan]"
                 }
                 {
-                    "cte" = "|i64b inf|"
+                    "cte" = "@i64b[inf]"
                 }
                 {
-                    "cte" = "|i64b -inf|"
+                    "cte" = "@i64b[-inf]"
                 }
             ]
         }
@@ -829,16 +829,16 @@ c0
             "name" = "Float value in int array"
             "must_fail" = [
                 {
-                    "cte" = "|i64x 1.2|"
+                    "cte" = "@i64x[1.2]"
                 }
                 {
-                    "cte" = "|i64 1.2|"
+                    "cte" = "@i64[1.2]"
                 }
                 {
-                    "cte" = "|i64o 1.2|"
+                    "cte" = "@i64o[1.2]"
                 }
                 {
-                    "cte" = "|i64b 1.2|"
+                    "cte" = "@i64b[1.2]"
                 }
             ]
         }
