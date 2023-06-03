@@ -244,7 +244,7 @@ func (_this *BuilderEventReceiver) OnEndContainer() {
 	_this.context.CurrentBuilder.BuildEndContainer(&_this.context)
 }
 func (_this *BuilderEventReceiver) OnMarker(id []byte) {
-	_this.context.BeginMarkerObject(id)
+	_this.context.BeginMarkerObject(common.CloneBytes(id))
 }
 func (_this *BuilderEventReceiver) OnReferenceLocal(id []byte) {
 	_this.context.CurrentBuilder.BuildFromLocalReference(&_this.context, id)

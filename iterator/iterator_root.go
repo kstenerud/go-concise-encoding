@@ -21,8 +21,8 @@
 package iterator
 
 import (
-	"fmt"
 	"reflect"
+	"strconv"
 
 	"github.com/kstenerud/go-concise-encoding/ce/events"
 	"github.com/kstenerud/go-concise-encoding/configuration"
@@ -43,6 +43,7 @@ type RootObjectIterator struct {
 	nextMarkerName  uint32
 	context         Context
 	config          *configuration.IteratorConfiguration
+	referenceIdBuff []byte
 }
 
 // Create a new root object iterator that will send data events to eventReceiver.
@@ -72,6 +73,7 @@ func (_this *RootObjectIterator) Init(context *Context,
 	_this.context = iteratorContext(context,
 		eventReceiver,
 		_this.addLocalReference)
+	_this.referenceIdBuff = make([]byte, 0, 16)
 }
 
 // Iterates over an object, sending events to the root iterator's
@@ -115,8 +117,9 @@ func (_this *RootObjectIterator) getNamedLocalReference(ptr duplicates.TypedPoin
 		_this.namedReferences[ptr] = num
 		_this.nextMarkerName++
 	}
-	// TODO: Use common buffer instead
-	return []byte(fmt.Sprintf("%v", num)), exists
+
+	_this.referenceIdBuff = strconv.AppendInt(_this.referenceIdBuff[:0], int64(num), 10)
+	return _this.referenceIdBuff, exists
 }
 
 func (_this *RootObjectIterator) addLocalReference(v reflect.Value) (didGenerateReferenceEvent bool) {
