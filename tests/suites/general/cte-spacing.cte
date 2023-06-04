@@ -18,11 +18,10 @@ c0
 ]#"
                     "events" = ["l" "s=a" "cm= comment " "s=b" "e"]
                 }
-//                { // TODO: Should this succeed?
-//                    "lossyCTE" = true
-//                    "cte" = "\.# ["a"/* comment */ "b"]#"
-//                    "events" = ["l" "s=a" "cm= comment " "s=b" "e"]
-//                }
+               {
+                   "from_cte" = "\.# ["a"/* comment */ "b"]#"
+                   "events" = ["l" "s=a" "cm= comment " "s=b" "e"]
+               }
             ]
             "mustFail" = [
                 {
