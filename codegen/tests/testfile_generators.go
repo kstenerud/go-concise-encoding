@@ -100,7 +100,7 @@ func generateListTests() *test_runner.UnitTest {
 func generateMapKeyTests() *test_runner.UnitTest {
 	prefix := test.Events{EvM}
 	suffix := test.Events{EvN, EvE}
-	validEvents := test.Events{EvB, EvBRID, EvBS, EvCM, EvCS, EvINF, EvN, EvNINF, EvPAD, EvRID, EvS, EvT, EvUID}
+	validEvents := test.Events{EvB, EvBRID, EvBS, EvCM, EvCS, EvN, EvPAD, EvRID, EvS, EvT, EvUID}
 	invalidEvents := complementaryEvents(validEvents)
 
 	return generateEncodeDecodeTest("Map Key", prefix, suffix, validEvents, invalidEvents, testTypeAll)

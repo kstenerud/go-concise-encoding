@@ -24,8 +24,11 @@ package rules
 
 import (
 	"fmt"
+	"math/big"
+	"reflect"
 	"strings"
 
+	compact_time "github.com/kstenerud/go-compact-time"
 	"github.com/kstenerud/go-concise-encoding/ce/events"
 	"github.com/kstenerud/go-concise-encoding/configuration"
 	"github.com/kstenerud/go-concise-encoding/version"
@@ -38,6 +41,7 @@ type contextStackEntry struct {
 	DataType            DataType
 	CurrentObjectCount  int
 	ExpectedObjectCount int // -1 means ignored
+	Keys                map[interface{}]bool
 }
 
 type Context struct {
@@ -97,7 +101,9 @@ func (_this *Context) Reset() {
 		DataType:            DataTypeInvalid,
 		ExpectedObjectCount: noObjectCount,
 		CurrentObjectCount:  0,
+		Keys:                make(map[interface{}]bool),
 	}
+
 }
 
 func (_this *Context) ChangeRule(rule EventRule) {
@@ -114,6 +120,7 @@ func (_this *Context) stackRule(rule EventRule, dataType DataType, expectedObjec
 		DataType:            dataType,
 		ExpectedObjectCount: expectedObjectCount,
 		CurrentObjectCount:  0,
+		Keys:                make(map[interface{}]bool),
 	}
 }
 
@@ -188,6 +195,94 @@ func (_this *Context) BeginList() {
 
 func (_this *Context) BeginMap() {
 	_this.beginContainer(&mapKeyRule, DataTypeMap, noObjectCount)
+}
+
+func (_this *Context) NotifyKey(key interface{}) {
+	switch v := key.(type) {
+	case int:
+		if v >= 0 {
+			key = uint64(v)
+		} else {
+			key = int64(v)
+		}
+	case int8:
+		if v >= 0 {
+			key = uint64(v)
+		} else {
+			key = int64(v)
+		}
+	case int16:
+		if v >= 0 {
+			key = uint64(v)
+		} else {
+			key = int64(v)
+		}
+	case int32:
+		if v >= 0 {
+			key = uint64(v)
+		} else {
+			key = int64(v)
+		}
+	case int64:
+		if v >= 0 {
+			key = uint64(v)
+		}
+	case uint:
+		key = uint64(v)
+	case uint8:
+		key = uint64(v)
+	case uint16:
+		key = uint64(v)
+	case uint32:
+		key = uint64(v)
+	case []byte:
+		var uid [16]byte
+		copy(uid[:], v)
+		key = uid
+	case compact_time.Time:
+		key = v.String()
+	case *big.Int:
+		if v.IsUint64() {
+			key = v.Uint64()
+		} else if v.IsInt64() {
+			key = v.Int64()
+		} else {
+			b := v.Bits()
+			arrLen := len(b) + 1
+			switch arrLen {
+			case 2:
+				var arr [2]big.Word
+				arr[0] = big.Word(v.Sign())
+				arr[1] = b[0]
+				key = arr
+			case 3:
+				var arr [3]big.Word
+				arr[0] = big.Word(v.Sign())
+				arr[1] = b[0]
+				arr[2] = b[1]
+				key = arr
+			case 4:
+				var arr [4]big.Word
+				arr[0] = big.Word(v.Sign())
+				arr[1] = b[0]
+				arr[2] = b[1]
+				arr[3] = b[2]
+				key = arr
+			default:
+				t := reflect.ArrayOf(arrLen, reflect.TypeOf(b[0]))
+				arr := reflect.New(t).Elem()
+				slice := arr.Slice(0, arrLen).Interface().([]big.Word)
+				slice[0] = big.Word(v.Sign())
+				copy(slice[1:], b)
+				key = arr.Interface()
+			}
+		}
+	}
+
+	if _, exists := _this.CurrentEntry.Keys[key]; exists {
+		panic(fmt.Errorf("key [%v] already exists in this container", key))
+	}
+	_this.CurrentEntry.Keys[key] = true
 }
 
 func (_this *Context) areRecordTypesAllowed() bool {

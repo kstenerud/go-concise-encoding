@@ -31,6 +31,9 @@ import (
 const maxMarkerIDRuneCount = 50
 const maxMarkerIDByteCount = 4 * maxMarkerIDRuneCount // max 4 bytes per rune
 
+type negint uint64
+type rid string
+
 type EventRule interface {
 	OnBeginDocument(ctx *Context)
 	OnEndDocument(ctx *Context)
@@ -38,7 +41,7 @@ type EventRule interface {
 	OnVersion(ctx *Context, version uint64)
 	OnPadding(ctx *Context)
 	OnComment(ctx *Context)
-	OnKeyableObject(ctx *Context, objType DataType)
+	OnKeyableObject(ctx *Context, objType DataType, key interface{})
 	OnNonKeyableObject(ctx *Context, objType DataType)
 	OnNull(ctx *Context)
 	OnList(ctx *Context)
@@ -66,8 +69,8 @@ var (
 	listRule                ListRule
 	mapKeyRule              MapKeyRule
 	mapValueRule            MapValueRule
-	recordTypeRule      RecordTypeRule
-	recordRule      RecordRule
+	recordTypeRule          RecordTypeRule
+	recordRule              RecordRule
 	arrayRule               ArrayRule
 	arrayChunkRule          ArrayChunkRule
 	stringRule              StringRule

@@ -73,6 +73,9 @@ func (_this *StringChunkRule) OnArrayData(ctx *Context, data []byte) {
 	ctx.ValidateArrayDataFunc(firstRuneBytes)
 	ctx.ValidateArrayDataFunc(nextRunesBytes)
 
+	ctx.AddBuiltArrayBytes(firstRuneBytes)
+	ctx.AddBuiltArrayBytes(nextRunesBytes)
+
 	if ctx.chunkActualByteCount == ctx.chunkExpectedByteCount {
 		ctx.EndChunkString()
 	}

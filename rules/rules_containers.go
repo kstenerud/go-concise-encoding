@@ -38,10 +38,21 @@ func (_this *ListRule) String() string { return "List Rule" }
 
 type MapKeyRule struct{}
 
-func (_this *MapKeyRule) String() string                                 { return "Map Key Rule" }
-func (_this *MapKeyRule) switchMapValue(ctx *Context)                    { ctx.ChangeRule(&mapValueRule) }
-func (_this *MapKeyRule) OnChildContainerEnded(ctx *Context, _ DataType) { _this.switchMapValue(ctx) }
-func (_this *MapKeyRule) OnKeyableObject(ctx *Context, _ DataType)       { _this.switchMapValue(ctx) }
+func (_this *MapKeyRule) String() string              { return "Map Key Rule" }
+func (_this *MapKeyRule) switchMapValue(ctx *Context) { ctx.ChangeRule(&mapValueRule) }
+func (_this *MapKeyRule) OnChildContainerEnded(ctx *Context, dataType DataType) {
+	switch dataType {
+	case DataTypeString:
+		ctx.NotifyKey(ctx.GetBuiltArrayAsString())
+	case DataTypeResourceID:
+		ctx.NotifyKey(rid(ctx.GetBuiltArrayAsString()))
+	}
+	_this.switchMapValue(ctx)
+}
+func (_this *MapKeyRule) OnKeyableObject(ctx *Context, _ DataType, key interface{}) {
+	ctx.NotifyKey(key)
+	_this.switchMapValue(ctx)
+}
 func (_this *MapKeyRule) OnMarker(ctx *Context, identifier []byte) {
 	ctx.BeginMarkerKeyable(identifier, AllowKeyable)
 }
@@ -51,10 +62,22 @@ func (_this *MapKeyRule) OnReferenceLocal(ctx *Context, identifier []byte) {
 }
 func (_this *MapKeyRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	ctx.ValidateFullArrayKeyable("map key", arrayType, elementCount, data)
+	switch arrayType {
+	case events.ArrayTypeString:
+		ctx.NotifyKey(string(data))
+	case events.ArrayTypeResourceID:
+		ctx.NotifyKey(rid(data))
+	}
 	_this.switchMapValue(ctx)
 }
 func (_this *MapKeyRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
 	ctx.ValidateFullArrayStringlikeKeyable("map key", arrayType, data)
+	switch arrayType {
+	case events.ArrayTypeString:
+		ctx.NotifyKey(string(data))
+	case events.ArrayTypeResourceID:
+		ctx.NotifyKey(rid(data))
+	}
 	_this.switchMapValue(ctx)
 }
 func (_this *MapKeyRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
@@ -69,8 +92,10 @@ func (_this *MapValueRule) String() string                                 { ret
 func (_this *MapValueRule) switchMapKey(ctx *Context)                      { ctx.ChangeRule(&mapKeyRule) }
 func (_this *MapValueRule) OnChildContainerEnded(ctx *Context, _ DataType) { _this.switchMapKey(ctx) }
 func (_this *MapValueRule) OnNull(ctx *Context)                            { _this.switchMapKey(ctx) }
-func (_this *MapValueRule) OnKeyableObject(ctx *Context, _ DataType)       { _this.switchMapKey(ctx) }
-func (_this *MapValueRule) OnNonKeyableObject(ctx *Context, _ DataType)    { _this.switchMapKey(ctx) }
+func (_this *MapValueRule) OnKeyableObject(ctx *Context, _ DataType, _ interface{}) {
+	_this.switchMapKey(ctx)
+}
+func (_this *MapValueRule) OnNonKeyableObject(ctx *Context, _ DataType) { _this.switchMapKey(ctx) }
 func (_this *MapValueRule) OnReferenceLocal(ctx *Context, identifier []byte) {
 	ctx.LocalReferenceAnyType(identifier)
 	_this.switchMapKey(ctx)
@@ -89,11 +114,35 @@ func (_this *MapValueRule) OnStringlikeArray(ctx *Context, arrayType events.Arra
 type RecordTypeRule struct{}
 
 func (_this *RecordTypeRule) String() string { return "Record Type Rule" }
+
+func (_this *RecordTypeRule) OnChildContainerEnded(ctx *Context, dataType DataType) {
+	switch dataType {
+	case DataTypeString:
+		ctx.NotifyKey(ctx.GetBuiltArrayAsString())
+	case DataTypeResourceID:
+		ctx.NotifyKey(rid(ctx.GetBuiltArrayAsString()))
+	}
+}
+func (_this *RecordTypeRule) OnKeyableObject(ctx *Context, objType DataType, key interface{}) {
+	ctx.NotifyKey(key)
+}
 func (_this *RecordTypeRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
 	ctx.ValidateFullArrayKeyable("record type", arrayType, elementCount, data)
+	switch arrayType {
+	case events.ArrayTypeString:
+		ctx.NotifyKey(string(data))
+	case events.ArrayTypeResourceID:
+		ctx.NotifyKey(rid(data))
+	}
 }
 func (_this *RecordTypeRule) OnStringlikeArray(ctx *Context, arrayType events.ArrayType, data string) {
 	ctx.ValidateFullArrayStringlikeKeyable("record type", arrayType, data)
+	switch arrayType {
+	case events.ArrayTypeString:
+		ctx.NotifyKey(string(data))
+	case events.ArrayTypeResourceID:
+		ctx.NotifyKey(rid(data))
+	}
 }
 func (_this *RecordTypeRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
 	ctx.BeginArrayKeyable("record type", arrayType)
@@ -116,7 +165,9 @@ func (_this *EdgeSourceRule) String() string { return "Edge Source Rule" }
 func (_this *EdgeSourceRule) moveToNextRule(ctx *Context) {
 	ctx.ChangeRule(&edgeDescriptionRule)
 }
-func (_this *EdgeSourceRule) OnKeyableObject(ctx *Context, _ DataType)    { _this.moveToNextRule(ctx) }
+func (_this *EdgeSourceRule) OnKeyableObject(ctx *Context, _ DataType, _ interface{}) {
+	_this.moveToNextRule(ctx)
+}
 func (_this *EdgeSourceRule) OnNonKeyableObject(ctx *Context, _ DataType) { _this.moveToNextRule(ctx) }
 func (_this *EdgeSourceRule) OnChildContainerEnded(ctx *Context, _ DataType) {
 	_this.moveToNextRule(ctx)
@@ -162,7 +213,7 @@ func (_this *EdgeDescriptionRule) String() string { return "Edge Description Rul
 func (_this *EdgeDescriptionRule) moveToNextRule(ctx *Context) {
 	ctx.ChangeRule(&edgeDestinationRule)
 }
-func (_this *EdgeDescriptionRule) OnKeyableObject(ctx *Context, _ DataType) {
+func (_this *EdgeDescriptionRule) OnKeyableObject(ctx *Context, _ DataType, _ interface{}) {
 	_this.moveToNextRule(ctx)
 }
 func (_this *EdgeDescriptionRule) OnNonKeyableObject(ctx *Context, _ DataType) {
@@ -223,7 +274,7 @@ func (_this *NodeRule) String() string { return "Node Rule" }
 func (_this *NodeRule) moveToNextRule(ctx *Context) {
 	ctx.ChangeRule(&listRule)
 }
-func (_this *NodeRule) OnKeyableObject(ctx *Context, _ DataType) {
+func (_this *NodeRule) OnKeyableObject(ctx *Context, _ DataType, _ interface{}) {
 	_this.moveToNextRule(ctx)
 }
 func (_this *NodeRule) OnNonKeyableObject(ctx *Context, _ DataType) {

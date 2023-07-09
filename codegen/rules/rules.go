@@ -370,7 +370,7 @@ var (
 	Key = &Method{
 		Name:                  "KEYABLE",
 		MethodType:            MethodTypeScalar,
-		Signature:             "OnKeyableObject(ctx *Context, objType DataType)",
+		Signature:             "OnKeyableObject(ctx *Context, objType DataType, key interface{})",
 		AssociatedTypes:       DataTypesKeyable,
 		DefaultImplementation: nothingToDoImplementation,
 	}
@@ -587,7 +587,7 @@ var allRules = []Rule{
 		IncludeMethods: []*Method{End},
 		ExcludeMethods: []*Method{Marker, Ref},
 		DefaultMethods: []*Method{
-			Child, Pad, Comment, Key,
+			Pad, Comment,
 		},
 	},
 	{

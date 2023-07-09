@@ -37,7 +37,7 @@ c0
                                     "s=bytes" "au8x=10 ff 38 9a dd 00 4f 4f 91"
                                     "s=url" "rid=https://example.com/"
                                     "s=email" "rid=mailto:me@somewhere.com"
-                                    "n=1.5" "s=Keys don't have to be strings"
+                                    "n=15" "s=Keys don't have to be strings"
                                     "s=marked_object" "mark=tag1" "m"
                                         "s=description" "s=This map will be referenced later using $tag1"
                                         "s=value" "n=-inf"
@@ -74,7 +74,7 @@ c0
     "bytes" = @u8[16 255 56 154 221 0 79 79 145]
     "url" = @"https://example.com/"
     "email" = @"mailto:me@somewhere.com"
-    1.5 = "Keys don't have to be strings"
+    15 = "Keys don't have to be strings"
     "marked_object" = &tag1:{
         "description" = "This map will be referenced later using $tag1"
         "value" = -inf
