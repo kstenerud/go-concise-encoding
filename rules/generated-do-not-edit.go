@@ -183,7 +183,7 @@ func (_this *ListRule) OnComment(ctx *Context) {
 func (_this *ListRule) OnNull(ctx *Context) {
 	/* Nothing to do */
 }
-func (_this *ListRule) OnKeyableObject(ctx *Context, objType DataType) {
+func (_this *ListRule) OnKeyableObject(ctx *Context, objType DataType, key interface{}) {
 	/* Nothing to do */
 }
 func (_this *ListRule) OnNonKeyableObject(ctx *Context, objType DataType) {
@@ -264,16 +264,10 @@ func (_this *MapValueRule) OnMarker(ctx *Context, identifier []byte) {
 func (_this *MapValueRule) OnArrayBegin(ctx *Context, arrayType events.ArrayType) {
 	ctx.BeginArrayAnyType(arrayType)
 }
-func (_this *RecordTypeRule) OnChildContainerEnded(ctx *Context, containerType DataType) {
-	/* Nothing to do */
-}
 func (_this *RecordTypeRule) OnPadding(ctx *Context) {
 	/* Nothing to do */
 }
 func (_this *RecordTypeRule) OnComment(ctx *Context) {
-	/* Nothing to do */
-}
-func (_this *RecordTypeRule) OnKeyableObject(ctx *Context, objType DataType) {
 	/* Nothing to do */
 }
 func (_this *RecordRule) OnChildContainerEnded(ctx *Context, containerType DataType) {
@@ -288,7 +282,7 @@ func (_this *RecordRule) OnComment(ctx *Context) {
 func (_this *RecordRule) OnNull(ctx *Context) {
 	/* Nothing to do */
 }
-func (_this *RecordRule) OnKeyableObject(ctx *Context, objType DataType) {
+func (_this *RecordRule) OnKeyableObject(ctx *Context, objType DataType, key interface{}) {
 	/* Nothing to do */
 }
 func (_this *RecordRule) OnNonKeyableObject(ctx *Context, objType DataType) {
@@ -393,7 +387,7 @@ func (_this *EdgeDestinationRule) OnPadding(ctx *Context) {
 func (_this *EdgeDestinationRule) OnComment(ctx *Context) {
 	/* Nothing to do */
 }
-func (_this *EdgeDestinationRule) OnKeyableObject(ctx *Context, objType DataType) {
+func (_this *EdgeDestinationRule) OnKeyableObject(ctx *Context, objType DataType, key interface{}) {
 	/* Nothing to do */
 }
 func (_this *EdgeDestinationRule) OnNonKeyableObject(ctx *Context, objType DataType) {
@@ -486,7 +480,7 @@ func (_this *BeginDocumentRule) OnComment(ctx *Context) {
 func (_this *BeginDocumentRule) OnNull(ctx *Context) {
 	wrongType("begin document", "Null")
 }
-func (_this *BeginDocumentRule) OnKeyableObject(ctx *Context, objType DataType) {
+func (_this *BeginDocumentRule) OnKeyableObject(ctx *Context, objType DataType, key interface{}) {
 	wrongType("begin document", objType)
 }
 func (_this *BeginDocumentRule) OnNonKeyableObject(ctx *Context, objType DataType) {
@@ -552,7 +546,7 @@ func (_this *EndDocumentRule) OnComment(ctx *Context) {
 func (_this *EndDocumentRule) OnNull(ctx *Context) {
 	wrongType("end document", "Null")
 }
-func (_this *EndDocumentRule) OnKeyableObject(ctx *Context, objType DataType) {
+func (_this *EndDocumentRule) OnKeyableObject(ctx *Context, objType DataType, key interface{}) {
 	wrongType("end document", objType)
 }
 func (_this *EndDocumentRule) OnNonKeyableObject(ctx *Context, objType DataType) {
@@ -621,7 +615,7 @@ func (_this *TerminalRule) OnComment(ctx *Context) {
 func (_this *TerminalRule) OnNull(ctx *Context) {
 	wrongType("terminal", "Null")
 }
-func (_this *TerminalRule) OnKeyableObject(ctx *Context, objType DataType) {
+func (_this *TerminalRule) OnKeyableObject(ctx *Context, objType DataType, key interface{}) {
 	wrongType("terminal", objType)
 }
 func (_this *TerminalRule) OnNonKeyableObject(ctx *Context, objType DataType) {
@@ -687,7 +681,7 @@ func (_this *VersionRule) OnComment(ctx *Context) {
 func (_this *VersionRule) OnNull(ctx *Context) {
 	wrongType("version", "Null")
 }
-func (_this *VersionRule) OnKeyableObject(ctx *Context, objType DataType) {
+func (_this *VersionRule) OnKeyableObject(ctx *Context, objType DataType, key interface{}) {
 	wrongType("version", objType)
 }
 func (_this *VersionRule) OnNonKeyableObject(ctx *Context, objType DataType) {
@@ -906,7 +900,7 @@ func (_this *ArrayRule) OnPadding(ctx *Context) {
 func (_this *ArrayRule) OnNull(ctx *Context) {
 	wrongType("array", "Null")
 }
-func (_this *ArrayRule) OnKeyableObject(ctx *Context, objType DataType) {
+func (_this *ArrayRule) OnKeyableObject(ctx *Context, objType DataType, key interface{}) {
 	wrongType("array", objType)
 }
 func (_this *ArrayRule) OnNonKeyableObject(ctx *Context, objType DataType) {
@@ -972,7 +966,7 @@ func (_this *ArrayChunkRule) OnComment(ctx *Context) {
 func (_this *ArrayChunkRule) OnNull(ctx *Context) {
 	wrongType("array chunk", "Null")
 }
-func (_this *ArrayChunkRule) OnKeyableObject(ctx *Context, objType DataType) {
+func (_this *ArrayChunkRule) OnKeyableObject(ctx *Context, objType DataType, key interface{}) {
 	wrongType("array chunk", objType)
 }
 func (_this *ArrayChunkRule) OnNonKeyableObject(ctx *Context, objType DataType) {
@@ -1038,7 +1032,7 @@ func (_this *StringRule) OnComment(ctx *Context) {
 func (_this *StringRule) OnNull(ctx *Context) {
 	wrongType("string", "Null")
 }
-func (_this *StringRule) OnKeyableObject(ctx *Context, objType DataType) {
+func (_this *StringRule) OnKeyableObject(ctx *Context, objType DataType, key interface{}) {
 	wrongType("string", objType)
 }
 func (_this *StringRule) OnNonKeyableObject(ctx *Context, objType DataType) {
@@ -1104,7 +1098,7 @@ func (_this *StringChunkRule) OnComment(ctx *Context) {
 func (_this *StringChunkRule) OnNull(ctx *Context) {
 	wrongType("string chunk", "Null")
 }
-func (_this *StringChunkRule) OnKeyableObject(ctx *Context, objType DataType) {
+func (_this *StringChunkRule) OnKeyableObject(ctx *Context, objType DataType, key interface{}) {
 	wrongType("string chunk", objType)
 }
 func (_this *StringChunkRule) OnNonKeyableObject(ctx *Context, objType DataType) {
@@ -1170,7 +1164,7 @@ func (_this *StringBuilderRule) OnComment(ctx *Context) {
 func (_this *StringBuilderRule) OnNull(ctx *Context) {
 	wrongType("string", "Null")
 }
-func (_this *StringBuilderRule) OnKeyableObject(ctx *Context, objType DataType) {
+func (_this *StringBuilderRule) OnKeyableObject(ctx *Context, objType DataType, key interface{}) {
 	wrongType("string", objType)
 }
 func (_this *StringBuilderRule) OnNonKeyableObject(ctx *Context, objType DataType) {
@@ -1236,7 +1230,7 @@ func (_this *StringBuilderChunkRule) OnComment(ctx *Context) {
 func (_this *StringBuilderChunkRule) OnNull(ctx *Context) {
 	wrongType("string chunk", "Null")
 }
-func (_this *StringBuilderChunkRule) OnKeyableObject(ctx *Context, objType DataType) {
+func (_this *StringBuilderChunkRule) OnKeyableObject(ctx *Context, objType DataType, key interface{}) {
 	wrongType("string chunk", objType)
 }
 func (_this *StringBuilderChunkRule) OnNonKeyableObject(ctx *Context, objType DataType) {
@@ -1452,7 +1446,7 @@ func (_this *AwaitEndRule) OnVersion(ctx *Context, version uint64) {
 func (_this *AwaitEndRule) OnNull(ctx *Context) {
 	wrongType("awaitEnd", "Null")
 }
-func (_this *AwaitEndRule) OnKeyableObject(ctx *Context, objType DataType) {
+func (_this *AwaitEndRule) OnKeyableObject(ctx *Context, objType DataType, key interface{}) {
 	wrongType("awaitEnd", objType)
 }
 func (_this *AwaitEndRule) OnNonKeyableObject(ctx *Context, objType DataType) {

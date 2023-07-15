@@ -395,8 +395,8 @@ var (
 	InvalidTLOValues = Events{EvV, EvE, EvAC, EvAD, EvREFL, EvRT}
 
 	ValidMapKeys = Events{
-		EvPAD, EvCS, EvCM, EvB, EvPI, EvNI, EvI, EvBI, EvBF, EvBBF, EvDF,
-		EvBDF, EvUID, EvT, EvTC, EvMARK, EvS, EvSB, EvRID, EvBRID,
+		EvPAD, EvCS, EvCM, EvB, EvPI, EvNI, EvI, EvBI,
+		EvUID, EvT, EvTC, EvMARK, EvS, EvSB, EvRID, EvBRID,
 		EvREFL, EvE,
 	}
 	InvalidMapKeys = ComplementaryEvents(ValidMapKeys)

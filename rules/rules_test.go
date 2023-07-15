@@ -293,7 +293,7 @@ func TestRulesListFilled(t *testing.T) {
 }
 
 func TestRulesMapFilled(t *testing.T) {
-	assertEventsMaxDepth(t, 2, M(), B(true), NULL(), N(0.1), NAN(), N(1), N(-1),
+	assertEventsMaxDepth(t, 2, M(), B(true), NULL(), N(1234567890), NAN(), N(1), N(-1),
 		T(compact_time.AsCompactTime(time.Now())), AU8(NewBytes(1, 0)), E(), ED())
 }
 

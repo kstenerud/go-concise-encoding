@@ -29,9 +29,9 @@ import (
 type MarkedObjectKeyableRule struct{}
 
 func (_this *MarkedObjectKeyableRule) String() string { return "Marked Keyable Object Rule" }
-func (_this *MarkedObjectKeyableRule) OnKeyableObject(ctx *Context, objType DataType) {
+func (_this *MarkedObjectKeyableRule) OnKeyableObject(ctx *Context, objType DataType, key interface{}) {
 	ctx.UnstackRule()
-	ctx.CurrentEntry.Rule.OnKeyableObject(ctx, objType)
+	ctx.CurrentEntry.Rule.OnKeyableObject(ctx, objType, key)
 	ctx.MarkObject(objType)
 }
 func (_this *MarkedObjectKeyableRule) OnArray(ctx *Context, arrayType events.ArrayType, elementCount uint64, data []uint8) {
@@ -66,12 +66,13 @@ func (_this *MarkedObjectAnyTypeRule) OnNull(ctx *Context) {
 }
 func (_this *MarkedObjectAnyTypeRule) OnNonKeyableObject(ctx *Context, objType DataType) {
 	ctx.UnstackRule()
-	ctx.CurrentEntry.Rule.OnKeyableObject(ctx, objType)
+	// TODO: Why is this OnKeyableObject?
+	ctx.CurrentEntry.Rule.OnKeyableObject(ctx, objType, "")
 	ctx.MarkObject(objType)
 }
-func (_this *MarkedObjectAnyTypeRule) OnKeyableObject(ctx *Context, objType DataType) {
+func (_this *MarkedObjectAnyTypeRule) OnKeyableObject(ctx *Context, objType DataType, key interface{}) {
 	ctx.UnstackRule()
-	ctx.CurrentEntry.Rule.OnKeyableObject(ctx, objType)
+	ctx.CurrentEntry.Rule.OnKeyableObject(ctx, objType, key)
 	ctx.MarkObject(objType)
 }
 func (_this *MarkedObjectAnyTypeRule) OnList(ctx *Context) {

@@ -65,9 +65,11 @@ func (_this *VersionRule) OnVersion(ctx *Context, version uint64) {
 
 type TopLevelRule struct{}
 
-func (_this *TopLevelRule) String() string                              { return "Top Level Rule" }
-func (_this *TopLevelRule) switchEndDocument(ctx *Context)              { ctx.ChangeRule(&endDocumentRule) }
-func (_this *TopLevelRule) OnKeyableObject(ctx *Context, _ DataType)    { _this.switchEndDocument(ctx) }
+func (_this *TopLevelRule) String() string                 { return "Top Level Rule" }
+func (_this *TopLevelRule) switchEndDocument(ctx *Context) { ctx.ChangeRule(&endDocumentRule) }
+func (_this *TopLevelRule) OnKeyableObject(ctx *Context, _ DataType, _ interface{}) {
+	_this.switchEndDocument(ctx)
+}
 func (_this *TopLevelRule) OnNonKeyableObject(ctx *Context, _ DataType) { _this.switchEndDocument(ctx) }
 func (_this *TopLevelRule) OnChildContainerEnded(ctx *Context, _ DataType) {
 	_this.switchEndDocument(ctx)

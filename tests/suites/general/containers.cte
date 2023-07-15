@@ -87,6 +87,20 @@ c0
                 {"cte"="{)"}                          // Wrong terminator
                 {"cte"="{>"}                          // Wrong terminator
                 {"cte"="{|"}                          // Wrong terminator
+
+                {"cte"="{true=1 true=2}"}             // Duplicate key
+                {"cbe"=@u8x[99 79 01 79 02 9b]}       // Duplicate key
+                {"cte"="{\"a\"=1 \"a\"=2}"}           // Duplicate key
+                {"cbe"=@u8x[99 81 61 01 81 61 02 9b]} // Duplicate key
+                {"cte"="{1=\"a\" 1=\"b\"}"}           // Duplicate key
+                {"cbe"=@u8x[99 01 81 61 01 81 62 9b]} // Duplicate key
+                {"cte"="{999999999999999999999999999999999999=\"a\" 999999999999999999999999999999999999=\"b\"}"} // Duplicate key
+                {"cbe"=@u8x[99 66 0f ff ff ff ff 0f 9f 4b b3 15 07 c9 7b ce 97 c0 81 61 66 0f ff ff ff ff 0f 9f 4b b3 15 07 c9 7b ce 97 c0 81 62 9b]} // Duplicate key
+                {"cte"="{@\"a\"=1 @\"a\"=2}"}         // Duplicate key
+                {"cbe"=@u8x[99 91 02 61 01 91 02 61 02 9b]} // Duplicate key
+                {"cte"="{2000-10-10/14:50:01.222/Europe/Milan=1 2000-10-10/14:50:01.222/Europe/Milan=2}"} // Duplicate key
+                {"cbe"=@u8x[99 7c f3 26 90 9d 52 00 0e 45 2f 4d 69 6c 61 6e 01 7c f3 26 90 9d 52 00 0e 45 2f 4d 69 6c 61 6e 02 9b]} // Duplicate key
+
                 {"cbe"=@u8x[99]}                      // Unterminated
                 {"cbe"=@u8x[99 01]}                   // Unterminated
                 {"cbe"=@u8x[99 01 02]}                // Unterminated
@@ -136,7 +150,22 @@ c0
                 {"cte"="@a<> @a<> @a{}"}        // Duplicate ID
                 {"cte"="@a<1> @a{1 2}"}         // Mismatched argcount
                 {"cte"="@a<1 2> @a{1}"}         // Mismatched argcount
-                // {"cte"="@a<1 1> @a{1 2}"}       // Duplicate key TODO
+
+                {"cte"="@a<1 1> @a{1 2}"}       // Duplicate key
+                {"cbe"=@u8x[7f f1 01 61 01 01 9b 96 01 61 01 02 9b]} // Duplicate key
+                {"cte"="@a<true true> @a{1 2}"} // Duplicate key
+                {"cbe"=@u8x[7f f1 01 61 79 79 9b 96 01 61 01 02 9b]} // Duplicate key
+                {"cte"="@a<\"a\" \"a\"> @a{1 2}"} // Duplicate key
+                {"cbe"=@u8x[7f f1 01 61 81 61 81 61 9b 96 01 61 01 02 9b]} // Duplicate key
+                {"cte"="@a<1 1> @a{\"a\" \"b\"}"} // Duplicate key
+                {"cbe"=@u8x[7f f1 01 61 01 01 9b 96 01 61 81 61 81 62 9b]} // Duplicate key
+                {"cte"="@a<999999999999999999999999999999999999 999999999999999999999999999999999999> @a{\"a\" \"b\"}"} // Duplicate key
+                {"cbe"=@u8x[7f f1 01 61 66 0f ff ff ff ff 0f 9f 4b b3 15 07 c9 7b ce 97 c0 66 0f ff ff ff ff 0f 9f 4b b3 15 07 c9 7b ce 97 c0 9b 96 01 61 81 61 81 62 9b]} // Duplicate key
+                {"cte"="@a<@\"a\" @\"a\"> @a{1 2}"} // Duplicate key
+                {"cbe"=@u8x[7f f1 01 61 91 02 61 91 02 61 9b 96 01 61 01 02 9b]} // Duplicate key
+                {"cte"="@a<2000-10-10/14:50:01.222/Europe/Milan 2000-10-10/14:50:01.222/Europe/Milan> @a{1 2}"} // Duplicate key
+                {"cbe"=@u8x[7f f1 01 61 7c f3 26 90 9d 52 00 0e 45 2f 4d 69 6c 61 6e 7c f3 26 90 9d 52 00 0e 45 2f 4d 69 6c 61 6e 9b 96 01 61 01 02 9b]} // Duplicate key
+
                 {"cbe"=@u8x[96]}                // Incomplete
                 {"cbe"=@u8x[96 01]}             // Incomplete
                 {"cbe"=@u8x[7f f1]}             // Incomplete
