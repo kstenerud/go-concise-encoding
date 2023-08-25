@@ -826,7 +826,7 @@ blah blahXXX"~"
         // ====================================================================
 
         {
-            "name" = "String with NUL character" // TODO
+            "name" = "String with NUL character"
             "mustSucceed" = [
                 {
                     "cte" = "\.^ "test\[0]string"^"
