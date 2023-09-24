@@ -24,23 +24,6 @@ import (
 	"reflect"
 )
 
-// ============================================================================
-// Iterator Session
-
-// Converts a value to custom binary data.
-// See https://github.com/kstenerud/concise-encoding/blob/master/cbe-specification.md#custom-binary
-// See https://github.com/kstenerud/concise-encoding/blob/master/cbe-specification.md#custom-text
-// See https://github.com/kstenerud/concise-encoding/blob/master/cte-specification.md#custom-binary
-// See https://github.com/kstenerud/concise-encoding/blob/master/cte-specification.md#custom-text
-type ConvertToCustomFunction func(v reflect.Value) (customType uint64, asBytes []byte, err error)
-
-type FieldNameStyle int
-
-const (
-	FieldNameCamelCase FieldNameStyle = iota
-	FieldNameSnakeCase
-)
-
 type IteratorConfiguration struct {
 	FieldNameStyle FieldNameStyle
 
@@ -77,32 +60,31 @@ type IteratorConfiguration struct {
 	CustomTextConverters map[reflect.Type]ConvertToCustomFunction
 }
 
-func DefaultIteratorConfiguration() IteratorConfiguration {
-	config := defaultIteratorConfiguration
-	config.CustomBinaryConverters = make(map[reflect.Type]ConvertToCustomFunction)
-	config.CustomTextConverters = make(map[reflect.Type]ConvertToCustomFunction)
-	config.RecordTypes = make(map[reflect.Type]string)
-	return config
+func (_this *IteratorConfiguration) init() {
+	_this.CustomBinaryConverters = make(map[reflect.Type]ConvertToCustomFunction)
+	_this.CustomTextConverters = make(map[reflect.Type]ConvertToCustomFunction)
+	_this.RecordTypes = make(map[reflect.Type]string)
 }
 
 var defaultIteratorConfiguration = IteratorConfiguration{
 	FieldNameStyle:           FieldNameSnakeCase,
-	RecursionSupport:         true,
+	RecursionSupport:         false,
 	DefaultFieldOmitBehavior: OmitFieldEmpty,
 }
 
-func (_this *IteratorConfiguration) ApplyDefaults() {
-	if _this.CustomBinaryConverters == nil {
-		_this.CustomBinaryConverters = make(map[reflect.Type]ConvertToCustomFunction)
-	}
-	if _this.CustomTextConverters == nil {
-		_this.CustomTextConverters = make(map[reflect.Type]ConvertToCustomFunction)
-	}
-}
+// Converts a value to custom binary data.
+// See https://github.com/kstenerud/concise-encoding/blob/master/cbe-specification.md#custom-binary
+// See https://github.com/kstenerud/concise-encoding/blob/master/cbe-specification.md#custom-text
+// See https://github.com/kstenerud/concise-encoding/blob/master/cte-specification.md#custom-binary
+// See https://github.com/kstenerud/concise-encoding/blob/master/cte-specification.md#custom-text
+type ConvertToCustomFunction func(v reflect.Value) (customType uint64, asBytes []byte, err error)
 
-func (_this *IteratorConfiguration) Validate() error {
-	return nil
-}
+type FieldNameStyle int
+
+const (
+	FieldNameCamelCase FieldNameStyle = iota
+	FieldNameSnakeCase
+)
 
 type FieldOmitBehavior int
 

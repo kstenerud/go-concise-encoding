@@ -206,7 +206,7 @@ func (_this *structBuilder) BuildFromArray(ctx *Context, arrayType events.ArrayT
 	switch arrayType {
 	case events.ArrayTypeString:
 		if _this.nextIsKey {
-			if ctx.config.CaseInsensitiveStructFieldNames {
+			if ctx.config.Builder.CaseInsensitiveStructFieldNames {
 				value = []byte(common.ToStructFieldIdentifier(string(value)))
 			}
 
@@ -232,7 +232,7 @@ func (_this *structBuilder) BuildFromStringlikeArray(ctx *Context, arrayType eve
 	switch arrayType {
 	case events.ArrayTypeString:
 		if _this.nextIsKey {
-			if ctx.config.CaseInsensitiveStructFieldNames {
+			if ctx.config.Builder.CaseInsensitiveStructFieldNames {
 				value = common.ToStructFieldIdentifier(value)
 			}
 

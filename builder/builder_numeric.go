@@ -126,19 +126,19 @@ func (_this *bigIntBuilder) BuildFromBigInt(ctx *Context, value *big.Int, dst re
 	return dst
 }
 func (_this *bigIntBuilder) BuildFromFloat(ctx *Context, value float64, dst reflect.Value) reflect.Value {
-	setBigIntFromFloat(value, dst, ctx.config.FloatToBigIntMaxBase2Exponent)
+	setBigIntFromFloat(value, dst, ctx.config.Builder.FloatToBigIntMaxBase2Exponent)
 	return dst
 }
 func (_this *bigIntBuilder) BuildFromBigFloat(ctx *Context, value *big.Float, dst reflect.Value) reflect.Value {
-	setBigIntFromBigFloat(value, dst, ctx.config.FloatToBigIntMaxBase2Exponent)
+	setBigIntFromBigFloat(value, dst, ctx.config.Builder.FloatToBigIntMaxBase2Exponent)
 	return dst
 }
 func (_this *bigIntBuilder) BuildFromDecimalFloat(ctx *Context, value compact_float.DFloat, dst reflect.Value) reflect.Value {
-	setBigIntFromDecimalFloat(value, dst, ctx.config.FloatToBigIntMaxBase10Exponent)
+	setBigIntFromDecimalFloat(value, dst, ctx.config.Builder.FloatToBigIntMaxBase10Exponent)
 	return dst
 }
 func (_this *bigIntBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
-	setBigIntFromBigDecimalFloat(value, dst, ctx.config.FloatToBigIntMaxBase10Exponent)
+	setBigIntFromBigDecimalFloat(value, dst, ctx.config.Builder.FloatToBigIntMaxBase10Exponent)
 	return dst
 }
 
@@ -366,19 +366,19 @@ func (_this *pBigIntBuilder) BuildFromBigInt(ctx *Context, value *big.Int, dst r
 	return dst
 }
 func (_this *pBigIntBuilder) BuildFromFloat(ctx *Context, value float64, dst reflect.Value) reflect.Value {
-	setPBigIntFromFloat(value, dst, ctx.config.FloatToBigIntMaxBase2Exponent)
+	setPBigIntFromFloat(value, dst, ctx.config.Builder.FloatToBigIntMaxBase2Exponent)
 	return dst
 }
 func (_this *pBigIntBuilder) BuildFromBigFloat(ctx *Context, value *big.Float, dst reflect.Value) reflect.Value {
-	setPBigIntFromBigFloat(value, dst, ctx.config.FloatToBigIntMaxBase2Exponent)
+	setPBigIntFromBigFloat(value, dst, ctx.config.Builder.FloatToBigIntMaxBase2Exponent)
 	return dst
 }
 func (_this *pBigIntBuilder) BuildFromDecimalFloat(ctx *Context, value compact_float.DFloat, dst reflect.Value) reflect.Value {
-	setPBigIntFromDecimalFloat(value, dst, ctx.config.FloatToBigIntMaxBase10Exponent)
+	setPBigIntFromDecimalFloat(value, dst, ctx.config.Builder.FloatToBigIntMaxBase10Exponent)
 	return dst
 }
 func (_this *pBigIntBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
-	setPBigIntFromBigDecimalFloat(value, dst, ctx.config.FloatToBigIntMaxBase10Exponent)
+	setPBigIntFromBigDecimalFloat(value, dst, ctx.config.Builder.FloatToBigIntMaxBase10Exponent)
 	return dst
 }
 

@@ -248,6 +248,7 @@ Nobody knows, Particle man#"
                 {"cbe"=@u8x[90 02]}                                        // Incomplete
                 {"cbe"=@u8x[90 04 40]}                                     // Incomplete
                 {"cbe"=@u8x[90 05 40 02]}                                  // Incomplete
+                {"cbe"=@u8x[82 00 e0]}                                     // Reserved codepoint
             ]
         }
 
@@ -830,6 +831,7 @@ blah blahXXX"~"
             "mustSucceed" = [
                 {
                     "cte" = "\.^ "test\[0]string"^"
+                    "cbe" = @u8x[8b 74 65 73 74 00 73 74 72 69 6e 67]
                     "events" = ["s=test\[0]string"]
                 }
             ]

@@ -98,9 +98,9 @@ func loadTestSuite(testDescriptorFile string) (suite *TestSuite, errors []error)
 		panic(fmt.Errorf("unexpected error opening test suite file %v: %w", testDescriptorFile, err))
 	}
 
-	config := configuration.DefaultCEUnmarshalerConfiguration()
-	config.DebugPanics = true
-	loadedTest, err := ce.UnmarshalCTE(file, suite, &config)
+	config := configuration.New()
+	config.Debug.PassThroughPanics = true
+	loadedTest, err := ce.UnmarshalCTE(file, suite, config)
 	if err != nil {
 		panic(fmt.Errorf("malformed unit test: Unexpected CTE decode error in test suite file %v: %w", testDescriptorFile, err))
 	}

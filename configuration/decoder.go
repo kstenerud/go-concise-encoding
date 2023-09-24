@@ -18,8 +18,13 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 
-// All configuration that can be used to fine-tune the behavior of various aspects of
-// this library.
 package configuration
 
-const maxBase10Exp = 50
+type DecoderConfiguration struct {
+}
+
+func (_this *DecoderConfiguration) init() {}
+
+var defaultDecoderConfiguration = DecoderConfiguration{}
+
+type DataErrorCallback func(object interface{}, err error)

@@ -60,7 +60,7 @@ func TestCTEDuplicateEmptySliceInSlice(t *testing.T) {
 // ===========================================================================
 
 func assertMarshal(t *testing.T, value interface{}, expectedDocument string) (successful bool) {
-	document, err := NewMarshaler(nil).MarshalToDocument(value)
+	document, err := NewMarshaler(configuration.New()).MarshalToDocument(value)
 	if err != nil {
 		t.Errorf("Error [%v] while marshaling object %v", err, describe.D(value))
 		return
@@ -75,9 +75,9 @@ func assertMarshal(t *testing.T, value interface{}, expectedDocument string) (su
 }
 
 func assertUnmarshal(t *testing.T, expectedValue interface{}, document string) (successful bool) {
-	config := configuration.DefaultCEUnmarshalerConfiguration()
-	config.DebugPanics = true
-	actualValue, err := NewUnmarshaler(&config).UnmarshalFromDocument([]byte(document), expectedValue)
+	config := configuration.New()
+	config.Debug.PassThroughPanics = true
+	actualValue, err := NewUnmarshaler(config).UnmarshalFromDocument([]byte(document), expectedValue)
 	if err != nil {
 		t.Errorf("Error [%v] while unmarshaling document [%v]", err, document)
 		return
@@ -92,13 +92,13 @@ func assertUnmarshal(t *testing.T, expectedValue interface{}, document string) (
 }
 
 func assertDecode(t *testing.T, document string) (successful bool) {
-	config := configuration.DefaultCEDecoderConfiguration()
-	config.DebugPanics = true
+	config := configuration.New()
+	config.Debug.PassThroughPanics = true
 	var receiver events.DataEventReceiver
 	receiver = nullevent.NewNullEventReceiver()
 	receiver = test.NewEventPrinter(receiver)
-	receiver = rules.NewRules(receiver, nil)
-	err := NewDecoder(&config).DecodeDocument([]byte(document), receiver)
+	receiver = rules.NewRules(receiver, config)
+	err := NewDecoder(config).DecodeDocument([]byte(document), receiver)
 
 	if err != nil {
 		t.Errorf("Error [%v] while decoding document [%v]", err, document)

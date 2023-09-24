@@ -183,7 +183,7 @@ func invokeEvents(receiver events.DataEventReceiver, events ...test.Event) {
 // ============================================================================
 
 func assertEvents(t *testing.T, allEvents ...test.Event) {
-	assertEventsSucceed(t, NewRules(nullevent.NewNullEventReceiver(), nil), allEvents...)
+	assertEventsSucceed(t, NewRules(nullevent.NewNullEventReceiver(), configuration.New()), allEvents...)
 }
 
 func assertEventsSucceed(t *testing.T, receiver events.DataEventReceiver, events ...test.Event) {
@@ -194,7 +194,7 @@ func assertEventsSucceed(t *testing.T, receiver events.DataEventReceiver, events
 
 func assertEventStreamsSucceed(t *testing.T, eventStreams []test.Events) {
 	for _, stream := range eventStreams {
-		rules := NewRules(nullevent.NewNullEventReceiver(), nil)
+		rules := NewRules(nullevent.NewNullEventReceiver(), configuration.New())
 		test.AssertNoPanic(t, stream, func() {
 			invokeEvents(rules, stream...)
 		})
@@ -203,7 +203,7 @@ func assertEventStreamsSucceed(t *testing.T, eventStreams []test.Events) {
 
 func assertEventStreamsFail(t *testing.T, eventStreams []test.Events) {
 	for _, stream := range eventStreams {
-		rules := NewRules(nullevent.NewNullEventReceiver(), nil)
+		rules := NewRules(nullevent.NewNullEventReceiver(), configuration.New())
 		test.AssertPanics(t, stream, func() {
 			invokeEvents(rules, stream...)
 		})
@@ -227,7 +227,7 @@ func assertEventsMaxDepth(t *testing.T, maxDepth int, events ...test.Event) {
 	assertEventsSucceed(t, rules, events...)
 }
 
-func newRulesAfterVersion(config *configuration.RuleConfiguration) *RulesEventReceiver {
+func newRulesAfterVersion(config *configuration.Configuration) *RulesEventReceiver {
 	rules := NewRules(nullevent.NewNullEventReceiver(), config)
 	rules.OnBeginDocument()
 	rules.OnVersion(ceVer)
@@ -235,7 +235,7 @@ func newRulesAfterVersion(config *configuration.RuleConfiguration) *RulesEventRe
 }
 
 func newRulesWithMaxDepth(maxDepth int) *RulesEventReceiver {
-	config := configuration.DefaultRuleConfiguration()
-	config.MaxContainerDepth = uint64(maxDepth)
-	return newRulesAfterVersion(&config)
+	config := configuration.New()
+	config.Rules.MaxContainerDepth = uint64(maxDepth)
+	return newRulesAfterVersion(config)
 }

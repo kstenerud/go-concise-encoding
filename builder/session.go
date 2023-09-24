@@ -39,14 +39,13 @@ import (
 // unintended behavior in codec activity elsewhere in the program.
 type Session struct {
 	builderGenerators sync.Map
-	config            *configuration.BuilderSessionConfiguration
+	config            *configuration.Configuration
 }
 
 // Start a new builder session. It will inherit the builders of its parent.
 // If parent is nil, it will inherit from the root session, which has builders
 // for all basic go types.
-// If config is nil, default configuration will be used.
-func NewSession(parent *Session, config *configuration.BuilderSessionConfiguration) *Session {
+func NewSession(parent *Session, config *configuration.Configuration) *Session {
 	_this := &Session{}
 	_this.Init(parent, config)
 	return _this
@@ -55,14 +54,7 @@ func NewSession(parent *Session, config *configuration.BuilderSessionConfigurati
 // Initialize a builder session. It will inherit the builders of its parent.
 // If parent is nil, it will inherit from the root session, which has builders
 // for all basic go types.
-// If config is nil, default configuration will be used.
-func (_this *Session) Init(parent *Session, config *configuration.BuilderSessionConfiguration) {
-	if config == nil {
-		defaultConfig := configuration.DefaultBuilderSessionConfiguration()
-		config = &defaultConfig
-	} else {
-		config.ApplyDefaults()
-	}
+func (_this *Session) Init(parent *Session, config *configuration.Configuration) {
 	_this.config = config
 
 	if parent == nil {
@@ -75,7 +67,7 @@ func (_this *Session) Init(parent *Session, config *configuration.BuilderSession
 		})
 	}
 
-	for _, t := range _this.config.CustomBuiltTypes {
+	for _, t := range _this.config.Builder.CustomBuiltTypes {
 		_this.RegisterBuilderGeneratorForType(t, generateCustomBuilder)
 	}
 }
@@ -83,8 +75,7 @@ func (_this *Session) Init(parent *Session, config *configuration.BuilderSession
 // NewBuilderFor creates a new builder that builds objects of the same type as
 // the template object.
 // If template is nil, a generic interface type will be used.
-// If config is nil, default configuration will be used.
-func (_this *Session) NewBuilderFor(template interface{}, config *configuration.BuilderConfiguration) *BuilderEventReceiver {
+func (_this *Session) NewBuilderFor(template interface{}) *BuilderEventReceiver {
 	rv := reflect.ValueOf(template)
 	var t reflect.Type
 	if rv.IsValid() {
@@ -93,7 +84,7 @@ func (_this *Session) NewBuilderFor(template interface{}, config *configuration.
 		t = common.TypeInterface
 	}
 
-	return NewBuilderEventReceiver(_this, t, config)
+	return NewBuilderEventReceiver(_this, t, _this.config)
 }
 
 // Register a specific builder for a type.
@@ -266,7 +257,7 @@ var listToFloat32SliceGenerator BuilderGenerator
 var listToFloat64SliceGenerator BuilderGenerator
 
 func init() {
-	rootSession.Init(nil, nil)
+	rootSession.Init(nil, configuration.New())
 
 	for _, t := range common.KeyableTypes {
 		rootSession.GetBuilderGeneratorForType(t)

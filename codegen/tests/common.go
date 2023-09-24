@@ -94,7 +94,7 @@ func (_this Directions) and(direction Directions) Directions {
 }
 
 func newMustSucceedTest(directions Directions,
-	config *configuration.CTEEncoderConfiguration,
+	config *configuration.Configuration,
 	events ...test.Event) *test_runner.MustSucceedTest {
 
 	if containsRecords(events) {
@@ -164,7 +164,7 @@ func newMustFailTest(testType testType, events ...test.Event) *test_runner.MustF
 	case testTypeCbe:
 		return &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CBE: generateCBE(events...)}}
 	case testTypeCte:
-		return &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: generateCTE(nil, events...)}}
+		return &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{CTE: generateCTE(configuration.New(), events...)}}
 	case testTypeEvents:
 		return &test_runner.MustFailTest{BaseTest: test_runner.BaseTest{Events: stringifyEvents(events...)}}
 	default:
@@ -211,7 +211,7 @@ func generateCBE(events ...test.Event) []byte {
 	}()
 
 	buffer := bytes.Buffer{}
-	encoder := cbe.NewEncoder(nil)
+	encoder := cbe.NewEncoder(configuration.New())
 	encoder.PrepareToEncode(&buffer)
 	encoder.OnBeginDocument()
 	encoder.OnVersion(version.ConciseEncodingVersion)
@@ -223,7 +223,7 @@ func generateCBE(events ...test.Event) []byte {
 	return result[2:]
 }
 
-func generateCTE(config *configuration.CTEEncoderConfiguration, events ...test.Event) string {
+func generateCTE(config *configuration.Configuration, events ...test.Event) string {
 	defer func() {
 		if r := recover(); r != nil {
 			switch v := r.(type) {
@@ -433,7 +433,7 @@ func hasNonstandardCTEEncoding(formats configuration.CTEEncoderDefaultNumericFor
 	return false
 }
 
-func canConvertFromCTE(config *configuration.CTEEncoderConfiguration, events ...test.Event) bool {
+func canConvertFromCTE(config *configuration.Configuration, events ...test.Event) bool {
 	for _, event := range events {
 		if noFromCTE[event.Name()] {
 			return false
@@ -442,16 +442,16 @@ func canConvertFromCTE(config *configuration.CTEEncoderConfiguration, events ...
 	return true
 }
 
-func canConvertToCTE(config *configuration.CTEEncoderConfiguration, events ...test.Event) bool {
+func canConvertToCTE(config *configuration.Configuration, events ...test.Event) bool {
 	for _, event := range events {
-		if hasNonstandardCTEEncoding(config.DefaultNumericFormats, event) {
+		if hasNonstandardCTEEncoding(config.Encoder.CTE.DefaultNumericFormats, event) {
 			return false
 		}
 	}
 	return true
 }
 
-func canConvertFromCBE(config *configuration.CTEEncoderConfiguration, events ...test.Event) bool {
+func canConvertFromCBE(config *configuration.Configuration, events ...test.Event) bool {
 	for _, event := range events {
 		if noFromCBE[event.Name()] {
 			return false
@@ -460,7 +460,7 @@ func canConvertFromCBE(config *configuration.CTEEncoderConfiguration, events ...
 	return true
 }
 
-func canConvertToCBE(config *configuration.CTEEncoderConfiguration, events ...test.Event) bool {
+func canConvertToCBE(config *configuration.Configuration, events ...test.Event) bool {
 	for _, event := range events {
 		if arrayHasShortForm[event.Name()] && event.ArrayElementCount() > 15 {
 			return false

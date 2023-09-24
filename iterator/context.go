@@ -35,7 +35,7 @@ type TryAddLocalReference func(reflect.Value) (didGenerateReferenceEvent bool)
 type Context struct {
 	// Per-session data
 	GetIteratorForType GetIteratorForType
-	Configuration      *configuration.IteratorConfiguration
+	Configuration      *configuration.Configuration
 	RecordTypeOrder    []recordTypeEntry
 
 	// Per-root-iterator data
@@ -53,9 +53,9 @@ type recordTypeEntry struct {
 	Iterator IteratorFunction
 }
 
-func sessionContext(getIteratorFunc GetIteratorForType, config *configuration.IteratorConfiguration) Context {
-	orderedEntries := make([]recordTypeEntry, 0, len(config.RecordTypes))
-	for rtype, name := range config.RecordTypes {
+func sessionContext(getIteratorFunc GetIteratorForType, config *configuration.Configuration) Context {
+	orderedEntries := make([]recordTypeEntry, 0, len(config.Iterator.RecordTypes))
+	for rtype, name := range config.Iterator.RecordTypes {
 		orderedEntries = append(orderedEntries, recordTypeEntry{
 			Name:     name,
 			Type:     rtype,

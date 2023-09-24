@@ -35,7 +35,7 @@ type recordTypeKey func(*Context, Builder)
 var unusedValue reflect.Value
 
 type Context struct {
-	config          *configuration.BuilderConfiguration
+	config          *configuration.Configuration
 	dstType         reflect.Type
 	referenceFiller ReferenceFiller
 
@@ -55,18 +55,12 @@ type Context struct {
 	recordTypeName string
 }
 
-func (_this *Context) Init(config *configuration.BuilderConfiguration,
+func (_this *Context) Init(config *configuration.Configuration,
 	dstType reflect.Type,
 	customBinaryBuildFunction configuration.CustomBinaryBuildFunction,
 	customTextBuildFunction configuration.CustomTextBuildFunction,
 	getBuilderGeneratorForType func(dstType reflect.Type) BuilderGenerator,
 ) {
-	if config == nil {
-		defaultConfig := configuration.DefaultBuilderConfiguration()
-		config = &defaultConfig
-	} else {
-		config.ApplyDefaults()
-	}
 	_this.config = config
 	_this.dstType = dstType
 	_this.CustomBinaryBuildFunction = customBinaryBuildFunction

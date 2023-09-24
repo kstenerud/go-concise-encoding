@@ -41,7 +41,7 @@ type Unmarshaler interface {
 	UnmarshalFromDocument(document []byte, template interface{}) (decoded interface{}, err error)
 }
 
-func chooseUnmarshaler(identifier byte, config *configuration.CEUnmarshalerConfiguration) (unmarshaler Unmarshaler, err error) {
+func chooseUnmarshaler(identifier byte, config *configuration.Configuration) (unmarshaler Unmarshaler, err error) {
 	switch identifier {
 	case 'c':
 		unmarshaler = cte.NewUnmarshaler(config)

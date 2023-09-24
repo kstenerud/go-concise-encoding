@@ -166,21 +166,21 @@ func V(v uint64) test.Event               { return test.V(v) }
 
 func iterateObject(object interface{},
 	eventReceiver events.DataEventReceiver,
-	iteratorConfiguration *configuration.IteratorConfiguration) {
+	config *configuration.Configuration) {
 
-	session := NewSession(nil, iteratorConfiguration)
+	session := NewSession(nil, config)
 	iter := session.NewIterator(eventReceiver)
 	iter.Iterate(object)
 }
 
 func assertIterateWithConfiguration(t *testing.T,
-	iteratorConfiguration *configuration.IteratorConfiguration,
+	config *configuration.Configuration,
 	obj interface{},
 	evts ...test.Event) {
 
 	expected := test.Events(append(test.Events{EvV}, evts...))
 	receiver, container := test.NewEventCollector(nil)
-	iterateObject(obj, receiver, iteratorConfiguration)
+	iterateObject(obj, receiver, config)
 
 	if !container.IsEquivalentTo(expected) {
 		t.Errorf("Expected %v to iterate to events [%v] but got [%v]", describe.D(obj), expected, container.Events)
@@ -188,6 +188,5 @@ func assertIterateWithConfiguration(t *testing.T,
 }
 
 func assertIterate(t *testing.T, obj interface{}, events ...test.Event) {
-	config := configuration.DefaultIteratorConfiguration()
-	assertIterateWithConfiguration(t, &config, obj, events...)
+	assertIterateWithConfiguration(t, configuration.New(), obj, events...)
 }

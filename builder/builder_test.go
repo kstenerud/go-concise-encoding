@@ -112,7 +112,7 @@ func TestBuilderTypedArrayFloat64(t *testing.T) {
 
 func TestBuildUnknown(t *testing.T) {
 	expected := []interface{}{1}
-	actual := runBuild(NewSession(nil, nil), nil, L(), N(1), E())
+	actual := runBuild(NewSession(nil, configuration.New()), nil, L(), N(1), E())
 
 	if !equivalence.IsEquivalent(expected, actual) {
 		t.Errorf("Expected %v but got %v", describe.D(expected), describe.D(actual))
@@ -591,8 +591,8 @@ func TestBuilderChunkedRID(t *testing.T) {
 type CustomBinaryExampleType uint64
 
 func TestBuilderChunkedCustomBinary(t *testing.T) {
-	config := configuration.DefaultBuilderSessionConfiguration()
-	config.CustomBinaryBuildFunction = func(customType uint64, src []byte, dst reflect.Value) error {
+	config := configuration.New()
+	config.Builder.CustomBinaryBuildFunction = func(customType uint64, src []byte, dst reflect.Value) error {
 		var accum CustomBinaryExampleType
 		for _, b := range src {
 			accum = (accum << 8) | CustomBinaryExampleType(b)
@@ -600,8 +600,8 @@ func TestBuilderChunkedCustomBinary(t *testing.T) {
 		dst.SetUint(uint64(accum))
 		return nil
 	}
-	config.CustomBuiltTypes = append(config.CustomBuiltTypes, reflect.TypeOf(CustomBinaryExampleType(0)))
-	session := NewSession(nil, &config)
+	config.Builder.CustomBuiltTypes = append(config.Builder.CustomBuiltTypes, reflect.TypeOf(CustomBinaryExampleType(0)))
+	session := NewSession(nil, config)
 	expected := CustomBinaryExampleType(0x01020304)
 	assertBuildWithSession(t, session, expected, BCB(1), ACM(2), ADU8([]byte{1, 2}), ACL(2), ADU8([]byte{3, 4}))
 	assertBuildWithSession(t, session, expected, BCB(1), ACM(2), ADU8([]byte{1, 2}), ACM(2), ADU8([]byte{3, 4}), ACL(0))
@@ -610,8 +610,8 @@ func TestBuilderChunkedCustomBinary(t *testing.T) {
 type CustomTextExampleType uint64
 
 func TestBuilderChunkedCustomText(t *testing.T) {
-	config := configuration.DefaultBuilderSessionConfiguration()
-	config.CustomTextBuildFunction = func(customType uint64, src string, dst reflect.Value) error {
+	config := configuration.New()
+	config.Builder.CustomTextBuildFunction = func(customType uint64, src string, dst reflect.Value) error {
 		v, err := strconv.ParseUint(string(src), 16, 64)
 		if err != nil {
 			return err
@@ -619,8 +619,8 @@ func TestBuilderChunkedCustomText(t *testing.T) {
 		dst.SetUint(v)
 		return nil
 	}
-	config.CustomBuiltTypes = append(config.CustomBuiltTypes, reflect.TypeOf(CustomTextExampleType(0)))
-	session := NewSession(nil, &config)
+	config.Builder.CustomBuiltTypes = append(config.Builder.CustomBuiltTypes, reflect.TypeOf(CustomTextExampleType(0)))
+	session := NewSession(nil, config)
 	expected := CustomTextExampleType(0x1234)
 	assertBuildWithSession(t, session, expected, BCT(1), ACM(2), ADU8([]byte{'1', '2'}), ACL(2), ADU8([]byte{'3', '4'}))
 	assertBuildWithSession(t, session, expected, BCT(1), ACM(2), ADU8([]byte{'1', '2'}), ACM(2), ADU8([]byte{'3', '4'}), ACL(0))

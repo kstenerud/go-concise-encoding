@@ -337,7 +337,7 @@ c0
                 {"cte"="@0[1f 2e 3d 4c]"                 "events"=["cb=0 1f 2e 3d 4c"]}
                 {"from_cte"="@0[1F 2E 3D 4C]"            "events"=["cb=0 1f 2e 3d 4c"]}
                 {"from_cte"="@0[]"                       "events"=["cb=0"]}
-                {"cte"="@0[]"                            "events"=["cb=0"] "debug"=true}
+                {"cte"="@0[]"                            "events"=["cb=0"]}
             ]
             "mustFail" = [
                 {"cte"="@0[00"}  // Not terminated

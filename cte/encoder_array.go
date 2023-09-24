@@ -41,10 +41,10 @@ type arrayEncoderEngine struct {
 	arrayChunkBacking      [16]byte
 	arrayChunkLeftover     []byte
 	stringBuffer           []byte
-	config                 *configuration.CTEEncoderConfiguration
+	config                 *configuration.Configuration
 }
 
-func (_this *arrayEncoderEngine) Init(stream *Writer, config *configuration.CTEEncoderConfiguration) {
+func (_this *arrayEncoderEngine) Init(stream *Writer, config *configuration.Configuration) {
 	_this.stream = stream
 	_this.arrayChunkLeftover = _this.arrayChunkBacking[:]
 	_this.config = config
@@ -302,8 +302,8 @@ func (_this *arrayEncoderEngine) beginArrayReferenceRemote(onComplete func()) {
 
 func (_this *arrayEncoderEngine) beginArrayUint8(onComplete func()) {
 	_this.setElementByteWidth(1)
-	_this.stream.WriteStringNotLF(arrayHeadersUint8[_this.config.DefaultNumericFormats.Array.Uint8])
-	format := arrayFormats8[_this.config.DefaultNumericFormats.Array.Uint8]
+	_this.stream.WriteStringNotLF(arrayHeadersUint8[_this.config.Encoder.CTE.DefaultNumericFormats.Array.Uint8])
+	format := arrayFormats8[_this.config.Encoder.CTE.DefaultNumericFormats.Array.Uint8]
 	_this.addElementsFunc = func(data []byte) {
 		for _, b := range data {
 			_this.writeSpaceIfNotFirstElement()
@@ -315,8 +315,8 @@ func (_this *arrayEncoderEngine) beginArrayUint8(onComplete func()) {
 func (_this *arrayEncoderEngine) beginArrayUint16(onComplete func()) {
 	const elemWidth = 2
 	_this.setElementByteWidth(elemWidth)
-	_this.stream.WriteStringNotLF(arrayHeadersUint16[_this.config.DefaultNumericFormats.Array.Uint16])
-	format := arrayFormats16[_this.config.DefaultNumericFormats.Array.Uint16]
+	_this.stream.WriteStringNotLF(arrayHeadersUint16[_this.config.Encoder.CTE.DefaultNumericFormats.Array.Uint16])
+	format := arrayFormats16[_this.config.Encoder.CTE.DefaultNumericFormats.Array.Uint16]
 	_this.addElementsFunc = func(data []byte) {
 		for len(data) > 0 {
 			_this.writeSpaceIfNotFirstElement()
@@ -329,8 +329,8 @@ func (_this *arrayEncoderEngine) beginArrayUint16(onComplete func()) {
 func (_this *arrayEncoderEngine) beginArrayUint32(onComplete func()) {
 	const elemWidth = 4
 	_this.setElementByteWidth(elemWidth)
-	_this.stream.WriteStringNotLF(arrayHeadersUint32[_this.config.DefaultNumericFormats.Array.Uint32])
-	format := arrayFormats32[_this.config.DefaultNumericFormats.Array.Uint32]
+	_this.stream.WriteStringNotLF(arrayHeadersUint32[_this.config.Encoder.CTE.DefaultNumericFormats.Array.Uint32])
+	format := arrayFormats32[_this.config.Encoder.CTE.DefaultNumericFormats.Array.Uint32]
 	_this.addElementsFunc = func(data []byte) {
 		for len(data) > 0 {
 			_this.writeSpaceIfNotFirstElement()
@@ -343,8 +343,8 @@ func (_this *arrayEncoderEngine) beginArrayUint32(onComplete func()) {
 func (_this *arrayEncoderEngine) beginArrayUint64(onComplete func()) {
 	const elemWidth = 8
 	_this.setElementByteWidth(elemWidth)
-	_this.stream.WriteStringNotLF(arrayHeadersUint64[_this.config.DefaultNumericFormats.Array.Uint64])
-	format := arrayFormats64[_this.config.DefaultNumericFormats.Array.Uint64]
+	_this.stream.WriteStringNotLF(arrayHeadersUint64[_this.config.Encoder.CTE.DefaultNumericFormats.Array.Uint64])
+	format := arrayFormats64[_this.config.Encoder.CTE.DefaultNumericFormats.Array.Uint64]
 	_this.addElementsFunc = func(data []byte) {
 		for len(data) > 0 {
 			_this.writeSpaceIfNotFirstElement()
@@ -357,8 +357,8 @@ func (_this *arrayEncoderEngine) beginArrayUint64(onComplete func()) {
 
 func (_this *arrayEncoderEngine) beginArrayInt8(onComplete func()) {
 	_this.setElementByteWidth(1)
-	_this.stream.WriteStringNotLF(arrayHeadersInt8[_this.config.DefaultNumericFormats.Array.Int8])
-	format := arrayFormats8[_this.config.DefaultNumericFormats.Array.Int8]
+	_this.stream.WriteStringNotLF(arrayHeadersInt8[_this.config.Encoder.CTE.DefaultNumericFormats.Array.Int8])
+	format := arrayFormats8[_this.config.Encoder.CTE.DefaultNumericFormats.Array.Int8]
 	_this.addElementsFunc = func(data []byte) {
 		for _, b := range data {
 			_this.writeSpaceIfNotFirstElement()
@@ -370,8 +370,8 @@ func (_this *arrayEncoderEngine) beginArrayInt8(onComplete func()) {
 func (_this *arrayEncoderEngine) beginArrayInt16(onComplete func()) {
 	const elemWidth = 2
 	_this.setElementByteWidth(elemWidth)
-	_this.stream.WriteStringNotLF(arrayHeadersInt16[_this.config.DefaultNumericFormats.Array.Int16])
-	format := arrayFormats16[_this.config.DefaultNumericFormats.Array.Int16]
+	_this.stream.WriteStringNotLF(arrayHeadersInt16[_this.config.Encoder.CTE.DefaultNumericFormats.Array.Int16])
+	format := arrayFormats16[_this.config.Encoder.CTE.DefaultNumericFormats.Array.Int16]
 	_this.addElementsFunc = func(data []byte) {
 		for len(data) > 0 {
 			_this.writeSpaceIfNotFirstElement()
@@ -384,8 +384,8 @@ func (_this *arrayEncoderEngine) beginArrayInt16(onComplete func()) {
 func (_this *arrayEncoderEngine) beginArrayInt32(onComplete func()) {
 	const elemWidth = 4
 	_this.setElementByteWidth(elemWidth)
-	_this.stream.WriteStringNotLF(arrayHeadersInt32[_this.config.DefaultNumericFormats.Array.Int32])
-	format := arrayFormats32[_this.config.DefaultNumericFormats.Array.Int32]
+	_this.stream.WriteStringNotLF(arrayHeadersInt32[_this.config.Encoder.CTE.DefaultNumericFormats.Array.Int32])
+	format := arrayFormats32[_this.config.Encoder.CTE.DefaultNumericFormats.Array.Int32]
 	_this.addElementsFunc = func(data []byte) {
 		for len(data) > 0 {
 			_this.writeSpaceIfNotFirstElement()
@@ -398,8 +398,8 @@ func (_this *arrayEncoderEngine) beginArrayInt32(onComplete func()) {
 func (_this *arrayEncoderEngine) beginArrayInt64(onComplete func()) {
 	const elemWidth = 8
 	_this.setElementByteWidth(elemWidth)
-	_this.stream.WriteStringNotLF(arrayHeadersInt64[_this.config.DefaultNumericFormats.Array.Int64])
-	format := arrayFormats64[_this.config.DefaultNumericFormats.Array.Int64]
+	_this.stream.WriteStringNotLF(arrayHeadersInt64[_this.config.Encoder.CTE.DefaultNumericFormats.Array.Int64])
+	format := arrayFormats64[_this.config.Encoder.CTE.DefaultNumericFormats.Array.Int64]
 	_this.addElementsFunc = func(data []byte) {
 		for len(data) > 0 {
 			_this.writeSpaceIfNotFirstElement()
@@ -413,8 +413,8 @@ func (_this *arrayEncoderEngine) beginArrayInt64(onComplete func()) {
 func (_this *arrayEncoderEngine) beginArrayFloat16(onComplete func()) {
 	const elemWidth = 2
 	_this.setElementByteWidth(elemWidth)
-	_this.stream.WriteStringNotLF(arrayHeadersFloat16[_this.config.DefaultNumericFormats.Array.Float16])
-	if _this.config.DefaultNumericFormats.Array.Float16 == configuration.CTEEncodingFormatHexadecimal {
+	_this.stream.WriteStringNotLF(arrayHeadersFloat16[_this.config.Encoder.CTE.DefaultNumericFormats.Array.Float16])
+	if _this.config.Encoder.CTE.DefaultNumericFormats.Array.Float16 == configuration.CTEEncodingFormatHexadecimal {
 		_this.addElementsFunc = func(data []byte) {
 			for len(data) > 0 {
 				_this.writeSpaceIfNotFirstElement()
@@ -426,7 +426,7 @@ func (_this *arrayEncoderEngine) beginArrayFloat16(onComplete func()) {
 		return
 	}
 
-	format := arrayFormatsGeneral[_this.config.DefaultNumericFormats.Array.Float16]
+	format := arrayFormatsGeneral[_this.config.Encoder.CTE.DefaultNumericFormats.Array.Float16]
 	_this.addElementsFunc = func(data []byte) {
 		for len(data) > 0 {
 			_this.writeSpaceIfNotFirstElement()
@@ -440,8 +440,8 @@ func (_this *arrayEncoderEngine) beginArrayFloat16(onComplete func()) {
 func (_this *arrayEncoderEngine) beginArrayFloat32(onComplete func()) {
 	const elemWidth = 4
 	_this.setElementByteWidth(elemWidth)
-	_this.stream.WriteStringNotLF(arrayHeadersFloat32[_this.config.DefaultNumericFormats.Array.Float32])
-	if _this.config.DefaultNumericFormats.Array.Float32 == configuration.CTEEncodingFormatHexadecimal {
+	_this.stream.WriteStringNotLF(arrayHeadersFloat32[_this.config.Encoder.CTE.DefaultNumericFormats.Array.Float32])
+	if _this.config.Encoder.CTE.DefaultNumericFormats.Array.Float32 == configuration.CTEEncodingFormatHexadecimal {
 		_this.addElementsFunc = func(data []byte) {
 			for len(data) > 0 {
 				_this.writeSpaceIfNotFirstElement()
@@ -453,7 +453,7 @@ func (_this *arrayEncoderEngine) beginArrayFloat32(onComplete func()) {
 		return
 	}
 
-	format := arrayFormatsGeneral[_this.config.DefaultNumericFormats.Array.Float32]
+	format := arrayFormatsGeneral[_this.config.Encoder.CTE.DefaultNumericFormats.Array.Float32]
 	_this.addElementsFunc = func(data []byte) {
 		for len(data) > 0 {
 			_this.writeSpaceIfNotFirstElement()
@@ -467,8 +467,8 @@ func (_this *arrayEncoderEngine) beginArrayFloat32(onComplete func()) {
 func (_this *arrayEncoderEngine) beginArrayFloat64(onComplete func()) {
 	const elemWidth = 8
 	_this.setElementByteWidth(elemWidth)
-	_this.stream.WriteStringNotLF(arrayHeadersFloat64[_this.config.DefaultNumericFormats.Array.Float64])
-	if _this.config.DefaultNumericFormats.Array.Float64 == configuration.CTEEncodingFormatHexadecimal {
+	_this.stream.WriteStringNotLF(arrayHeadersFloat64[_this.config.Encoder.CTE.DefaultNumericFormats.Array.Float64])
+	if _this.config.Encoder.CTE.DefaultNumericFormats.Array.Float64 == configuration.CTEEncodingFormatHexadecimal {
 		_this.addElementsFunc = func(data []byte) {
 			for len(data) > 0 {
 				_this.writeSpaceIfNotFirstElement()
@@ -481,7 +481,7 @@ func (_this *arrayEncoderEngine) beginArrayFloat64(onComplete func()) {
 		return
 	}
 
-	format := arrayFormatsGeneral[_this.config.DefaultNumericFormats.Array.Float64]
+	format := arrayFormatsGeneral[_this.config.Encoder.CTE.DefaultNumericFormats.Array.Float64]
 	_this.addElementsFunc = func(data []byte) {
 		for len(data) > 0 {
 			_this.writeSpaceIfNotFirstElement()

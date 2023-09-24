@@ -24,61 +24,37 @@ package configuration
 // Rules
 
 type RuleConfiguration struct {
-	// Limits before the ruleset artificially terminates with an error.
-	MaxArrayByteLength      uint64
-	MaxStringByteLength     uint64
-	MaxResourceIDByteLength uint64
-	MaxIdentifierLength     uint64
-	MaxContainerDepth       uint64
-	MaxObjectCount          uint64
-	MaxLocalReferenceCount  uint64
-
-	// TODO: Max bytes total for all array types
-	MaxTotalArrayBytes uint64
+	MaxDocumentSizeBytes          uint64
+	MaxArraySizeBytes             uint64
+	MaxIdentifierLength           uint64
+	MaxObjectCount                uint64
+	MaxContainerDepth             uint64
+	MaxIntegerDigitCount          uint64
+	MaxFloatCoefficientDigitCount uint64
+	MaxFloatExponentDigitCount    uint64
+	MaxYearDigitCount             uint64
+	MaxMarkerCount                uint64
+	MaxLocalReferenceCount        uint64
+	AllowRecursiveLocalReferences bool
+	AutoCompleteTruncatedDocument bool
 }
 
-func DefaultRuleConfiguration() RuleConfiguration {
-	return defaultRuleConfiguration
-}
+func (_this *RuleConfiguration) init() {}
 
 var defaultRuleConfiguration = RuleConfiguration{
-	MaxArrayByteLength:      1000000000,
-	MaxStringByteLength:     100000000,
-	MaxResourceIDByteLength: 10000,
-	MaxIdentifierLength:     1000,
-	MaxContainerDepth:       1000,
-	MaxObjectCount:          10000000,
-	MaxLocalReferenceCount:  100000,
-	// TODO: References need to check for amplification attacks. Keep count of referenced things and their object counts
+	MaxDocumentSizeBytes:          5 * gigabyte,
+	MaxArraySizeBytes:             1 * gigabyte,
+	MaxIdentifierLength:           1000,
+	MaxObjectCount:                1000000,
+	MaxContainerDepth:             1000,
+	MaxIntegerDigitCount:          100,
+	MaxFloatCoefficientDigitCount: 100,
+	MaxFloatExponentDigitCount:    5,
+	MaxYearDigitCount:             11,
+	MaxMarkerCount:                10000,
+	MaxLocalReferenceCount:        10000,
+	AllowRecursiveLocalReferences: false,
+	AutoCompleteTruncatedDocument: false,
 }
 
-func (_this *RuleConfiguration) ApplyDefaults() {
-	if _this.MaxArrayByteLength < 1 {
-		_this.MaxArrayByteLength = defaultRuleConfiguration.MaxArrayByteLength
-	}
-	if _this.MaxStringByteLength < 1 {
-		_this.MaxStringByteLength = defaultRuleConfiguration.MaxStringByteLength
-	}
-	if _this.MaxStringByteLength > _this.MaxArrayByteLength {
-		_this.MaxStringByteLength = _this.MaxArrayByteLength
-	}
-	if _this.MaxResourceIDByteLength < 1 {
-		_this.MaxResourceIDByteLength = defaultRuleConfiguration.MaxResourceIDByteLength
-	}
-	if _this.MaxResourceIDByteLength > _this.MaxArrayByteLength {
-		_this.MaxResourceIDByteLength = _this.MaxArrayByteLength
-	}
-	if _this.MaxContainerDepth < 1 {
-		_this.MaxContainerDepth = defaultRuleConfiguration.MaxContainerDepth
-	}
-	if _this.MaxObjectCount < 1 {
-		_this.MaxObjectCount = defaultRuleConfiguration.MaxObjectCount
-	}
-	if _this.MaxLocalReferenceCount < 1 {
-		_this.MaxLocalReferenceCount = defaultRuleConfiguration.MaxLocalReferenceCount
-	}
-}
-
-func (_this *RuleConfiguration) Validate() error {
-	return nil
-}
+const gigabyte = 1024 * 1024 * 1024

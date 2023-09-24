@@ -29,22 +29,26 @@ import (
 	"github.com/cockroachdb/apd/v2"
 	compact_float "github.com/kstenerud/go-compact-float"
 	compact_time "github.com/kstenerud/go-compact-time"
+	"github.com/kstenerud/go-concise-encoding/configuration"
 	"github.com/kstenerud/go-concise-encoding/internal/common"
 	"github.com/kstenerud/go-uleb128"
 )
 
 type Reader struct {
-	reader io.Reader
-	buffer []byte
+	reader    io.Reader
+	buffer    []byte
+	bytesRead uint64
+	config    *configuration.Configuration
 }
 
-func NewReader() *Reader {
+func NewReader(config *configuration.Configuration) *Reader {
 	_this := &Reader{}
-	_this.Init()
+	_this.Init(config)
 	return _this
 }
 
-func (_this *Reader) Init() {
+func (_this *Reader) Init(config *configuration.Configuration) {
+	_this.config = config
 	_this.buffer = make([]byte, decoderStartBufferSize)
 }
 
@@ -56,6 +60,7 @@ func (_this *Reader) ReadUint8() uint8 {
 	if _, err := _this.reader.Read(_this.buffer[:1]); err != nil {
 		_this.unexpectedError(err)
 	}
+	_this.markBytesRead(1)
 	return _this.buffer[0]
 }
 
@@ -87,6 +92,7 @@ func (_this *Reader) ReadTypeOrEOF() cbeTypeField {
 		_this.unexpectedError(err)
 	}
 
+	_this.markBytesRead(1)
 	return cbeTypeField(_this.buffer[0])
 }
 
@@ -200,6 +206,13 @@ const maxBigIntBitCount = 8192
 
 const decoderStartBufferSize = 127
 
+func (_this *Reader) markBytesRead(byteCount int) {
+	_this.bytesRead += uint64(byteCount)
+	if _this.bytesRead > _this.config.Rules.MaxDocumentSizeBytes {
+		_this.errorf("exceeded maximum document size of %v", _this.config.Rules.MaxDocumentSizeBytes)
+	}
+}
+
 func (_this *Reader) readSmallULEB128(name string, maxValue uint64) uint64 {
 	asUint, asBig, _, err := uleb128.DecodeWithByteBuffer(_this.reader, _this.buffer)
 	if err != nil {
@@ -222,6 +235,7 @@ func (_this *Reader) readIntoBuffer(count int) {
 		if bytesRead, err := _this.reader.Read(dst); err != nil {
 			_this.unexpectedError(err)
 		} else {
+			_this.markBytesRead(bytesRead)
 			dst = dst[bytesRead:]
 		}
 	}

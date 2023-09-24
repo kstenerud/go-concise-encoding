@@ -125,12 +125,12 @@ func (_this *BaseTest) cteToEvents(document string) (result test.Events, err err
 		}()
 	}
 
-	config := configuration.DefaultCEDecoderConfiguration()
-	config.DebugPanics = _this.Debug
-	decoder := cte.NewDecoder(&config)
+	config := configuration.New()
+	config.Debug.PassThroughPanics = _this.Debug
+	decoder := cte.NewDecoder(config)
 	buffer := bytes.NewBuffer([]byte(document))
 	receiver, collection := test.NewEventCollector(nil)
-	receiver = rules.NewRules(receiver, nil)
+	receiver = rules.NewRules(receiver, config)
 	if err = decoder.Decode(buffer, receiver); err != nil {
 		return
 	}
@@ -152,12 +152,12 @@ func (_this *BaseTest) cbeToEvents(document []byte) (result test.Events, err err
 		}()
 	}
 
-	config := configuration.DefaultCEDecoderConfiguration()
-	config.DebugPanics = _this.Debug
-	decoder := cbe.NewDecoder(&config)
+	config := configuration.New()
+	config.Debug.PassThroughPanics = _this.Debug
+	decoder := cbe.NewDecoder(config)
 	buffer := bytes.NewBuffer(document)
 	receiver, collection := test.NewEventCollector(nil)
-	receiver = rules.NewRules(receiver, nil)
+	receiver = rules.NewRules(receiver, config)
 	if err = decoder.Decode(buffer, receiver); err != nil {
 		return
 	}

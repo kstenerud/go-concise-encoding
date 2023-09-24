@@ -45,7 +45,7 @@ type contextStackEntry struct {
 }
 
 type Context struct {
-	config          *configuration.RuleConfiguration
+	config          *configuration.Configuration
 	ExpectedVersion uint64
 
 	objectCount uint64
@@ -77,7 +77,7 @@ type Context struct {
 	LocalReferenceCount    uint64
 }
 
-func (_this *Context) Init(config *configuration.RuleConfiguration) {
+func (_this *Context) Init(config *configuration.Configuration) {
 	_this.config = config
 	_this.ExpectedVersion = version.ConciseEncodingVersion
 	_this.stack = make([]contextStackEntry, 0, 16)
@@ -143,8 +143,8 @@ func (_this *Context) NotifyNewObject(isRealObject bool) {
 		}
 	}
 	_this.objectCount++
-	if _this.objectCount > _this.config.MaxObjectCount {
-		panic(fmt.Errorf("exceeded max object count of %d", _this.config.MaxObjectCount))
+	if _this.objectCount > _this.config.Rules.MaxObjectCount {
+		panic(fmt.Errorf("exceeded max object count of %d", _this.config.Rules.MaxObjectCount))
 	}
 }
 
@@ -153,8 +153,8 @@ func (_this *Context) NotifyNewObject(isRealObject bool) {
  */
 func (_this *Context) beginContainer(rule EventRule, dataType DataType, expectedObjectCount int) {
 	_this.containerDepth++
-	if _this.containerDepth > _this.config.MaxContainerDepth {
-		panic(fmt.Errorf("exceeded max container depth of %d", _this.config.MaxContainerDepth))
+	if _this.containerDepth > _this.config.Rules.MaxContainerDepth {
+		panic(fmt.Errorf("exceeded max container depth of %d", _this.config.Rules.MaxContainerDepth))
 	}
 	_this.stackRule(rule, dataType, expectedObjectCount)
 }
@@ -348,8 +348,8 @@ func (_this *Context) EndDocument() {
 
 func (_this *Context) MarkObject(dataType DataType) {
 	newLocalReferenceCount := _this.LocalReferenceCount + 1
-	if newLocalReferenceCount > _this.config.MaxLocalReferenceCount {
-		panic(fmt.Errorf("too many marked objects (%d). Max is %d", newLocalReferenceCount, _this.config.MaxLocalReferenceCount))
+	if newLocalReferenceCount > _this.config.Rules.MaxLocalReferenceCount {
+		panic(fmt.Errorf("too many marked objects (%d). Max is %d", newLocalReferenceCount, _this.config.Rules.MaxLocalReferenceCount))
 	}
 
 	id := _this.markerID

@@ -30,32 +30,26 @@ import (
 )
 
 type Decoder struct {
-	config *configuration.CEDecoderConfiguration
+	config *configuration.Configuration
 }
 
 // Create a new CTE decoder, which will read from reader and send data events
-// to nextReceiver. If config is nil, default configuration will be used.
-func NewDecoder(config *configuration.CEDecoderConfiguration) *Decoder {
+// to nextReceiver.
+func NewDecoder(config *configuration.Configuration) *Decoder {
 	_this := &Decoder{}
 	_this.Init(config)
 	return _this
 }
 
 // Initialize this decoder, which will read from reader and send data events
-// to nextReceiver. If config is nil, default configuration will be used.
-func (_this *Decoder) Init(config *configuration.CEDecoderConfiguration) {
-	if config == nil {
-		defaultConfig := configuration.DefaultCEDecoderConfiguration()
-		config = &defaultConfig
-	} else {
-		config.ApplyDefaults()
-	}
+// to nextReceiver.
+func (_this *Decoder) Init(config *configuration.Configuration) {
 	_this.config = config
 }
 
 func (_this *Decoder) Decode(reader io.Reader, eventReceiver events.DataEventReceiver) (err error) {
 	defer func() {
-		if !_this.config.DebugPanics {
+		if !_this.config.Debug.PassThroughPanics {
 			if r := recover(); r != nil {
 				switch v := r.(type) {
 				case error:
@@ -72,12 +66,14 @@ func (_this *Decoder) Decode(reader io.Reader, eventReceiver events.DataEventRec
 		return
 	}
 
+	_this.markBytesRead(buf.Len())
+
 	return ParseDocument(buf.String(), eventReceiver)
 }
 
 func (_this *Decoder) DecodeDocument(document []byte, eventReceiver events.DataEventReceiver) (err error) {
 	defer func() {
-		if !_this.config.DebugPanics {
+		if !_this.config.Debug.PassThroughPanics {
 			if r := recover(); r != nil {
 				switch v := r.(type) {
 				case error:
@@ -89,5 +85,18 @@ func (_this *Decoder) DecodeDocument(document []byte, eventReceiver events.DataE
 		}
 	}()
 
+	_this.markBytesRead(len(document))
+
 	return ParseDocument(string(document), eventReceiver)
+}
+
+func (_this *Decoder) markBytesRead(byteCount int) {
+	if uint64(byteCount) > _this.config.Rules.MaxDocumentSizeBytes {
+		_this.errorf("exceeded maximum document size of %v", _this.config.Rules.MaxDocumentSizeBytes)
+	}
+}
+
+func (_this *Decoder) errorf(format string, args ...interface{}) {
+	// TODO: Diagnostics
+	panic(fmt.Errorf(format, args...))
 }

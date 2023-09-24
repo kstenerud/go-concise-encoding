@@ -28,6 +28,7 @@ import (
 	"github.com/cockroachdb/apd/v2"
 	compact_float "github.com/kstenerud/go-compact-float"
 	compact_time "github.com/kstenerud/go-compact-time"
+	"github.com/kstenerud/go-concise-encoding/configuration"
 	"github.com/kstenerud/go-concise-encoding/test"
 	"github.com/kstenerud/go-concise-encoding/types"
 	"github.com/kstenerud/go-describe"
@@ -162,13 +163,13 @@ func UID(v []byte) test.Event             { return test.UID(v) }
 func V(v uint64) test.Event               { return test.V(v) }
 
 func runBuild(session *Session, template interface{}, events ...test.Event) interface{} {
-	builder := session.NewBuilderFor(template, nil)
+	builder := session.NewBuilderFor(template)
 	test.InvokeEventsAsCompleteDocument(builder, events...)
 	return builder.GetBuiltObject()
 }
 
 func assertBuild(t *testing.T, expected interface{}, events ...test.Event) {
-	actual := runBuild(NewSession(nil, nil), expected, events...)
+	actual := runBuild(NewSession(nil, configuration.New()), expected, events...)
 	if !equivalence.IsEquivalent(expected, actual) {
 		t.Errorf("Expected %v but got %v", describe.D(expected), describe.D(actual))
 	}
@@ -183,6 +184,6 @@ func assertBuildWithSession(t *testing.T, session *Session, expected interface{}
 
 func assertBuildPanics(t *testing.T, template interface{}, events ...test.Event) {
 	test.AssertPanics(t, "build", func() {
-		runBuild(NewSession(nil, nil), template, events...)
+		runBuild(NewSession(nil, configuration.New()), template, events...)
 	})
 }

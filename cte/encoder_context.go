@@ -66,7 +66,7 @@ func (_this *indenter) GetOriginAndIndent() []byte {
 }
 
 type EncoderContext struct {
-	config              *configuration.CTEEncoderConfiguration
+	config              *configuration.Configuration
 	indenter            indenter
 	stack               []EncoderDecorator
 	Decorator           EncoderDecorator
@@ -75,7 +75,7 @@ type EncoderContext struct {
 	ArrayEngine         arrayEncoderEngine
 }
 
-func (_this *EncoderContext) Init(config *configuration.CTEEncoderConfiguration) {
+func (_this *EncoderContext) Init(config *configuration.Configuration) {
 	_this.config = config
 	_this.ArrayEngine.Init(&_this.Stream, _this.config)
 	_this.Stream.Init()

@@ -25,6 +25,7 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/kstenerud/go-concise-encoding/configuration"
 	"github.com/kstenerud/go-concise-encoding/test"
 	"github.com/kstenerud/go-describe"
 	"github.com/kstenerud/go-equivalence"
@@ -32,7 +33,7 @@ import (
 
 func TestCBEEncoderMultiUse(t *testing.T) {
 	buffer := &bytes.Buffer{}
-	encoder := NewEncoder(nil)
+	encoder := NewEncoder(configuration.New())
 	encoder.PrepareToEncode(buffer)
 	test.InvokeEventsAsCompleteDocument(encoder, test.EvV, test.M(), test.E())
 
@@ -58,7 +59,7 @@ func TestCBEDuplicateEmptySliceInSlice(t *testing.T) {
 // ===========================================================================
 
 func assertMarshal(t *testing.T, value interface{}, expectedDocument []byte) (successful bool) {
-	document, err := NewMarshaler(nil).MarshalToDocument(value)
+	document, err := NewMarshaler(configuration.New()).MarshalToDocument(value)
 	if err != nil {
 		t.Errorf("Error [%v] while marshaling %v", err, describe.D(value))
 		return
@@ -72,7 +73,7 @@ func assertMarshal(t *testing.T, value interface{}, expectedDocument []byte) (su
 }
 
 func assertUnmarshal(t *testing.T, expectedValue interface{}, document []byte) (successful bool) {
-	actualValue, err := NewUnmarshaler(nil).UnmarshalFromDocument([]byte(document), expectedValue)
+	actualValue, err := NewUnmarshaler(configuration.New()).UnmarshalFromDocument([]byte(document), expectedValue)
 	if err != nil {
 		t.Errorf("Error [%v] while unmarshaling %v", err, describe.D(document))
 		return

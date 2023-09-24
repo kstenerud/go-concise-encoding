@@ -97,11 +97,11 @@ func GenerateTestFile(filePath string, tests ...*test_runner.UnitTest) {
 		Tests:     tests,
 	}
 
-	config := configuration.DefaultCTEMarshalerConfiguration()
+	config := configuration.New()
 	config.Iterator.FieldNameStyle = configuration.FieldNameSnakeCase
-	config.Encoder.DefaultNumericFormats.Array.Uint8 = configuration.CTEEncodingFormatHexadecimalZeroFilled
-	config.DebugPanics = true
-	document, err := ce.MarshalToCTEDocument(suite, &config)
+	config.Encoder.CTE.DefaultNumericFormats.Array.Uint8 = configuration.CTEEncodingFormatHexadecimalZeroFilled
+	config.Debug.PassThroughPanics = true
+	document, err := ce.MarshalToCTEDocument(suite, config)
 	if err != nil {
 		panic(err)
 	}

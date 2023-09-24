@@ -25,66 +25,6 @@ import (
 	"reflect"
 )
 
-// ============================================================================
-// Builder Session
-
-// Fills out a value from custom data.
-// See https://github.com/kstenerud/concise-encoding/blob/master/cbe-specification.md#custom-binary
-// See https://github.com/kstenerud/concise-encoding/blob/master/cbe-specification.md#custom-text
-// See https://github.com/kstenerud/concise-encoding/blob/master/cte-specification.md#custom-binary
-// See https://github.com/kstenerud/concise-encoding/blob/master/cte-specification.md#custom-text
-type CustomBinaryBuildFunction func(customType uint64, src []byte, dst reflect.Value) error
-type CustomTextBuildFunction func(customType uint64, src string, dst reflect.Value) error
-
-type BuilderSessionConfiguration struct {
-	// Specifies which types will be built using custom text/binary build
-	// functions. You must also set one or both of CustomBinaryBuildFunction
-	// and CustomTextBuildFunction in order to use this feature.
-	// Both CBE and CTE will attempt to use either the binary or text version
-	// depending on the data type (custom binary, custom text) encoded in the
-	// source document.
-	CustomBuiltTypes []reflect.Type
-
-	// Build function to use when building from a custom binary source.
-	CustomBinaryBuildFunction CustomBinaryBuildFunction
-
-	// Build function to use when building from a custom text source.
-	CustomTextBuildFunction CustomTextBuildFunction
-}
-
-func DefaultBuilderSessionConfiguration() BuilderSessionConfiguration {
-	return defaultBuilderSessionConfiguration
-}
-
-var defaultBuilderSessionConfiguration = BuilderSessionConfiguration{
-	CustomBinaryBuildFunction: func(customType uint64, src []byte, dst reflect.Value) error {
-		return fmt.Errorf("no builder has been registered to handle custom binary data")
-	},
-	CustomTextBuildFunction: func(customType uint64, src string, dst reflect.Value) error {
-		return fmt.Errorf("no builder has been registered to handle custom text data")
-	},
-	CustomBuiltTypes: []reflect.Type{},
-}
-
-func (_this *BuilderSessionConfiguration) ApplyDefaults() {
-	if _this.CustomBinaryBuildFunction == nil {
-		_this.CustomBinaryBuildFunction = defaultBuilderSessionConfiguration.CustomBinaryBuildFunction
-	}
-	if _this.CustomTextBuildFunction == nil {
-		_this.CustomTextBuildFunction = defaultBuilderSessionConfiguration.CustomTextBuildFunction
-	}
-	if _this.CustomBuiltTypes == nil {
-		_this.CustomBuiltTypes = defaultBuilderSessionConfiguration.CustomBuiltTypes
-	}
-}
-
-func (_this *BuilderSessionConfiguration) Validate() error {
-	return nil
-}
-
-// ============================================================================
-// Builder
-
 type BuilderConfiguration struct {
 	// Max base-10 exponent allowed when converting from floating point to big integer.
 	// As exponents get very large, it takes geometrically more CPU to convert.
@@ -101,11 +41,23 @@ type BuilderConfiguration struct {
 
 	// TODO: If true, don't raise an error on unknown fields
 	IgnoreUnknownFields bool
+
+	// Specifies which types will be built using custom text/binary build
+	// functions. You must also set one or both of CustomBinaryBuildFunction
+	// and CustomTextBuildFunction in order to use this feature.
+	// Both CBE and CTE will attempt to use either the binary or text version
+	// depending on the data type (custom binary, custom text) encoded in the
+	// source document.
+	CustomBuiltTypes []reflect.Type
+
+	// Build function to use when building from a custom binary source.
+	CustomBinaryBuildFunction CustomBinaryBuildFunction
+
+	// Build function to use when building from a custom text source.
+	CustomTextBuildFunction CustomTextBuildFunction
 }
 
-func DefaultBuilderConfiguration() BuilderConfiguration {
-	return defaultBuilderConfiguration
-}
+func (_this *BuilderConfiguration) init() {}
 
 var defaultBuilderConfiguration = BuilderConfiguration{
 	FloatToBigIntMaxBase10Exponent:  maxBase10Exp,
@@ -113,12 +65,21 @@ var defaultBuilderConfiguration = BuilderConfiguration{
 	AllowLossyFloatConversion:       true,
 	IgnoreUnknownFields:             true,
 	CaseInsensitiveStructFieldNames: true,
+	CustomBinaryBuildFunction: func(customType uint64, src []byte, dst reflect.Value) error {
+		return fmt.Errorf("no builder has been registered to handle custom binary data")
+	},
+	CustomTextBuildFunction: func(customType uint64, src string, dst reflect.Value) error {
+		return fmt.Errorf("no builder has been registered to handle custom text data")
+	},
+	CustomBuiltTypes: []reflect.Type{},
 }
 
-func (_this *BuilderConfiguration) ApplyDefaults() {
-	// Nothing to do
-}
+// Fills out a value from custom data.
+// See https://github.com/kstenerud/concise-encoding/blob/master/cbe-specification.md#custom-binary
+// See https://github.com/kstenerud/concise-encoding/blob/master/cbe-specification.md#custom-text
+// See https://github.com/kstenerud/concise-encoding/blob/master/cte-specification.md#custom-binary
+// See https://github.com/kstenerud/concise-encoding/blob/master/cte-specification.md#custom-text
+type CustomBinaryBuildFunction func(customType uint64, src []byte, dst reflect.Value) error
+type CustomTextBuildFunction func(customType uint64, src string, dst reflect.Value) error
 
-func (_this *BuilderConfiguration) Validate() error {
-	return nil
-}
+const maxBase10Exp = 50

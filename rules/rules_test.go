@@ -437,47 +437,47 @@ func TestRulesErrorInvalidMarkerID(t *testing.T) {
 // TODO: Other array byte lengths
 
 func TestRulesMaxBytesLength(t *testing.T) {
-	config := configuration.DefaultRuleConfiguration()
-	config.MaxArrayByteLength = 10
-	rules := newRulesAfterVersion(&config)
+	config := configuration.New()
+	config.Rules.MaxArraySizeBytes = 10
+	rules := newRulesAfterVersion(config)
 	assertEventsFail(t, rules, AU8(NewBytes(11, 0)))
 
-	rules = newRulesAfterVersion(&config)
+	rules = newRulesAfterVersion(config)
 	assertEventsSucceed(t, rules, BAU8(), ACM(8), ADU8(NewBytes(8, 0)))
 	assertEventsFail(t, rules, ACL(4))
 }
 
 func TestRulesMaxStringLength(t *testing.T) {
-	config := configuration.DefaultRuleConfiguration()
-	config.MaxStringByteLength = 10
-	rules := newRulesAfterVersion(&config)
+	config := configuration.New()
+	config.Rules.MaxArraySizeBytes = 10
+	rules := newRulesAfterVersion(config)
 	assertEventsFail(t, rules, S("12345678901"))
 
-	rules = newRulesAfterVersion(&config)
+	rules = newRulesAfterVersion(config)
 	assertEventsSucceed(t, rules, BS(), ACM(8), ADU8(NewBytes(8, 40)))
 	assertEventsFail(t, rules, ACL(4))
 }
 
 func TestRulesMaxResourceIDLength(t *testing.T) {
-	config := configuration.DefaultRuleConfiguration()
-	config.MaxResourceIDByteLength = 10
-	rules := newRulesAfterVersion(&config)
+	config := configuration.New()
+	config.Rules.MaxArraySizeBytes = 10
+	rules := newRulesAfterVersion(config)
 	assertEventsFail(t, rules, RID("12345678901"))
 
-	rules = newRulesAfterVersion(&config)
+	rules = newRulesAfterVersion(config)
 	assertEventsSucceed(t, rules, BRID(), ACM(8), ADU8(NewBytes(8, 64)))
 	assertEventsFail(t, rules, ACL(4))
 }
 
 func TestRulesMaxIDLength(t *testing.T) {
 	maxIDLength := 200
-	config := configuration.DefaultRuleConfiguration()
-	config.MaxIdentifierLength = uint64(maxIDLength)
+	config := configuration.New()
+	config.Rules.MaxIdentifierLength = uint64(maxIDLength)
 
-	rules := newRulesAfterVersion(&config)
+	rules := newRulesAfterVersion(config)
 	assertEventsFail(t, rules, MARK(string(NewString(maxIDLength+1, 0))))
 
-	rules = newRulesAfterVersion(&config)
+	rules = newRulesAfterVersion(config)
 	assertEventsSucceed(t, rules,
 		L(),
 		MARK(string(NewString(maxIDLength, 0))),
@@ -494,27 +494,27 @@ func TestRulesMaxContainerDepth(t *testing.T) {
 }
 
 func TestRulesMaxObjectCount(t *testing.T) {
-	config := configuration.DefaultRuleConfiguration()
-	config.MaxObjectCount = 3
-	rules := newRulesAfterVersion(&config)
+	config := configuration.New()
+	config.Rules.MaxObjectCount = 3
+	rules := newRulesAfterVersion(config)
 	assertEventsSucceed(t, rules, L(), S("test"), B(true))
 	assertEventsFail(t, rules, B(false))
 }
 
 func TestRulesMaxReferenceCount(t *testing.T) {
-	config := configuration.DefaultRuleConfiguration()
-	config.MaxLocalReferenceCount = 2
-	rules := newRulesAfterVersion(&config)
+	config := configuration.New()
+	config.Rules.MaxLocalReferenceCount = 2
+	rules := newRulesAfterVersion(config)
 	assertEventsSucceed(t, rules, L(), MARK("test"), B(true), MARK("10"), B(true))
 	assertEventsFail(t, rules, MARK("xx"), B(true))
 }
 
 func TestRulesReset(t *testing.T) {
-	config := configuration.DefaultRuleConfiguration()
-	config.MaxContainerDepth = 2
-	config.MaxObjectCount = 5
-	config.MaxLocalReferenceCount = 2
-	rules := newRulesAfterVersion(&config)
+	config := configuration.New()
+	config.Rules.MaxContainerDepth = 2
+	config.Rules.MaxObjectCount = 5
+	config.Rules.MaxLocalReferenceCount = 2
+	rules := newRulesAfterVersion(config)
 	assertEventsSucceed(t, rules, L())
 	rules.Reset()
 	assertEventsFail(t, rules, E())
@@ -528,13 +528,13 @@ func TestRulesReset(t *testing.T) {
 }
 
 func TestTopLevelStringLikeReferenceID(t *testing.T) {
-	config := configuration.DefaultRuleConfiguration()
-	rules := NewRules(nullevent.NewNullEventReceiver(), &config)
+	config := configuration.New()
+	rules := NewRules(nullevent.NewNullEventReceiver(), config)
 	assertEventsSucceed(t, rules, BD(), EvV, REFR("http://x.y"), ED())
 }
 
 func TestRulesForwardLocalReference(t *testing.T) {
-	rules := newRulesAfterVersion(nil)
+	rules := newRulesAfterVersion(configuration.New())
 	assertEventsSucceed(t, rules, M(),
 		S("marked"), MARK("x"), M(),
 		S("recursive"), REFL("x"),
@@ -543,63 +543,67 @@ func TestRulesForwardLocalReference(t *testing.T) {
 }
 
 func TestRulesIdentifier(t *testing.T) {
-	rules := newRulesAfterVersion(nil)
+	config := configuration.New()
+
+	rules := newRulesAfterVersion(config)
 	assertEventsFail(t, rules, MARK("12\u0001abc"), N(1))
-	rules = newRulesAfterVersion(nil)
+	rules = newRulesAfterVersion(config)
 	assertEventsFail(t, rules, MARK(""), N(1))
-	rules = newRulesAfterVersion(nil)
+	rules = newRulesAfterVersion(config)
 	assertEventsFail(t, rules, MARK("a+b"), N(1))
-	rules = newRulesAfterVersion(nil)
+	rules = newRulesAfterVersion(config)
 	assertEventsFail(t, rules, MARK("a+b"), N(1))
-	rules = newRulesAfterVersion(nil)
+	rules = newRulesAfterVersion(config)
 	assertEventsFail(t, rules, MARK(":a"), N(1))
-	rules = newRulesAfterVersion(nil)
+	rules = newRulesAfterVersion(config)
 	assertEventsFail(t, rules, MARK("a:"), N(1))
-	rules = newRulesAfterVersion(nil)
+	rules = newRulesAfterVersion(config)
 	assertEventsFail(t, rules, MARK("a::a"), N(1))
 
-	rules = newRulesAfterVersion(nil)
+	rules = newRulesAfterVersion(config)
 	assertEventsSucceed(t, rules, MARK("1"), N(1))
-	rules = newRulesAfterVersion(nil)
+	rules = newRulesAfterVersion(config)
 	assertEventsSucceed(t, rules, MARK("a"), N(1))
-	rules = newRulesAfterVersion(nil)
+	rules = newRulesAfterVersion(config)
 	assertEventsSucceed(t, rules, MARK("a-a"), N(1))
-	rules = newRulesAfterVersion(nil)
+	rules = newRulesAfterVersion(config)
 	assertEventsSucceed(t, rules, MARK("_a"), N(1))
-	rules = newRulesAfterVersion(nil)
+	rules = newRulesAfterVersion(config)
 	assertEventsSucceed(t, rules, MARK("a_"), N(1))
-	rules = newRulesAfterVersion(nil)
+	rules = newRulesAfterVersion(config)
 	assertEventsSucceed(t, rules, MARK("a-"), N(1))
-	rules = newRulesAfterVersion(nil)
+	rules = newRulesAfterVersion(config)
 	assertEventsSucceed(t, rules, MARK("-a"), N(1))
-	rules = newRulesAfterVersion(nil)
+	rules = newRulesAfterVersion(config)
 	assertEventsSucceed(t, rules, MARK("a."), N(1))
-	rules = newRulesAfterVersion(nil)
+	rules = newRulesAfterVersion(config)
 	assertEventsSucceed(t, rules, MARK(".a"), N(1))
-	rules = newRulesAfterVersion(nil)
+	rules = newRulesAfterVersion(config)
 	assertEventsSucceed(t, rules, MARK("0_"), N(1))
-	rules = newRulesAfterVersion(nil)
+	rules = newRulesAfterVersion(config)
 	assertEventsSucceed(t, rules, MARK("0-"), N(1))
-	rules = newRulesAfterVersion(nil)
+	rules = newRulesAfterVersion(config)
 	assertEventsSucceed(t, rules, MARK("a-_a12-_3_gy"), N(1))
-	rules = newRulesAfterVersion(nil)
+	rules = newRulesAfterVersion(config)
 	assertEventsSucceed(t, rules, MARK("人気"), N(1))
-	rules = newRulesAfterVersion(nil)
+	rules = newRulesAfterVersion(config)
 	assertEventsSucceed(t, rules, MARK("a...."), N(1))
-	rules = newRulesAfterVersion(nil)
+	rules = newRulesAfterVersion(config)
 	assertEventsSucceed(t, rules, MARK("a\u0300"), N(1))
 }
 
 func TestRulesMultichunk(t *testing.T) {
-	rules := newRulesAfterVersion(nil)
+	rules := newRulesAfterVersion(configuration.New())
 	assertEventsSucceed(t, rules, BS(), ACM(1), ADT("a"), ACL(0))
 }
 
 func TestRulesEdge(t *testing.T) {
-	rules := newRulesAfterVersion(nil)
+	config := configuration.New()
+
+	rules := newRulesAfterVersion(config)
 	assertEventsSucceed(t, rules, EDGE(), RID("x"), RID("y"), N(1), E())
 
-	rules = newRulesAfterVersion(nil)
+	rules = newRulesAfterVersion(config)
 	assertEventsSucceed(t, rules, EDGE(), RID("a"), RID("b"), N(1), E(), ED())
 }
 
@@ -877,7 +881,7 @@ func TestRulesAllowedTypesEdgeDestination(t *testing.T) {
 }
 
 func TestMedia(t *testing.T) {
-	rules := NewRules(nullevent.NewNullEventReceiver(), nil)
+	rules := NewRules(nullevent.NewNullEventReceiver(), configuration.New())
 	assertEventsSucceed(t, rules, BD(), V(0), BMEDIA("a/b"), ACL(0), ED())
 }
 

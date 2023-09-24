@@ -178,12 +178,12 @@ func generateEncodeDecodeTest(
 	invalidTestTypes testType) *test_runner.UnitTest {
 	mustSucceed := []*test_runner.MustSucceedTest{}
 	mustFail := []*test_runner.MustFailTest{}
-	config := configuration.DefaultCTEEncoderConfiguration()
+	config := configuration.New()
 
 	for _, eventSet := range generateEventPrefixesAndFollowups(validEvents...) {
 		events := append(prefix, eventSet...)
 		events = append(events, suffix...)
-		mustSucceed = append(mustSucceed, newMustSucceedTest(DirectionsAll, &config, events...))
+		mustSucceed = append(mustSucceed, newMustSucceedTest(DirectionsAll, config, events...))
 	}
 
 	for _, event := range invalidEvents {

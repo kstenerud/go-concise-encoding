@@ -288,13 +288,13 @@ func (_this *MustSucceedTest) cteToCte(document string) (result string, err erro
 		}()
 	}
 
-	decoderConfig := configuration.DefaultCEDecoderConfiguration()
-	decoderConfig.DebugPanics = _this.Debug
-	decoder := cte.NewDecoder(&decoderConfig)
+	decoderConfig := configuration.New()
+	decoderConfig.Debug.PassThroughPanics = _this.Debug
+	decoder := cte.NewDecoder(decoderConfig)
 
-	encoderConfig := configuration.DefaultCTEEncoderConfiguration()
-	encoder := cte.NewEncoder(&encoderConfig)
-	receiver := rules.NewRules(encoder, nil)
+	encoderConfig := configuration.New()
+	encoder := cte.NewEncoder(encoderConfig)
+	receiver := rules.NewRules(encoder, encoderConfig)
 
 	inBuffer := bytes.NewBuffer([]byte(document))
 	outBuffer := &strings.Builder{}
@@ -320,13 +320,13 @@ func (_this *MustSucceedTest) cbeToCte(document []byte) (result string, err erro
 		}()
 	}
 
-	decoderConfig := configuration.DefaultCEDecoderConfiguration()
-	decoderConfig.DebugPanics = _this.Debug
-	decoder := cbe.NewDecoder(&decoderConfig)
+	decoderConfig := configuration.New()
+	decoderConfig.Debug.PassThroughPanics = _this.Debug
+	decoder := cbe.NewDecoder(decoderConfig)
 
-	encoderConfig := configuration.DefaultCTEEncoderConfiguration()
-	encoder := cte.NewEncoder(&encoderConfig)
-	receiver := rules.NewRules(encoder, nil)
+	encoderConfig := configuration.New()
+	encoder := cte.NewEncoder(encoderConfig)
+	receiver := rules.NewRules(encoder, encoderConfig)
 
 	inBuffer := bytes.NewBuffer([]byte(document))
 	outBuffer := &strings.Builder{}
@@ -352,13 +352,13 @@ func (_this *MustSucceedTest) cteToCbe(document string) (result []byte, err erro
 		}()
 	}
 
-	decoderConfig := configuration.DefaultCEDecoderConfiguration()
-	decoderConfig.DebugPanics = _this.Debug
-	decoder := cte.NewDecoder(&decoderConfig)
+	decoderConfig := configuration.New()
+	decoderConfig.Debug.PassThroughPanics = _this.Debug
+	decoder := cte.NewDecoder(decoderConfig)
 
-	encoderConfig := configuration.DefaultCBEEncoderConfiguration()
-	encoder := cbe.NewEncoder(&encoderConfig)
-	receiver := rules.NewRules(encoder, nil)
+	encoderConfig := configuration.New()
+	encoder := cbe.NewEncoder(encoderConfig)
+	receiver := rules.NewRules(encoder, encoderConfig)
 
 	inBuffer := bytes.NewBuffer([]byte(document))
 	outBuffer := &bytes.Buffer{}
@@ -384,13 +384,13 @@ func (_this *MustSucceedTest) cbeToCbe(document []byte) (result []byte, err erro
 		}()
 	}
 
-	decoderConfig := configuration.DefaultCEDecoderConfiguration()
-	decoderConfig.DebugPanics = _this.Debug
-	decoder := cbe.NewDecoder(&decoderConfig)
+	decoderConfig := configuration.New()
+	decoderConfig.Debug.PassThroughPanics = _this.Debug
+	decoder := cbe.NewDecoder(decoderConfig)
 
-	encoderConfig := configuration.DefaultCBEEncoderConfiguration()
-	encoder := cbe.NewEncoder(&encoderConfig)
-	receiver := rules.NewRules(encoder, nil)
+	encoderConfig := configuration.New()
+	encoder := cbe.NewEncoder(encoderConfig)
+	receiver := rules.NewRules(encoder, encoderConfig)
 
 	inBuffer := bytes.NewBuffer([]byte(document))
 	outBuffer := &bytes.Buffer{}
@@ -416,10 +416,11 @@ func (_this *MustSucceedTest) eventsToCte(events test.Events) (result string, er
 		}()
 	}
 
-	encoder := cte.NewEncoder(nil)
+	encoderConfig := configuration.New()
+	encoder := cte.NewEncoder(encoderConfig)
 	outBuffer := &strings.Builder{}
 	encoder.PrepareToEncode(outBuffer)
-	receiver := rules.NewRules(encoder, nil)
+	receiver := rules.NewRules(encoder, encoderConfig)
 	receiver.OnBeginDocument()
 	for _, event := range events {
 		event.Invoke(receiver)
@@ -443,10 +444,11 @@ func (_this *MustSucceedTest) eventsToCbe(events test.Events) (result []byte, er
 		}()
 	}
 
-	encoder := cbe.NewEncoder(nil)
+	encoderConfig := configuration.New()
+	encoder := cbe.NewEncoder(encoderConfig)
 	outBuffer := &bytes.Buffer{}
 	encoder.PrepareToEncode(outBuffer)
-	receiver := rules.NewRules(encoder, nil)
+	receiver := rules.NewRules(encoder, encoderConfig)
 	receiver.OnBeginDocument()
 	for _, event := range events {
 		event.Invoke(receiver)
@@ -471,7 +473,7 @@ func (_this *MustSucceedTest) eventsToEvents(events test.Events) (result test.Ev
 	}
 
 	receiver, collection := test.NewEventCollector(nil)
-	receiver = rules.NewRules(receiver, nil)
+	receiver = rules.NewRules(receiver, configuration.New())
 	receiver.OnBeginDocument()
 	for _, event := range events {
 		event.Invoke(receiver)

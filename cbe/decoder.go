@@ -34,26 +34,20 @@ import (
 // Decodes CBE documents.
 type Decoder struct {
 	reader Reader
-	config *configuration.CEDecoderConfiguration
+	config *configuration.Configuration
 }
 
-// Create a new CBE decoder. If config is nil, default configuration will be used.
-func NewDecoder(config *configuration.CEDecoderConfiguration) *Decoder {
+// Create a new CBE decoder.
+func NewDecoder(config *configuration.Configuration) *Decoder {
 	_this := &Decoder{}
 	_this.Init(config)
 	return _this
 }
 
-// Initialize this decoder. If config is nil, default configuration will be used.
-func (_this *Decoder) Init(config *configuration.CEDecoderConfiguration) {
-	if config == nil {
-		defaultConfig := configuration.DefaultCEDecoderConfiguration()
-		config = &defaultConfig
-	} else {
-		config.ApplyDefaults()
-	}
+// Initialize this decoder.
+func (_this *Decoder) Init(config *configuration.Configuration) {
 	_this.config = config
-	_this.reader.Init()
+	_this.reader.Init(config)
 }
 
 // Decode an already streamed document, sending all decoded events to eventReceiver.
@@ -64,7 +58,7 @@ func (_this *Decoder) DecodeDocument(document []byte, eventReceiver events.DataE
 // Read and decode a document from reader, sending all decoded events to eventReceiver.
 func (_this *Decoder) Decode(reader io.Reader, eventReceiver events.DataEventReceiver) (err error) {
 	defer func() {
-		if !_this.config.DebugPanics {
+		if !_this.config.Debug.PassThroughPanics {
 			if r := recover(); r != nil {
 				switch v := r.(type) {
 				case error:

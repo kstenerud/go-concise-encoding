@@ -42,15 +42,14 @@ type RootObjectIterator struct {
 	namedReferences map[duplicates.TypedPointer]uint32
 	nextMarkerName  uint32
 	context         Context
-	config          *configuration.IteratorConfiguration
+	config          *configuration.Configuration
 	referenceIdBuff []byte
 }
 
 // Create a new root object iterator that will send data events to eventReceiver.
-// If config is nil, default configuration will be used.
 func NewRootObjectIterator(context *Context,
 	eventReceiver events.DataEventReceiver,
-	config *configuration.IteratorConfiguration) *RootObjectIterator {
+	config *configuration.Configuration) *RootObjectIterator {
 
 	_this := &RootObjectIterator{}
 	_this.Init(context, eventReceiver, config)
@@ -58,17 +57,10 @@ func NewRootObjectIterator(context *Context,
 }
 
 // Initialize this iterator to send data events to eventReceiver.
-// If config is nil, default configuration will be used.
 func (_this *RootObjectIterator) Init(context *Context,
 	eventReceiver events.DataEventReceiver,
-	config *configuration.IteratorConfiguration) {
+	config *configuration.Configuration) {
 
-	if config == nil {
-		defaultConfig := configuration.DefaultIteratorConfiguration()
-		config = &defaultConfig
-	} else {
-		config.ApplyDefaults()
-	}
 	_this.config = config
 	_this.context = iteratorContext(context,
 		eventReceiver,
@@ -91,7 +83,7 @@ func (_this *RootObjectIterator) Iterate(object interface{}) {
 		return
 	}
 
-	if _this.config.RecursionSupport {
+	if _this.config.Iterator.RecursionSupport {
 		_this.foundReferences = duplicates.FindDuplicatePointers(object)
 		_this.namedReferences = make(map[duplicates.TypedPointer]uint32)
 	}
@@ -123,7 +115,7 @@ func (_this *RootObjectIterator) getNamedLocalReference(ptr duplicates.TypedPoin
 }
 
 func (_this *RootObjectIterator) addLocalReference(v reflect.Value) (didGenerateReferenceEvent bool) {
-	if !_this.config.RecursionSupport {
+	if !_this.config.Iterator.RecursionSupport {
 		return false
 	}
 

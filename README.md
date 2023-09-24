@@ -72,7 +72,7 @@ func demonstrateCTEMarshal() {
         900:     time.Date(2020, time.Month(1), 15, 13, 41, 0, 599000, time.UTC),
     }
     var buffer bytes.Buffer
-    err := ce.MarshalCTE(dict, &buffer, nil)
+    err := ce.MarshalCTE(dict, &buffer, configuration.New())
     if err != nil {
         fmt.Printf("Error marshaling CTE: %v\n", err)
         return
@@ -84,7 +84,7 @@ func demonstrateCTEMarshal() {
 func demonstrateCTEUnmarshal() {
     data := bytes.NewBuffer([]byte(`c1 {"a key"=2.5 900=2020-01-15/13:41:00.000599}`))
 
-    value, err := ce.UnmarshalCTE(data, nil, nil)
+    value, err := ce.UnmarshalCTE(data, nil, configuration.New())
     if err != nil {
         fmt.Printf("Error unmarshaling CTE: %v\n", err)
         return
@@ -99,7 +99,7 @@ func demonstrateCBEMarshal() {
         900:     time.Date(2020, time.Month(1), 15, 13, 41, 0, 599000, time.UTC),
     }
     var buffer bytes.Buffer
-    err := ce.MarshalCBE(dict, &buffer, nil)
+    err := ce.MarshalCBE(dict, &buffer, configuration.New())
     if err != nil {
         fmt.Printf("Error marshaling CBE: %v\n", err)
         return
@@ -113,7 +113,7 @@ func demonstrateCBEUnmarshal() {
         0x79, 0x70, 0x00, 0x00, 0x20, 0x40, 0x6a, 0x84, 0x03, 0x9b, 0xbc, 0x12,
         0x00, 0x20, 0x6d, 0x2f, 0x50, 0x00, 0x7b})
 
-    value, err := ce.UnmarshalCBE(data, nil, nil)
+    value, err := ce.UnmarshalCBE(data, nil, configuration.New())
     if err != nil {
         fmt.Printf("Error unmarshaling CBE: %v\n", err)
         return

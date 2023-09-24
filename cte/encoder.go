@@ -38,7 +38,7 @@ type EncoderEventReceiver struct {
 
 // Create a new encoder.
 // If config = nil, defaults are used.
-func NewEncoder(config *configuration.CTEEncoderConfiguration) *EncoderEventReceiver {
+func NewEncoder(config *configuration.Configuration) *EncoderEventReceiver {
 	_this := &EncoderEventReceiver{}
 	_this.Init(config)
 	return _this
@@ -46,13 +46,7 @@ func NewEncoder(config *configuration.CTEEncoderConfiguration) *EncoderEventRece
 
 // Initialize an encoder.
 // If config = nil, defaults are used.
-func (_this *EncoderEventReceiver) Init(config *configuration.CTEEncoderConfiguration) {
-	if config == nil {
-		defaultConfig := configuration.DefaultCTEEncoderConfiguration()
-		config = &defaultConfig
-	} else {
-		config.ApplyDefaults()
-	}
+func (_this *EncoderEventReceiver) Init(config *configuration.Configuration) {
 	_this.context.Init(config)
 }
 

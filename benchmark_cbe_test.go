@@ -89,16 +89,14 @@ func benchmarkMarshal(b *testing.B, marshaler ce.Marshaler) {
 }
 
 func BenchmarkCTEMarshal(b *testing.B) {
-	config := configuration.DefaultCTEMarshalerConfiguration()
-	config.Iterator.RecursionSupport = false
-	marshaler := ce.NewCTEMarshaler(&config)
+	config := configuration.New()
+	marshaler := ce.NewCTEMarshaler(config)
 	benchmarkMarshal(b, marshaler)
 }
 
 func BenchmarkCBEMarshal(b *testing.B) {
-	config := configuration.DefaultCBEMarshalerConfiguration()
-	config.Iterator.RecursionSupport = false
-	marshaler := ce.NewCBEMarshaler(&config)
+	config := configuration.New()
+	marshaler := ce.NewCBEMarshaler(config)
 	benchmarkMarshal(b, marshaler)
 }
 
@@ -182,48 +180,39 @@ func benchmarkDecode(b *testing.B, marshaler ce.Marshaler, decoder ce.Decoder) {
 }
 
 func BenchmarkCTEDecode(b *testing.B) {
-	marshalConfig := configuration.DefaultCTEMarshalerConfiguration()
-	marshalConfig.Iterator.RecursionSupport = false
-	marshaler := ce.NewCTEMarshaler(&marshalConfig)
-	decoder := ce.NewCTEDecoder(nil)
+	config := configuration.New()
+	marshaler := ce.NewCTEMarshaler(config)
+	decoder := ce.NewCTEDecoder(config)
 	benchmarkDecode(b, marshaler, decoder)
 }
 
 func BenchmarkCTEUnmarshalRules(b *testing.B) {
-	marshalConfig := configuration.DefaultCTEMarshalerConfiguration()
-	marshalConfig.Iterator.RecursionSupport = false
-	marshaler := ce.NewCTEMarshaler(&marshalConfig)
-	unmarshalConfig := configuration.DefaultCEUnmarshalerConfiguration()
-	unmarshaler := ce.NewCTEUnmarshaler(&unmarshalConfig)
+	config := configuration.New()
+	marshaler := ce.NewCTEMarshaler(config)
+	unmarshaler := ce.NewCTEUnmarshaler(config)
 	benchmarkUnmarshal(b, marshaler, unmarshaler)
 }
 
 func BenchmarkCTEUnmarshalNoRules(b *testing.B) {
-	marshalConfig := configuration.DefaultCTEMarshalerConfiguration()
-	marshalConfig.Iterator.RecursionSupport = false
-	marshaler := ce.NewCTEMarshaler(&marshalConfig)
-	unmarshalConfig := configuration.DefaultCEUnmarshalerConfiguration()
-	unmarshalConfig.EnforceRules = false
-	unmarshaler := ce.NewCTEUnmarshaler(&unmarshalConfig)
+	config := configuration.New()
+	config.Marshal.EnforceRules = false
+	marshaler := ce.NewCTEMarshaler(config)
+	unmarshaler := ce.NewCTEUnmarshaler(config)
 	benchmarkUnmarshal(b, marshaler, unmarshaler)
 }
 
 func BenchmarkCBEUnmarshalRules(b *testing.B) {
-	marshalConfig := configuration.DefaultCBEMarshalerConfiguration()
-	marshalConfig.Iterator.RecursionSupport = false
-	marshaler := ce.NewCBEMarshaler(&marshalConfig)
-	unmarshalConfig := configuration.DefaultCEUnmarshalerConfiguration()
-	unmarshaler := ce.NewCBEUnmarshaler(&unmarshalConfig)
+	config := configuration.New()
+	marshaler := ce.NewCBEMarshaler(config)
+	unmarshaler := ce.NewCBEUnmarshaler(config)
 	benchmarkUnmarshal(b, marshaler, unmarshaler)
 }
 
 func BenchmarkCBEUnmarshalNoRules(b *testing.B) {
-	marshalConfig := configuration.DefaultCBEMarshalerConfiguration()
-	marshalConfig.Iterator.RecursionSupport = false
-	marshaler := ce.NewCBEMarshaler(&marshalConfig)
-	unmarshalConfig := configuration.DefaultCEUnmarshalerConfiguration()
-	unmarshalConfig.EnforceRules = false
-	unmarshaler := ce.NewCBEUnmarshaler(&unmarshalConfig)
+	config := configuration.New()
+	config.Marshal.EnforceRules = false
+	marshaler := ce.NewCBEMarshaler(config)
+	unmarshaler := ce.NewCBEUnmarshaler(config)
 	benchmarkUnmarshal(b, marshaler, unmarshaler)
 }
 
@@ -265,9 +254,8 @@ func BenchmarkJSONUnmarshal(b *testing.B) {
 func BenchmarkRules(b *testing.B) {
 	b.Helper()
 	receiver, store := test.NewEventCollector(nil)
-	iterConfiguration := configuration.DefaultIteratorConfiguration()
-	iterConfiguration.RecursionSupport = false
-	iterSession := iterator.NewSession(nil, &iterConfiguration)
+	config := configuration.New()
+	iterSession := iterator.NewSession(nil, config)
 	iter := iterSession.NewIterator(receiver)
 
 	objs := generate()
@@ -280,7 +268,7 @@ func BenchmarkRules(b *testing.B) {
 
 	b.ReportAllocs()
 	b.ResetTimer()
-	r := rules.NewRules(nullevent.NewNullEventReceiver(), nil)
+	r := rules.NewRules(nullevent.NewNullEventReceiver(), config)
 	for i := 0; i < b.N; i++ {
 		index := i % len(objs)
 		r.Reset()
@@ -292,9 +280,8 @@ func BenchmarkRules(b *testing.B) {
 func BenchmarkBuilder(b *testing.B) {
 	b.Helper()
 	receiver, store := test.NewEventCollector(nil)
-	iterConfiguration := configuration.DefaultIteratorConfiguration()
-	iterConfiguration.RecursionSupport = false
-	iterSession := iterator.NewSession(nil, &iterConfiguration)
+	config := configuration.New()
+	iterSession := iterator.NewSession(nil, config)
 	iter := iterSession.NewIterator(receiver)
 
 	objs := generate()
@@ -307,10 +294,10 @@ func BenchmarkBuilder(b *testing.B) {
 	b.ReportAllocs()
 	b.ResetTimer()
 	template := &A{}
-	builderSession := builder.NewSession(nil, nil)
+	builderSession := builder.NewSession(nil, config)
 	for i := 0; i < b.N; i++ {
 		index := i % len(objs)
-		builder := builderSession.NewBuilderFor(template, nil)
+		builder := builderSession.NewBuilderFor(template)
 		test.InvokeEventsAsCompleteDocument(builder, documents[index]...)
 	}
 	b.StopTimer()
@@ -318,13 +305,12 @@ func BenchmarkBuilder(b *testing.B) {
 
 func BenchmarkIterator(b *testing.B) {
 	b.Helper()
-	iterConfiguration := configuration.DefaultIteratorConfiguration()
-	iterSession := iterator.NewSession(nil, &iterConfiguration)
+	config := configuration.New()
+	iterSession := iterator.NewSession(nil, config)
 	objs := generate()
 
 	b.ReportAllocs()
 	b.ResetTimer()
-	iterConfiguration.RecursionSupport = false
 	iter := iterSession.NewIterator(nullevent.NewNullEventReceiver())
 	for i := 0; i < b.N; i++ {
 		index := i % len(objs)

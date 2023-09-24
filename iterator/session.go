@@ -37,15 +37,14 @@ import (
 // unintended behavior in codec activity elsewhere in the program.
 type Session struct {
 	iteratorFuncs sync.Map
-	config        *configuration.IteratorConfiguration
+	config        *configuration.Configuration
 	context       Context
 }
 
 // Start a new iterator session. It will inherit the iterators of its parent.
 // If parent is nil, it will inherit from the root session, which has iterators
 // for all basic go types.
-// If config is nil, default configuration will be used.
-func NewSession(parent *Session, config *configuration.IteratorConfiguration) *Session {
+func NewSession(parent *Session, config *configuration.Configuration) *Session {
 	_this := &Session{}
 	_this.Init(parent, config)
 	return _this
@@ -54,14 +53,7 @@ func NewSession(parent *Session, config *configuration.IteratorConfiguration) *S
 // Initialize an iterator session. It will inherit the iterators of its parent.
 // If parent is nil, it will inherit from the root session, which has iterators
 // for all basic go types.
-// If config is nil, default configuration will be used.
-func (_this *Session) Init(parent *Session, config *configuration.IteratorConfiguration) {
-	if config == nil {
-		defaultConfig := configuration.DefaultIteratorConfiguration()
-		config = &defaultConfig
-	} else {
-		config.ApplyDefaults()
-	}
+func (_this *Session) Init(parent *Session, config *configuration.Configuration) {
 	_this.config = config
 
 	if parent == nil {
@@ -73,10 +65,10 @@ func (_this *Session) Init(parent *Session, config *configuration.IteratorConfig
 		return true
 	})
 
-	for t, converter := range _this.config.CustomBinaryConverters {
+	for t, converter := range _this.config.Iterator.CustomBinaryConverters {
 		_this.RegisterIteratorForType(t, newCustomBinaryIterator(converter))
 	}
-	for t, converter := range _this.config.CustomTextConverters {
+	for t, converter := range _this.config.Iterator.CustomTextConverters {
 		_this.RegisterIteratorForType(t, newCustomTextIterator(converter))
 	}
 
@@ -90,9 +82,7 @@ func (_this *Session) Init(parent *Session, config *configuration.IteratorConfig
 }
 
 // Creates a new iterator that sends data events to eventReceiver.
-// If config is nil, default configuration will be used.
 func (_this *Session) NewIterator(eventReceiver events.DataEventReceiver) *RootObjectIterator {
-
 	return NewRootObjectIterator(&_this.context, eventReceiver, _this.config)
 }
 
@@ -136,7 +126,7 @@ func (_this *Session) GetIteratorForType(t reflect.Type) IteratorFunction {
 var rootSession Session
 
 func init() {
-	rootSession.Init(nil, nil)
+	rootSession.Init(nil, configuration.New())
 
 	for _, t := range common.KeyableTypes {
 		rootSession.GetIteratorForType(t)

@@ -49,20 +49,18 @@ type BuilderEventReceiver struct {
 }
 
 // Create a new builder event receiver that can build objects of dstType.
-// If config is nil, default configuration will be used.
-func NewBuilderEventReceiver(session *Session, dstType reflect.Type, config *configuration.BuilderConfiguration) *BuilderEventReceiver {
+func NewBuilderEventReceiver(session *Session, dstType reflect.Type, config *configuration.Configuration) *BuilderEventReceiver {
 	_this := &BuilderEventReceiver{}
 	_this.Init(session, dstType, config)
 	return _this
 }
 
 // Initialize to build objects of dstType.
-// If config is nil, default configuration will be used.
-func (_this *BuilderEventReceiver) Init(session *Session, dstType reflect.Type, config *configuration.BuilderConfiguration) {
+func (_this *BuilderEventReceiver) Init(session *Session, dstType reflect.Type, config *configuration.Configuration) {
 	_this.context.Init(config,
 		dstType,
-		session.config.CustomBinaryBuildFunction,
-		session.config.CustomTextBuildFunction,
+		config.Builder.CustomBinaryBuildFunction,
+		config.Builder.CustomTextBuildFunction,
 		session.GetBuilderGeneratorForType)
 
 	if dstType == nil {

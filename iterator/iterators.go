@@ -339,7 +339,7 @@ func extractFields(ctx *Context, structType reflect.Type, indexPath []int, field
 			localPath := make([]int, len(indexPath)+1)
 			copy(localPath, indexPath)
 			localPath[len(indexPath)] = i
-			field := newStructField(reflectField, localPath, ctx.Configuration.FieldNameStyle)
+			field := newStructField(reflectField, localPath, ctx.Configuration.Iterator.FieldNameStyle)
 			if field.OmitBehavior != configuration.OmitFieldAlways {
 				if reflectField.Anonymous {
 					field.IsAnonymous = true
@@ -386,7 +386,7 @@ func newStructIterator(ctx *Context, structType reflect.Type) IteratorFunction {
 		context.EventReceiver.OnMap()
 		for _, field := range fields {
 			fieldValue := field.getValueFromStruct(value)
-			if shouldIncludeField(field, fieldValue, ctx.Configuration.DefaultFieldOmitBehavior) {
+			if shouldIncludeField(field, fieldValue, ctx.Configuration.Iterator.DefaultFieldOmitBehavior) {
 				if !field.IsAnonymous {
 					context.EventReceiver.OnStringlikeArray(events.ArrayTypeString, field.Name)
 				}
@@ -405,7 +405,7 @@ func newRecordIterators(ctx *Context, structType reflect.Type, name string) (typ
 	typeIterator = func(context *Context, value reflect.Value) {
 		context.EventReceiver.OnRecordType(identifier)
 		for _, field := range fields {
-			if shouldIncludeField(field, dummyValue, ctx.Configuration.DefaultFieldOmitBehavior) {
+			if shouldIncludeField(field, dummyValue, ctx.Configuration.Iterator.DefaultFieldOmitBehavior) {
 				if !field.IsAnonymous {
 					context.EventReceiver.OnStringlikeArray(events.ArrayTypeString, field.Name)
 				}
@@ -418,7 +418,7 @@ func newRecordIterators(ctx *Context, structType reflect.Type, name string) (typ
 		context.EventReceiver.OnRecord(identifier)
 		for _, field := range fields {
 			fieldValue := field.getValueFromStruct(value)
-			if shouldIncludeField(field, fieldValue, ctx.Configuration.DefaultFieldOmitBehavior) {
+			if shouldIncludeField(field, fieldValue, ctx.Configuration.Iterator.DefaultFieldOmitBehavior) {
 				field.Iterate(context, fieldValue)
 			}
 		}

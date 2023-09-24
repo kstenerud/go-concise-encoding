@@ -43,28 +43,20 @@ import (
 // designed to panic).
 type Encoder struct {
 	writer              Writer
-	config              *configuration.CBEEncoderConfiguration
+	config              *configuration.Configuration
 	arrayType           events.ArrayType
 	trySmallArrayHeader bool
 }
 
 // Create a new CBE encoder.
-// If config is nil, default configuration will be used.
-func NewEncoder(config *configuration.CBEEncoderConfiguration) *Encoder {
+func NewEncoder(config *configuration.Configuration) *Encoder {
 	_this := &Encoder{}
 	_this.Init(config)
 	return _this
 }
 
 // Initialize this encoder.
-// If config is nil, default configuration will be used.
-func (_this *Encoder) Init(config *configuration.CBEEncoderConfiguration) {
-	if config == nil {
-		defaultConfig := configuration.DefaultCBEEncoderConfiguration()
-		config = &defaultConfig
-	} else {
-		config.ApplyDefaults()
-	}
+func (_this *Encoder) Init(config *configuration.Configuration) {
 	_this.config = config
 	_this.writer.Init()
 }

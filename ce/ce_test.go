@@ -26,6 +26,7 @@ import (
 	"testing"
 
 	"github.com/kstenerud/go-concise-encoding/builder"
+	"github.com/kstenerud/go-concise-encoding/configuration"
 	"github.com/kstenerud/go-describe"
 	"github.com/kstenerud/go-equivalence"
 )
@@ -33,7 +34,9 @@ import (
 func TestCEUnmarshalCTE(t *testing.T) {
 	document := "c0 [1 2 3]"
 	expected := []interface{}{1, 2, 3}
-	actual, err := UnmarshalFromCEDocument([]byte(document), nil, nil)
+
+	config := configuration.New()
+	actual, err := UnmarshalFromCEDocument([]byte(document), nil, config)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -42,7 +45,7 @@ func TestCEUnmarshalCTE(t *testing.T) {
 	}
 
 	stream := strings.NewReader(document)
-	actual, err = UnmarshalCE(stream, nil, nil)
+	actual, err = UnmarshalCE(stream, nil, config)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -55,10 +58,11 @@ func TestCEDecodeCTE(t *testing.T) {
 	document := "c1 [1 2 3]"
 	expected := []interface{}{1, 2, 3}
 
-	decoder := NewCEDecoder(nil)
+	config := configuration.New()
+	decoder := NewCEDecoder(config)
 
-	builderSession := builder.NewSession(nil, nil)
-	builder := builder.NewBuilderEventReceiver(builderSession, nil, nil)
+	builderSession := builder.NewSession(nil, config)
+	builder := builder.NewBuilderEventReceiver(builderSession, nil, config)
 	err := decoder.DecodeDocument([]byte(document), builder)
 	if err != nil {
 		t.Fatal(err)
@@ -82,7 +86,9 @@ func TestCEDecodeCTE(t *testing.T) {
 func TestCEUnmarshalCBE(t *testing.T) {
 	document := []byte{0x81, 0x00, 0x9a, 0x01, 0x02, 0x03, 0x9b}
 	expected := []interface{}{1, 2, 3}
-	actual, err := UnmarshalFromCEDocument([]byte(document), nil, nil)
+
+	config := configuration.New()
+	actual, err := UnmarshalFromCEDocument([]byte(document), nil, config)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -91,7 +97,7 @@ func TestCEUnmarshalCBE(t *testing.T) {
 	}
 
 	stream := bytes.NewBuffer(document)
-	actual, err = UnmarshalCE(stream, nil, nil)
+	actual, err = UnmarshalCE(stream, nil, config)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -104,10 +110,11 @@ func TestCEDecodeCBE(t *testing.T) {
 	document := []byte{0x81, 0x00, 0x9a, 0x01, 0x02, 0x03, 0x9b}
 	expected := []interface{}{1, 2, 3}
 
-	decoder := NewCEDecoder(nil)
+	config := configuration.New()
+	decoder := NewCEDecoder(config)
 
-	builderSession := builder.NewSession(nil, nil)
-	builder := builder.NewBuilderEventReceiver(builderSession, nil, nil)
+	builderSession := builder.NewSession(nil, config)
+	builder := builder.NewBuilderEventReceiver(builderSession, nil, config)
 	err := decoder.DecodeDocument([]byte(document), builder)
 	if err != nil {
 		t.Fatal(err)

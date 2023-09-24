@@ -27,6 +27,7 @@ import (
 	"time"
 
 	"github.com/kstenerud/go-concise-encoding/ce"
+	"github.com/kstenerud/go-concise-encoding/configuration"
 	"github.com/kstenerud/go-concise-encoding/version"
 )
 
@@ -36,7 +37,7 @@ func demonstrateCTEMarshal() error {
 		900:     time.Date(2020, time.Month(1), 15, 13, 41, 0, 599000, time.UTC),
 	}
 	var buffer bytes.Buffer
-	err := ce.MarshalCTE(dict, &buffer, nil)
+	err := ce.MarshalCTE(dict, &buffer, configuration.New())
 	if err != nil {
 		fmt.Printf("Error marshaling: %v\n", err)
 		return err
@@ -50,7 +51,7 @@ func demonstrateCTEMarshal() error {
 func demonstrateCTEUnmarshal() error {
 	data := bytes.NewBuffer([]byte(`c0 {"a key"=2.5 900=2020-01-15/13:41:00.000599}`))
 
-	value, err := ce.UnmarshalCTE(data, nil, nil)
+	value, err := ce.UnmarshalCTE(data, nil, configuration.New())
 	if err != nil {
 		fmt.Printf("Error unmarshaling: %v\n", err)
 		return err
@@ -67,7 +68,7 @@ func demonstrateCBEMarshal() error {
 		900:     time.Date(2020, time.Month(1), 15, 13, 41, 0, 599000, time.UTC),
 	}
 	var buffer bytes.Buffer
-	err := ce.MarshalCBE(dict, &buffer, nil)
+	err := ce.MarshalCBE(dict, &buffer, configuration.New())
 	if err != nil {
 		fmt.Printf("Error marshaling: %v\n", err)
 		return err
@@ -85,7 +86,7 @@ func demonstrateCBEUnmarshal() error {
 		0x79, 0x70, 0x20, 0x40, 0x6a, 0x84, 0x03, 0x7c, 0xbc, 0x12,
 		0x00, 0x20, 0x6d, 0x2f, 0x50, 0x00, 0x9b})
 
-	value, err := ce.UnmarshalCBE(data, nil, nil)
+	value, err := ce.UnmarshalCBE(data, nil, configuration.New())
 	if err != nil {
 		fmt.Printf("Error unmarshaling: %v\n", err)
 		return err
@@ -105,7 +106,7 @@ type SomeStruct struct {
 func demonstrateRecursiveStructInMap() error {
 	document := `c0 {"my-value" = &1:{"a"=100 "b"="test" "c"=$1}}`
 	template := map[string]*SomeStruct{}
-	result, err := ce.UnmarshalFromCTEDocument([]byte(document), template, nil)
+	result, err := ce.UnmarshalFromCTEDocument([]byte(document), template, configuration.New())
 	if err != nil {
 		fmt.Printf("Error unmarshaling CTE document: %v\n", err)
 		return err
@@ -116,7 +117,7 @@ func demonstrateRecursiveStructInMap() error {
 	fmt.Printf("A: %v, B: %v, Ptr to C: %p, ptr to s: %p\n", s.A, s.B, s.C, s)
 	// Prints: A: 100, B: test, Ptr to C: 0xc0001f4600, ptr to s: 0xc0001f4600
 
-	encodedDocument, err := ce.MarshalToCTEDocument(v, nil)
+	encodedDocument, err := ce.MarshalToCTEDocument(v, configuration.New())
 	if err != nil {
 		fmt.Printf("Error marshaling CTE document: %v\n", err)
 		return err
@@ -124,7 +125,7 @@ func demonstrateRecursiveStructInMap() error {
 	fmt.Printf("Re-encoded CTE: %v\n", string(encodedDocument))
 	// Prints: Re-encoded CTE: c0 {my-value=&0:{A=100 B=test C=$0}}
 
-	encodedDocument, err = ce.MarshalToCBEDocument(v, nil)
+	encodedDocument, err = ce.MarshalToCBEDocument(v, configuration.New())
 	if err != nil {
 		fmt.Printf("Error marshaling CBE document: %v\n", err)
 		return err

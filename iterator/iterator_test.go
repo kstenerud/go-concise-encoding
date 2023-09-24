@@ -239,35 +239,25 @@ type StructTestIterate struct {
 }
 
 func TestIterateStruct(t *testing.T) {
-	config := configuration.DefaultIteratorConfiguration()
-	config.FieldNameStyle = configuration.FieldNameCamelCase
+	config := configuration.New()
+	config.Iterator.FieldNameStyle = configuration.FieldNameCamelCase
 
 	assertIterate(t, new(StructTestIterate), M(), S("a"), N(0), E())
 
-	assertIterateWithConfiguration(t, &config, new(StructTestIterate), M(), S("A"), N(0), E())
+	assertIterateWithConfiguration(t, config, new(StructTestIterate), M(), S("A"), N(0), E())
 	assertIterate(t, (*StructTestIterate)(nil), NULL())
 }
 
 func TestIterateRecord(t *testing.T) {
-	config := configuration.DefaultIteratorConfiguration()
-	config.RecordTypes[reflect.TypeOf(StructTestIterate{})] = "x"
+	config := configuration.New()
+	config.Iterator.RecordTypes[reflect.TypeOf(StructTestIterate{})] = "x"
 
-	assertIterateWithConfiguration(t, &config, new(StructTestIterate), RT("x"), S("a"), E(), REC("x"), N(0), E())
+	assertIterateWithConfiguration(t, config, new(StructTestIterate), RT("x"), S("a"), E(), REC("x"), N(0), E())
 
-	config.FieldNameStyle = configuration.FieldNameCamelCase
-	assertIterateWithConfiguration(t, &config, new(StructTestIterate), RT("x"), S("A"), E(), REC("x"), N(0), E())
+	config.Iterator.FieldNameStyle = configuration.FieldNameCamelCase
+	assertIterateWithConfiguration(t, config, new(StructTestIterate), RT("x"), S("A"), E(), REC("x"), N(0), E())
 
-	assertIterateWithConfiguration(t, &config, (*StructTestIterate)(nil), RT("x"), S("A"), E(), NULL())
-}
-
-func TestIterateNilConfig(t *testing.T) {
-	expected := test.Events{EvV, N(1)}
-	receiver, events := test.NewEventCollector(nil)
-	iterateObject(1, receiver, nil)
-
-	if !events.IsEquivalentTo(expected) {
-		t.Errorf("Expected %v but got %v", expected, events.Events)
-	}
+	assertIterateWithConfiguration(t, config, (*StructTestIterate)(nil), RT("x"), S("A"), E(), NULL())
 }
 
 type RecursiveStructTestIterate struct {
@@ -282,10 +272,10 @@ func TestIterateRecurse(t *testing.T) {
 	obj.R = obj
 
 	expected := test.Events{EvV, MARK("0"), M(), S("i"), N(50), S("r"), REFL("0"), E()}
-	iteratorConfiguration := configuration.DefaultIteratorConfiguration()
-	iteratorConfiguration.RecursionSupport = true
+	config := configuration.New()
+	config.Iterator.RecursionSupport = true
 	receiver, events := test.NewEventCollector(nil)
-	iterateObject(obj, receiver, &iteratorConfiguration)
+	iterateObject(obj, receiver, config)
 
 	if !events.IsEquivalentTo(expected) {
 		t.Errorf("Expected %v but got %v", expected, events.Events)

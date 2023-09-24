@@ -52,7 +52,7 @@ type RulesEventReceiver struct {
 
 // Create a new rules set.
 // If config = nil, defaults are used.
-func NewRules(nextReceiver events.DataEventReceiver, config *configuration.RuleConfiguration) *RulesEventReceiver {
+func NewRules(nextReceiver events.DataEventReceiver, config *configuration.Configuration) *RulesEventReceiver {
 	_this := &RulesEventReceiver{}
 	_this.Init(nextReceiver, config)
 	return _this
@@ -62,14 +62,7 @@ var nullReceiver = &nullevent.NullEventReceiver{}
 
 // Initialize a rules set.
 // If config = nil, defaults are used.
-func (_this *RulesEventReceiver) Init(nextReceiver events.DataEventReceiver, config *configuration.RuleConfiguration) {
-	if config == nil {
-		defaultConfig := configuration.DefaultRuleConfiguration()
-		config = &defaultConfig
-	} else {
-		config.ApplyDefaults()
-	}
-
+func (_this *RulesEventReceiver) Init(nextReceiver events.DataEventReceiver, config *configuration.Configuration) {
 	_this.receiver = nextReceiver
 	if _this.receiver == nil {
 		_this.receiver = nullReceiver

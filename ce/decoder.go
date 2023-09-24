@@ -45,7 +45,7 @@ type Decoder interface {
 // - 0x63 = Decode as CTE
 // - 0x81 = Decode as CBE
 type UniversalDecoder struct {
-	config *configuration.CEDecoderConfiguration
+	config *configuration.Configuration
 }
 
 func (_this *UniversalDecoder) Decode(reader io.Reader, eventReceiver events.DataEventReceiver) error {
@@ -70,9 +70,9 @@ func (_this *UniversalDecoder) DecodeDocument(document []byte, eventReceiver eve
 	}
 }
 
-func chooseDecoder(identifier byte, config *configuration.CEDecoderConfiguration) (decoder Decoder, err error) {
+func chooseDecoder(identifier byte, config *configuration.Configuration) (decoder Decoder, err error) {
 	switch identifier {
-	case 'c':
+	case 'c', 'C':
 		decoder = cte.NewDecoder(config)
 	case cbe.CBESignatureByte:
 		decoder = cbe.NewDecoder(config)

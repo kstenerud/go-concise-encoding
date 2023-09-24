@@ -26,11 +26,11 @@ import (
 	"bytes"
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"regexp"
 
 	"github.com/kstenerud/go-concise-encoding/ce"
+	"github.com/kstenerud/go-concise-encoding/configuration"
 	"github.com/kstenerud/go-describe"
 )
 
@@ -129,7 +129,7 @@ func reportSuccess(snippet []byte, unmarshaled interface{}) {
 }
 
 func inspectFile(path string, verbosityLevel verbosity) {
-	contents, err := ioutil.ReadFile(path)
+	contents, err := os.ReadFile(path)
 	if err != nil {
 		fmt.Printf("Could not read file [%v]: %v\n", path, err)
 	}
@@ -138,12 +138,13 @@ func inspectFile(path string, verbosityLevel verbosity) {
 		fmt.Printf("Inspecting %v\n", path)
 	}
 
+	config := configuration.New()
 	for _, snippet := range getSnippets(contents) {
 		snippet = addHeaderIfNeeded(snippet)
-		unmarshaled, err := ce.UnmarshalCTE(bytes.NewBuffer(snippet), nil, nil)
+		unmarshaled, err := ce.UnmarshalCTE(bytes.NewBuffer(snippet), nil, config)
 		if err != nil {
-			decoder := ce.NewCTEDecoder(nil)
-			if err = decoder.DecodeDocument(snippet, ce.NewRules(nil, nil)); err != nil {
+			decoder := ce.NewCTEDecoder(config)
+			if err = decoder.DecodeDocument(snippet, ce.NewRules(nil, config)); err != nil {
 				reportError(snippet, err)
 				continue
 			}
