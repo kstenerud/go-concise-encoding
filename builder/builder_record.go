@@ -153,6 +153,10 @@ func (_this *recordBuilder) BuildEndContainer(ctx *Context) {
 	_this.builder.BuildEndContainer(ctx)
 }
 
+func (_this *recordBuilder) BuildArtificiallyEndContainer(ctx *Context) {
+	_this.builder.BuildArtificiallyEndContainer(ctx)
+}
+
 func (_this *recordBuilder) BuildFromLocalReference(ctx *Context, id []byte) {
 	_this.sendKey(ctx)
 	_this.builder.BuildFromLocalReference(ctx, id)

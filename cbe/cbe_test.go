@@ -56,6 +56,76 @@ func TestCBEDuplicateEmptySliceInSlice(t *testing.T) {
 	assertMarshalUnmarshal(t, v, []byte{0x81, 0x00, 0x9a, 0x9a, 0x9b, 0x9a, 0x9b, 0x9a, 0x9b, 0x9b})
 }
 
+func TestCBEUnmarshalPartialBadMap(t *testing.T) {
+	// {1=2, 3=}
+	document := []byte{0x81, 0x00, 0x99, 0x01, 0x02, 0x03, 0x9b}
+	expectedValue := map[interface{}]interface{}{
+		1: 2,
+	}
+	marshaler := NewUnmarshaler(configuration.New())
+	actualValue, err := marshaler.UnmarshalFromDocument(document, nil)
+	if err == nil {
+		t.Errorf("Expected an error")
+	}
+	if !equivalence.IsEquivalent(expectedValue, actualValue) {
+		t.Errorf("Expected %v but got %v", describe.D(expectedValue), describe.D(actualValue))
+	}
+}
+
+func TestCBEUnmarshalMapTruncatedDocument(t *testing.T) {
+	// {1=2, 3=<EOF>
+	document := []byte{0x81, 0x00, 0x99, 0x01, 0x02, 0x03}
+	expectedValue := map[interface{}]interface{}{
+		1: 2,
+	}
+	marshaler := NewUnmarshaler(configuration.New())
+	actualValue, err := marshaler.UnmarshalFromDocument(document, nil)
+	if err == nil {
+		t.Errorf("Expected an error")
+	}
+	if !equivalence.IsEquivalent(expectedValue, actualValue) {
+		t.Errorf("Expected %v but got %v", describe.D(expectedValue), describe.D(actualValue))
+	}
+}
+
+func TestCBEUnmarshalListTruncatedDocument(t *testing.T) {
+	// [1 2 3 <EOF>
+	document := []byte{0x81, 0x00, 0x9a, 0x01, 0x02, 0x03}
+	expectedValue := []interface{}{
+		1, 2, 3,
+	}
+	marshaler := NewUnmarshaler(configuration.New())
+	actualValue, err := marshaler.UnmarshalFromDocument(document, nil)
+	if err == nil {
+		t.Errorf("Expected an error")
+	}
+	if !equivalence.IsEquivalent(expectedValue, actualValue) {
+		t.Errorf("Expected %v but got %v", describe.D(expectedValue), describe.D(actualValue))
+	}
+}
+
+func TestCBEUnmarshalDeepTruncatedDocument(t *testing.T) {
+	// [1 2 3 {4=5 6=[7<EOF>
+	document := []byte{0x81, 0x00, 0x9a, 0x01, 0x02, 0x03, 0x99, 0x04, 0x05, 0x06, 0x9a, 0x07}
+	expectedValue := []interface{}{
+		1, 2, 3,
+		map[interface{}]interface{}{
+			4: 5,
+			6: []interface{}{
+				7,
+			},
+		},
+	}
+	marshaler := NewUnmarshaler(configuration.New())
+	actualValue, err := marshaler.UnmarshalFromDocument(document, nil)
+	if err == nil {
+		t.Errorf("Expected an error")
+	}
+	if !equivalence.IsEquivalent(expectedValue, actualValue) {
+		t.Errorf("Expected %v but got %v", describe.D(expectedValue), describe.D(actualValue))
+	}
+}
+
 // ===========================================================================
 
 func assertMarshal(t *testing.T, value interface{}, expectedDocument []byte) (successful bool) {

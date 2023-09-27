@@ -74,3 +74,4 @@ func (_this *NullEventReceiver) OnEndContainer()                            {}
 func (_this *NullEventReceiver) OnMarker([]byte)                            {}
 func (_this *NullEventReceiver) OnReferenceLocal([]byte)                    {}
 func (_this *NullEventReceiver) OnEndDocument()                             {}
+func (_this *NullEventReceiver) OnError()                                   {}

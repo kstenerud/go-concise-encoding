@@ -248,3 +248,6 @@ func (_this *BuilderEventReceiver) OnReferenceLocal(id []byte) {
 	_this.context.CurrentBuilder.BuildFromLocalReference(&_this.context, id)
 }
 func (_this *BuilderEventReceiver) OnEndDocument() {}
+func (_this *BuilderEventReceiver) OnError() {
+	_this.context.ArtificiallyTerminate()
+}

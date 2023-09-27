@@ -152,7 +152,11 @@ func (_this *cteListener) ExitVersion(ctx *parser.VersionContext) {
 		_this.wrapPanic(recover(), ctx.BaseParserRuleContext)
 	}()
 
-	versionStr := ctx.GetText()[1:]
+	versionStr := ctx.GetText()
+	if len(versionStr) < 2 {
+		panic(fmt.Errorf("expected a version string"))
+	}
+	versionStr = versionStr[1:]
 	_this.eventReceiver.OnVersion(parseSmallUint(versionStr))
 }
 

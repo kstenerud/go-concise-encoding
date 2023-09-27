@@ -304,3 +304,5 @@ func (_this *EncoderEventReceiver) OnRemoteReference() {
 func (_this *EncoderEventReceiver) OnEndDocument() {
 	// Nothing to do
 }
+
+func (_this *EncoderEventReceiver) OnError() {}

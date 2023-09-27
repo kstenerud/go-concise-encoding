@@ -176,6 +176,10 @@ func (_this *markerObjectBuilder) BuildEndContainer(ctx *Context) {
 	_this.child.BuildEndContainer(ctx)
 }
 
+func (_this *markerObjectBuilder) BuildArtificiallyEndContainer(ctx *Context) {
+	_this.child.BuildArtificiallyEndContainer(ctx)
+}
+
 func (_this *markerObjectBuilder) NotifyChildContainerFinished(ctx *Context, value reflect.Value) {
 	if !_this.isContainer {
 		PanicBadEvent(_this, "NotifyChildContainerFinished (isContainer = false)")

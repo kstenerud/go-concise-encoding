@@ -142,6 +142,9 @@ func (_this *ignoreBuilder) NotifyChildContainerFinished(ctx *Context, _ reflect
 	ctx.UnstackBuilder()
 }
 
+func (_this *ignoreBuilder) BuildArtificiallyEndContainer(ctx *Context) {
+}
+
 // IgnoreXTimesBuilder
 
 type ignoreXTimesBuilder struct {
@@ -277,6 +280,9 @@ func (_this *ignoreXTimesBuilder) NotifyChildContainerFinished(ctx *Context, val
 	_this.tryFinish(ctx)
 }
 
+func (_this *ignoreXTimesBuilder) BuildArtificiallyEndContainer(ctx *Context) {
+}
+
 // Ignore container
 
 type ignoreContainerBuilder struct{}
@@ -368,6 +374,10 @@ func (_this *ignoreContainerBuilder) BuildNewNode(ctx *Context) {
 
 func (_this *ignoreContainerBuilder) BuildEndContainer(ctx *Context) {
 	ctx.UnstackBuilderAndNotifyChildFinished(reflect.Value{})
+}
+
+func (_this *ignoreContainerBuilder) BuildArtificiallyEndContainer(ctx *Context) {
+	_this.BuildEndContainer(ctx)
 }
 
 func (_this *ignoreContainerBuilder) BuildBeginListContents(ctx *Context) {

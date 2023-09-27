@@ -112,3 +112,7 @@ func (_this *recordTypeBuilder) BuildFromTime(ctx *Context, value compact_time.T
 func (_this *recordTypeBuilder) BuildEndContainer(ctx *Context) {
 	ctx.EndRecordType()
 }
+
+func (_this *recordTypeBuilder) BuildArtificiallyEndContainer(ctx *Context) {
+	_this.BuildEndContainer(ctx)
+}

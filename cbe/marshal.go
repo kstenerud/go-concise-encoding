@@ -118,6 +118,7 @@ func (_this *Unmarshaler) Init(config *configuration.Configuration) {
 
 // Unmarshal a CBE document, creating an object of the same type as the template.
 // If template is nil, a best-guess type will be returned (likely a slice or map).
+// If an error occurs while decoding, err will be non-null, and decoded will contain whatever was successfully decoded thus far.
 func (_this *Unmarshaler) Unmarshal(reader io.Reader, template interface{}) (decoded interface{}, err error) {
 	if !_this.config.Debug.PassThroughPanics {
 		defer func() {
@@ -139,8 +140,9 @@ func (_this *Unmarshaler) Unmarshal(reader io.Reader, template interface{}) (dec
 		_this.rules.SetNextReceiver(receiver)
 		receiver = &_this.rules
 	}
-	if err = _this.decoder.Decode(reader, receiver); err != nil {
-		return
+	err = _this.decoder.Decode(reader, receiver)
+	if err != nil {
+		receiver.OnError()
 	}
 	decoded = builder.GetBuiltObject()
 	return
@@ -148,6 +150,7 @@ func (_this *Unmarshaler) Unmarshal(reader io.Reader, template interface{}) (dec
 
 // Unmarshal a CBE document, creating an object of the same type as the template.
 // If template is nil, a best-guess type will be returned (likely a slice or map).
+// If an error occurs while decoding, err will be non-null, and decoded will contain whatever was successfully decoded thus far.
 func (_this *Unmarshaler) UnmarshalFromDocument(document []byte, template interface{}) (decoded interface{}, err error) {
 	return _this.Unmarshal(bytes.NewBuffer(document), template)
 }

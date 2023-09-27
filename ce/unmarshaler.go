@@ -34,10 +34,12 @@ import (
 type Unmarshaler interface {
 	// Unmarshal an object from the given reader, in a type compatible with template.
 	// If template is nil, a best-guess type will be returned (likely a slice or map).
+	// If an error occurs while decoding, err will be non-null, and decoded will contain whatever was successfully decoded thus far.
 	Unmarshal(reader io.Reader, template interface{}) (decoded interface{}, err error)
 
 	// Unmarshal an object from the given document, in a type compatible with template.
 	// If template is nil, a best-guess type will be returned (likely a slice or map).
+	// If an error occurs while decoding, err will be non-null, and decoded will contain whatever was successfully decoded thus far.
 	UnmarshalFromDocument(document []byte, template interface{}) (decoded interface{}, err error)
 }
 

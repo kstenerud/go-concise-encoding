@@ -104,9 +104,12 @@ type SomeStruct struct {
 }
 
 func demonstrateRecursiveStructInMap() error {
+	config := configuration.New()
+	config.Iterator.RecursionSupport = true
+
 	document := `c0 {"my-value" = &1:{"a"=100 "b"="test" "c"=$1}}`
 	template := map[string]*SomeStruct{}
-	result, err := ce.UnmarshalFromCTEDocument([]byte(document), template, configuration.New())
+	result, err := ce.UnmarshalFromCTEDocument([]byte(document), template, config)
 	if err != nil {
 		fmt.Printf("Error unmarshaling CTE document: %v\n", err)
 		return err
@@ -117,7 +120,7 @@ func demonstrateRecursiveStructInMap() error {
 	fmt.Printf("A: %v, B: %v, Ptr to C: %p, ptr to s: %p\n", s.A, s.B, s.C, s)
 	// Prints: A: 100, B: test, Ptr to C: 0xc0001f4600, ptr to s: 0xc0001f4600
 
-	encodedDocument, err := ce.MarshalToCTEDocument(v, configuration.New())
+	encodedDocument, err := ce.MarshalToCTEDocument(v, config)
 	if err != nil {
 		fmt.Printf("Error marshaling CTE document: %v\n", err)
 		return err
@@ -125,7 +128,7 @@ func demonstrateRecursiveStructInMap() error {
 	fmt.Printf("Re-encoded CTE: %v\n", string(encodedDocument))
 	// Prints: Re-encoded CTE: c0 {my-value=&0:{A=100 B=test C=$0}}
 
-	encodedDocument, err = ce.MarshalToCBEDocument(v, configuration.New())
+	encodedDocument, err = ce.MarshalToCBEDocument(v, config)
 	if err != nil {
 		fmt.Printf("Error marshaling CBE document: %v\n", err)
 		return err

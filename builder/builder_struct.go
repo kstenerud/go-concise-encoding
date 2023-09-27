@@ -303,6 +303,10 @@ func (_this *structBuilder) BuildEndContainer(ctx *Context) {
 	ctx.UnstackBuilderAndNotifyChildFinished(object)
 }
 
+func (_this *structBuilder) BuildArtificiallyEndContainer(ctx *Context) {
+	_this.BuildEndContainer(ctx)
+}
+
 func (_this *structBuilder) BuildBeginMapContents(ctx *Context) {
 	ctx.StackBuilder(_this)
 }

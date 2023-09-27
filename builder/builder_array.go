@@ -165,6 +165,10 @@ func (_this *arrayBuilder) BuildEndContainer(ctx *Context) {
 	ctx.UnstackBuilderAndNotifyChildFinished(object)
 }
 
+func (_this *arrayBuilder) BuildArtificiallyEndContainer(ctx *Context) {
+	_this.BuildEndContainer(ctx)
+}
+
 func (_this *arrayBuilder) BuildBeginListContents(ctx *Context) {
 	ctx.StackBuilder(_this)
 }

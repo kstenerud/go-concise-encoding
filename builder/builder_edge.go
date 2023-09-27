@@ -189,3 +189,6 @@ func (_this *edgeBuilder) NotifyChildContainerFinished(ctx *Context, value refle
 	_this.components[_this.index] = value
 	_this.tryFinish(ctx)
 }
+
+func (_this *edgeBuilder) BuildArtificiallyEndContainer(ctx *Context) {
+}

@@ -62,6 +62,9 @@ func (_this *stringBuilder) BuildFromStringlikeArray(ctx *Context, arrayType eve
 	return dst
 }
 
+func (_this *stringBuilder) BuildArtificiallyEndContainer(ctx *Context) {
+}
+
 // ============================================================================
 
 type uint8ArrayBuilder struct {
@@ -98,6 +101,9 @@ func (_this *uint8ArrayBuilder) BuildBeginListContents(ctx *Context) {
 	generator(ctx).BuildBeginListContents(ctx)
 }
 
+func (_this *uint8ArrayBuilder) BuildArtificiallyEndContainer(ctx *Context) {
+}
+
 type uint8SliceBuilder struct{}
 
 var globalUint8SliceBuilder = &uint8SliceBuilder{}
@@ -122,6 +128,9 @@ func (_this *uint8SliceBuilder) BuildFromArray(ctx *Context, arrayType events.Ar
 
 func (_this *uint8SliceBuilder) BuildBeginListContents(ctx *Context) {
 	listToUint8SliceGenerator(ctx).BuildBeginListContents(ctx)
+}
+
+func (_this *uint8SliceBuilder) BuildArtificiallyEndContainer(ctx *Context) {
 }
 
 // ============================================================================
@@ -163,6 +172,9 @@ func (_this *uint16ArrayBuilder) BuildBeginListContents(ctx *Context) {
 	generator(ctx).BuildBeginListContents(ctx)
 }
 
+func (_this *uint16ArrayBuilder) BuildArtificiallyEndContainer(ctx *Context) {
+}
+
 type uint16SliceBuilder struct{}
 
 var globalUint16SliceBuilder = &uint16SliceBuilder{}
@@ -193,6 +205,9 @@ func (_this *uint16SliceBuilder) BuildFromArray(ctx *Context, arrayType events.A
 
 func (_this *uint16SliceBuilder) BuildBeginListContents(ctx *Context) {
 	listToUint16SliceGenerator(ctx).BuildBeginListContents(ctx)
+}
+
+func (_this *uint16SliceBuilder) BuildArtificiallyEndContainer(ctx *Context) {
 }
 
 // ============================================================================
@@ -236,6 +251,9 @@ func (_this *uint32ArrayBuilder) BuildBeginListContents(ctx *Context) {
 	generator(ctx).BuildBeginListContents(ctx)
 }
 
+func (_this *uint32ArrayBuilder) BuildArtificiallyEndContainer(ctx *Context) {
+}
+
 type uint32SliceBuilder struct{}
 
 var globalUint32SliceBuilder = &uint32SliceBuilder{}
@@ -268,6 +286,9 @@ func (_this *uint32SliceBuilder) BuildFromArray(ctx *Context, arrayType events.A
 
 func (_this *uint32SliceBuilder) BuildBeginListContents(ctx *Context) {
 	listToUint32SliceGenerator(ctx).BuildBeginListContents(ctx)
+}
+
+func (_this *uint32SliceBuilder) BuildArtificiallyEndContainer(ctx *Context) {
 }
 
 // ============================================================================
@@ -315,6 +336,9 @@ func (_this *uint64ArrayBuilder) BuildBeginListContents(ctx *Context) {
 	generator(ctx).BuildBeginListContents(ctx)
 }
 
+func (_this *uint64ArrayBuilder) BuildArtificiallyEndContainer(ctx *Context) {
+}
+
 type uint64SliceBuilder struct{}
 
 var globalUint64SliceBuilder = &uint64SliceBuilder{}
@@ -351,6 +375,9 @@ func (_this *uint64SliceBuilder) BuildFromArray(ctx *Context, arrayType events.A
 
 func (_this *uint64SliceBuilder) BuildBeginListContents(ctx *Context) {
 	listToUint64SliceGenerator(ctx).BuildBeginListContents(ctx)
+}
+
+func (_this *uint64SliceBuilder) BuildArtificiallyEndContainer(ctx *Context) {
 }
 
 // ============================================================================
@@ -391,6 +418,9 @@ func (_this *int8ArrayBuilder) BuildBeginListContents(ctx *Context) {
 	generator(ctx).BuildBeginListContents(ctx)
 }
 
+func (_this *int8ArrayBuilder) BuildArtificiallyEndContainer(ctx *Context) {
+}
+
 type int8SliceBuilder struct{}
 
 var globalInt8SliceBuilder = &int8SliceBuilder{}
@@ -420,6 +450,9 @@ func (_this *int8SliceBuilder) BuildFromArray(ctx *Context, arrayType events.Arr
 
 func (_this *int8SliceBuilder) BuildBeginListContents(ctx *Context) {
 	listToInt8SliceGenerator(ctx).BuildBeginListContents(ctx)
+}
+
+func (_this *int8SliceBuilder) BuildArtificiallyEndContainer(ctx *Context) {
 }
 
 // ============================================================================
@@ -461,6 +494,9 @@ func (_this *int16ArrayBuilder) BuildBeginListContents(ctx *Context) {
 	generator(ctx).BuildBeginListContents(ctx)
 }
 
+func (_this *int16ArrayBuilder) BuildArtificiallyEndContainer(ctx *Context) {
+}
+
 type int16SliceBuilder struct{}
 
 var globalInt16SliceBuilder = &int16SliceBuilder{}
@@ -491,6 +527,9 @@ func (_this *int16SliceBuilder) BuildFromArray(ctx *Context, arrayType events.Ar
 
 func (_this *int16SliceBuilder) BuildBeginListContents(ctx *Context) {
 	listToInt16SliceGenerator(ctx).BuildBeginListContents(ctx)
+}
+
+func (_this *int16SliceBuilder) BuildArtificiallyEndContainer(ctx *Context) {
 }
 
 // ============================================================================
@@ -534,6 +573,9 @@ func (_this *int32ArrayBuilder) BuildBeginListContents(ctx *Context) {
 	generator(ctx).BuildBeginListContents(ctx)
 }
 
+func (_this *int32ArrayBuilder) BuildArtificiallyEndContainer(ctx *Context) {
+}
+
 type int32SliceBuilder struct{}
 
 var globalInt32SliceBuilder = &int32SliceBuilder{}
@@ -566,6 +608,9 @@ func (_this *int32SliceBuilder) BuildFromArray(ctx *Context, arrayType events.Ar
 
 func (_this *int32SliceBuilder) BuildBeginListContents(ctx *Context) {
 	listToInt32SliceGenerator(ctx).BuildBeginListContents(ctx)
+}
+
+func (_this *int32SliceBuilder) BuildArtificiallyEndContainer(ctx *Context) {
 }
 
 // ============================================================================
@@ -613,6 +658,9 @@ func (_this *int64ArrayBuilder) BuildBeginListContents(ctx *Context) {
 	generator(ctx).BuildBeginListContents(ctx)
 }
 
+func (_this *int64ArrayBuilder) BuildArtificiallyEndContainer(ctx *Context) {
+}
+
 type int64SliceBuilder struct{}
 
 var globalInt64SliceBuilder = &int64SliceBuilder{}
@@ -649,6 +697,9 @@ func (_this *int64SliceBuilder) BuildFromArray(ctx *Context, arrayType events.Ar
 
 func (_this *int64SliceBuilder) BuildBeginListContents(ctx *Context) {
 	listToInt64SliceGenerator(ctx).BuildBeginListContents(ctx)
+}
+
+func (_this *int64SliceBuilder) BuildArtificiallyEndContainer(ctx *Context) {
 }
 
 // ============================================================================
@@ -692,6 +743,9 @@ func (_this *float32ArrayBuilder) BuildBeginListContents(ctx *Context) {
 	generator(ctx).BuildBeginListContents(ctx)
 }
 
+func (_this *float32ArrayBuilder) BuildArtificiallyEndContainer(ctx *Context) {
+}
+
 type float32SliceBuilder struct{}
 
 var globalFloat32SliceBuilder = &float32SliceBuilder{}
@@ -725,6 +779,9 @@ func (_this *float32SliceBuilder) BuildFromArray(ctx *Context, arrayType events.
 
 func (_this *float32SliceBuilder) BuildBeginListContents(ctx *Context) {
 	listToFloat32SliceGenerator(ctx).BuildBeginListContents(ctx)
+}
+
+func (_this *float32SliceBuilder) BuildArtificiallyEndContainer(ctx *Context) {
 }
 
 // ============================================================================
@@ -772,6 +829,9 @@ func (_this *float64ArrayBuilder) BuildBeginListContents(ctx *Context) {
 	generator(ctx).BuildBeginListContents(ctx)
 }
 
+func (_this *float64ArrayBuilder) BuildArtificiallyEndContainer(ctx *Context) {
+}
+
 type float64SliceBuilder struct{}
 
 var globalFloat64SliceBuilder = &float64SliceBuilder{}
@@ -811,6 +871,9 @@ func (_this *float64SliceBuilder) BuildBeginListContents(ctx *Context) {
 	listToFloat64SliceGenerator(ctx).BuildBeginListContents(ctx)
 }
 
+func (_this *float64SliceBuilder) BuildArtificiallyEndContainer(ctx *Context) {
+}
+
 type mediaBuilder struct{}
 
 var globalMediaBuilder = &mediaBuilder{}
@@ -825,4 +888,7 @@ func (_this *mediaBuilder) BuildFromMedia(ctx *Context, mediaType string, data [
 	}
 	dst.Set(reflect.ValueOf(v))
 	return dst
+}
+
+func (_this *mediaBuilder) BuildArtificiallyEndContainer(ctx *Context) {
 }

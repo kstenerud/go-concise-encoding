@@ -41,3 +41,6 @@ func (_this *customBuilder) BuildFromCustomText(ctx *Context, customType uint64,
 	ctx.TryBuildFromCustomText(_this, customType, data, dst)
 	return dst
 }
+
+func (_this *customBuilder) BuildArtificiallyEndContainer(ctx *Context) {
+}

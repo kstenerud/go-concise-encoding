@@ -53,6 +53,9 @@ func (_this *ridBuilder) BuildFromStringlikeArray(ctx *Context, arrayType events
 	return dst
 }
 
+func (_this *ridBuilder) BuildArtificiallyEndContainer(ctx *Context) {
+}
+
 // ============================================================================
 
 type pRidBuilder struct{}
@@ -85,4 +88,7 @@ func (_this *pRidBuilder) BuildFromStringlikeArray(ctx *Context, arrayType event
 		PanicBadEvent(_this, "BuildFromStringlikeArray(%v)", arrayType)
 	}
 	return dst
+}
+
+func (_this *pRidBuilder) BuildArtificiallyEndContainer(ctx *Context) {
 }

@@ -212,3 +212,6 @@ func (_this *interfaceBuilder) BuildFromLocalReference(ctx *Context, id []byte) 
 func (_this *interfaceBuilder) NotifyChildContainerFinished(ctx *Context, value reflect.Value) {
 	ctx.UnstackBuilderAndNotifyChildFinished(value)
 }
+
+func (_this *interfaceBuilder) BuildArtificiallyEndContainer(ctx *Context) {
+}

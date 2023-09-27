@@ -232,6 +232,10 @@ func (_this *mapBuilder) BuildEndContainer(ctx *Context) {
 	ctx.UnstackBuilderAndNotifyChildFinished(object)
 }
 
+func (_this *mapBuilder) BuildArtificiallyEndContainer(ctx *Context) {
+	_this.BuildEndContainer(ctx)
+}
+
 func (_this *mapBuilder) BuildBeginMapContents(ctx *Context) {
 	ctx.StackBuilder(_this)
 }

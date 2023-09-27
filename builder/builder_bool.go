@@ -35,3 +35,6 @@ func (_this *boolBuilder) BuildFromBool(ctx *Context, value bool, dst reflect.Va
 	dst.SetBool(value)
 	return dst
 }
+
+func (_this *boolBuilder) BuildArtificiallyEndContainer(ctx *Context) {
+}

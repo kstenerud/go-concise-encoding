@@ -160,3 +160,6 @@ func (_this *topLevelBuilder) BuildNewEdge(ctx *Context) {
 func (_this *topLevelBuilder) NotifyChildContainerFinished(ctx *Context, value reflect.Value) {
 	_this.containerFinishedCallback(value)
 }
+
+func (_this *topLevelBuilder) BuildArtificiallyEndContainer(ctx *Context) {
+}

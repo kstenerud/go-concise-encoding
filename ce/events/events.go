@@ -214,4 +214,6 @@ type DataEventReceiver interface {
 	// Data will always end on an element boundary (the spec requires this).
 	// So for example uint32 data sent via this call will always be a multiple of 4 bytes.
 	OnArrayData(data []byte)
+
+	OnError()
 }

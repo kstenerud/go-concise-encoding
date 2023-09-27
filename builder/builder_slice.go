@@ -202,6 +202,10 @@ func (_this *sliceBuilder) BuildEndContainer(ctx *Context) {
 	ctx.UnstackBuilderAndNotifyChildFinished(object)
 }
 
+func (_this *sliceBuilder) BuildArtificiallyEndContainer(ctx *Context) {
+	_this.BuildEndContainer(ctx)
+}
+
 func (_this *sliceBuilder) BuildBeginListContents(ctx *Context) {
 	ctx.StackBuilder(_this)
 }

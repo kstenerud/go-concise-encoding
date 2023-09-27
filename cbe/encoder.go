@@ -505,6 +505,8 @@ func (_this *Encoder) OnEndDocument() {
 	}
 }
 
+func (_this *Encoder) OnError() {}
+
 // ============================================================================
 
 // Internal

@@ -66,6 +66,9 @@ func (_this *bigDecimalFloatBuilder) BuildFromBigDecimalFloat(ctx *Context, valu
 	return dst
 }
 
+func (_this *bigDecimalFloatBuilder) BuildArtificiallyEndContainer(ctx *Context) {
+}
+
 // ============================================================================
 
 type bigFloatBuilder struct{}
@@ -102,6 +105,9 @@ func (_this *bigFloatBuilder) BuildFromBigFloat(ctx *Context, value *big.Float, 
 func (_this *bigFloatBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
 	setBigFloatFromBigDecimalFloat(value, dst)
 	return dst
+}
+
+func (_this *bigFloatBuilder) BuildArtificiallyEndContainer(ctx *Context) {
 }
 
 // ============================================================================
@@ -142,6 +148,9 @@ func (_this *bigIntBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.De
 	return dst
 }
 
+func (_this *bigIntBuilder) BuildArtificiallyEndContainer(ctx *Context) {
+}
+
 // ============================================================================
 
 type decimalFloatBuilder struct{}
@@ -178,6 +187,9 @@ func (_this *decimalFloatBuilder) BuildFromBigFloat(ctx *Context, value *big.Flo
 func (_this *decimalFloatBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
 	setDecimalFloatFromBigDecimalFloat(value, dst)
 	return dst
+}
+
+func (_this *decimalFloatBuilder) BuildArtificiallyEndContainer(ctx *Context) {
 }
 
 // ============================================================================
@@ -218,6 +230,9 @@ func (_this *floatBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Dec
 	return dst
 }
 
+func (_this *floatBuilder) BuildArtificiallyEndContainer(ctx *Context) {
+}
+
 // ============================================================================
 
 type intBuilder struct{}
@@ -254,6 +269,9 @@ func (_this *intBuilder) BuildFromBigFloat(ctx *Context, value *big.Float, dst r
 func (_this *intBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
 	setIntFromBigDecimalFloat(value, dst)
 	return dst
+}
+
+func (_this *intBuilder) BuildArtificiallyEndContainer(ctx *Context) {
 }
 
 // ============================================================================
@@ -298,6 +316,9 @@ func (_this *pBigDecimalFloatBuilder) BuildFromBigDecimalFloat(ctx *Context, val
 	return dst
 }
 
+func (_this *pBigDecimalFloatBuilder) BuildArtificiallyEndContainer(ctx *Context) {
+}
+
 // ============================================================================
 
 type pBigFloatBuilder struct{}
@@ -338,6 +359,9 @@ func (_this *pBigFloatBuilder) BuildFromBigFloat(ctx *Context, value *big.Float,
 func (_this *pBigFloatBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Decimal, dst reflect.Value) reflect.Value {
 	setPBigFloatFromBigDecimalFloat(value, dst)
 	return dst
+}
+
+func (_this *pBigFloatBuilder) BuildArtificiallyEndContainer(ctx *Context) {
 }
 
 // ============================================================================
@@ -382,6 +406,9 @@ func (_this *pBigIntBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.D
 	return dst
 }
 
+func (_this *pBigIntBuilder) BuildArtificiallyEndContainer(ctx *Context) {
+}
+
 // ============================================================================
 
 type uintBuilder struct {
@@ -421,6 +448,9 @@ func (_this *uintBuilder) BuildFromBigDecimalFloat(ctx *Context, value *apd.Deci
 	return dst
 }
 
+func (_this *uintBuilder) BuildArtificiallyEndContainer(ctx *Context) {
+}
+
 // ============================================================================
 
 type uidBuilder struct {
@@ -434,4 +464,7 @@ func (_this *uidBuilder) String() string      { return reflect.TypeOf(_this).Str
 func (_this *uidBuilder) BuildFromUID(ctx *Context, value []byte, dst reflect.Value) reflect.Value {
 	setFromUID(value, dst)
 	return dst
+}
+
+func (_this *uidBuilder) BuildArtificiallyEndContainer(ctx *Context) {
 }

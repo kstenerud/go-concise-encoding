@@ -189,3 +189,6 @@ func (_this *nodeBuilder) NotifyChildContainerFinished(ctx *Context, container r
 		_this.stackChildrenBuilder(ctx)
 	}
 }
+
+func (_this *nodeBuilder) BuildArtificiallyEndContainer(ctx *Context) {
+}

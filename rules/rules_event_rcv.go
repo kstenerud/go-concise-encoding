@@ -367,3 +367,7 @@ func (_this *RulesEventReceiver) OnEndDocument() {
 	_this.context.CurrentEntry.Rule.OnEndDocument(&_this.context)
 	_this.receiver.OnEndDocument()
 }
+
+func (_this *RulesEventReceiver) OnError() {
+	_this.receiver.OnError()
+}

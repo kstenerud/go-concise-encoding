@@ -188,3 +188,6 @@ func (_this *ptrBuilder) BuildBeginNodeContents(ctx *Context) {
 func (_this *ptrBuilder) NotifyChildContainerFinished(ctx *Context, value reflect.Value) {
 	ctx.UnstackBuilderAndNotifyChildFinished(value.Addr())
 }
+
+func (_this *ptrBuilder) BuildArtificiallyEndContainer(ctx *Context) {
+}

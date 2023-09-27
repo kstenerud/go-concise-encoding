@@ -44,6 +44,9 @@ func (_this *timeBuilder) BuildFromTime(ctx *Context, value compact_time.Time, d
 	return dst
 }
 
+func (_this *timeBuilder) BuildArtificiallyEndContainer(ctx *Context) {
+}
+
 // ============================================================================
 
 var globalCompactTimeBuilder = &compactTimeBuilder{}
@@ -63,6 +66,9 @@ func (_this *compactTimeBuilder) BuildFromTime(ctx *Context, value compact_time.
 	return dst
 }
 
+func (_this *compactTimeBuilder) BuildArtificiallyEndContainer(ctx *Context) {
+}
+
 // ============================================================================
 
 var globalPCompactTimeBuilder = &pCompactTimeBuilder{}
@@ -80,4 +86,7 @@ func (_this *pCompactTimeBuilder) BuildFromNull(ctx *Context, dst reflect.Value)
 func (_this *pCompactTimeBuilder) BuildFromTime(ctx *Context, value compact_time.Time, dst reflect.Value) reflect.Value {
 	dst.Set(reflect.ValueOf(value))
 	return dst
+}
+
+func (_this *pCompactTimeBuilder) BuildArtificiallyEndContainer(ctx *Context) {
 }

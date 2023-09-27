@@ -68,6 +68,7 @@ type Builder interface {
 	// Signals that the container is finished
 	// This gets triggered from a data event.
 	BuildEndContainer(ctx *Context)
+	BuildArtificiallyEndContainer(ctx *Context)
 
 	// Tells this builder to prepare to receive the new container's contents.
 	// This gets called by the parent builder.

@@ -104,12 +104,14 @@ func MarshalToCBEDocument(object interface{}, config *configuration.Configuratio
 
 // Unmarshal a CBE document from a reader, creating an object of the same type as the template.
 // If template is nil, a best-guess type will be returned (likely a slice or map).
+// If an error occurs while decoding, err will be non-null, and decoded will contain whatever was successfully decoded thus far.
 func UnmarshalCBE(reader io.Reader, template interface{}, config *configuration.Configuration) (decoded interface{}, err error) {
 	return NewCBEUnmarshaler(config).Unmarshal(reader, template)
 }
 
 // Unmarshal a CBE document from a byte slice, creating an object of the same type as the template.
 // If template is nil, a best-guess type will be returned (likely a slice or map).
+// If an error occurs while decoding, err will be non-null, and decoded will contain whatever was successfully decoded thus far.
 func UnmarshalFromCBEDocument(document []byte, template interface{}, config *configuration.Configuration) (decoded interface{}, err error) {
 	return NewCBEUnmarshaler(config).UnmarshalFromDocument(document, template)
 }
@@ -130,12 +132,14 @@ func MarshalToCTEDocument(object interface{}, config *configuration.Configuratio
 
 // Unmarshal a CTE document, creating an object of the same type as the template.
 // If template is nil, a best-guess type will be returned (likely a slice or map).
+// If an error occurs while decoding, err will be non-null, and decoded will contain whatever was successfully decoded thus far.
 func UnmarshalCTE(reader io.Reader, template interface{}, config *configuration.Configuration) (decoded interface{}, err error) {
 	return NewCTEUnmarshaler(config).Unmarshal(reader, template)
 }
 
 // Unmarshal a CTE document from a byte slice, creating an object of the same type as the template.
 // If template is nil, a best-guess type will be returned (likely a slice or map).
+// If an error occurs while decoding, err will be non-null, and decoded will contain whatever was successfully decoded thus far.
 func UnmarshalFromCTEDocument(document []byte, template interface{}, config *configuration.Configuration) (decoded interface{}, err error) {
 	return NewCTEUnmarshaler(config).UnmarshalFromDocument(document, template)
 }

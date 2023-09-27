@@ -96,6 +96,12 @@ func (_this *Context) SwapBuilder(builder Builder) Builder {
 	return oldTop
 }
 
+func (_this *Context) ArtificiallyTerminate() {
+	for len(_this.builderStack) > 1 {
+		_this.CurrentBuilder.BuildArtificiallyEndContainer(_this)
+	}
+}
+
 func (_this *Context) UnstackBuilderAndNotifyChildFinished(container reflect.Value) Builder {
 	oldTop := _this.UnstackBuilder()
 	_this.CurrentBuilder.NotifyChildContainerFinished(_this, container)

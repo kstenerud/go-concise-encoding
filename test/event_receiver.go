@@ -433,3 +433,7 @@ func (_this *EventReceiver) OnNan(signaling bool) {
 	}
 	_this.next.OnNan(signaling)
 }
+
+func (_this *EventReceiver) OnError() {
+	_this.next.OnError()
+}
